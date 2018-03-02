@@ -34,8 +34,8 @@ import java.util.List;
 /**
  * The BlockDetails return the detailed block information including the transactions and the transaction logs
  *
- * @see org.aion.api.IAdmin#getBlockDetailByNumber(java.lang.String)  getBlockDetailByNumber
- * @see org.aion.api.IAdmin#getBlockDetailByNumber(java.util.List)  getBlockDetailByNumber
+ * @see org.aion.api.IAdmin#getBlockDetailsByNumber(java.lang.String)  getBlockDetailsByNumber
+ * @see org.aion.api.IAdmin#getBlockDetailsByNumber(java.util.List)  getBlockDetailsByNumber
  * @see org.aion.api.type.TxDetails TxDetails
  * @see org.aion.api.type.TxLog TxLog
  *
