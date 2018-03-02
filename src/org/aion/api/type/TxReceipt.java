@@ -1,0 +1,195 @@
+/*******************************************************************************
+ * Copyright (c) 2017-2018 Aion foundation.
+ *
+ *     This file is part of the aion network project.
+ *
+ *     The aion network project is free software: you can redistribute it
+ *     and/or modify it under the terms of the GNU General Public License
+ *     as published by the Free Software Foundation, either version 3 of
+ *     the License, or any later version.
+ *
+ *     The aion network project is distributed in the hope that it will
+ *     be useful, but WITHOUT ANY WARRANTY; without even the implied
+ *     warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *     See the GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with the aion network project source files.
+ *     If not, see <https://www.gnu.org/licenses/>.
+ *
+ * Contributors:
+ *     Aion foundation.
+ *
+ ******************************************************************************/
+
+package org.aion.api.type;
+
+import org.aion.base.type.Address;
+import org.aion.base.type.Hash256;
+
+import java.util.List;
+
+/**
+ * TxReceipt class containing all relevant information to
+ * transaction receipts utilized by
+ * {@link org.aion.api.ITx#getTxReceipt(Hash256) getTxReceipt}.
+ */
+
+public final class TxReceipt {
+    private final int txIndex;
+    private final long blockNumber;
+    private final long nrgConsumed;
+    private final long cumulativeNrgUsed;
+    private final Hash256 blockHash;
+    private final Hash256 txHash;
+    private final Address from;
+    private final Address to;
+    private final Address contractAddress;
+    private final List<TxLog> txLogs;
+
+    private TxReceipt(TxReceiptBuilder builder) {
+        this.txIndex = builder.txIndex;
+        this.blockNumber = builder.blockNumber;
+        this.nrgConsumed = builder.nrgConsumed;
+        this.cumulativeNrgUsed = builder.cumulativeNrgUsed;
+        this.blockHash = builder.blockHash;
+        this.txHash = builder.txHash;
+        this.from = builder.from;
+        this.to = builder.to;
+        this.contractAddress = builder.contractAddress;
+        this.txLogs = builder.txLogs;
+    }
+
+    public int getTxIndex() {
+        return txIndex;
+    }
+
+    public long getBlockNumber() {
+        return blockNumber;
+    }
+
+    public long getNrgConsumed() {
+        return nrgConsumed;
+    }
+
+    public long getCumulativeNrgUsed() {
+        return cumulativeNrgUsed;
+    }
+
+    public Hash256 getBlockHash() {
+        return blockHash;
+    }
+
+    public Hash256 getTxHash() {
+        return txHash;
+    }
+
+    public Address getFrom() {
+        return from;
+    }
+
+    public Address getTo() {
+        return to;
+    }
+
+    public Address getContractAddress() {
+        return contractAddress;
+    }
+
+    public List<TxLog> getTxLogs() {
+        return txLogs;
+    }
+
+    /**
+     * This Builder class is used to build a {@link TxReceipt} instance.
+     */
+    public static class TxReceiptBuilder {
+        private int txIndex;
+        private long blockNumber;
+        private long nrgConsumed;
+        private long cumulativeNrgUsed;
+        private Hash256 blockHash;
+        private Hash256 txHash;
+        private Address from;
+        private Address to;
+        private Address contractAddress;
+        private List<TxLog> txLogs;
+
+        public TxReceiptBuilder(){
+        }
+
+        public TxReceipt.TxReceiptBuilder txIndex(final int txIndex) {
+            this.txIndex = txIndex;
+            return this;
+        }
+
+        public TxReceipt.TxReceiptBuilder blockNumber(final long blockNumber) {
+            this.blockNumber = blockNumber;
+            return this;
+        }
+
+        public TxReceipt.TxReceiptBuilder nrgConsumed(final long nrgConsumed) {
+            this.nrgConsumed = nrgConsumed;
+            return this;
+        }
+
+        public TxReceipt.TxReceiptBuilder cumulativeNrgUsed(final long cumulativeNrgUsed) {
+            this.cumulativeNrgUsed = cumulativeNrgUsed;
+            return this;
+        }
+
+        public TxReceipt.TxReceiptBuilder blockHash(final Hash256 blockHash) {
+            this.blockHash = blockHash;
+            return this;
+        }
+
+        public TxReceipt.TxReceiptBuilder txHash(final Hash256 txHash) {
+            this.txHash = txHash;
+            return this;
+        }
+
+        public TxReceipt.TxReceiptBuilder from(final Address from) {
+            this.from = from;
+            return this;
+        }
+
+        public TxReceipt.TxReceiptBuilder to(final Address to) {
+            this.to = to;
+            return this;
+        }
+
+        public TxReceipt.TxReceiptBuilder contractAddress(final Address contractAddress) {
+            this.contractAddress = contractAddress;
+            return this;
+        }
+
+        public TxReceipt.TxReceiptBuilder txLogs(final List txLogs) {
+            this.txLogs = txLogs;
+            return this;
+        }
+
+        public TxReceipt createTxReceipt() {
+            if (blockHash == null || txHash == null ||
+                    from == null || to == null || contractAddress == null || txLogs == null) {
+
+                throw new NullPointerException(
+                        "TxHash#" + String.valueOf(txHash) +
+                        " BlockHash#" + String.valueOf(blockHash) +
+                        " From#" + String.valueOf(from) +
+                        " To#" + String.valueOf(to) +
+                        " ContractAddress#" + String.valueOf(contractAddress) +
+                        " TxLogs#" + String.valueOf(txLogs)
+                    );
+            }
+
+            if (txIndex < 0 || blockNumber < 0  || nrgConsumed < 0 || cumulativeNrgUsed < 0) {
+                throw new IllegalArgumentException("TxIdx#" + txIndex +
+                        " Block#" + blockNumber +
+                        " NrgConsumed#" + nrgConsumed +
+                        " CumulativeNrg#" + cumulativeNrgUsed);
+            }
+
+            return new TxReceipt(this);
+        }
+    }
+}

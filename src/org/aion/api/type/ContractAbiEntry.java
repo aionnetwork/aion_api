@@ -1,0 +1,216 @@
+/*******************************************************************************
+ * Copyright (c) 2017-2018 Aion foundation.
+ *
+ *     This file is part of the aion network project.
+ *
+ *     The aion network project is free software: you can redistribute it
+ *     and/or modify it under the terms of the GNU General Public License
+ *     as published by the Free Software Foundation, either version 3 of
+ *     the License, or any later version.
+ *
+ *     The aion network project is distributed in the hope that it will
+ *     be useful, but WITHOUT ANY WARRANTY; without even the implied
+ *     warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *     See the GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with the aion network project source files.
+ *     If not, see <https://www.gnu.org/licenses/>.
+ *
+ * Contributors:
+ *     Aion foundation.
+ *
+ ******************************************************************************/
+
+package org.aion.api.type;
+
+import java.util.List;
+
+/**
+ * Represents an internal representation of a single entry in the JSON ABI
+ * Contains all relevant information pertaining to that entry. Typically the
+ * API does not require the manual creation of such a class, instead it is
+ * returned by {@link org.aion.api.IContract IContract} or
+ * {@link org.aion.api.ITx#compile(java.lang.String) compile}
+ * related API.
+ *
+ * @author Jay Tseng
+ */
+
+public final class ContractAbiEntry {
+
+    // original abi structure
+    public boolean constant;
+    public boolean anonymous;
+    public boolean payable;
+    public String type;
+    public String name;
+    public List<ContractAbiIOParam> inputs;
+    public List<ContractAbiIOParam> outputs;
+
+    // additional member
+    private boolean isEvent;
+    private boolean isConstructor;
+    private String hashed;
+
+    public boolean isEvent() {
+        return isEvent;
+    }
+
+    public void setEvent(boolean event) {
+        isEvent = event;
+    }
+
+    public String getHashed() {
+        return hashed;
+    }
+
+    void setHashed(String hashed) {
+        this.hashed = hashed;
+    }
+
+    public boolean isConstructor() {
+        return isConstructor;
+    }
+
+    void setConstructor(boolean constructor) {
+        isConstructor = constructor;
+    }
+
+    // original abi structure
+//    private final boolean constant;
+//    private final boolean anonymous;
+//    private final boolean payable;
+//    private final String type;
+//    private final String name;
+//    private final List<ContractAbiIOParam> inputs;
+//    private final List<ContractAbiIOParam> outputs;
+//
+//    // addtional member
+//    private final boolean isEvent;
+//    private final String hashed;
+
+
+//    private ContractAbiEntry(AbiEntryBuilder builder) {
+//        this.constant = builder.constant;
+//        this.isEvent = builder.isEvent;
+//        this.anonymous = builder.isAnonymous;
+//        this.payable = builder.payable;
+//        this.name = builder.name;
+//        this.type = builder.type;
+//        this.hashed = builder.hashed;
+//        this.inputs = builder.inputParams;
+//        this.outputs = builder.outputParams;
+//    }
+//
+//    public boolean getConstant() {
+//        return constant;
+//    }
+//
+//    public boolean getEvent() {
+//        return isEvent;
+//    }
+//
+//    public boolean getAnonymous() {
+//        return anonymous;
+//    }
+//
+//    public boolean getPayable() {
+//        return payable;
+//    }
+//
+//    public String getName() {
+//        return name;
+//    }
+//
+//    public String getType() {
+//        return type;
+//    }
+//
+//    public String getHashed() {
+//        return hashed;
+//    }
+//
+//    public List<ContractAbiIOParam> getInputs() {
+//        return inputs;
+//    }
+//
+//    public List<ContractAbiIOParam> getOutputs() {
+//        return outputs;
+//    }
+//
+//    /**
+//     * This Builder class is used to build a {@link ContractAbiEntry} instance.
+//     */
+//    public static class AbiEntryBuilder {
+//        private boolean constant;
+//        private boolean isEvent;
+//        private boolean isAnonymous;
+//        private boolean payable;
+//        private String name;
+//        private String type;
+//        private String hashed;
+//        private List<ContractAbiIOParam> inputParams;
+//        private List<ContractAbiIOParam> outputParams;
+//
+//        public AbiEntryBuilder() {}
+//
+//        public AbiEntryBuilder constant(final boolean constant) {
+//            this.constant = constant;
+//            return this;
+//        }
+//
+//        public AbiEntryBuilder isEvent(final boolean isEvent) {
+//            this.isEvent = isEvent;
+//            return this;
+//        }
+//
+//        public AbiEntryBuilder isAnonymous(final boolean isAnonymous) {
+//            this.isAnonymous = isAnonymous;
+//            return this;
+//        }
+//
+//        public AbiEntryBuilder payable(final boolean payable) {
+//            this.payable = payable;
+//            return this;
+//        }
+//
+//        public AbiEntryBuilder name(final String name) {
+//            this.name = name;
+//            return this;
+//        }
+//
+//        public AbiEntryBuilder type(final String type) {
+//            this.type = type;
+//            return this;
+//        }
+//
+//        public AbiEntryBuilder hashed(final String hashed) {
+//            this.hashed = hashed;
+//            return this;
+//        }
+//
+//        public AbiEntryBuilder inputParams(final List inputParams) {
+//            this.inputParams = inputParams;
+//            return this;
+//        }
+//
+//        public AbiEntryBuilder outputParams(final List outputParams) {
+//            this.outputParams = outputParams;
+//            return this;
+//        }
+//
+//        public ContractAbiEntry createAbiFunctionEntry() {
+//            if (name == null || hashed == null || inputParams == null || outputParams == null || type == null) {
+//                throw new NullPointerException(
+//                        "name#" + String.valueOf(name) +
+//                                " type#" + String.valueOf(type) +
+//                                " hashed#" + String.valueOf(hashed) +
+//                                " outputs#" + String.valueOf(outputParams) +
+//                                " inputs#" + String.valueOf(inputParams));
+//            }
+//
+//            return new ContractAbiEntry(this);
+//        }
+//    }
+}
