@@ -79,7 +79,7 @@ public class AionLoggerFactory {
         if (loggerContext == null) {
             System.out.println(
                     "If you see this line, meaning you are under the unit test!!! If you are not. should report an issue.");
-            init(new ArrayList<>());
+            init(new HashMap<>());
         }
 
         ch.qos.logback.classic.Logger newlogger = loggerContext.getLogger(label);
@@ -121,11 +121,12 @@ public class AionLoggerFactory {
         return existLogger == null ? newlogger : existLogger;
     }
 
-    public static void init(final List<CfgLogModule> _logModules) {
+    public static void init(final Map<String, String> _logModules) {
 
-        for (CfgLogModule clm : _logModules) {
-            logModules.put(clm.getLabel(), clm.getLevel());
-        }
+
+        _logModules.entrySet().stream().forEach( e -> {
+            logModules.put(e.getKey(), e.getValue());
+        });
 
         loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
 

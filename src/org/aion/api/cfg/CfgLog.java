@@ -27,46 +27,87 @@ package org.aion.api.cfg;
 import org.aion.api.log.LogEnum;
 import org.aion.api.log.LogLevels;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.ArrayList;
-import java.util.List;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.HashMap;
+import java.util.Map;
 
-@XmlAccessorType(XmlAccessType.NONE)
 public class CfgLog {
 
-    // xml properties
-    @XmlElement(name = "module", required = true)
-    private List<CfgLogModule> modules;
+    private Map<String, String> modules;
 
-    // init
-    public CfgLog() {
-        modules = new ArrayList<>();
-        modules.add(new CfgLogModule(LogEnum.BSE.name(), LogLevels.INFO.name()));
-        modules.add(new CfgLogModule(LogEnum.CHN.name(), LogLevels.INFO.name()));
-        modules.add(new CfgLogModule(LogEnum.CNT.name(), LogLevels.INFO.name()));
-        modules.add(new CfgLogModule(LogEnum.NET.name(), LogLevels.INFO.name()));
-        modules.add(new CfgLogModule(LogEnum.TRX.name(), LogLevels.INFO.name()));
-        modules.add(new CfgLogModule(LogEnum.WLT.name(), LogLevels.INFO.name()));
-        modules.add(new CfgLogModule(LogEnum.EXE.name(), LogLevels.INFO.name()));
-        modules.add(new CfgLogModule(LogEnum.ADM.name(), LogLevels.INFO.name()));
-        modules.add(new CfgLogModule(LogEnum.SOL.name(), LogLevels.INFO.name()));
+    CfgLog() {
+
+        modules = new HashMap<>();
+        modules.put(LogEnum.BSE.name(), LogLevels.INFO.name());
+        modules.put(LogEnum.CHN.name(), LogLevels.INFO.name());
+        modules.put(LogEnum.CNT.name(), LogLevels.INFO.name());
+        modules.put(LogEnum.NET.name(), LogLevels.INFO.name());
+        modules.put(LogEnum.TRX.name(), LogLevels.INFO.name());
+        modules.put(LogEnum.WLT.name(), LogLevels.INFO.name());
+        modules.put(LogEnum.EXE.name(), LogLevels.INFO.name());
+        modules.put(LogEnum.ADM.name(), LogLevels.INFO.name());
+        modules.put(LogEnum.SOL.name(), LogLevels.INFO.name());
+    }
+
+    void fromXML(final XMLStreamReader sr) throws XMLStreamException {
+        this.modules = new HashMap<>();
+        loop:
+        while (sr.hasNext()) {
+            int eventType = sr.next();
+            switch (eventType) {
+            case XMLStreamReader.START_ELEMENT:
+                String elementName = sr.getLocalName().toUpperCase();
+                if (LogEnum.contains(elementName))
+                    this.modules.put(elementName, Cfg.readValue(sr).toUpperCase());
+                break;
+            case XMLStreamReader.END_ELEMENT:
+                break loop;
+            default:
+                //Cfg.skipElement(sr);
+                break;
+            }
+        }
+    }
+
+    String toXML() {
+        final XMLOutputFactory output = XMLOutputFactory.newInstance();
+        XMLStreamWriter xmlWriter;
+        String xml;
+        try {
+            Writer strWriter = new StringWriter();
+            xmlWriter = output.createXMLStreamWriter(strWriter);
+            xmlWriter.writeCharacters("\r\n\t");
+            xmlWriter.writeStartElement("log");
+            xmlWriter.writeCharacters("\r\n");
+            for (Map.Entry<String, String> module : this.modules.entrySet()) {
+                xmlWriter.writeCharacters("\t\t");
+                xmlWriter.writeStartElement(module.getKey().toUpperCase());
+                xmlWriter.writeCharacters(module.getValue().toUpperCase());
+                xmlWriter.writeEndElement();
+                xmlWriter.writeCharacters("\r\n");
+            }
+            xmlWriter.writeCharacters("\t");
+            xmlWriter.writeEndElement();
+            xml = strWriter.toString();
+            strWriter.flush();
+            strWriter.close();
+            xmlWriter.flush();
+            xmlWriter.close();
+            return xml;
+        } catch (IOException | XMLStreamException e) {
+            return "";
+        }
     }
 
     // getters
-    public List<CfgLogModule> getModules() {
+    public Map<String, String> getModules() {
         return this.modules;
-    }
-
-    // setters
-    public void setModules(List<CfgLogModule> _modules) {
-        this.modules = _modules;
-    }
-
-    // implements
-    public boolean contains(String _module) {
-        return false;
     }
 
 }

@@ -27,18 +27,11 @@ package org.aion.api.cfg;
 import org.aion.api.log.LogEnum;
 import org.aion.api.log.LogLevels;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlValue;
 
-@XmlAccessorType(XmlAccessType.NONE)
+
 public class CfgLogModule {
 
-    // xml properties
-    @XmlAttribute(required = true)
     protected String label;
-    @XmlValue
     protected String level;
 
     public CfgLogModule() {

@@ -24,23 +24,14 @@
 
 package org.aion.api.cfg;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 
-@XmlAccessorType(XmlAccessType.NONE)
 /**
  * Created by Jay Tseng on 18/04/17.
  */ public class CfgConnect {
 
-    // xml properties
-    @XmlAttribute(name = "ip", required = true)
-    protected String ip;
-    @XmlAttribute(name = "port", required = true)
-    protected int port;
-    @XmlAttribute(name = "user", required = true)
+    private String ip;
+    private int port;
     protected String user;
-    @XmlAttribute(name = "password", required = true)
     protected String password;
 
     public CfgConnect() {

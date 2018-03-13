@@ -25,7 +25,7 @@
 package org.aion.api.impl;
 
 import org.aion.api.IUtils;
-import org.aion.api.cfg.ApiCfg;
+import org.aion.api.cfg.CfgApi;
 import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.impl.internal.Message;
 import org.aion.api.log.AionLoggerFactory;
@@ -59,11 +59,10 @@ public class ApiBase {
     int timeout = 300_000;
     MsgExecutor msgExecutor;
     boolean recon = false;
-    private ApiCfg cfg;
+    private CfgApi cfg;
 
     ApiBase() {
-        cfg = ApiCfg.inst();
-        cfg.load();
+        cfg = CfgApi.inst();
 
         AionLoggerFactory.init(cfg.getLog().getModules());
         LOGGER = AionLoggerFactory.getLogger(LogEnum.BSE.name());

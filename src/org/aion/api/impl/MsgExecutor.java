@@ -26,7 +26,7 @@ package org.aion.api.impl;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import org.aion.api.IUtils;
-import org.aion.api.cfg.ApiCfg;
+import org.aion.api.cfg.CfgApi;
 import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.impl.internal.LRUTimeMap;
 import org.aion.api.impl.internal.Message;
@@ -323,8 +323,8 @@ public class MsgExecutor implements Runnable {
                 byte[] header = ApiUtils
                         .toReqHeader(this.ver, Message.Servs.s_privilege, Message.Funcs.f_userPrivilege);
 
-                String user = new String(ApiCfg.inst().getConnect().getUser());
-                String pw = new String(ApiCfg.inst().getConnect().getPassword());
+                String user = new String(CfgApi.inst().getConnect().getUser());
+                String pw = new String(CfgApi.inst().getConnect().getPassword());
 
                 Message.req_userPrivilege reqBody = Message.req_userPrivilege.newBuilder().setUsername(user)
                         .setPassword(pw).build();

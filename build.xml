@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project basedir="." default="clean_build" name="javaAPI">  
     <property name="dir.lib" value="lib" />
+    <property name="dir.mod" value="mod" />
     <property name="main.build.dir" value="build/main" />
     <property name="main.src.dir" value="src" />
     <property name="test.build.dir" value="build/test" />
@@ -16,11 +17,12 @@
             <pathelement location="${dir.lib}/logback-core-1.2.3.jar" />
 	    <pathelement location="${dir.lib}/logback-classic-1.2.3.jar" />
             <pathelement location="${dir.lib}/protobuf-java-3.5.0.jar" />
-            <pathelement location="${dir.lib}/libAionBase.jar" />
-            <pathelement location="${dir.lib}/libCrypto.jar" />
             <pathelement location="${dir.lib}/libnsc.jar" />
             <pathelement location="${dir.lib}/libnzmq.jar" />
-            <pathelement location="${dir.lib}/libRlp.jar" />
+            <pathelement location="${dir.mod}/modRlp.jar" />
+            <pathelement location="${dir.mod}/modAionBase.jar" />
+            <pathelement location="${dir.mod}/modCrypto.jar" />
+            <pathelement location="${dir.mod}/modLogger.jar" />
     </path>
 
     <path id="classpath.test">
@@ -33,7 +35,7 @@
         <delete dir="${main.build.dir}" includeEmptyDirs="true" />
         <delete dir="${test.build.dir}" includeEmptyDirs="true" />
         <delete dir="${test.report.dir}" includeEmptyDirs="true" />
-        <delete file="${dir.pack}/libAionApi.jar" />
+        <delete file="${dir.pack}/modAionApi.jar" />
     </target>
 
     <!-- Build Related -->
@@ -43,10 +45,11 @@
         <javac
             debug="${compile.debug}"
             debuglevel="source,lines,vars"
+	    release="9"
             includeantruntime="false"
             srcdir="${main.src.dir}"
             destdir="${main.build.dir}"
-            includes="**/*.java"
+            includes="**/*.java, module-info.java"
             >
 		<classpath>
                         <path refid="classpath.dependency" />
@@ -61,7 +64,7 @@
         </antcall>
 
         <jar
-            destfile="libAionApi.jar"
+            destfile="modAionApi.jar"
             filesetmanifest="mergewithoutmain"
 	    duplicate="preserve"
             basedir="${main.build.dir}"
@@ -73,21 +76,17 @@
 		<attribute name="Implementation-Vendor-Id" value="aion.network"/>
                 <attribute name="Specification-Title" value="Aion Foundation Java API"/>
             </manifest>	    
-
-		<zipfileset src="${dir.lib}/libCrypto.jar"/>
-		<zipfileset src="${dir.lib}/libnzmq.jar"/>
+		<!--<zipfileset src="${dir.lib}/libnzmq.jar"/>
       		<zipfileset src="${dir.lib}/logback-core-1.2.3.jar"/>
       		<zipfileset src="${dir.lib}/logback-classic-1.2.3.jar"/>
       		<zipfileset src="${dir.lib}/libnsc.jar"/>
-      		<zipfileset src="${dir.lib}/libAionBase.jar"/>
-      		<zipfileset src="${dir.lib}/libRlp.jar"/>
       		<zipfileset src="${dir.lib}/gson-2.7.jar"/>
       		<zipfileset src="${dir.lib}/slf4j-api-1.7.25.jar"/>
       		<zipfileset src="${dir.lib}/commons-collections4-4.0.jar"/>
-      		<zipfileset src="${dir.lib}/protobuf-java-3.5.0.jar"/>
+      		<zipfileset src="${dir.lib}/protobuf-java-3.5.0.jar"/>-->
 	</jar>
         <move includeemptydirs="false" todir="${dir.pack}">
-            <file file="libAionApi.jar"/>
+            <file file="modAionApi.jar"/>
         </move>
     </target>
 
