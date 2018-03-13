@@ -92,7 +92,7 @@ public class ApiDemo {
                 case "--help":
                 case "-h":
                     System.out.println("[OPTION] [NUM|STRING] [OPTION] [NUM|STRING] [OPTION] [NUM|STRING]");
-                    System.out.println("  Ex. java -jar libAionApi.jar -t 1 -l tcp://localhost:8547");
+                    System.out.println("  Ex. ./apiDemo.sh -t 1 -l tcp://localhost:8547");
                     System.out.println("Mandatory arguments to long options are mandatory for short options too.");
                     System.out.println("  -v, --version             get api version.");
                     System.out.println("  -l, --url                 set the kernel url and port.");
@@ -152,7 +152,7 @@ public class ApiDemo {
         } else {
             System.out.println("Must input arg, please use -h or --help to see the details");
             System.out.println(
-                    "if you are unable to run this jar, try \"java -jar libAionApi.jar -h\" .");
+                    "if you are unable to run this jar, try \"./apiDemo.sh -h\" .");
         }
 
         exit(0);

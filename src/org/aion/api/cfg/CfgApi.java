@@ -33,8 +33,14 @@ public class CfgApi extends Cfg {
 
     private CfgApi() {
         this.log = new CfgLog();
+
         // TODO :: test and open it later.
         //this.connect = new CfgConnect();
+
+        if (!fromXML()) {
+            toXML(null);
+        }
+
     }
 
     public static CfgApi inst() {
@@ -66,7 +72,6 @@ public class CfgApi extends Cfg {
 
     @Override
     public boolean fromXML() {
-        boolean shouldWriteBackToFile = false;
         File cfgFile = new File(CONF_FILE_PATH);
         if(!cfgFile.exists())
             return false;
@@ -88,7 +93,7 @@ public class CfgApi extends Cfg {
                         //this.connect.fromXML(sr);
                         break;
                     default:
-                        skipElement(sr);
+                        //skipElement(sr);
                         break;
                     }
                     break;
@@ -104,7 +109,7 @@ public class CfgApi extends Cfg {
             System.out.println("<error on-parsing-config-xml msg=" + e.getLocalizedMessage() + ">");
             System.exit(1);
         }
-        return shouldWriteBackToFile;
+        return true;
     }
 
     @Override
@@ -125,12 +130,16 @@ public class CfgApi extends Cfg {
 
         try {
 
-            sw = output.createXMLStreamWriter(new FileWriter(CONF_FILE_PATH));
+            File file = new File(CONF_FILE_PATH);
+            file.getParentFile().mkdirs();
+
+            sw = output.createXMLStreamWriter(new FileWriter(file));
             sw.writeStartDocument("utf-8", "1.0");
             sw.writeCharacters("\r\n");
             sw.writeStartElement("aion_api");
 
-            sw.writeCharacters(this.getLog().toXML());
+            this.log = new CfgLog();
+            sw.writeCharacters(this.log.toXML());
             //sw.writeCharacters(this.getConnect().toXML());
 
             sw.writeCharacters("\r\n");

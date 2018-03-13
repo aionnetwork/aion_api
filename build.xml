@@ -35,7 +35,8 @@
         <delete dir="${main.build.dir}" includeEmptyDirs="true" />
         <delete dir="${test.build.dir}" includeEmptyDirs="true" />
         <delete dir="${test.report.dir}" includeEmptyDirs="true" />
-        <delete file="${dir.pack}/modAionApi.jar" />
+        <delete file="${dir.pack}/modAionApi*.jar" />
+	<delete file="${dir.mod}/modAionApi*.jar" />
     </target>
 
     <!-- Build Related -->
@@ -50,6 +51,7 @@
             srcdir="${main.src.dir}"
             destdir="${main.build.dir}"
             includes="**/*.java, module-info.java"
+            excludes="org/aion/api/server/pb/*.java"
             >
 		<classpath>
                         <path refid="classpath.dependency" />
@@ -76,14 +78,6 @@
 		<attribute name="Implementation-Vendor-Id" value="aion.network"/>
                 <attribute name="Specification-Title" value="Aion Foundation Java API"/>
             </manifest>	    
-		<!--<zipfileset src="${dir.lib}/libnzmq.jar"/>
-      		<zipfileset src="${dir.lib}/logback-core-1.2.3.jar"/>
-      		<zipfileset src="${dir.lib}/logback-classic-1.2.3.jar"/>
-      		<zipfileset src="${dir.lib}/libnsc.jar"/>
-      		<zipfileset src="${dir.lib}/gson-2.7.jar"/>
-      		<zipfileset src="${dir.lib}/slf4j-api-1.7.25.jar"/>
-      		<zipfileset src="${dir.lib}/commons-collections4-4.0.jar"/>
-      		<zipfileset src="${dir.lib}/protobuf-java-3.5.0.jar"/>-->
 	</jar>
         <move includeemptydirs="false" todir="${dir.pack}">
             <file file="modAionApi.jar"/>

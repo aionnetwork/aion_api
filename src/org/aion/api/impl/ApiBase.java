@@ -64,6 +64,7 @@ public class ApiBase {
     ApiBase() {
         cfg = CfgApi.inst();
 
+
         AionLoggerFactory.init(cfg.getLog().getModules());
         LOGGER = AionLoggerFactory.getLogger(LogEnum.BSE.name());
     }
