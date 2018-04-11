@@ -70,10 +70,22 @@ public class ApiBase {
     }
 
     public ApiMsg connect(String url) {
-        return connect(url, false, 1);
+        return connect(url, false, 1, 300_000);
+    }
+
+    public ApiMsg connect(String url, boolean reconnect) {
+        return connect(url, reconnect, 1, 300_000);
+    }
+
+    public ApiMsg connect(String url, int workers) {
+        return connect(url, false, workers, 300_000);
     }
 
     public ApiMsg connect(String url, boolean reconnect, int workers) {
+        return connect(url, reconnect, workers, 300_000);
+    }
+
+    public ApiMsg connect(String url, boolean reconnect, int workers, int timeout) {
         if (url == null) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[connect]" + ErrId.getErrString(-1004L));
@@ -102,7 +114,12 @@ public class ApiBase {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("[connect]" + " Init MsgExecutor.");
         }
-        this.msgExecutor = new MsgExecutor(ApiUtils.PROTOCOL_VER, url);
+
+        if (timeout < 60_000) {
+            timeout = 60_000;
+        }
+
+        this.msgExecutor = new MsgExecutor(ApiUtils.PROTOCOL_VER, url, timeout);
 
         int numProcs = Math.max(Runtime.getRuntime().availableProcessors() >> 1, 1);
 
@@ -163,14 +180,6 @@ public class ApiBase {
         return new ApiMsg(true, org.aion.api.type.ApiMsg.cast.BOOLEAN);
     }
 
-    public ApiMsg connect(String url, boolean reconnect) {
-        return connect(url, reconnect, 1);
-    }
-
-    public ApiMsg connect(String url, int workers) {
-        return connect(url, false, workers);
-    }
-
     MsgRsp blockTx(byte[] hash, byte[] req) {
 
         if (LOGGER.isTraceEnabled()) {
@@ -208,7 +217,7 @@ public class ApiBase {
             LOGGER.trace("[Process] MsgHash: [{}], reqmsg: [{}]", IUtils.bytes2Hex(hash), IUtils.bytes2Hex(req));
         }
 
-        MsgRsp rsp = this.msgExecutor.send(hash, req, timeout);
+        MsgRsp rsp = this.msgExecutor.send(hash, req);
 
         if (rsp == null) {
 
@@ -218,11 +227,9 @@ public class ApiBase {
             return new MsgRsp(55, null);
         }
 
-        ByteArrayWrapper bw = ByteArrayWrapper.wrap(hash);
-
         long time = System.currentTimeMillis();
         while ((rsp == null || rsp.getStatus() == 100) && (System.currentTimeMillis() - time < 10000)) {
-            rsp = this.msgExecutor.getStatus(bw);
+            rsp = this.msgExecutor.getStatus(ByteArrayWrapper.wrap(hash));
 
             try {
                 Thread.sleep(1);

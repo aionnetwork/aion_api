@@ -423,7 +423,9 @@ public class ApiUtils {
     }
 
     public static byte[] genHash(int hashlen) {
-        return ByteBuffer.allocate(hashlen).put(keccak(String.valueOf(rm.nextInt()).getBytes()), 0, hashlen).array();
+        byte[] hash = new byte[hashlen];
+        rm.nextBytes(hash);
+        return hash;
     }
 
     /**

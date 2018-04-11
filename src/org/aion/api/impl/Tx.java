@@ -47,17 +47,13 @@ import org.slf4j.Logger;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Jay Tseng on 15/11/16.
  */
 public final class Tx implements ITx {
     private final Logger LOGGER = AionLoggerFactory.getLogger(LogEnum.TRX.name());
-    private final ApiMsg apiMsg = new ApiMsg();
     final AionAPIImpl apiInst;
 
     private ByteArrayWrapper fmsg;
@@ -68,17 +64,16 @@ public final class Tx implements ITx {
         this.apiInst = inst;
     }
 
-
     public ApiMsg contractDeploy(ContractDeploy cd) {
         if (!this.apiInst.isConnected()) {
-            return apiMsg.set(-1003);
+            return new ApiMsg(-1003);
         }
 
         if (cd == null) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[contractDeploy] {}", ErrId.getErrString(-306L));
             }
-            return apiMsg.set(-306);
+            return new ApiMsg(-306);
         }
 
         byte[] code = cd.isConstructor()
@@ -104,13 +99,12 @@ public final class Tx implements ITx {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[contractDeploy] {}", ErrId.getErrString(-103L));
             }
-            return apiMsg.set(-103);
+            return new ApiMsg(-103);
         }
 
         try {
             Message.rsp_contractDeploy msgRsp = Message.rsp_contractDeploy.parseFrom(rsp.getTxDeploy().toBytes());
-            return apiMsg
-                    .set(new DeployResponse(Address.wrap(msgRsp.getContractAddress().toByteArray()),
+            return new ApiMsg(new DeployResponse(Address.wrap(msgRsp.getContractAddress().toByteArray()),
                                     Hash256.wrap(msgRsp.getTxHash().toByteArray())),
                                     ApiMsg.cast.OTHERS);
 
@@ -118,13 +112,13 @@ public final class Tx implements ITx {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[contractDeploy] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
             }
-            return apiMsg.set(-104, e.getMessage(), ApiMsg.cast.OTHERS);
+            return new ApiMsg(-104, e.getMessage(), ApiMsg.cast.OTHERS);
         }
     }
 
     public ApiMsg call(TxArgs args) {
         if (!this.apiInst.isConnected()) {
-            return apiMsg.set(-1003);
+            return new ApiMsg(-1003);
         }
 
         Message.req_call reqBody = Message.req_call.newBuilder()
@@ -145,23 +139,23 @@ public final class Tx implements ITx {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[call] {}", ErrId.getErrString(-103L));
             }
-            return apiMsg.set(-103);
+            return new ApiMsg(-103);
         }
 
         try {
-            return apiMsg.set(Message.rsp_call.parseFrom(ApiUtils.parseBody(rsp).getData()).getResult().toByteArray(),
+            return new ApiMsg(Message.rsp_call.parseFrom(ApiUtils.parseBody(rsp).getData()).getResult().toByteArray(),
                     ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[call] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
             }
-            return apiMsg.set(-104, e.getMessage(), ApiMsg.cast.OTHERS);
+            return new ApiMsg(-104, e.getMessage(), ApiMsg.cast.OTHERS);
         }
     }
 
     public ApiMsg getTxReceipt(Hash256 txHash) {
         if (!this.apiInst.isConnected()) {
-            return apiMsg.set(-1003);
+            return new ApiMsg(-1003);
         }
 
 
@@ -175,19 +169,19 @@ public final class Tx implements ITx {
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
         int code = this.apiInst.validRspHeader(rsp);
         if (code != 1) {
-            return apiMsg.set(code);
+            return new ApiMsg(code);
         }
 
         try {
             Message.rsp_getTransactionReceipt mrsp = Message.rsp_getTransactionReceipt
                     .parseFrom(ApiUtils.parseBody(rsp).getData());
-            return apiMsg.set(ApiUtils.toTransactionReceipt(mrsp), ApiMsg.cast.OTHERS);
+            return new ApiMsg(ApiUtils.toTransactionReceipt(mrsp), ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             //Todo : kernel return message change
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getTxReceipt] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
             }
-            return apiMsg.set(-104, e.getMessage(), ApiMsg.cast.OTHERS);
+            return new ApiMsg(-104, e.getMessage(), ApiMsg.cast.OTHERS);
         }
     }
 
@@ -196,11 +190,12 @@ public final class Tx implements ITx {
     //synchronized public byte[] sendTransaction(Types.TxArgs args) {
     public ApiMsg sendTransaction(TxArgs args) {
         if (!this.apiInst.isConnected()) {
-            return apiMsg.set(-1003);
+            return new ApiMsg(-1003);
         }
 
         byte[] reqMsg;
         byte[] hash = ApiUtils.genHash(ApiUtils.MSG_HASH_LEN);
+
         if (this.fastbuild) {
             if (args == null) {
                 if (fmsg == null) {
@@ -220,7 +215,7 @@ public final class Tx implements ITx {
                 if (LOGGER.isErrorEnabled()) {
                     LOGGER.error("[sendTransaction] {}", ErrId.getErrString(-303L));
                 }
-                return apiMsg.set(-303);
+                return new ApiMsg(-303);
             }
 
             byte[] reqHead = ApiUtils
@@ -240,7 +235,6 @@ public final class Tx implements ITx {
         }
 
         MsgRsp msgRsp;
-        this.apiInst.timeout = 300_000;
         if (this.apiInst.nb) {
             msgRsp = this.apiInst.Process(hash, reqMsg);
             this.apiInst.nb = false;
@@ -252,20 +246,20 @@ public final class Tx implements ITx {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[sendTransaction] {}", ErrId.getErrString(-103L));
             }
-            return apiMsg.set(-103);
+            return new ApiMsg(-103);
         }
 
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("[sendTransaction] TxRsp.status [{}]", msgRsp.getStatus());
         }
 
-        return apiMsg.set((int) msgRsp.getStatus(), msgRsp, ApiMsg.cast.OTHERS);
+        return new ApiMsg((int) msgRsp.getStatus(), msgRsp, ApiMsg.cast.OTHERS);
     }
 
     @Override
     public ApiMsg sendSignedTransaction(TxArgs args, ByteArrayWrapper key, String passphrase) {
         if (!this.apiInst.isConnected()) {
-            return apiMsg.set(-1003);
+            return new ApiMsg(-1003);
         }
 
         byte[] reqMsg;
@@ -275,14 +269,14 @@ public final class Tx implements ITx {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[sendTransaction] {}", ErrId.getErrString(-303L));
             }
-            return apiMsg.set(-303);
+            return new ApiMsg(-303);
         }
 
         if (key == null || passphrase == null) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[sendTransaction] {}", ErrId.getErrString(-315L));
             }
-            return apiMsg.set(-315);
+            return new ApiMsg(-315);
         }
 
         byte[] reqHead = ApiUtils
@@ -293,7 +287,7 @@ public final class Tx implements ITx {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[sendTransaction] {}", ErrId.getErrString(-21L));
             }
-            return apiMsg.set(-21);
+            return new ApiMsg(-21);
         }
 
         AionTransaction tx = new AionTransaction(args.getNonce().toByteArray()
@@ -311,7 +305,6 @@ public final class Tx implements ITx {
         reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
 
         MsgRsp msgRsp;
-        this.apiInst.timeout = 300_000;
         if (this.apiInst.nb) {
             msgRsp = this.apiInst.Process(hash, reqMsg);
             this.apiInst.nb = false;
@@ -323,20 +316,20 @@ public final class Tx implements ITx {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[sendTransaction] {}", ErrId.getErrString(-103L));
             }
-            return apiMsg.set(-103);
+            return new ApiMsg(-103);
         }
 
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("[sendTransaction] TxRsp.status [{}]", msgRsp.getStatus());
         }
 
-        return apiMsg.set((int) msgRsp.getStatus(), msgRsp, ApiMsg.cast.OTHERS);
+        return new ApiMsg((int) msgRsp.getStatus(), msgRsp, ApiMsg.cast.OTHERS);
     }
 
     @Override
     public ApiMsg sendRawTransaction(ByteArrayWrapper tx) {
         if (!this.apiInst.isConnected()) {
-            return apiMsg.set(-1003);
+            return new ApiMsg(-1003);
         }
 
         byte[] reqMsg;
@@ -346,7 +339,7 @@ public final class Tx implements ITx {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[sendTransaction] {}", ErrId.getErrString(-315L));
             }
-            return apiMsg.set(-315);
+            return new ApiMsg(-315);
         }
 
         byte[] reqHead = ApiUtils
@@ -359,7 +352,6 @@ public final class Tx implements ITx {
         reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
 
         MsgRsp msgRsp;
-        this.apiInst.timeout = 300_000;
         if (this.apiInst.nb) {
             msgRsp = this.apiInst.Process(hash, reqMsg);
             this.apiInst.nb = false;
@@ -371,19 +363,19 @@ public final class Tx implements ITx {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[sendTransaction] {}", ErrId.getErrString(-103L));
             }
-            return apiMsg.set(-103);
+            return new ApiMsg(-103);
         }
 
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("[sendTransaction] TxRsp.status [{}]", msgRsp.getStatus());
         }
 
-        return apiMsg.set((int) msgRsp.getStatus(), msgRsp, ApiMsg.cast.OTHERS);
+        return new ApiMsg((int) msgRsp.getStatus(), msgRsp, ApiMsg.cast.OTHERS);
     }
 
     public ApiMsg compile(String code) {
         if (!this.apiInst.isConnected()) {
-            return apiMsg.set(-1003);
+            return new ApiMsg(-1003);
         }
 
         if (code == null) {
@@ -416,7 +408,7 @@ public final class Tx implements ITx {
         //
 
         if (val != 1) {
-            return apiMsg.set(val);
+            return new ApiMsg(val);
         }
 
         Map<String, Message.t_Contract> ctMap;
@@ -427,14 +419,14 @@ public final class Tx implements ITx {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[compile] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
             }
-            return apiMsg.set(-104, e.getMessage(), ApiMsg.cast.OTHERS);
+            return new ApiMsg(-104, e.getMessage(), ApiMsg.cast.OTHERS);
         }
 
         if (ctMap.isEmpty()) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[compile] {}", ErrId.getErrString(-126L));
             }
-            return apiMsg.set(-126);
+            return new ApiMsg(-126);
         }
 
         // generate type for Gson parsing
@@ -470,26 +462,26 @@ public final class Tx implements ITx {
                 if (LOGGER.isErrorEnabled()) {
                     LOGGER.error("[compile] {} exception: [{}]", ErrId.getErrString(-105L), e.toString());
                 }
-                return apiMsg.set(-105, e.getMessage(), ApiMsg.cast.OTHERS);
+                return new ApiMsg(-105, e.getMessage(), ApiMsg.cast.OTHERS);
             } catch (JsonParseException e) {
                 if (LOGGER.isErrorEnabled()) {
                     LOGGER.error("[compile] {} exception: [{}]", ErrId.getErrString(-106L), e.toString());
                 }
-                return apiMsg.set(-106, e.getMessage(), ApiMsg.cast.OTHERS);
+                return new ApiMsg(-106, e.getMessage(), ApiMsg.cast.OTHERS);
             } catch (UnsupportedEncodingException e) {
                 if (LOGGER.isErrorEnabled()) {
                     LOGGER.error("[compile] {} exception: [{}]", ErrId.getErrString(-200L), e.toString());
                 }
-                return apiMsg.set(-200, e.getMessage(), ApiMsg.cast.OTHERS);
+                return new ApiMsg(-200, e.getMessage(), ApiMsg.cast.OTHERS);
             }
         }
 
-        return apiMsg.set(rtn, ApiMsg.cast.OTHERS);
+        return new ApiMsg(rtn, ApiMsg.cast.OTHERS);
     }
 
     public ApiMsg getSolcVersion() {
         if (!this.apiInst.isConnected()) {
-            return apiMsg.set(-1003);
+            return new ApiMsg(-1003);
         }
 
         byte[] reqHead = ApiUtils
@@ -498,30 +490,29 @@ public final class Tx implements ITx {
         byte[] rsp = this.apiInst.nbProcess(reqHead);
         int code = this.apiInst.validRspHeader(rsp);
         if (code != 1) {
-            return apiMsg.set(code);
+            return new ApiMsg(code);
         }
 
         try {
-            return apiMsg
-                    .set(Message.rsp_getSolcVersion.parseFrom(ApiUtils.parseBody(rsp).getData()).getVer(), ApiMsg.cast.OTHERS);
+            return new ApiMsg(Message.rsp_getSolcVersion.parseFrom(ApiUtils.parseBody(rsp).getData()).getVer(), ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getSolcVersion] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
             }
-            return apiMsg.set(-104, e.getMessage(), ApiMsg.cast.OTHERS);
+            return new ApiMsg(-104, e.getMessage(), ApiMsg.cast.OTHERS);
         }
     }
 
     public ApiMsg getCode(Address address, long blockNumber) {
         if (!this.apiInst.isConnected()) {
-            return apiMsg.set(-1003);
+            return new ApiMsg(-1003);
         }
 
         if (blockNumber < -1L) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getCode] {}", ErrId.getErrString(-310L));
             }
-            return apiMsg.set(-310);
+            return new ApiMsg(-310);
         }
 
         Message.req_getCode reqBody = Message.req_getCode.newBuilder().setAddress(ByteString.copyFrom(address.toBytes()))
@@ -533,17 +524,17 @@ public final class Tx implements ITx {
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
         int code = this.apiInst.validRspHeader(rsp);
         if (code != 1) {
-            return apiMsg.set(code);
+            return new ApiMsg(code);
         }
 
         try {
-            return apiMsg.set(Message.rsp_getCode.parseFrom(ApiUtils.parseBody(rsp).getData()).getCode().toByteArray(),
+            return new ApiMsg(Message.rsp_getCode.parseFrom(ApiUtils.parseBody(rsp).getData()).getCode().toByteArray(),
                     ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getCode] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
             }
-            return apiMsg.set(-104, e.getMessage(), ApiMsg.cast.OTHERS);
+            return new ApiMsg(-104, e.getMessage(), ApiMsg.cast.OTHERS);
         }
     }
 
@@ -587,13 +578,13 @@ public final class Tx implements ITx {
     }
 
     public Tx timeout(int t) {
-        this.apiInst.timeout = (t < 30_000 ? 300_000 : t);
+        this.apiInst.timeout = (t < 300_000 ? 300_000 : t);
         return this;
     }
 
     public ApiMsg estimateNrg(TxArgs args) {
         if (!this.apiInst.isConnected()) {
-            return apiMsg.set(-1003);
+            return new ApiMsg(-1003);
         }
 
         byte[] reqMsg;
@@ -617,7 +608,7 @@ public final class Tx implements ITx {
                 if (LOGGER.isErrorEnabled()) {
                     LOGGER.error("[sendTransaction] {}", ErrId.getErrString(-303L));
                 }
-                return apiMsg.set(-303);
+                return new ApiMsg(-303);
             }
 
             byte[] reqHead = ApiUtils
@@ -638,22 +629,22 @@ public final class Tx implements ITx {
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
         int code = this.apiInst.validRspHeader(rsp);
         if (code != 1) {
-            return apiMsg.set(code);
+            return new ApiMsg(code);
         }
 
         try {
-            return apiMsg.set(Message.rsp_estimateNrg.parseFrom(ApiUtils.parseBody(rsp).getData()).getNrg(),
+            return new ApiMsg(Message.rsp_estimateNrg.parseFrom(ApiUtils.parseBody(rsp).getData()).getNrg(),
                     ApiMsg.cast.LONG);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getCode] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
             }
-            return apiMsg.set(-104, e.getMessage(), ApiMsg.cast.OTHERS);
+            return new ApiMsg(-104, e.getMessage(), ApiMsg.cast.OTHERS);
         }
     }
 
     public ApiMsg getMsgStatus(ByteArrayWrapper b) {
-        return apiMsg.set(this.apiInst.msgExecutor.getStatus(b), ApiMsg.cast.OTHERS);
+        return new ApiMsg(this.apiInst.msgExecutor.getStatus(b), ApiMsg.cast.OTHERS);
     }
 
     public ApiMsg eventRegister(List<String> evt, ContractEventFilter ef, Address address) {
@@ -665,7 +656,7 @@ public final class Tx implements ITx {
         }
 
         if (!this.apiInst.isConnected()) {
-            return apiMsg.set(-1003);
+            return new ApiMsg(-1003);
         }
 
         List<ByteString> addrList = new ArrayList<>();
@@ -697,17 +688,17 @@ public final class Tx implements ITx {
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
         int code = this.apiInst.validRspHeader(rsp);
         if (code != 1) {
-            return apiMsg.set(code);
+            return new ApiMsg(code);
         }
 
         try {
-            return apiMsg.set(Message.rsp_eventDeregister.parseFrom(ApiUtils.parseBody(rsp).getData()).getResult(),
+            return new ApiMsg(Message.rsp_eventDeregister.parseFrom(ApiUtils.parseBody(rsp).getData()).getResult(),
                     ApiMsg.cast.BOOLEAN);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[eventRegister] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
             }
-            return apiMsg.set(-104, e.getMessage(), ApiMsg.cast.OTHERS);
+            return new ApiMsg(-104, e.getMessage(), ApiMsg.cast.OTHERS);
         }
     }
 
@@ -719,7 +710,7 @@ public final class Tx implements ITx {
         }
 
         if (!this.apiInst.isConnected()) {
-            return apiMsg.set(-1003);
+            return new ApiMsg(-1003);
         }
 
         Message.req_eventDeregister reqBody = Message.req_eventDeregister.newBuilder().addAllEvents(evt)
@@ -732,17 +723,17 @@ public final class Tx implements ITx {
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
         int code = this.apiInst.validRspHeader(rsp);
         if (code != 1) {
-            return apiMsg.set(code);
+            return new ApiMsg(code);
         }
 
         try {
-            return apiMsg.set(Message.rsp_eventDeregister.parseFrom(ApiUtils.parseBody(rsp).getData()).getResult(),
+            return new ApiMsg(Message.rsp_eventDeregister.parseFrom(ApiUtils.parseBody(rsp).getData()).getResult(),
                     ApiMsg.cast.BOOLEAN);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[eventDeregister] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
             }
-            return apiMsg.set(-104, e.getMessage(), ApiMsg.cast.OTHERS);
+            return new ApiMsg(-104, e.getMessage(), ApiMsg.cast.OTHERS);
         }
     }
 
