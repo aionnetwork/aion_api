@@ -44,7 +44,6 @@ import java.util.List;
  */
 public class Wallet implements IWallet {
     private static final Logger LOGGER = AionLoggerFactory.getLogger(LogEnum.WLT.name());
-    private final ApiMsg apiMsg = new ApiMsg();
     private AionAPIImpl apiInst;
 
     protected Wallet(AionAPIImpl inst) {
@@ -53,7 +52,7 @@ public class Wallet implements IWallet {
 
     public ApiMsg getAccounts() {
         if (!this.apiInst.isConnected()) {
-            return apiMsg.set(-1003);
+            return new ApiMsg(-1003);
         }
 
         byte[] reqHdr = ApiUtils.toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_wallet, Message.Funcs.f_accounts);
@@ -61,7 +60,7 @@ public class Wallet implements IWallet {
         byte[] rsp = this.apiInst.nbProcess(reqHdr);
         int code = this.apiInst.validRspHeader(rsp);
         if (code != 1) {
-            return apiMsg.set(code);
+            return new ApiMsg(code);
         }
 
         try {
@@ -76,12 +75,12 @@ public class Wallet implements IWallet {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("[getAccounts] {}", account.stream().toString());
             }
-            return apiMsg.set(account, ApiMsg.cast.OTHERS);
+            return new ApiMsg(account, ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getAccounts] {} exception: [{}]", ErrId.getErrString(-104L), e.toString());
             }
-            return apiMsg.set(-104);
+            return new ApiMsg(-104);
         }
     }
 
@@ -91,21 +90,21 @@ public class Wallet implements IWallet {
 
     public ApiMsg unlockAccount(Address acc, String passphrase, int duration) {
         if (!this.apiInst.isConnected()) {
-            return apiMsg.set(-1003);
+            return new ApiMsg(-1003);
         }
 
         if (passphrase == null) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[unlockAccount] {}", ErrId.getErrString(-301L));
             }
-            return apiMsg.set(-301);
+            return new ApiMsg(-301);
         }
 
         if (duration < 0) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[unlockAccount] {}", ErrId.getErrString(-302L));
             }
-            return apiMsg.set(-302);
+            return new ApiMsg(-302);
         }
 
         Message.req_unlockAccount reqBody = Message.req_unlockAccount.newBuilder().setAccount(ByteString.copyFrom(acc.toBytes()))
@@ -118,19 +117,19 @@ public class Wallet implements IWallet {
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
         int code = this.apiInst.validRspHeader(rsp);
         if (code != 1) {
-            return apiMsg.set(code);
+            return new ApiMsg(code);
         }
 
         byte[] body = ApiUtils.parseBody(rsp).getData();
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("[unlockAccount] rspmsg: [{}]", body[0]);
         }
-        return apiMsg.set(ApiUtils.isTypeBoolean(body[0]), ApiMsg.cast.BOOLEAN);
+        return new ApiMsg(ApiUtils.isTypeBoolean(body[0]), ApiMsg.cast.BOOLEAN);
     }
 
     public ApiMsg getMinerAccount() {
         if (!this.apiInst.isConnected()) {
-            return apiMsg.set(-1003);
+            return new ApiMsg(-1003);
         }
 
         byte[] reqHdr = ApiUtils.toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_wallet, Message.Funcs.f_minerAddress);
@@ -138,7 +137,7 @@ public class Wallet implements IWallet {
 
         int code = this.apiInst.validRspHeader(rsp);
         if (code != 1) {
-            return apiMsg.set(code);
+            return new ApiMsg(code);
         }
 
         try {
@@ -148,35 +147,35 @@ public class Wallet implements IWallet {
                 LOGGER.debug("[getMinerAccount] minerAddress: [{}]", this.apiInst.minerAddress);
             }
 
-            return apiMsg.set(this.apiInst.minerAddress, ApiMsg.cast.OTHERS);
+            return new ApiMsg(this.apiInst.minerAddress, ApiMsg.cast.OTHERS);
         } catch (Exception e) {
             e.printStackTrace();
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getMinerAccount] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
             }
-            return apiMsg.set(-104, e.getMessage(), ApiMsg.cast.OTHERS);
+            return new ApiMsg(-104, e.getMessage(), ApiMsg.cast.OTHERS);
         }
     }
 
     public ApiMsg setDefaultAccount(Address addr) {
         this.apiInst.defaultAccount = addr;
-        return apiMsg.set(true, ApiMsg.cast.BOOLEAN);
+        return new ApiMsg(true, ApiMsg.cast.BOOLEAN);
     }
 
     public ApiMsg getDefaultAccount() {
-        return apiMsg.set(this.apiInst.defaultAccount, ApiMsg.cast.OTHERS);
+        return new ApiMsg(this.apiInst.defaultAccount, ApiMsg.cast.OTHERS);
     }
 
     public ApiMsg lockAccount(Address acc, String passphrase) {
         if (!this.apiInst.isConnected()) {
-            return apiMsg.set(-1003);
+            return new ApiMsg(-1003);
         }
 
         if (passphrase == null) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[lockAccount] {}", ErrId.getErrString(-301L));
             }
-            return apiMsg.set(-301);
+            return new ApiMsg(-301);
         }
 
         Message.req_accountlock reqBody = Message.req_accountlock.newBuilder().setAccount(ByteString.copyFrom(acc.toBytes()))
@@ -189,13 +188,13 @@ public class Wallet implements IWallet {
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
         int code = this.apiInst.validRspHeader(rsp);
         if (code != 1) {
-            return apiMsg.set(code);
+            return new ApiMsg(code);
         }
 
         byte[] body = ApiUtils.parseBody(rsp).getData();
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("[lockAccount] rspmsg: [{}]", body[0]);
         }
-        return apiMsg.set(ApiUtils.isTypeBoolean(body[0]), ApiMsg.cast.BOOLEAN);
+        return new ApiMsg(ApiUtils.isTypeBoolean(body[0]), ApiMsg.cast.BOOLEAN);
     }
 }

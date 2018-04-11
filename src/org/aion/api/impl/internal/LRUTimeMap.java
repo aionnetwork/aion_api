@@ -46,30 +46,33 @@ import java.util.concurrent.TimeUnit;
 public class LRUTimeMap<K, V> extends LRUMap<K, V> {
 
     private static final long serialVersionUID = 1000000001L;
-    protected final int defaultTimeout;
+    private final int timeout;
     private final Logger LOGGER = AionLoggerFactory.getLogger(LogEnum.EXE.name());
-    private final Map<Long, K> timemap = Collections.synchronizedMap(new LinkedHashMap<>());
+    private final Map<Long, K> timeMap = Collections.synchronizedMap(new LinkedHashMap<>());
     private final ScheduledExecutorService timeoutChecker = Executors.newSingleThreadScheduledExecutor();
 
     public LRUTimeMap(int maxEntries) {
         super(maxEntries);
-        this.defaultTimeout = 180_000;
+        this.timeout = 180_000;
+        runChecker();
+    }
+
+    public LRUTimeMap(int maxEntries, int timeout) {
+        super(maxEntries);
+        this.timeout = timeout;
         runChecker();
     }
 
     private void runChecker() {
-        this.timeoutChecker.scheduleWithFixedDelay(() -> {
-            check();
-        }, 0, 1000, TimeUnit.MILLISECONDS);
+        this.timeoutChecker.scheduleWithFixedDelay(this::check, 0, 1000, TimeUnit.MILLISECONDS);
     }
 
     public void check() {
 
         long current = System.currentTimeMillis();
         List<Long> timeList = new ArrayList<>();
-        Iterator it = timemap.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry entry = (Map.Entry) it.next();
+        for (Object o : timeMap.entrySet()) {
+            Entry entry = (Entry) o;
             if ((long) entry.getKey() < current) {
                 timeList.add((long) entry.getKey());
             } else {
@@ -78,35 +81,29 @@ public class LRUTimeMap<K, V> extends LRUMap<K, V> {
         }
 
         for (Long l : timeList) {
-            K k = timemap.get(l);
+            K k = timeMap.get(l);
             this.remove(k);
-            timemap.remove(l);
+            timeMap.remove(l);
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("remove timeout msg - [{}]", IUtils.bytes2Hex(((ByteBuffer) k).array()));
             }
         }
     }
 
-    public LRUTimeMap(int maxEntries, int timeout) {
-        super(maxEntries);
-        this.defaultTimeout = timeout;
-        runChecker();
-    }
 
     @Override
     public V put(K key, V val) {
-        return put(key, val, defaultTimeout);
-    }
-
-    public V put(K key, V val, int timeout) {
         Object obj = super.put(key, val);
-        timemap.put(System.currentTimeMillis() + timeout, key);
+        timeMap.put(System.currentTimeMillis() + timeout, key);
         return (V) obj;
     }
 
     @Override
     public void clear() {
         super.clear();
-        this.timemap.clear();
+        this.timeMap.clear();
+        if (timeoutChecker != null) {
+            timeoutChecker.shutdown();
+        }
     }
 }

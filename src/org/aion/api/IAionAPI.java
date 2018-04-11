@@ -45,7 +45,7 @@ public interface IAionAPI {
      * Default LOCALHOST_URL "tcp://127.0.0.1:8547"
      */
     String LOCALHOST_URL = "tcp://127.0.0.1:8547";
-    String VERSION = "0.1.3";
+    String VERSION = "0.1.4";
 
     static IAionAPI init() {
         return AionAPIImpl.inst();
@@ -112,6 +112,23 @@ public interface IAionAPI {
      * You can retrieve through the method {@link ApiMsg#getObject() getObject}.
      */
     ApiMsg connect(String url, boolean reconnect, int worker);
+
+    /**
+     * Establishes connection between Aion Java API and Aion Kernel.
+     *
+     * @param url
+     *         the class {@link java.lang.String String} including the connection address and port of the desired backend Aion
+     *         client.
+     * @param reconnect
+     *         the boolean value set the client api will try to reconnect when the connection broken.
+     * @param worker
+     *         set the thread number for handle the transaction API.
+     * @param timeout
+     *         set the timeout for the api message does not have the response from server
+     * @return the boolean value indicating the success of the connection wrapped into ApiMsg.
+     * You can retrieve through the method {@link ApiMsg#getObject() getObject}.
+     */
+    ApiMsg connect(String url, boolean reconnect, int worker, int timeout);
 
     /**
      * Check the connection status between Aion Java API and Aion Kernel.

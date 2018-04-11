@@ -51,7 +51,6 @@ import static java.lang.Math.min;
 public class Admin implements IAdmin {
 
     private static final Logger LOGGER = AionLoggerFactory.getLogger(LogEnum.ADM.name());
-    private final ApiMsg apiMsg = new ApiMsg();
     private AionAPIImpl apiInst;
 
     Admin(AionAPIImpl inst) {
@@ -61,14 +60,14 @@ public class Admin implements IAdmin {
     @Override
     public ApiMsg getBlockDetailsByNumber(String blks) {
         if (!this.apiInst.isConnected()) {
-            return apiMsg.set(-1003);
+            return new ApiMsg(-1003);
         }
 
         if (blks == null) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getBlockDetailsByNumber]" + ErrId.getErrString(-17L));
             }
-            return apiMsg.set(-17);
+            return new ApiMsg(-17);
         }
 
         try {
@@ -77,7 +76,7 @@ public class Admin implements IAdmin {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getBlockDetailsByNumber] " + e.getMessage());
             }
-            return  apiMsg.set(-17);
+            return  new ApiMsg(-17);
         }
 
     }
@@ -123,14 +122,14 @@ public class Admin implements IAdmin {
     @Override
     public ApiMsg getBlockDetailsByNumber(List<Long> blks) {
         if (!this.apiInst.isConnected()) {
-            return apiMsg.set(-1003);
+            return new ApiMsg(-1003);
         }
 
         if (blks == null) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getBlockDetailsByNumber]" + ErrId.getErrString(-17L));
             }
-            return apiMsg.set(-17);
+            return new ApiMsg(-17);
         }
 
         Message.req_getBlockDetailsByNumber reqBody = Message.req_getBlockDetailsByNumber.newBuilder()
@@ -144,31 +143,31 @@ public class Admin implements IAdmin {
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
         int code = this.apiInst.validRspHeader(rsp);
         if (code != 1) {
-            return apiMsg.set(code);
+            return new ApiMsg(code);
         }
 
         try {
             List<BlockDetails> k = ApiUtils.toBlockDetails(Message.rsp_getBlockDetailsByNumber.parseFrom(ApiUtils.parseBody(rsp).getData()).getBlkDetailsList());
-            return apiMsg.set(k, org.aion.api.type.ApiMsg.cast.OTHERS);
+            return new ApiMsg(k, org.aion.api.type.ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[accountCreate]" + ErrId.getErrString(-104L) + e.getMessage());
             }
-            return apiMsg.set(-104, e.getMessage(), org.aion.api.type.ApiMsg.cast.OTHERS);
+            return new ApiMsg(-104, e.getMessage(), org.aion.api.type.ApiMsg.cast.OTHERS);
         }
     }
 
     @Override
     public ApiMsg getBlockDetailsByLatest(Long count) {
         if (!this.apiInst.isConnected()) {
-            return apiMsg.set(-1003);
+            return new ApiMsg(-1003);
         }
 
         if (count == null) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getBlockDetailsByLatest]" + ErrId.getErrString(-17L));
             }
-            return apiMsg.set(-17);
+            return new ApiMsg(-17);
         }
 
         Message.req_getBlockDetailsByLatest reqBody = Message.req_getBlockDetailsByLatest.newBuilder()
@@ -182,31 +181,31 @@ public class Admin implements IAdmin {
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
         int code = this.apiInst.validRspHeader(rsp);
         if (code != 1) {
-            return apiMsg.set(code);
+            return new ApiMsg(code);
         }
 
         try {
             List<BlockDetails> k = ApiUtils.toBlockDetails(Message.rsp_getBlockDetailsByLatest.parseFrom(ApiUtils.parseBody(rsp).getData()).getBlkDetailsList());
-            return apiMsg.set(k, org.aion.api.type.ApiMsg.cast.OTHERS);
+            return new ApiMsg(k, org.aion.api.type.ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[accountCreate]" + ErrId.getErrString(-104L) + e.getMessage());
             }
-            return apiMsg.set(-104, e.getMessage(), org.aion.api.type.ApiMsg.cast.OTHERS);
+            return new ApiMsg(-104, e.getMessage(), org.aion.api.type.ApiMsg.cast.OTHERS);
         }
     }
 
     @Override
     public ApiMsg getBlocksByLatest(Long count) {
         if (!this.apiInst.isConnected()) {
-            return apiMsg.set(-1003);
+            return new ApiMsg(-1003);
         }
 
         if (count == null) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getBlocksByLatest]" + ErrId.getErrString(-17L));
             }
-            return apiMsg.set(-17);
+            return new ApiMsg(-17);
         }
 
         Message.req_getBlocksByLatest reqBody = Message.req_getBlocksByLatest.newBuilder()
@@ -220,31 +219,31 @@ public class Admin implements IAdmin {
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
         int code = this.apiInst.validRspHeader(rsp);
         if (code != 1) {
-            return apiMsg.set(code);
+            return new ApiMsg(code);
         }
 
         try {
             List<Block> k = ApiUtils.toBlocks(Message.rsp_getBlocksByLatest.parseFrom(ApiUtils.parseBody(rsp).getData()).getBlksList());
-            return apiMsg.set(k, org.aion.api.type.ApiMsg.cast.OTHERS);
+            return new ApiMsg(k, org.aion.api.type.ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[accountCreate]" + ErrId.getErrString(-104L) + e.getMessage());
             }
-            return apiMsg.set(-104, e.getMessage(), org.aion.api.type.ApiMsg.cast.OTHERS);
+            return new ApiMsg(-104, e.getMessage(), org.aion.api.type.ApiMsg.cast.OTHERS);
         }
     }
 
     @Override
     public ApiMsg getAccountDetailsByAddressList(String addressList) {
         if (!this.apiInst.isConnected()) {
-            return apiMsg.set(-1003);
+            return new ApiMsg(-1003);
         }
 
         if (addressList == null) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getAccountDetailsByAddressList]" + ErrId.getErrString(-17L));
             }
-            return apiMsg.set(-17);
+            return new ApiMsg(-17);
         }
 
         try {
@@ -253,21 +252,21 @@ public class Admin implements IAdmin {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getAccountDetailsByAddressList] " + e.getMessage());
             }
-            return  apiMsg.set(-17);
+            return  new ApiMsg(-17);
         }
     }
 
     @Override
     public ApiMsg getAccountDetailsByAddressList(List<Address> addressList) {
         if (!this.apiInst.isConnected()) {
-            return apiMsg.set(-1003);
+            return new ApiMsg(-1003);
         }
 
         if (addressList == null) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getAccountDetailsByAddressList]" + ErrId.getErrString(-17L));
             }
-            return apiMsg.set(-17);
+            return new ApiMsg(-17);
         }
 
         // convert addresses to protobuf ByteString
@@ -286,17 +285,17 @@ public class Admin implements IAdmin {
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
         int code = this.apiInst.validRspHeader(rsp);
         if (code != 1) {
-            return apiMsg.set(code);
+            return new ApiMsg(code);
         }
 
         try {
             List<AccountDetails> k = ApiUtils.toAccountDetails(Message.rsp_getAccountDetailsByAddressList.parseFrom(ApiUtils.parseBody(rsp).getData()).getAccountsList());
-            return apiMsg.set(k, org.aion.api.type.ApiMsg.cast.OTHERS);
+            return new ApiMsg(k, org.aion.api.type.ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getAccountDetailsByAddressList]" + ErrId.getErrString(-104L) + e.getMessage());
             }
-            return apiMsg.set(-104, e.getMessage(), org.aion.api.type.ApiMsg.cast.OTHERS);
+            return new ApiMsg(-104, e.getMessage(), org.aion.api.type.ApiMsg.cast.OTHERS);
         }
     }
 }

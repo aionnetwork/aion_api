@@ -43,7 +43,6 @@ import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static org.aion.api.sol.impl.SolidityValue.SolidityTypeEnum.*;
 
@@ -89,7 +88,6 @@ public final class Contract implements IContract {
     private final Hash256 deployTxId;
 
     // Transaction relative settings
-    private ApiMsg apiMsg;
     private Address from;
     private long txNrgLimit;
     private long txNrgPrice;
@@ -187,7 +185,6 @@ public final class Contract implements IContract {
         this.inputParams = new ArrayList<>();
         this.outputParams = new ArrayList<>();
         this.eventsName = new ArrayList<>();
-        this.apiMsg = new ApiMsg();
         int lrumapSize = 100;
         this.eventsIssued = new LRUMap<>(lrumapSize);
         this.eventsIssuedRev = new LRUMap<>(lrumapSize);
@@ -219,7 +216,6 @@ public final class Contract implements IContract {
         this.inputParams = new ArrayList<>();
         this.outputParams = new ArrayList<>();
         this.eventsName = new ArrayList<>();
-        this.apiMsg = new ApiMsg();
 
     }
 
@@ -328,7 +324,6 @@ public final class Contract implements IContract {
 
         nonBlock = false;
         this.errorCode = 1;
-        this.apiMsg.set(0, null, ApiMsg.cast.NULL);
     }
 
     public Contract newFunction(String f) {
@@ -726,19 +721,19 @@ public final class Contract implements IContract {
     public ApiMsg execute() {
 
         if (this.error()) {
-            return apiMsg.set(this.errorCode);
+            return new ApiMsg(this.errorCode);
         }
 
         if (!this.functionBuilt) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[execute] {}", ErrId.getErrString(-113L));
             }
-            return apiMsg.set(-113);
+            return new ApiMsg(-113);
         }
         // execute
         if (this.isConstant) {
             // call
-            apiMsg.set(this.api.getTx().call(this.txArgs));
+            ApiMsg apiMsg = this.api.getTx().call(this.txArgs);
 
             if (apiMsg.isError()) {
                 return apiMsg;
@@ -760,7 +755,7 @@ public final class Contract implements IContract {
             return apiMsg.set(builder.createContractResponse(), org.aion.api.type.ApiMsg.cast.OTHERS);
         } else {
             // send transaction
-            apiMsg.set(nonBlock ? api.getTx().nonBlock().sendTransaction(null)
+            ApiMsg apiMsg = (nonBlock ? api.getTx().nonBlock().sendTransaction(null)
                             : api.getTx().sendTransaction(null));
 
             if (apiMsg.isError()) {
@@ -1119,7 +1114,7 @@ public final class Contract implements IContract {
 
     private boolean validString(String s) {
 
-        return s != null && (s == "latest" || s == "pending" || s.matches(REGEX_NUMERIC));
+        return s != null && (s.equals("latest") || s.equals("pending") || s.matches(REGEX_NUMERIC));
 
     }
 

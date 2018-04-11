@@ -71,10 +71,10 @@ public class MsgExecutor implements Runnable {
     private final boolean PRIVILEGE = true; // temp flag
     Socket nbSocket;
     AtomicBoolean isInitialized = new AtomicBoolean(false);
-    private LRUTimeMap<ByteArrayWrapper, MsgRsp> hashMap;
-    private LRUMap<String, LinkedBlockingQueue<Event>> eventMap;
+    private Map<ByteArrayWrapper, MsgRsp> hashMap;
+    private Map<String, BlockingQueue<Event>> eventMap;
     private AtomicInteger penddingTx = new AtomicInteger(0);
-    private LinkedBlockingQueue<MsgReq> queue = new LinkedBlockingQueue<>(qSize);
+    private BlockingQueue<MsgReq> queue = new LinkedBlockingQueue<>(qSize);
     private int ver;
     private String url;
     private volatile boolean running = true;
@@ -83,6 +83,8 @@ public class MsgExecutor implements Runnable {
     private String addrBindNumber;
     private Map<String, Boolean> privilege;
 
+    Set<ByteArrayWrapper> check = new HashSet<>();
+
     static {
         NativeLoader.loadLibrary("zmq");
     }
@@ -90,14 +92,23 @@ public class MsgExecutor implements Runnable {
     MsgExecutor(int protocolVer, String url) {
         this.ver = protocolVer;
         this.url = url;
-        this.addrBindNumber = ApiUtils.genHash(8).toString();
-        this.hashMap = new LRUTimeMap<>(maxPenddingTx << 1);
-        this.eventMap = new LRUMap<>(100);
+        this.addrBindNumber = Arrays.toString(ApiUtils.genHash(8));
+        this.hashMap = Collections.synchronizedMap(new LRUTimeMap<>(maxPenddingTx << 1));
+        this.eventMap = Collections.synchronizedMap(new LRUMap<>(100));
+        initPriviege();
+    }
+
+    MsgExecutor(int protocolVer, String url, int timeout) {
+        this.ver = protocolVer;
+        this.url = url;
+        this.addrBindNumber = Arrays.toString(ApiUtils.genHash(8));
+        this.hashMap = Collections.synchronizedMap(new LRUTimeMap<>(maxPenddingTx << 1, timeout));
+        this.eventMap = Collections.synchronizedMap(new LRUMap<>(100));
         initPriviege();
     }
 
     private void initPriviege() {
-        this.privilege = new HashMap<>();
+        this.privilege = Collections.synchronizedMap(new HashMap<>());
         this.privilege.put("Account", PRIVILEGE);
         this.privilege.put("Transaction", PRIVILEGE);
         this.privilege.put("Contract", PRIVILEGE);
@@ -112,7 +123,7 @@ public class MsgExecutor implements Runnable {
         return this.privilege;
     }
 
-    private synchronized void update(ByteArrayWrapper msgHash, ByteArrayWrapper rsp, int status) throws CloneNotSupportedException {
+    private void update(ByteArrayWrapper msgHash, ByteArrayWrapper rsp, int status) throws CloneNotSupportedException {
 
         if (msgHash == null || rsp == null) {
             throw new NullPointerException("msgHash#" + String.valueOf(msgHash) + " rsp#" + String.valueOf(rsp));
@@ -170,7 +181,7 @@ public class MsgExecutor implements Runnable {
 
     }
 
-    private void process(byte[] rsp) {
+    private synchronized void process(final byte[] rsp) {
         if (rsp == null) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[process] Null response.");
@@ -235,7 +246,7 @@ public class MsgExecutor implements Runnable {
         }
     }
 
-    private synchronized void updateEvent(ByteArrayWrapper data) {
+    private void updateEvent(ByteArrayWrapper data) {
         if (Optional.ofNullable(data).isPresent()) {
 
             Message.rsp_EventCtCallback evt;
@@ -267,7 +278,7 @@ public class MsgExecutor implements Runnable {
                 ContractEvent d = builder.createContractEvent();
 
                 if (this.eventMap.get(d.getEventName()) != null) {
-                    LinkedBlockingQueue<Event> em = this.eventMap.get(d.getEventName());
+                    BlockingQueue<Event> em = this.eventMap.get(d.getEventName());
                     if (em != null) {
                         try {
                             em.put(d);
@@ -323,8 +334,8 @@ public class MsgExecutor implements Runnable {
                 byte[] header = ApiUtils
                         .toReqHeader(this.ver, Message.Servs.s_privilege, Message.Funcs.f_userPrivilege);
 
-                String user = new String(CfgApi.inst().getConnect().getUser());
-                String pw = new String(CfgApi.inst().getConnect().getPassword());
+                String user = CfgApi.inst().getConnect().getUser();
+                String pw = CfgApi.inst().getConnect().getPassword();
 
                 Message.req_userPrivilege reqBody = Message.req_userPrivilege.newBuilder().setUsername(user)
                         .setPassword(pw).build();
@@ -363,9 +374,13 @@ public class MsgExecutor implements Runnable {
                 LOGGER.debug("[run] Worker connected!");
             }
 
-            int numProcs = workers + 2;
-            ExecutorService es = Executors.newFixedThreadPool(numProcs);
-            for (int i = 0; i < numProcs; i++) {
+            int thNum = workers + 2;
+            if (thNum < 3) {
+                thNum = 3;
+            }
+
+            ExecutorService es = Executors.newFixedThreadPool(thNum);
+            for (int i = 0 ; i<thNum ; i++) {
                 if (i == 0) {
                     es.execute(() -> heartBeatRun(ctx));
                 } else if (i == 1) {
@@ -727,12 +742,7 @@ public class MsgExecutor implements Runnable {
         });
     }
 
-    public int put(byte[] hash, byte[] payload) {
-        int messageTimeout = 300_000;
-        return put(hash, payload, messageTimeout);
-    }
-
-    MsgRsp getStatus(ByteArrayWrapper msgHash) {
+    synchronized MsgRsp getStatus(ByteArrayWrapper msgHash) {
         if (msgHash == null || msgHash.getData().length != ApiUtils.MSG_HASH_LEN) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getStatus] {}", ErrId.getErrString(57L));
@@ -768,7 +778,7 @@ public class MsgExecutor implements Runnable {
                 || status <= Message.Retcode.r_wallet_nullcb_VALUE;
     }
 
-    public int put(byte[] hash, byte[] payload, int timeout) {
+    public synchronized int put(byte[] hash, byte[] payload) {
 
         if (this.penddingTx.get() >= this.maxPenddingTx) {
             if (LOGGER.isErrorEnabled()) {
@@ -777,7 +787,12 @@ public class MsgExecutor implements Runnable {
             return Message.Retcode.r_fail_hit_pending_tx_limit_VALUE;
         }
 
-        this.hashMap.put(ByteArrayWrapper.wrap(hash), new MsgRsp(Message.Retcode.r_tx_Init_VALUE, ByteArrayWrapper.wrap(hash)), timeout);
+        try {
+            this.hashMap.put(ByteArrayWrapper.wrap(hash), new MsgRsp(Message.Retcode.r_tx_Init_VALUE, ByteArrayWrapper.wrap(hash)));
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("[put] Put tx into hashMap [{}]", IUtils.bytes2Hex(hash));
         }
@@ -807,15 +822,14 @@ public class MsgExecutor implements Runnable {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("[clearTx] MsgHash: [{}]", IUtils.bytes2Hex(msgHash));
             }
-            this.hashMap.remove(ByteBuffer.wrap(msgHash));
             this.penddingTx.decrementAndGet();
         }
 
         return true;
     }
 
-    public MsgRsp send(byte[] hash, byte[] req, int timeout) {
-        int code = this.put(hash, req, timeout);
+    public MsgRsp send(byte[] hash, byte[] req) {
+        int code = this.put(hash, req);
         if (code == 1) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("[send] Reqmsg hash: [{}] msg: [{}]", IUtils.bytes2Hex(hash), IUtils.bytes2Hex(req));
@@ -835,6 +849,10 @@ public class MsgExecutor implements Runnable {
         this.running = false;
         if (this.msgThread != null) {
             this.msgThread.interrupt();
+        }
+
+        if (this.hashMap != null) {
+            hashMap.clear();
         }
 
         this.clear();
@@ -863,7 +881,7 @@ public class MsgExecutor implements Runnable {
         List<Event> result = new ArrayList<>();
         if (Optional.ofNullable(evtNames).isPresent()) {
             evtNames.forEach((ev) -> {
-                Optional<LinkedBlockingQueue<Event>> evtQ = Optional.ofNullable(this.eventMap.get(ev));
+                Optional<BlockingQueue<Event>> evtQ = Optional.ofNullable(this.eventMap.get(ev));
                 if (evtQ.isPresent()) {
                     int number = evtQ.get().size();
                     for (int i = 0; i < number; i++) {

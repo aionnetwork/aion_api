@@ -44,7 +44,6 @@ import java.util.List;
  */
 public class Net implements INet {
     private static final Logger LOGGER = AionLoggerFactory.getLogger(LogEnum.NET.name());
-    private final ApiMsg apiMsg = new ApiMsg();
     private AionAPIImpl apiInst;
 
     Net(AionAPIImpl inst) {
@@ -53,7 +52,7 @@ public class Net implements INet {
 
     public ApiMsg syncInfo() {
         if (!this.apiInst.isConnected()) {
-            return apiMsg.set(-1003);
+            return new ApiMsg(-1003);
         }
 
         byte[] reqHdr = ApiUtils.toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_net, Message.Funcs.f_syncInfo);
@@ -61,7 +60,7 @@ public class Net implements INet {
         byte[] rsp = this.apiInst.nbProcess(reqHdr);
         int code = this.apiInst.validRspHeader(rsp);
         if (code != 1) {
-            return apiMsg.set(code);
+            return new ApiMsg(code);
         }
 
         try {
@@ -69,18 +68,18 @@ public class Net implements INet {
             SyncInfo syncInfo = new SyncInfo(msgRsp.getSyncing(), msgRsp.getChainBestBlock(),
                     msgRsp.getNetworkBestBlock(), msgRsp.getMaxImportBlocks());
             
-            return apiMsg.set(syncInfo, ApiMsg.cast.OTHERS);
+            return new ApiMsg(syncInfo, ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[syncInfo] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
             }
-            return apiMsg.set(-104);
+            return new ApiMsg(-104);
         }
     }
 
     public ApiMsg isSyncing() {
         if (!apiInst.isInitialized.get()) {
-            return apiMsg.set(-1003);
+            return new ApiMsg(-1003);
         }
 
         byte[] reqHdr = ApiUtils.toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_net, Message.Funcs.f_isSyncing);
@@ -88,24 +87,24 @@ public class Net implements INet {
         byte[] rsp = this.apiInst.nbProcess(reqHdr);
         int code = this.apiInst.validRspHeader(rsp);
         if (code != 1) {
-            return apiMsg.set(code);
+            return new ApiMsg(code);
         }
 
         try {
             Message.rsp_isSyncing msgRsp = Message.rsp_isSyncing.parseFrom(ApiUtils.parseBody(rsp).getData());
-            return apiMsg.set(msgRsp.getSyncing(), ApiMsg.cast.BOOLEAN);
+            return new ApiMsg(msgRsp.getSyncing(), ApiMsg.cast.BOOLEAN);
 
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[isSyncing] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
             }
-            return apiMsg.set(-104, e.getMessage(), ApiMsg.cast.OTHERS);
+            return new ApiMsg(-104, e.getMessage(), ApiMsg.cast.OTHERS);
         }
     }
 
     public ApiMsg getProtocolVersion() {
         if (!this.apiInst.isConnected()) {
-            return apiMsg.set(-1003);
+            return new ApiMsg(-1003);
         }
 
         byte[] reqHdr = ApiUtils
@@ -114,17 +113,16 @@ public class Net implements INet {
         byte[] rsp = this.apiInst.nbProcess(reqHdr);
         int code = this.apiInst.validRspHeader(rsp);
         if (code != 1) {
-            return apiMsg.set(code);
+            return new ApiMsg(code);
         }
 
         try {
-            return apiMsg
-                    .set(toProtocol(Message.rsp_protocolVersion.parseFrom(ApiUtils.parseBody(rsp).getData())), ApiMsg.cast.OTHERS);
+            return new ApiMsg(toProtocol(Message.rsp_protocolVersion.parseFrom(ApiUtils.parseBody(rsp).getData())), ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getProtocolVersion] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
             }
-            return apiMsg.set(-104);
+            return new ApiMsg(-104);
         }
     }
 
@@ -142,7 +140,7 @@ public class Net implements INet {
 
     public ApiMsg getActiveNodes() {
         if (!this.apiInst.isConnected()) {
-            return apiMsg.set(-1003);
+            return new ApiMsg(-1003);
         }
 
         byte[] reqHdr = ApiUtils
@@ -151,16 +149,16 @@ public class Net implements INet {
         byte[] rsp = this.apiInst.nbProcess(reqHdr);
         int code = this.apiInst.validRspHeader(rsp);
         if (code != 1) {
-            return apiMsg.set(code);
+            return new ApiMsg(code);
         }
 
         try {
-            return apiMsg.set(toNodes(Message.rsp_getActiveNodes.parseFrom(ApiUtils.parseBody(rsp).getData()).getNodeList()), ApiMsg.cast.OTHERS);
+            return new ApiMsg(toNodes(Message.rsp_getActiveNodes.parseFrom(ApiUtils.parseBody(rsp).getData()).getNodeList()), ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getActiveNodes] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
             }
-            return apiMsg.set(-104);
+            return new ApiMsg(-104);
         }
     }
 
@@ -181,7 +179,7 @@ public class Net implements INet {
 
     public ApiMsg getStaticNodes() {
         if (!this.apiInst.isConnected()) {
-            return apiMsg.set(-1003);
+            return new ApiMsg(-1003);
         }
 
         byte[] reqHdr = ApiUtils
@@ -190,17 +188,17 @@ public class Net implements INet {
         byte[] rsp = this.apiInst.nbProcess(reqHdr);
         int code = this.apiInst.validRspHeader(rsp);
         if (code != 1) {
-            return apiMsg.set(code);
+            return new ApiMsg(code);
         }
 
         try {
-            return apiMsg.set(toNodes(Message.rsp_getStaticNodes.parseFrom(ApiUtils.parseBody(rsp).getData()).getNodeList()), ApiMsg.cast.OTHERS);
+            return new ApiMsg(toNodes(Message.rsp_getStaticNodes.parseFrom(ApiUtils.parseBody(rsp).getData()).getNodeList()), ApiMsg.cast.OTHERS);
 
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getStaticNodes] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
             }
-            return apiMsg.set(-104);
+            return new ApiMsg(-104);
         }
     }
 }
