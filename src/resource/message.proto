@@ -71,6 +71,7 @@ enum Funcs	 {
 	f_getAccountDetailsByAddressList  		= 51;
 	f_backupAccounts			            = 52;
 	f_NA                                    = 53;
+	f_getBlockSqlByRange					= 54;
 }
 
 enum Retcode {
@@ -226,6 +227,14 @@ message t_Block {
 	bytes hash		    		= 16;
 	uint32 size		    		= 17;
 	repeated bytes txHash	    = 18;
+}
+
+message t_BlockSql {
+	uint64 blockNumber          = 1;
+	string blockHash            = 2;
+	string parentHash			= 3;
+	string block 				= 4;
+	repeated string tx			= 5;
 }
 
 // for demo, in protocol, it's all one byte per field instead of int32
@@ -940,3 +949,15 @@ message rsp_getAccountDetailsByAddressList{
     repeated t_AccountDetail accounts = 1;
 }
 
+//*****************************************************************************
+//      f_getBlockSqlByRange
+//*****************************************************************************
+
+message req_getBlockSqlByRange{
+	uint64 blkNumberStart 	= 1;
+	uint64 blkNumberEnd 	= 2;
+}
+
+message rsp_getBlockSqlByRange{
+	repeated t_BlockSql blkSql = 1;
+}
