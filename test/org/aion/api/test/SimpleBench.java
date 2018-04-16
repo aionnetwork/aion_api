@@ -134,7 +134,7 @@ public class SimpleBench {
         IContract tmp = ct.newFunction("g")
                 .setParam(IUint.copyFrom(1))
                 .setTxNrgPrice(1L)
-                .setTxNrgLimit(5_000_000L)
+                .setTxNrgLimit(50_000L)
                 .build();
 
         while (true) {
@@ -143,6 +143,7 @@ public class SimpleBench {
                         .execute()
                         .getObject();
                 assertNotNull(rsp.getMsgHash());
+                assertTrue(!rsp.isTxError());
                 queue.add(rsp.getMsgHash().getData());
 
                 if (count.get() >= totalTxs) {
@@ -163,7 +164,7 @@ public class SimpleBench {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        int totalTxs = 3;
+        int totalTxs = 500;
 
         setUp();
         int throughput = run(totalTxs);

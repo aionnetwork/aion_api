@@ -332,7 +332,7 @@ public class ApiDemo {
 
         contractResponse = apiMsg.getObject();
 
-        if (contractResponse.error()) {
+        if (contractResponse.isStatusError()) {
             System.out.println("ContractResponse isError! " + contractResponse.statusToString());
         }
 
@@ -545,7 +545,7 @@ public class ApiDemo {
         }
 
         ContractResponse contractResponse = apiMsg.getObject();
-        if (contractResponse.error()) {
+        if (contractResponse.isStatusError()) {
             System.out.println("ContractResponse isError! " + contractResponse.statusToString());
         }
 
