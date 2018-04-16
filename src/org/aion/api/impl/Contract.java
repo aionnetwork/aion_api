@@ -774,7 +774,9 @@ public final class Contract implements IContract {
                     .constant(false)
                     .msgHash(msgRsp.getMsgHash())
                     .status(msgRsp.getStatus())
-                    .txHash(msgRsp.getTxHash());
+                    .txHash(msgRsp.getTxHash())
+                    .error(msgRsp.getError());
+
 
 
             return apiMsg.set(builder.createContractResponse(),

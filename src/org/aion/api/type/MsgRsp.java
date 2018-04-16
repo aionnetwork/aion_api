@@ -59,6 +59,7 @@ public class MsgRsp {
     private Hash256 txHash;
     private ByteArrayWrapper txResult;
     private ByteArrayWrapper txDeploy;
+    private String error;
 
     private MsgRsp() {}
 
@@ -79,6 +80,9 @@ public class MsgRsp {
         newMsg.setTxHash(in.getTxHash().clone());
         newMsg.setTxResult(ByteArrayWrapper.wrap(in.getTxResult().toBytes().clone()));
         newMsg.setTxDeploy(ByteArrayWrapper.wrap(in.getTxDeploy().toBytes().clone()));
+        if (in.getError() != null) {
+            newMsg.setError(new StringBuilder(in.getError()).toString());
+        }
         return newMsg;
     }
 
@@ -120,6 +124,14 @@ public class MsgRsp {
 
     public void setTxResult(ByteArrayWrapper txResult) {
         this.txResult = txResult;
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
+
+    public String getError() {
+        return error;
     }
 
     public ByteArrayWrapper getTxDeploy() { return txDeploy; }

@@ -28,7 +28,9 @@ import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.impl.internal.Message;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
+import org.aion.base.util.ByteUtil;
 
+import java.nio.ByteBuffer;
 import java.util.List;
 
 /**
@@ -49,6 +51,7 @@ public final class ContractResponse {
     private final Hash256 txHash;
     private final byte status;
     private final ByteArrayWrapper msgHash;
+    private final String error;
 
     private ContractResponse(ContractResponseBuilder builder) {
         this.constant = builder.constant;
@@ -56,6 +59,7 @@ public final class ContractResponse {
         this.txHash = builder.txHash;
         this.status = builder.status;
         this.msgHash = builder.msgHash;
+        this.error = builder.error;
     }
 
     /**
@@ -128,7 +132,7 @@ public final class ContractResponse {
         return (getStatus() == -15);
     }
 
-    public boolean error() {
+    public boolean isStatusError() {
         return (getStatus() < 0 || getStatus() == 102);
     }
 
@@ -152,6 +156,13 @@ public final class ContractResponse {
         return msgHash;
     }
 
+    public String getError() {
+        return error;
+    }
+
+    public boolean isTxError() {
+        return error != null && !error.isEmpty();
+    }
 
     /**
      * This Builder class is used to build a {@link ContractResponse} instance.
@@ -162,6 +173,7 @@ public final class ContractResponse {
         private Hash256 txHash;
         private byte status;
         private ByteArrayWrapper msgHash;
+        private String error;
 
         public ContractResponseBuilder() {
         }
@@ -188,6 +200,15 @@ public final class ContractResponse {
 
         public ContractResponse.ContractResponseBuilder msgHash(final ByteArrayWrapper msgHash) {
             this.msgHash = msgHash;
+            return this;
+        }
+
+        public ContractResponse.ContractResponseBuilder error(final String error) {
+            if (error == null) {
+                return this;
+            }
+
+            this.error = error;
             return this;
         }
 

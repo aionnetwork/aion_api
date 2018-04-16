@@ -142,9 +142,15 @@ public class MsgExecutor implements Runnable {
 
         if (rsp.getData().length > 0) {
             try {
-                if (status == 105) {
-                    msgRsp.setTxResult(ByteArrayWrapper.wrap(rsp.getData()));
-                } else if (status == 101) {
+                if (status != 101) {
+                    if (rsp.getData()[0] > 0 && rsp.getData().length > rsp.getData()[0]) {
+                        msgRsp.setError(new String(rsp.getData(), 1, rsp.getData()[0]));
+                    }
+
+                    if (status == 105) {
+                        msgRsp.setTxResult(ByteArrayWrapper.wrap(ByteBuffer.wrap(rsp.getData(),rsp.getData()[0]+1, rsp.getData().length-(rsp.getData()[0]+1)).array()));
+                    }
+                } else {
                     // if response message = 68, that is a contract deploy
                     if (rsp.getData().length == 68) {
                         Message.rsp_contractDeploy result = Message.rsp_contractDeploy.parseFrom(rsp.getData());
@@ -219,9 +225,7 @@ public class MsgExecutor implements Runnable {
                 update(ApiUtils.parseHash(rsp), ApiUtils.parseBody(rsp), (int) rsp[1]);
             } catch (CloneNotSupportedException e) {
                 if (LOGGER.isErrorEnabled()) {
-                    //LOGGER.error("[process] {}", ErrId.getErrString());
                     LOGGER.error("[process] update data get a CloneNotSupportedException exception");
-
                 }
             }
         }
