@@ -70,6 +70,7 @@ public final class Contract implements IContract {
     public static final String SC_FN_CONSTRUCTOR = "constructor";
     public static final String SC_FN_FUNC = "function";
     public static final String SC_FN_EVENT = "event";
+    public static final String SC_FN_FALLBACK = "fallback";
 
 
     private final AionAPIImpl api;

@@ -249,7 +249,7 @@ public interface IContractController {
      * pair of the Class {@link Address Address} and the class {@link String String} represent the contract address and the
      * contract name.
      **/
-    List<Map.Entry<Address,String>> getContractList();
+    Map<Address,String> getContractMap();
 
     /**
      * remove contract by given the contract object from ContractController.

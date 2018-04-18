@@ -180,7 +180,10 @@ public final class CompileResponse {
                             .substring(0, 8));
                     break;
                 case SC_FN_CONSTRUCTOR:
-                    entry.setConstructor(true);
+                    entry.setConstructor();
+                    break;
+                case SC_FN_FALLBACK:
+                    entry.setFallback();
                     break;
                 default:
                     throw new IllegalArgumentException("entry.type#" + entry.type);
