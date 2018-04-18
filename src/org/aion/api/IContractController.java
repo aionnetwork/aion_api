@@ -245,8 +245,7 @@ public interface IContractController {
     /**
      * retrieve all of the pair of the contract address and the contract name  inside the ContractController.
      *
-     * @return the interface {@link List List} of the interface {@link java.util.Map.Entry Map.Entry} of the pair of the
-     * pair of the Class {@link Address Address} and the class {@link String String} represent the contract address and the
+     * @return the interface {@link Map Map} of the key of the Class {@link Address Address} and the value of the class {@link String String} represent the contract address and the
      * contract name.
      **/
     Map<Address,String> getContractMap();
