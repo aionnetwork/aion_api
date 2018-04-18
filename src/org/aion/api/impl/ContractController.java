@@ -111,45 +111,48 @@ public final class ContractController implements IContractController {
                 throw new NullPointerException("null CompileResponse#" + entry.getKey());
             }
 
-            String trimCtName = entry.getKey().replace("<stdin>:", "");
-            ByteArrayWrapper data = ByteArrayWrapper.wrap(new byte[0]);
-            boolean hasConstructor = false;
-            for (ContractAbiEntry cae : entry.getValue().getAbiDefinition()) {
-                if (cae.isConstructor()) {
+            boolean isInterface  = entry.getValue().getCode().equals("0x");
+            
+            if (!isInterface) {
+                String trimCtName = entry.getKey().replace("<stdin>:", "");
+                ByteArrayWrapper data = ByteArrayWrapper.wrap(new byte[0]);
+                boolean hasConstructor = false;
+                for (ContractAbiEntry cae : entry.getValue().getAbiDefinition()) {
+                    if (cae.isConstructor()) {
 
-                    hasConstructor = true;
-                    Contract ct = new Contract(entry.getValue(), trimCtName)
-                            .newFunction(SC_FN_CONSTRUCTOR)
-                            .setFrom(from)
-                            .setTxNrgLimit(nrgLimit)
-                            .setTxNrgPrice(nrgPrice);
+                        hasConstructor = true;
+                        
+                        Contract ct = new Contract(entry.getValue(), trimCtName)
+                                .newFunction(SC_FN_CONSTRUCTOR)
+                                .setFrom(from)
+                                .setTxNrgLimit(nrgLimit)
+                                .setTxNrgPrice(nrgPrice);
 
-                    List<ISolidityArg> ctParams;
-                    // assume only one contract want to deploy
-                    if (params.get("") != null && response.size() == 1) {
-                        ctParams = params.get("");
-                    } else {
-                        ctParams = params.get(trimCtName);
-                    }
-
-                    if (ctParams != null) {
-                        for (ISolidityArg i : ctParams) {
-                            ct = ct.setParam(i);
+                        List<ISolidityArg> ctParams;
+                        // assume only one contract want to deploy
+                        if (params.get("") != null && response.size() == 1) {
+                            ctParams = params.get("");
+                        } else {
+                            ctParams = params.get(trimCtName);
                         }
 
-                        ct.build().encodeParams(ct.getAbiFunction());
-                        data = ct.getEncodedData();
+                        if (ctParams != null) {
+                            for (ISolidityArg i : ctParams) {
+                                ct = ct.setParam(i);
+                            }
 
-                        if (LOGGER.isDebugEnabled()) {
-                            LOGGER.debug("[createCtListFromSource] This contract has contractor!");
+                            ct.build().encodeParams(ct.getAbiFunction());
+                            data = ct.getEncodedData();
+
+                            if (LOGGER.isDebugEnabled()) {
+                                LOGGER.debug("[createCtListFromSource] This contract has contractor!");
+                            }
                         }
-                    }
 
-                    break;
+                        break;
+                    }
                 }
-            }
 
-            if (hasConstructor) {
                 ContractDeploy.ContractDeployBuilder cd = new ContractDeploy.ContractDeployBuilder().compileResponse(entry.getValue()).constructor(hasConstructor).data(data).from(from)
                         .nrgLimit(nrgLimit).nrgPrice(nrgPrice).value(value);
 
