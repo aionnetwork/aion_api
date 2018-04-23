@@ -1545,7 +1545,7 @@ public class BaseAPITests {
 
         long t0 = System.currentTimeMillis();
 
-        ApiMsg msg = api.getAdmin().getBlockSqlByRange(414L, 419L);
+        ApiMsg msg = api.getAdmin().getBlockSqlByRange(1570L, 1620L);
         assertFalse(msg.isError());
         List<BlockSql> blks = msg.getObject();
 

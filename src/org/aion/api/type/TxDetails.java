@@ -197,7 +197,7 @@ public final class TxDetails {
                         " Logs#" + String.valueOf(logs));
             }
 
-            if (nrgConsumed < 0 || nrgPrice < 1 || txIndex < 0) {
+            if (nrgConsumed < 0 || nrgPrice < 0 || txIndex < 0) {
                 throw new IllegalArgumentException(
                         "NrgConsumed#" + nrgConsumed +
                         " TxIndex#" + String.valueOf(txIndex) +

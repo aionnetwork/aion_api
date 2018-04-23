@@ -106,7 +106,7 @@ public final class ContractDeploy {
                                 " value#" + String.valueOf(value));
             }
 
-            if (nrgLimit < 0 || nrgPrice < 1) {
+            if (nrgLimit < 0 || nrgPrice < 0) {
                 throw new IllegalArgumentException("nrgConsumed#" + nrgLimit + " nrgPrice#" + nrgPrice);
             }
 

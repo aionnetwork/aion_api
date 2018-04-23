@@ -94,7 +94,7 @@ public final class ContractController implements IContractController {
                             .valueOf(value) + " inputParams#" + String.valueOf(params));
         }
 
-        if (nrgLimit < 0 || nrgPrice < 1) {
+        if (nrgLimit < 0 || nrgPrice < 0) {
             throw new IllegalArgumentException("nrgConsumed#" + nrgLimit + " nrgPrice" + nrgPrice);
         }
 

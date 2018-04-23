@@ -276,7 +276,7 @@ public final class Block {
                                 " receiptTxRoot#" + String.valueOf(receiptTxRoot));
             }
 
-            if (number < 0 || timestamp < 1 || nrgConsumed < 0 || nrgLimit < 1 || size < 1) {
+            if (number < 0 || timestamp < 0 || nrgConsumed < 0 || nrgLimit < 0 || size < 0) {
                 throw new IllegalArgumentException("Block#" + number + " Time#" + timestamp
                         + " NrgConsumed#" + nrgConsumed + " NrgLimit#" + nrgLimit
                         + " size#" + size);
