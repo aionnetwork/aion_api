@@ -111,68 +111,71 @@ public final class ContractController implements IContractController {
                 throw new NullPointerException("null CompileResponse#" + entry.getKey());
             }
 
-            String trimCtName = entry.getKey().replace("<stdin>:", "");
-            ByteArrayWrapper data = ByteArrayWrapper.wrap(ByteArrayWrapper.NULL_BYTE);
-            boolean hasConstructor = false;
-            for (ContractAbiEntry cae : entry.getValue().getAbiDefinition()) {
-                if (cae.isConstructor()) {
+            boolean isInterface  = entry.getValue().getCode().equals("0x");
+            
+            if (!isInterface) {
+                String trimCtName = entry.getKey().replace("<stdin>:", "");
+                ByteArrayWrapper data = ByteArrayWrapper.wrap(new byte[0]);
+                boolean hasConstructor = false;
+                for (ContractAbiEntry cae : entry.getValue().getAbiDefinition()) {
+                    if (cae.isConstructor()) {
 
-                    Contract ct = new Contract(entry.getValue(), trimCtName)
-                            .newFunction(SC_FN_CONSTRUCTOR)
-                            .setFrom(from)
-                            .setTxNrgLimit(nrgLimit)
-                            .setTxNrgPrice(nrgPrice);
-
-                    List<ISolidityArg> ctParams;
-                    // assume only one contract want to deploy
-                    if (params.get("") != null && response.size() == 1) {
-                        ctParams = params.get("");
-                    } else {
-                        ctParams = params.get(trimCtName);
-                    }
-
-                    if (ctParams != null) {
-                        for (ISolidityArg i : ctParams) {
-                            ct = ct.setParam(i);
-                        }
-
-                        ct.build().encodeParams(ct.getAbiFunction());
-                        data = ct.getEncodedData();
                         hasConstructor = true;
+                        
+                        Contract ct = new Contract(entry.getValue(), trimCtName)
+                                .newFunction(SC_FN_CONSTRUCTOR)
+                                .setFrom(from)
+                                .setTxNrgLimit(nrgLimit)
+                                .setTxNrgPrice(nrgPrice);
 
-                        if (LOGGER.isDebugEnabled()) {
-                            LOGGER.debug("[createCtListFromSource] This contract has contractor!");
+                        List<ISolidityArg> ctParams;
+                        // assume only one contract want to deploy
+                        if (params.get("") != null && response.size() == 1) {
+                            ctParams = params.get("");
+                        } else {
+                            ctParams = params.get(trimCtName);
                         }
+
+                        if (ctParams != null) {
+                            for (ISolidityArg i : ctParams) {
+                                ct = ct.setParam(i);
+                            }
+
+                            ct.build().encodeParams(ct.getAbiFunction());
+                            data = ct.getEncodedData();
+
+                            if (LOGGER.isDebugEnabled()) {
+                                LOGGER.debug("[createCtListFromSource] This contract has contractor!");
+                            }
+                        }
+
+                        break;
                     }
-
-                    break;
                 }
-            }
 
-            ContractDeploy.ContractDeployBuilder cd = new ContractDeploy.ContractDeployBuilder()
-                    .compileResponse(entry.getValue()).constructor(hasConstructor).data(data).from(from)
-                    .nrgLimit(nrgLimit).nrgPrice(nrgPrice).value(value);
+                ContractDeploy.ContractDeployBuilder cd = new ContractDeploy.ContractDeployBuilder().compileResponse(entry.getValue()).constructor(hasConstructor).data(data).from(from)
+                        .nrgLimit(nrgLimit).nrgPrice(nrgPrice).value(value);
 
-            apiMsg = API.getTx().contractDeploy(cd.createContractDeploy());
+                apiMsg = API.getTx().contractDeploy(cd.createContractDeploy());
 
-            if (apiMsg.isError()) {
-                if (LOGGER.isErrorEnabled()) {
-                    LOGGER.error("[createFromSource] {}", getErrString(-327L));
+                if (apiMsg.isError()) {
+                    if (LOGGER.isErrorEnabled()) {
+                        LOGGER.error("[createFromSource] {}", getErrString(-327L));
+                    }
+                    return apiMsg;
                 }
-                return apiMsg;
+
+                DeployResponse dr = apiMsg.getObject();
+
+                if (LOGGER.isInfoEnabled()) {
+                    LOGGER.info("[createFromSource] Contract deployed - name:[{}] address:[{}], txhash: [{}]",
+                            entry.getKey(), dr.getAddress().toString(), dr.getTxid().toString());
+                }
+
+                Contract.ContractBuilder builder = new Contract.ContractBuilder().api(API).deployResponse(dr).compileResponse(entry.getValue()).from(from).contractName(trimCtName);
+
+                CONTAINER.put(dr.getAddress(), builder.createContract());
             }
-
-            DeployResponse dr = apiMsg.getObject();
-
-            if (LOGGER.isInfoEnabled()) {
-                LOGGER.info("[createFromSource] Contract deployed - address: [{}], txhash: [{}]",
-                        dr.getAddress().toString(), dr.getTxid().toString());
-            }
-
-            Contract.ContractBuilder builder = new Contract.ContractBuilder().api(API).deployResponse(dr)
-                    .compileResponse(entry.getValue()).from(from).contractName(trimCtName);
-
-            CONTAINER.put(dr.getAddress(), builder.createContract());
         }
 
         return apiMsg.set(1);
@@ -223,14 +226,14 @@ public final class ContractController implements IContractController {
                 .map(Map.Entry::getValue).collect(Collectors.toList());
     }
 
-    public List<Map.Entry<Address, String>> getContractList() {
-        List<Map.Entry<Address, String>> l = new ArrayList<>();
+    public Map<Address, String> getContractMap() {
+        Map<Address, String> rtn = new HashMap<>();
 
         for (Map.Entry<Address, IContract> ct : this.CONTAINER.entrySet()) {
-            l.add(new AbstractMap.SimpleEntry(ct.getKey(), ct.getValue().getContractName()));
+            rtn.put(ct.getKey(), ct.getValue().getContractName());
         }
 
-        return l;
+        return rtn;
     }
 
     public final IContract put(IContract c) {

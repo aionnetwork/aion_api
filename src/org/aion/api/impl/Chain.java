@@ -361,7 +361,7 @@ public final class Chain implements IChain {
         }
 
         try {
-            return new ApiMsg(Message.rsp_getBlockTransactionCount.parseFrom(ApiUtils.parseBody(rsp).getData()).getTxCount(),
+            return new ApiMsg(1, Message.rsp_getBlockTransactionCount.parseFrom(ApiUtils.parseBody(rsp).getData()).getTxCount(),
                             org.aion.api.type.ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
@@ -397,7 +397,7 @@ public final class Chain implements IChain {
         }
 
         try {
-            return new ApiMsg(Message.rsp_getBlockTransactionCount.parseFrom(ApiUtils.parseBody(rsp).getData()).getTxCount(),
+            return new ApiMsg(1, Message.rsp_getBlockTransactionCount.parseFrom(ApiUtils.parseBody(rsp).getData()).getTxCount(),
                             org.aion.api.type.ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {

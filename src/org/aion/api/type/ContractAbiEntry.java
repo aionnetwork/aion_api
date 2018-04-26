@@ -52,6 +52,7 @@ public final class ContractAbiEntry {
     private boolean isEvent;
     private boolean isConstructor;
     private String hashed;
+    private boolean isFallback;
 
     public boolean isEvent() {
         return isEvent;
@@ -73,8 +74,16 @@ public final class ContractAbiEntry {
         return isConstructor;
     }
 
-    void setConstructor(boolean constructor) {
-        isConstructor = constructor;
+    void setConstructor() {
+        isConstructor = true;
+    }
+
+    public boolean isFallback() {
+        return isFallback;
+    }
+
+    void setFallback() {
+        isFallback = true;
     }
 
     // original abi structure
