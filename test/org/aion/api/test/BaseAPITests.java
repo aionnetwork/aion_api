@@ -1537,6 +1537,69 @@ public class BaseAPITests {
     }
 
     @Test
+    public void TestGetBlocksSqlByRange() throws Throwable {
+        System.out.println("run TestGetBlocksSqlByRange.");
+
+        IAionAPI api = IAionAPI.init();
+        api.connect(url);
+
+        long t0 = System.currentTimeMillis();
+
+        ApiMsg msg = api.getAdmin().getBlockSqlByRange(1570L, 1620L);
+        assertFalse(msg.isError());
+        List<BlockSql> blks = msg.getObject();
+
+        long t1 = System.currentTimeMillis();
+
+
+        long totalTime = t1 - t0;
+        long totalTxns = 0;
+        for (BlockSql b : blks) {
+            System.out.println("#: " + b.getNumber() + " [" + b.getTransactions().size() + "]");
+            totalTxns += b.getTransactions().size();
+        }
+
+        System.out.println("bench: " + (t1 - t0) + " ms");
+        System.out.println("time/txn: " + totalTime / (double)totalTxns);
+
+        assertNotNull(blks);
+
+        api.destroyApi();
+    }
+
+    @Test
+    public void TestGetBlocksSqlByRangeLatest() throws Throwable {
+        System.out.println("run TestGetBlocksSqlByRangeLatest.");
+
+        IAionAPI api = IAionAPI.init();
+        api.connect(url);
+
+        long latest = api.getChain().blockNumber().getObject();
+
+        long t0 = System.currentTimeMillis();
+
+        ApiMsg msg = api.getAdmin().getBlockSqlByRange(latest-500, latest);
+        assertFalse(msg.isError());
+        List<BlockSql> blks = msg.getObject();
+
+        long t1 = System.currentTimeMillis();
+
+        long totalTime = t1 - t0;
+        long totalTxns = 0;
+        for (BlockSql b : blks) {
+            System.out.println("#: " + b.getNumber() + " [" + b.getTransactions().size() + "]");
+            totalTxns += b.getTransactions().size();
+        }
+
+        System.out.println("bench: " + (t1 - t0) + " ms");
+        System.out.println("time/txn: " + totalTime / (double)totalTxns);
+
+        assertNotNull(blks);
+
+        api.destroyApi();
+    }
+
+    @Test
     public void TestGetAccountDetailsByAddressList() throws Throwable {
         System.out.println("run TestGetAccountDetailsByAddressList.");
 

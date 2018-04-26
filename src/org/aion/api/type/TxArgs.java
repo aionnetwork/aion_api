@@ -143,7 +143,7 @@ public final class TxArgs {
                         " Data#" + String.valueOf(data));
             }
 
-            if (nrgLimit < 0 || nrgPrice < 1) {
+            if (nrgLimit < 0 || nrgPrice < 0) {
                 throw new IllegalArgumentException(
                         "NrgLimit#" + nrgLimit +
                         " NrgPrice#" + nrgPrice);

@@ -31,10 +31,7 @@ import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.impl.internal.Message;
 import org.aion.api.log.AionLoggerFactory;
 import org.aion.api.log.LogEnum;
-import org.aion.api.type.Block;
-import org.aion.api.type.ApiMsg;
-import org.aion.api.type.BlockDetails;
-import org.aion.api.type.AccountDetails;
+import org.aion.api.type.*;
 import org.aion.base.type.Address;
 import org.aion.base.util.ByteUtil;
 import org.slf4j.Logger;
@@ -117,6 +114,47 @@ public class Admin implements IAdmin {
         }
 
         return addressList;
+    }
+
+    @SuppressWarnings("Duplicates")
+    @Override
+    public ApiMsg getBlockSqlByRange(Long blkStart, Long blkEnd) {
+        if (!this.apiInst.isConnected()) {
+            return new ApiMsg(-1003);
+        }
+
+        if (blkStart == null || blkEnd == null || blkStart < 0 || blkEnd < 0 || blkEnd < blkStart) {
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("[getBlockSqlByNumber]" + ErrId.getErrString(-17L));
+            }
+            return new ApiMsg(-17);
+        }
+
+        Message.req_getBlockSqlByRange reqBody =
+                Message.req_getBlockSqlByRange.newBuilder()
+                        .setBlkNumberStart(blkStart)
+                        .setBlkNumberEnd(blkEnd)
+                        .build();
+
+        byte[] reqHead = ApiUtils
+                .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_admin, Message.Funcs.f_getBlockSqlByRange);
+        byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
+
+        byte[] rsp = this.apiInst.nbProcess(reqMsg);
+        int code = this.apiInst.validRspHeader(rsp);
+        if (code != 1) {
+            return new ApiMsg(code);
+        }
+
+        try {
+            List<BlockSql> k = ApiUtils.toBlockSql(Message.rsp_getBlockSqlByRange.parseFrom(ApiUtils.parseBody(rsp).getData()).getBlkSqlList());
+            return new ApiMsg(k, org.aion.api.type.ApiMsg.cast.OTHERS);
+        } catch (InvalidProtocolBufferException e) {
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("[accountCreate]" + ErrId.getErrString(-104L) + e.getMessage());
+            }
+            return new ApiMsg(-104, e.getMessage(), org.aion.api.type.ApiMsg.cast.OTHERS);
+        }
     }
 
     @Override

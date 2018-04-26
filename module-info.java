@@ -1,4 +1,4 @@
-module aion.aion.api {
+module aion.api.client {
     requires aion.base;
     requires aion.log;
     requires java.xml;

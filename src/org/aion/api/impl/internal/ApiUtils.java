@@ -558,6 +558,26 @@ public class ApiUtils {
         return rtn;
     }
 
+    public static List<BlockSql> toBlockSql(List<Message.t_BlockSql> blks) {
+        List<BlockSql> rtn = new ArrayList<>();
+
+        if (blks == null) {
+            return rtn;
+        }
+
+        for (Message.t_BlockSql b : blks) {
+            BlockSql built = new BlockSql.BlockSqlBuilder()
+                    .block(b.getBlock())
+                    .hash(b.getBlockHash())
+                    .parentHash(b.getParentHash())
+                    .number(b.getBlockNumber())
+                    .transactions(b.getTxList())
+                    .createBlockSql();
+            rtn.add(built);
+        }
+
+        return rtn;
+    }
     public static List<Block> toBlocks(List<Message.t_Block> blks) {
         if (blks == null) {
             throw new NullPointerException();

@@ -212,7 +212,7 @@ public final class Transaction {
                         " Nonce#" + String.valueOf(nonce));
             }
 
-            if (transactionIndex < 0 || blockNumber < 0 || timeStamp < 0 || nrgConsumed < 0 || nrgPrice < 1) {
+            if (transactionIndex < 0 || blockNumber < 0 || timeStamp < 0 || nrgConsumed < 0 || nrgPrice < 0) {
                 throw new IllegalArgumentException(
                         "TxIndex#" + transactionIndex +
                                 " BlockNumber#" + blockNumber +
