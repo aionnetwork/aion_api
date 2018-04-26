@@ -1584,9 +1584,6 @@ public class BaseAPITests {
 
         long t1 = System.currentTimeMillis();
 
-
-
-
         long totalTime = t1 - t0;
         long totalTxns = 0;
         for (BlockSql b : blks) {
