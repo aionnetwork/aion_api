@@ -527,7 +527,8 @@ public class ApiUtils {
                     .stateRoot(Hash256.wrap(bd.getStateRoot().toByteArray()))
                     .timestamp(bd.getTimestamp())
                     .txTrieRoot(Hash256.wrap(bd.getTxTrieRoot().toByteArray()))
-                    .totalDifficulty(new BigInteger(1, bd.getTotalDifficulty().toByteArray()));
+                    .totalDifficulty(new BigInteger(1, bd.getTotalDifficulty().toByteArray()))
+                    .blockTime(bd.getBlockTime());
 
             List<TxDetails> txDetails = new ArrayList<>();
             for (Message.t_TxDetail td : bd.getTxList()) {
@@ -541,7 +542,9 @@ public class ApiUtils {
                         .nonce(new BigInteger(1, td.getNonce().toByteArray()))
                         .value(new BigInteger(1, td.getValue().toByteArray()))
                         .nrgConsumed(td.getNrgConsumed())
-                        .nrgPrice(td.getNrgPrice());
+                        .nrgPrice(td.getNrgPrice())
+                        .timestamp(td.getTimestamp())
+                        .error(td.getError());
 
                 List<TxLog> txLogs = new ArrayList<>();
                 for (Message.t_LgEle log : td.getLogsList()) {

@@ -151,7 +151,48 @@ public class Admin implements IAdmin {
             return new ApiMsg(k, org.aion.api.type.ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[accountCreate]" + ErrId.getErrString(-104L) + e.getMessage());
+                LOGGER.error("[getBlockSqlByRange]" + ErrId.getErrString(-104L) + e.getMessage());
+            }
+            return new ApiMsg(-104, e.getMessage(), org.aion.api.type.ApiMsg.cast.OTHERS);
+        }
+    }
+
+    @SuppressWarnings("Duplicates")
+    @Override
+    public ApiMsg getBlockDetailsByRange(Long blkStart, Long blkEnd) {
+        if (!this.apiInst.isConnected()) {
+            return new ApiMsg(-1003);
+        }
+
+        if (blkStart == null || blkEnd == null || blkStart < 0 || blkEnd < 0 || blkEnd < blkStart) {
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("[getBlockDetailsByRange]" + ErrId.getErrString(-17L));
+            }
+            return new ApiMsg(-17);
+        }
+
+        Message.req_getBlockDetailsByRange reqBody =
+                Message.req_getBlockDetailsByRange.newBuilder()
+                        .setBlkNumberStart(blkStart)
+                        .setBlkNumberEnd(blkEnd)
+                        .build();
+
+        byte[] reqHead = ApiUtils
+                .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_admin, Message.Funcs.f_getBlockDetailsByRange);
+        byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
+
+        byte[] rsp = this.apiInst.nbProcess(reqMsg);
+        int code = this.apiInst.validRspHeader(rsp);
+        if (code != 1) {
+            return new ApiMsg(code);
+        }
+
+        try {
+            List<BlockDetails> k = ApiUtils.toBlockDetails(Message.rsp_getBlockDetailsByRange.parseFrom(ApiUtils.parseBody(rsp).getData()).getBlkDetailsList());
+            return new ApiMsg(k, org.aion.api.type.ApiMsg.cast.OTHERS);
+        } catch (InvalidProtocolBufferException e) {
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("[getBlockDetailsByRange]" + ErrId.getErrString(-104L) + e.getMessage());
             }
             return new ApiMsg(-104, e.getMessage(), org.aion.api.type.ApiMsg.cast.OTHERS);
         }
@@ -189,7 +230,7 @@ public class Admin implements IAdmin {
             return new ApiMsg(k, org.aion.api.type.ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[accountCreate]" + ErrId.getErrString(-104L) + e.getMessage());
+                LOGGER.error("[getBlockDetailsByNumber]" + ErrId.getErrString(-104L) + e.getMessage());
             }
             return new ApiMsg(-104, e.getMessage(), org.aion.api.type.ApiMsg.cast.OTHERS);
         }
@@ -227,7 +268,7 @@ public class Admin implements IAdmin {
             return new ApiMsg(k, org.aion.api.type.ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[accountCreate]" + ErrId.getErrString(-104L) + e.getMessage());
+                LOGGER.error("[getBlockDetailsByLatest]" + ErrId.getErrString(-104L) + e.getMessage());
             }
             return new ApiMsg(-104, e.getMessage(), org.aion.api.type.ApiMsg.cast.OTHERS);
         }
@@ -265,7 +306,7 @@ public class Admin implements IAdmin {
             return new ApiMsg(k, org.aion.api.type.ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[accountCreate]" + ErrId.getErrString(-104L) + e.getMessage());
+                LOGGER.error("[getBlocksByLatest]" + ErrId.getErrString(-104L) + e.getMessage());
             }
             return new ApiMsg(-104, e.getMessage(), org.aion.api.type.ApiMsg.cast.OTHERS);
         }

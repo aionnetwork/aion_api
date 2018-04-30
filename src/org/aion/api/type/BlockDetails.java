@@ -61,6 +61,7 @@ public final class BlockDetails {
     private final Hash256 receiptTxRoot;
     private final int size;
     private final List<TxDetails> txDetails;
+    private final long blockTime;
 
     private BlockDetails(BlockDetails.BlockDetailsBuilder builder) {
         this.number = builder.number;
@@ -81,6 +82,7 @@ public final class BlockDetails {
         this.size = builder.size;
         this.txDetails = builder.txDetails;
         this.totalDifficulty = builder.totalDifficulty;
+        this.blockTime = builder.blockTime;
     }
 
     public long getNumber() {
@@ -155,6 +157,8 @@ public final class BlockDetails {
         return totalDifficulty;
     }
 
+    public long getBlockTime() { return blockTime; }
+
     public static class BlockDetailsBuilder {
         private long number;
         private long timestamp;
@@ -174,6 +178,7 @@ public final class BlockDetails {
         private Hash256 receiptTxRoot;
         private int size;
         private List<TxDetails> txDetails;
+        private long blockTime;
 
         public BlockDetailsBuilder() {
         }
@@ -265,6 +270,11 @@ public final class BlockDetails {
 
         public BlockDetailsBuilder size(final int s) {
             this.size = s;
+            return this;
+        }
+
+        public BlockDetailsBuilder blockTime(final long blockTime) {
+            this.blockTime = blockTime;
             return this;
         }
 

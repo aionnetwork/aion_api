@@ -1551,12 +1551,42 @@ public class BaseAPITests {
 
         long t1 = System.currentTimeMillis();
 
-
         long totalTime = t1 - t0;
         long totalTxns = 0;
         for (BlockSql b : blks) {
             System.out.println("#: " + b.getNumber() + " [" + b.getTransactions().size() + "]");
             totalTxns += b.getTransactions().size();
+        }
+
+        System.out.println("bench: " + (t1 - t0) + " ms");
+        System.out.println("time/txn: " + totalTime / (double)totalTxns);
+
+        assertNotNull(blks);
+
+        api.destroyApi();
+    }
+
+    @SuppressWarnings("Duplicates")
+    @Test
+    public void TestGetBlocksDetailsByRange() throws Throwable {
+        System.out.println("run TestGetBlocksDetailsByRange.");
+
+        IAionAPI api = IAionAPI.init();
+        api.connect(url);
+
+        long t0 = System.currentTimeMillis();
+
+        ApiMsg msg = api.getAdmin().getBlockDetailsByRange(1L, 500L);
+        assertFalse(msg.isError());
+        List<BlockDetails> blks = msg.getObject();
+
+        long t1 = System.currentTimeMillis();
+
+        long totalTime = t1 - t0;
+        long totalTxns = 0;
+        for (BlockDetails b : blks) {
+            System.out.println("#: " + b.getNumber() + " [" + b.getTxDetails().size() + "]");
+            totalTxns += b.getTxDetails().size();
         }
 
         System.out.println("bench: " + (t1 - t0) + " ms");

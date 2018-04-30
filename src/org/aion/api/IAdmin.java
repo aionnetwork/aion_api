@@ -71,6 +71,8 @@ public interface IAdmin {
 
     ApiMsg getBlockSqlByRange(Long blkStart, Long blkEnd);
 
+    ApiMsg getBlockDetailsByRange(Long blkStart, Long blkEnd);
+
     /**
      * Get detailed block information, for all blocks in range (latest - n, latest]
      *

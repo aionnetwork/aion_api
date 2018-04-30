@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-//package org.aion.api.impl.internal;
-package org.aion.api.server.pb;
+package org.aion.api.impl.internal;
+//package org.aion.api.server.pb;
 
 enum Servs {
     s_hb	    = 0;
@@ -72,6 +72,7 @@ enum Funcs	 {
 	f_backupAccounts			            = 52;
 	f_NA                                    = 53;
 	f_getBlockSqlByRange					= 54;
+	f_getBlockDetailsByRange				= 55;
 }
 
 enum Retcode {
@@ -187,6 +188,7 @@ message t_BlockDetail {
     bytes hash                  = 16;
     uint32 size                 = 17;
 	repeated t_TxDetail tx	    = 18;
+	uint64 blockTime			= 19;
 }
 
 message t_TxDetail {
@@ -201,6 +203,8 @@ message t_TxDetail {
     uint32 txIndex     		= 9;
     bytes contract 			= 10;
 	repeated t_LgEle logs 	= 11;
+	uint64 timestamp		= 12;
+	string error			= 13;
 }
 
 message t_AccountDetail {
@@ -960,4 +964,17 @@ message req_getBlockSqlByRange{
 
 message rsp_getBlockSqlByRange{
 	repeated t_BlockSql blkSql = 1;
+}
+
+//*****************************************************************************
+//      f_getBlockDetailsByRange
+//*****************************************************************************
+
+message req_getBlockDetailsByRange{
+	uint64 blkNumberStart 	= 1;
+	uint64 blkNumberEnd 	= 2;
+}
+
+message rsp_getBlockDetailsByRange{
+	repeated t_BlockDetail blkDetails = 1;
 }
