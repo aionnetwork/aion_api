@@ -17,12 +17,18 @@
  *     along with the aion network project source files.
  *     If not, see <https://www.gnu.org/licenses/>.
  *
+ *
  * Contributors:
  *     Aion foundation.
- *
+ *     
  ******************************************************************************/
 
 package org.aion.api.type.core.tx;
+
+import static org.aion.base.util.ByteUtil.ZERO_BYTE_ARRAY;
+
+import java.math.BigInteger;
+import java.util.Arrays;
 
 import org.aion.base.type.Address;
 import org.aion.base.util.ByteUtil;
@@ -35,32 +41,25 @@ import org.aion.crypto.SignatureFac;
 import org.aion.rlp.RLP;
 import org.aion.rlp.RLPList;
 
-import java.math.BigInteger;
-import java.util.Arrays;
-
-import static org.aion.base.util.ByteUtil.ZERO_BYTE_ARRAY;
-
+/**
+ * 
+ * Aion transaction class.
+ *
+ */
 public class AionTransaction extends AbstractTransaction {
 
-    private static final int
-        RLP_TX_NONCE = 0, 
-        RLP_TX_TO = 1, 
-        RLP_TX_VALUE = 2, 
-        RLP_TX_DATA = 3,
-        RLP_TX_TIMESTAMP = 4,
-        RLP_TX_NRG = 5,
-        RLP_TX_NRGPRICE = 6,
-        RLP_TX_TYPE = 7,
-        RLP_TX_SIG = 8;
-    
+    public static final int RLP_TX_NONCE = 0, RLP_TX_TO = 1, RLP_TX_VALUE = 2, RLP_TX_DATA = 3, RLP_TX_TIMESTAMP = 4,
+            RLP_TX_NRG = 5, RLP_TX_NRGPRICE = 6, RLP_TX_TYPE = 7, RLP_TX_SIG = 8;
+
     /* Tx in encoded form */
-    private byte[] rlpEncoded;
+    protected byte[] rlpEncoded;
 
     private byte[] rlpRaw;
 
     protected Address from;
 
-    /** These four members doesn't include into the RLP encode data
+    /**
+     * These four members doesn't include into the RLP encode data
      *
      */
     private long txIndexInBlock = 0;
@@ -71,41 +70,19 @@ public class AionTransaction extends AbstractTransaction {
     /*
      * Indicates if this transaction has been parsed from the RLP-encoded data
      */
-    private boolean parsed = false;
+    protected boolean parsed = false;
 
     public AionTransaction(byte[] encodedData) {
         this.rlpEncoded = encodedData;
         parsed = false;
     }
 
-    /**
-     * Copy constructor for transaction, makes no assumptions about which
-     * values should or should not be null. If they are null they will simply be propagated to
-     * the copy
-     *
-     * Note: we implicitly assume that the elements of the byte arrays wont be modified after creation.
-     * This saves us costly copy operations
-     *
-     * @param transaction transaction to copy from
-     */
-    public AionTransaction(final AionTransaction transaction) {
-        this.hash = transaction.hash;
-        this.value = transaction.value;
-        this.data = transaction.data;
-        this.to = transaction.to;
-        this.nonce = transaction.nonce;
-        this.timeStamp = transaction.timeStamp;
-        this.nrg = transaction.nrg;
-        this.nrgPrice = transaction.nrgPrice;
-        this.type = transaction.type;
-    }
-
     public AionTransaction(byte[] nonce, Address to, byte[] value, byte[] data, long nrg, long nrgPrice) {
         super(nonce, to, value, data, nrg, nrgPrice);
         parsed = true;
     }
-    
-    private AionTransaction(byte[] nonce, Address to, byte[] value, byte[] data, long nrg, long nrgPrice, byte type) {
+
+    public AionTransaction(byte[] nonce, Address to, byte[] value, byte[] data, long nrg, long nrgPrice, byte type) {
         super(nonce, to, value, data, nrg, nrgPrice);
         this.type = type;
         parsed = true;
@@ -174,7 +151,6 @@ public class AionTransaction extends AbstractTransaction {
             LOG.error("tx -> no signature found");
         }
 
-
         this.parsed = true;
         this.hash = getHash();
     }
@@ -197,7 +173,7 @@ public class AionTransaction extends AbstractTransaction {
         return hash;
     }
 
-    private byte[] getRawHash() {
+    public byte[] getRawHash() {
         if (!parsed) {
             rlpParse();
         }
@@ -212,20 +188,28 @@ public class AionTransaction extends AbstractTransaction {
         return nonce == null ? ZERO_BYTE_ARRAY : nonce;
     }
 
+    public BigInteger getNonceBI() {
+        return new BigInteger(1, getNonce());
+    }
+
     public byte[] getTimeStamp() {
         if (!parsed) {
             rlpParse();
         }
         return this.timeStamp == null ? ZERO_BYTE_ARRAY : this.timeStamp;
     }
-    
+
+    public BigInteger getTimeStampBI() {
+        return new BigInteger(1, getTimeStamp());
+    }
+
     public long getNrg() {
         if (!parsed) {
             rlpParse();
-        }                       
+        }
         return this.nrg;
     }
-    
+
     public long getNrgPrice() {
         if (!parsed) {
             rlpParse();
@@ -233,9 +217,6 @@ public class AionTransaction extends AbstractTransaction {
         return this.nrgPrice;
     }
 
-    /** for api getTransactionByHash, do not use in other purpose.
-     * @param timeStamp
-     */
     public void setTimeStamp(long timeStamp) {
         this.timeStamp = BigInteger.valueOf(timeStamp).toByteArray();
         this.parsed = true;
@@ -262,13 +243,13 @@ public class AionTransaction extends AbstractTransaction {
         }
         return data;
     }
-    
+
     public byte getType() {
         if (!parsed) {
             rlpParse();
         }
         return this.type;
-    }    
+    }
 
     public ISignature getSignature() {
         if (!parsed) {
@@ -296,7 +277,7 @@ public class AionTransaction extends AbstractTransaction {
         }
     }
 
-    private boolean isContractCreation() {
+    public boolean isContractCreation() {
         if (!parsed) {
             rlpParse();
         }
@@ -320,7 +301,7 @@ public class AionTransaction extends AbstractTransaction {
         }
 
         try {
-            from = Address.wrap(this.signature.getPubkey(null));
+            from = Address.wrap(this.signature.getAddress());
             return from;
         } catch (Exception e) {
             e.printStackTrace();
@@ -353,25 +334,18 @@ public class AionTransaction extends AbstractTransaction {
         } else {
             dataS = ByteUtil.toHexString(Arrays.copyOfRange(data, 0, maxDataSize)) + "... (" + data.length + " bytes)";
         }
-        return "TransactionData ["
-                + "hash=" + ByteUtil.toHexString(hash)
-                + ", nonce=" + ByteUtil.toHexString(nonce)
-                + ", receiveAddress=" + (to == null ? "" : to.toString())
-                + ", value=" + ByteUtil.toHexString(value)
-                + ", data=" + dataS
-                + ", timeStamp=" + ByteUtil.byteArrayToLong(timeStamp)
-                + ", Nrg=" + this.nrg
-                + ", NrgPrice=" + this.nrgPrice
-                + ", txType=" + this.type
-                + ", sig=" + ((signature == null) ? "null" : signature.toString())
-                + "]";
+        return "TransactionData [" + "hash=" + ByteUtil.toHexString(hash) + ", nonce=" + new BigInteger(1, nonce)
+                + ", receiveAddress=" + (to == null ? "" : to.toString()) + ", value=" + new BigInteger(1, value)
+                + ", data=" + dataS + ", timeStamp=" + ByteUtil.byteArrayToLong(timeStamp) + ", Nrg=" + this.nrg
+                + ", NrgPrice=" + this.nrgPrice + ", txType=" + this.type + ", sig="
+                + ((signature == null) ? "null" : signature.toString()) + "]";
     }
 
     /**
      * For signatures you have to keep also RLP of the transaction without any
      * signature data
      */
-    private byte[] getEncodedRaw() {
+    public byte[] getEncodedRaw() {
 
         if (!parsed) {
             rlpParse();
@@ -380,13 +354,6 @@ public class AionTransaction extends AbstractTransaction {
             return rlpRaw;
         }
 
-        // parse null as 0 for nonce
-//        byte[] nonce = null;
-//        if (this.nonce == null || this.nonce.length == 1 && this.nonce[0] == 0) {
-//            nonce = RLP.encodeElement(null);
-//        } else {
-//            nonce = RLP.encodeElement(this.nonce);
-//        }
         byte[] nonce = RLP.encodeElement(this.nonce);
 
         byte[] to;
@@ -403,7 +370,6 @@ public class AionTransaction extends AbstractTransaction {
         byte[] nrgPrice = RLP.encodeLong(this.nrgPrice);
         byte[] type = RLP.encodeByte(this.type);
 
-
         rlpRaw = RLP.encodeList(nonce, to, value, data, timeStamp, nrg, nrgPrice, type);
         return rlpRaw;
     }
@@ -414,13 +380,6 @@ public class AionTransaction extends AbstractTransaction {
             return rlpEncoded;
         }
 
-        // parse null as 0 for nonce
-//        byte[] nonce;
-//        if (this.nonce == null || this.nonce.length == 1 && this.nonce[0] == 0) {
-//            nonce = RLP.encodeElement(null);
-//        } else {
-//            nonce = RLP.encodeElement(this.nonce);
-//        }
         byte[] nonce = RLP.encodeElement(this.nonce);
 
         byte[] to;
@@ -475,46 +434,49 @@ public class AionTransaction extends AbstractTransaction {
         return tx.hashCode() == this.hashCode();
     }
 
-    public static AionTransaction createDefault(String to, BigInteger amount, BigInteger nonce, long nrg, long nrgPrice) throws Exception {
+    public static AionTransaction createDefault(String to, BigInteger amount, BigInteger nonce, long nrg, long nrgPrice)
+            throws Exception {
         return create(to, amount, nonce, nrg, nrgPrice);
     }
 
-    public static AionTransaction create(String to, BigInteger amount, BigInteger nonce, long nrg, long nrgPrice) throws Exception {
+    public static AionTransaction create(String to, BigInteger amount, BigInteger nonce, long nrg, long nrgPrice)
+            throws Exception {
         return new AionTransaction(nonce.toByteArray(), Address.wrap(to), amount.toByteArray(), null, nrg, nrgPrice);
     }
-    
+
     @Override
     public void setEncoded(byte[] _encodedData) {
         this.rlpEncoded = _encodedData;
         parsed = false;
     }
-    
+
     public DataWord nrgPrice() {
         return new DataWord(this.nrgPrice);
     }
-    
+
     public long nrgLimit() {
         return new DataWord(this.nrg).longValue();
     }
-    
+
     public long transactionCost(long blockNumber) {
         long nonZeroes = nonZeroBytesInData();
         long zeroes = zeroBytesInData();
 
-        return (isContractCreation() ? 200000 : 0) + 21000 + 4 * zeroes + 64 * nonZeroes;
+        return (isContractCreation() ? Constants.NRG_TX_CREATE : 0) + Constants.NRG_TRANSACTION
+                + zeroes * Constants.NRG_TX_DATA_ZERO + nonZeroes * Constants.NRG_TX_DATA_NONZERO;
     }
 
-    private long nonZeroBytesInData() {
+    public long nonZeroBytesInData() {
         int total = (data == null) ? 0 : data.length;
-        
+
         return total - zeroBytesInData();
     }
 
-    private long zeroBytesInData() {
+    public long zeroBytesInData() {
         if (data == null) {
             return 0;
         }
-        
+
         int c = 0;
         for (byte b : data) {
             c += (b == 0) ? 1 : 0;
