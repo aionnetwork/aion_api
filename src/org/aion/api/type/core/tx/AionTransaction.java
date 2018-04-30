@@ -48,11 +48,16 @@ import org.aion.rlp.RLPList;
  */
 public class AionTransaction extends AbstractTransaction {
 
-    public static final int RLP_TX_NONCE = 0, RLP_TX_TO = 1, RLP_TX_VALUE = 2, RLP_TX_DATA = 3, RLP_TX_TIMESTAMP = 4,
+    private static final int NRG_TX_CREATE = 200000;
+    private static final int NRG_TRANSACTION = 21000;
+    private static final int NRG_TX_DATA_ZERO = 4;
+    private static final int NRG_TX_DATA_NONZERO = 64;
+
+    private static final int RLP_TX_NONCE = 0, RLP_TX_TO = 1, RLP_TX_VALUE = 2, RLP_TX_DATA = 3, RLP_TX_TIMESTAMP = 4,
             RLP_TX_NRG = 5, RLP_TX_NRGPRICE = 6, RLP_TX_TYPE = 7, RLP_TX_SIG = 8;
 
     /* Tx in encoded form */
-    protected byte[] rlpEncoded;
+    private byte[] rlpEncoded;
 
     private byte[] rlpRaw;
 
@@ -70,7 +75,7 @@ public class AionTransaction extends AbstractTransaction {
     /*
      * Indicates if this transaction has been parsed from the RLP-encoded data
      */
-    protected boolean parsed = false;
+    private boolean parsed = false;
 
     public AionTransaction(byte[] encodedData) {
         this.rlpEncoded = encodedData;
@@ -82,7 +87,7 @@ public class AionTransaction extends AbstractTransaction {
         parsed = true;
     }
 
-    public AionTransaction(byte[] nonce, Address to, byte[] value, byte[] data, long nrg, long nrgPrice, byte type) {
+    private AionTransaction(byte[] nonce, Address to, byte[] value, byte[] data, long nrg, long nrgPrice, byte type) {
         super(nonce, to, value, data, nrg, nrgPrice);
         this.type = type;
         parsed = true;
@@ -115,7 +120,7 @@ public class AionTransaction extends AbstractTransaction {
         return tx2;
     }
 
-    public void rlpParse() {
+    private void rlpParse() {
 
         RLPList decodedTxList = RLP.decode2(rlpEncoded);
         RLPList tx = (RLPList) decodedTxList.get(0);
@@ -173,7 +178,7 @@ public class AionTransaction extends AbstractTransaction {
         return hash;
     }
 
-    public byte[] getRawHash() {
+    private byte[] getRawHash() {
         if (!parsed) {
             rlpParse();
         }
@@ -277,7 +282,7 @@ public class AionTransaction extends AbstractTransaction {
         }
     }
 
-    public boolean isContractCreation() {
+    private boolean isContractCreation() {
         if (!parsed) {
             rlpParse();
         }
@@ -345,7 +350,7 @@ public class AionTransaction extends AbstractTransaction {
      * For signatures you have to keep also RLP of the transaction without any
      * signature data
      */
-    public byte[] getEncodedRaw() {
+    private byte[] getEncodedRaw() {
 
         if (!parsed) {
             rlpParse();
@@ -462,17 +467,17 @@ public class AionTransaction extends AbstractTransaction {
         long nonZeroes = nonZeroBytesInData();
         long zeroes = zeroBytesInData();
 
-        return (isContractCreation() ? Constants.NRG_TX_CREATE : 0) + Constants.NRG_TRANSACTION
-                + zeroes * Constants.NRG_TX_DATA_ZERO + nonZeroes * Constants.NRG_TX_DATA_NONZERO;
+        return (isContractCreation() ? NRG_TX_CREATE : 0) + NRG_TRANSACTION
+                + zeroes * NRG_TX_DATA_ZERO + nonZeroes * NRG_TX_DATA_NONZERO;
     }
 
-    public long nonZeroBytesInData() {
+    private long nonZeroBytesInData() {
         int total = (data == null) ? 0 : data.length;
 
         return total - zeroBytesInData();
     }
 
-    public long zeroBytesInData() {
+    private long zeroBytesInData() {
         if (data == null) {
             return 0;
         }
