@@ -414,11 +414,12 @@ public class MsgExecutor implements Runnable {
     private void heartBeatRun(Context ctx) {
         Socket hbWorker = ctx.socket(ZMQ.DEALER);
         hbWorker.connect(HB_BIND_ADDR + addrBindNumber);
+        hbWorker.setReceiveTimeOut(1000);
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("[heartBeatRun] hbWorker connected!");
         }
 
-        int hbTolerance = 30000;
+        int hbTolerance = 300;
         byte[] hbMsg = ApiUtils.toReqHeader(this.ver, Message.Servs.s_hb, Message.Funcs.f_NA);
 
         while (hbTolerance > 0) {
@@ -434,21 +435,25 @@ public class MsgExecutor implements Runnable {
 
             byte[] rsp = hbWorker.recv(ZMQ.PAIR);
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("[heartBeatRun] hbWorker recv msg: [{}]", (rsp != null ? IUtils.bytes2Hex(rsp) : "= null"));
+                LOGGER.debug("[heartBeatRun] hbWorker recv msg: [{}]", (rsp != null ? IUtils.bytes2Hex(rsp) : "null"));
             }
 
             if (!checkHbRspMsg(rsp)) {
                 hbTolerance--;
             } else {
-                hbTolerance = 30000;
+                hbTolerance = 300;
             }
 
             try {
-                Thread.sleep(3000);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+
+        LOGGER.warn("Heartbeat Timeout, disconnect the connection!");
+        ctx.close();
+        terminate();
     }
 
     private void callbackRun(Context ctx) {
