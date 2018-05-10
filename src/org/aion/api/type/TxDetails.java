@@ -52,6 +52,8 @@ public final class TxDetails {
     private final List<TxLog> logs;
     private final int txIndex;
     private final Address contract;
+    private final long timestamp;
+    private final String error;
 
     private TxDetails(TxDetailsBuilder builder) {
         this.from = builder.from;
@@ -65,6 +67,8 @@ public final class TxDetails {
         this.logs = builder.logs;
         this.txIndex = builder.txIndex;
         this.contract = builder.contract;
+        this.timestamp = builder.timestamp;
+        this.error = builder.error;
     }
 
     public Address getFrom() {
@@ -110,6 +114,10 @@ public final class TxDetails {
     public int getTxIndex() {
         return txIndex;
     }
+
+    public long getTimestamp() { return timestamp; }
+
+    public String getError() { return error; }
     /**
      * This Builder class is used to build a {@link TxDetails} instance.
      */
@@ -125,6 +133,8 @@ public final class TxDetails {
         private ByteArrayWrapper data;
         private List<TxLog> logs;
         private int txIndex;
+        private long timestamp;
+        private String error;
 
         public TxDetailsBuilder(){
         }
@@ -181,6 +191,16 @@ public final class TxDetails {
 
         public TxDetailsBuilder contract(final Address contract) {
             this.contract = contract;
+            return this;
+        }
+
+        public TxDetailsBuilder timestamp(final long timestamp) {
+            this.timestamp = timestamp;
+            return this;
+        }
+
+        public TxDetailsBuilder error(final String error) {
+            this.error = error;
             return this;
         }
 
