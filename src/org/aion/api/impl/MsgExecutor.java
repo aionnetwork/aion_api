@@ -67,6 +67,11 @@ public class MsgExecutor implements Runnable {
     private final String NB_BIND_ADDR = "inproc://apinbTh";
     private final String HB_BIND_ADDR = "inproc://apihbTh";
 
+    private final int HB_POLL_MS = 500;
+    private final int HB_TOLERANCE = 3;
+    // = If api is unresponsive for more than ~2 seconds, kill the api.
+    // TODO: implement auto-reconnect on kernel failure
+
     //TODO: update kernel api privilege then remove this flag
     private final boolean PRIVILEGE = true; // temp flag
     Socket nbSocket;
@@ -395,30 +400,42 @@ public class MsgExecutor implements Runnable {
             }
 
             proxy(feSocket, beSocket, cbSocket, nbDealer, hbDealer);
+
             feSocket.disconnect(this.url);
+
         } catch (Exception e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[run] Exception [{}].", e.getMessage());
             }
             if (feSocket != null) {
-                feSocket.disconnect(this.url);
+                try {
+                    feSocket.disconnect(this.url);
+                } catch (Exception f) {
+                    if (LOGGER.isErrorEnabled()) {
+                        LOGGER.error("[run] feSocket.disconnect failed, probably due to forceful context close [{}].", f.getMessage());
+                    }
+                }
+
+            }
+        } finally {
+            this.isInitialized.set(false);
+            if (LOGGER.isInfoEnabled()) {
+                LOGGER.info("[run] Socket disconnected!");
             }
         }
 
-        this.isInitialized.set(false);
-        if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("[run] Socket disconnected!");
-        }
+
     }
 
     private void heartBeatRun(Context ctx) {
         Socket hbWorker = ctx.socket(ZMQ.DEALER);
         hbWorker.connect(HB_BIND_ADDR + addrBindNumber);
+        hbWorker.setReceiveTimeOut(1000);
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("[heartBeatRun] hbWorker connected!");
         }
 
-        int hbTolerance = 30000;
+        int hbTolerance = HB_TOLERANCE;
         byte[] hbMsg = ApiUtils.toReqHeader(this.ver, Message.Servs.s_hb, Message.Funcs.f_NA);
 
         while (hbTolerance > 0) {
@@ -434,21 +451,27 @@ public class MsgExecutor implements Runnable {
 
             byte[] rsp = hbWorker.recv(ZMQ.PAIR);
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("[heartBeatRun] hbWorker recv msg: [{}]", (rsp != null ? IUtils.bytes2Hex(rsp) : "= null"));
+                LOGGER.debug("[heartBeatRun] hbWorker recv msg: [{}]", (rsp != null ? IUtils.bytes2Hex(rsp) : "null"));
             }
 
             if (!checkHbRspMsg(rsp)) {
                 hbTolerance--;
             } else {
-                hbTolerance = 30000;
+                hbTolerance = HB_TOLERANCE;
             }
 
             try {
-                Thread.sleep(3000);
+                Thread.sleep(HB_POLL_MS);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+
+        LOGGER.warn("Heartbeat Timeout, disconnect the connection!");
+
+        terminate();
+
+        ctx.close();
     }
 
     private void callbackRun(Context ctx) {

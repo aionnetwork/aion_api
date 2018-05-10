@@ -43,6 +43,7 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
@@ -1572,13 +1573,40 @@ public class BaseAPITests {
         System.out.println("run TestGetBlocksSqlByRangeLatest.");
 
         IAionAPI api = IAionAPI.init();
-        api.connect(url);
+        api.connect(url, false, 1, 1000);
+
+        if (!api.isConnected()) {
+            System.out.println("Api not connected.");
+            api.destroyApi();
+            return;
+        }
 
         long latest = api.getChain().blockNumber().getObject();
 
         long t0 = System.currentTimeMillis();
 
-        ApiMsg msg = api.getAdmin().getBlockSqlByRange(latest-500, latest);
+        ApiMsg msg = null;
+        int retry = 0;
+        do {
+            try {
+                if (!api.isConnected()) {
+                    System.out.println("Api not connected.");
+                    api.destroyApi();
+                    api.connect(url);
+                }
+
+                msg = api.getAdmin().getBlockSqlByRange(0L, latest);
+                retry = 400;
+            } catch (Exception e) {
+                System.out.println("Retrying api call ------------------------------");
+                e.printStackTrace();
+                retry++;
+                Thread.sleep(1000);
+            }
+        }
+        while (retry < 100);
+
+        assertFalse(msg == null);
         assertFalse(msg.isError());
         List<BlockSql> blks = msg.getObject();
 
