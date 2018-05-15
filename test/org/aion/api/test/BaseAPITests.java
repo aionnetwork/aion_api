@@ -34,6 +34,7 @@ import org.aion.base.util.ByteArrayWrapper;
 import org.aion.base.util.Bytesable;
 import org.aion.crypto.ECKey;
 import org.aion.crypto.ECKeyFac;
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -1680,6 +1681,84 @@ public class BaseAPITests {
 
         List<AccountDetails> accs = msg.getObject();
         assertNotNull(accs);
+
+        api.destroyApi();
+    }
+
+    /**
+     * Tests that getNonce works when used on the first account in the account list.
+     */
+    @Test
+    public void TestGetNonce() {
+        System.out.println("run TestGetNonce.");
+
+        IAionAPI api = IAionAPI.init();
+        ApiMsg apiMsg = api.connect(url);
+        assertFalse(apiMsg.isError());
+        api.connect(url);
+
+        apiMsg.set(api.getWallet().getAccounts());
+        assertFalse(apiMsg.isError());
+        List accs = apiMsg.getObject();
+        assertFalse(accs.isEmpty());
+
+        Address acc = (Address) accs.get(0);
+        apiMsg.set(api.getChain().getNonce(acc));
+        assertFalse(apiMsg.isError());
+
+        BigInteger no = apiMsg.getObject();
+        assertNotNull(no);
+        System.out.println("Nonce of account " + acc.toString() + " is " + no);
+        api.destroyApi();
+
+    }
+
+    /**
+     * Tests that getNonce returns a nonce that is 1 greater than the nonce prior to making a
+     * transaction.
+     */
+    @Test
+    public void TestNonceAfterTransaction() {
+        System.out.println("run TestNonceAfterTransaction.");
+
+        IAionAPI api = IAionAPI.init();
+        ApiMsg apiMsg = api.connect(url);
+        assertFalse(apiMsg.isError());
+
+        // !! Change this to an account and password that has positive balance.
+        String accStr = "0xa0764b690b0c9e07d5ca4763b7c1de8d8599901d0f3936b6fce91adc0602777f";
+        String pass = "j";
+        Address acc = new Address(accStr);
+        BigInteger prevNonce = api.getChain().getNonce(acc).getObject();
+        assertNotNull(prevNonce);
+
+        apiMsg.set(api.getChain().getBalance(acc));
+        assertFalse(apiMsg.isError());
+        BigInteger balance = apiMsg.getObject();
+        System.out.println("The account balance is " + balance);
+        assertFalse(balance.equals(BigInteger.ZERO));
+
+        Assert.assertTrue(api.getWallet().unlockAccount(acc, pw, 300).getObject());
+
+        TxArgs.TxArgsBuilder builder = new TxArgs.TxArgsBuilder()
+            .data(ByteArrayWrapper.wrap(IUtils.hex2Bytes("00000000")))
+            .from(acc)
+            .to(acc)
+            .nrgLimit(100000)
+            .nrgPrice(10000000000L)
+            .value(BigInteger.ZERO)
+            .nonce(BigInteger.ZERO);
+        api.getTx().fastTxbuild(builder.createTxArgs());
+
+        Hash256 txHash = ((MsgRsp)api.getTx().sendTransaction(null).getObject()).getTxHash();
+        assertNotNull(txHash);
+
+        apiMsg.set(api.getChain().getNonce(acc));
+        assertFalse(apiMsg.isError());
+        BigInteger currNonce = apiMsg.getObject();
+        assertNotNull(currNonce);
+        System.out.println("Previous nonce " + prevNonce + " current nonce " + currNonce);
+        Assert.assertTrue(currNonce.subtract(prevNonce).equals(BigInteger.ONE));
 
         api.destroyApi();
     }
