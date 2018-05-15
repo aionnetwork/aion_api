@@ -463,4 +463,53 @@ public final class Chain implements IChain {
                 .totalDifficulty(new BigInteger(rsp.getTotalDifficulty().toByteArray()))
                 .createBlock();
     }
+
+    public ApiMsg getNonce(Address address) {
+        return getNonce(address, blockNumber().getObject());
+    }
+
+    public ApiMsg getNonce(Address address, long blockNumber) {
+
+        if (!apiInst.isInitialized.get()) {
+            return new ApiMsg(-1003);
+        }
+
+        if (blockNumber < -1L) {
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("[getNonce] {}", ErrId.getErrString(-129L));
+            }
+            return new ApiMsg(-129);
+        }
+
+        Message.req_getNonce reqBody = Message.req_getNonce.newBuilder()
+            .setAddress(ByteString.copyFrom(address.toBytes()))
+            .setBlockNumber(blockNumber).build();
+
+        byte[] reqHead = ApiUtils.toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_chain, Message.Funcs.f_getNonce);
+        byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
+
+        byte[] rsp = this.apiInst.nbProcess(reqMsg);
+        int code = this.apiInst.validRspHeader(rsp);
+        if (code != 1) {
+            return new ApiMsg(code);
+        }
+
+        try {
+            Message.rsp_getNonce resp = Message.rsp_getNonce.parseFrom(ApiUtils.parseBody(rsp).getData());
+
+            byte[] nonce = resp.getNonce().toByteArray();
+            if (nonce == null) {
+                throw new NullPointerException("null nonce");
+            } else {
+                return new ApiMsg(new BigInteger(nonce), org.aion.api.type.ApiMsg.cast.OTHERS);
+            }
+
+        } catch (InvalidProtocolBufferException e) {
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("[getNonce] {}", ErrId.getErrString(-104L) + e.getMessage());
+            }
+            return new ApiMsg(-104, e.getMessage(), org.aion.api.type.ApiMsg.cast.OTHERS);
+        }
+    }
+
 }
