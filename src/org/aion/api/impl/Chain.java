@@ -32,6 +32,7 @@ import java.util.List;
 import org.aion.api.IChain;
 import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.impl.internal.Message;
+import org.aion.api.impl.internal.Message.Retcode;
 import org.aion.api.log.AionLoggerFactory;
 import org.aion.api.log.LogEnum;
 import org.aion.api.type.ApiMsg;
@@ -115,8 +116,8 @@ public final class Chain implements IChain {
 
             byte[] balance = resp.getBalance().toByteArray();
             if (balance == null) {
-                return new ApiMsg(-7, "null balance for address " + address +
-                    " and blockNumber " + blockNumber, cast.OTHERS);
+                return new ApiMsg(Retcode.r_fail_null_rsp_VALUE, "null balance for address " +
+                    address + " and blockNumber " + blockNumber, cast.OTHERS);
             } else {
                 return new ApiMsg(new BigInteger(balance), cast.OTHERS);
             }
@@ -362,7 +363,8 @@ public final class Chain implements IChain {
         }
 
         try {
-            return new ApiMsg(1, Message.rsp_getBlockTransactionCount.parseFrom(ApiUtils.parseBody(rsp).getData()).getTxCount(),
+            return new ApiMsg(Retcode.r_success_VALUE,
+                Message.rsp_getBlockTransactionCount.parseFrom(ApiUtils.parseBody(rsp).getData()).getTxCount(),
                             cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
@@ -398,7 +400,7 @@ public final class Chain implements IChain {
         }
 
         try {
-            return new ApiMsg(1, Message.rsp_getBlockTransactionCount.parseFrom(ApiUtils.parseBody(rsp).getData()).getTxCount(),
+            return new ApiMsg(Retcode.r_success_VALUE, Message.rsp_getBlockTransactionCount.parseFrom(ApiUtils.parseBody(rsp).getData()).getTxCount(),
                             cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
@@ -498,7 +500,7 @@ public final class Chain implements IChain {
 
             byte[] nonce = resp.getNonce().toByteArray();
             if (nonce == null) {
-                return new ApiMsg(-7, "null nonce for address " + address, cast.OTHERS);
+                return new ApiMsg(Retcode.r_fail_null_rsp_VALUE, "null nonce for address " + address, cast.OTHERS);
             } else {
                 return new ApiMsg(new BigInteger(nonce), cast.OTHERS);
             }
