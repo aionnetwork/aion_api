@@ -986,7 +986,6 @@ message rsp_getBlockDetailsByRange{
 
 message req_getNonce {
     bytes address = 1;
-    uint64 blockNumber  = 2;
 }
 
 message rsp_getNonce {
