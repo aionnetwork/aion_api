@@ -401,7 +401,12 @@ public class MsgExecutor implements Runnable {
 
             proxy(feSocket, beSocket, cbSocket, nbDealer, hbDealer);
 
-            feSocket.disconnect(this.url);
+            // Shutdown ZmqSocket
+            hbDealer.close();
+            nbDealer.close();
+            cbSocket.close();
+            beSocket.close();
+            feSocket.close();
 
         } catch (Exception e) {
             if (LOGGER.isErrorEnabled()) {
@@ -438,7 +443,7 @@ public class MsgExecutor implements Runnable {
         int hbTolerance = HB_TOLERANCE;
         byte[] hbMsg = ApiUtils.toReqHeader(this.ver, Message.Servs.s_hb, Message.Funcs.f_NA);
 
-        while (hbTolerance > 0) {
+        while ( this.running && hbTolerance > 0) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("[heartBeatRun] hbWorker sent!");
             }
@@ -467,11 +472,14 @@ public class MsgExecutor implements Runnable {
             }
         }
 
-        LOGGER.warn("Heartbeat Timeout, disconnect the connection!");
+        if (this.running) {
+            LOGGER.warn("Heartbeat Timeout, disconnect the connection!");
+            terminate();
+        } else {
+            LOGGER.info("HeartbeatRun closed!");
+        }
 
-        terminate();
-
-        ctx.close();
+        hbWorker.close();
     }
 
     private void callbackRun(Context ctx) {
@@ -481,13 +489,15 @@ public class MsgExecutor implements Runnable {
             LOGGER.debug("[callbackRun] CbWorker connected!");
         }
 
-        while (true) {
+        while (this.running) {
             byte[] rsp = cbWorker.recv(ZMQ.PAIR);
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("[callbackRun] CbWorker recv msg: [{}]", (rsp != null ? IUtils.bytes2Hex(rsp) : "= null"));
             }
             process(rsp);
         }
+
+        cbWorker.close();
     }
 
     private void workerRun(Context ctx) {
@@ -497,7 +507,7 @@ public class MsgExecutor implements Runnable {
             LOGGER.debug("[workerRun] Worker connected!");
         }
 
-        while (true) {
+        while (this.running) {
             MsgReq msg = null;
             try {
                 msg = queue.take();
@@ -534,6 +544,8 @@ public class MsgExecutor implements Runnable {
                 process(rsp);
             }
         }
+
+        worker.close();
     }
 
     private void proxy(Socket feSocket, Socket beSocket, Socket cbSocket, Socket nbDealer, Socket hbDealer) {
@@ -548,12 +560,12 @@ public class MsgExecutor implements Runnable {
 
             while (this.running) {
                 //  Wait while there are either requests or replies to process.
-                int rc = ZMQ.poll(items, -1);
+                int rc = ZMQ.poll(items, 3000);
                 if (rc < 1) {
-                    if (rc == 0) {
-                        throw new Exception("ZMQ poll timeout.");
+                    if ( this.running && LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("ZMQ.poll error rc:{}", rc);
                     }
-                    throw new Exception("ZMQ poll isError: " + rc);
+                    continue;
                 }
 
                 //  Process a reply.
@@ -874,6 +886,13 @@ public class MsgExecutor implements Runnable {
 
     void terminate() {
         this.running = false;
+
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         if (this.msgThread != null) {
             this.msgThread.interrupt();
         }
