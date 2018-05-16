@@ -1,4 +1,4 @@
-/*******************************************************************************
+/* ******************************************************************************
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -26,6 +26,9 @@ package org.aion.api.impl;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import org.aion.api.IChain;
 import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.impl.internal.Message;
@@ -38,10 +41,6 @@ import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
 import org.aion.base.util.ByteUtil;
 import org.slf4j.Logger;
-
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Jay Tseng on 14/11/16.
@@ -463,4 +462,51 @@ public final class Chain implements IChain {
                 .totalDifficulty(new BigInteger(rsp.getTotalDifficulty().toByteArray()))
                 .createBlock();
     }
+
+    /**
+     * GetNonce returns a BigInteger representing the nonce of the account address at the latest
+     * block number.
+     *
+     * @param address
+     *          the class {@link Address Address} of the desired account to get the nonce of.
+     *
+     * @return the account's nonce.
+     */
+    public ApiMsg getNonce(Address address) {
+        if (!apiInst.isInitialized.get()) {
+            return new ApiMsg(-1003);
+        }
+
+        Message.req_getNonce reqBody = Message.req_getNonce.newBuilder()
+            .setAddress(ByteString.copyFrom(address.toBytes())).build();
+
+        byte[] reqHead = ApiUtils.toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_chain,
+            Message.Funcs.f_getNonce);
+        byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
+
+        byte[] rsp = this.apiInst.nbProcess(reqMsg);
+        int code = this.apiInst.validRspHeader(rsp);
+        if (code != 1) {
+            return new ApiMsg(code);
+        }
+
+        try {
+            Message.rsp_getNonce resp = Message.rsp_getNonce.
+                parseFrom(ApiUtils.parseBody(rsp).getData());
+
+            byte[] nonce = resp.getNonce().toByteArray();
+            if (nonce == null) {
+                throw new NullPointerException("null nonce");
+            } else {
+                return new ApiMsg(new BigInteger(nonce), org.aion.api.type.ApiMsg.cast.OTHERS);
+            }
+
+        } catch (InvalidProtocolBufferException e) {
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("[getNonce] {}", ErrId.getErrString(-104L) + e.getMessage());
+            }
+            return new ApiMsg(-104, e.getMessage(), org.aion.api.type.ApiMsg.cast.OTHERS);
+        }
+    }
+
 }

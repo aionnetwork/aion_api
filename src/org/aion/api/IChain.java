@@ -75,6 +75,18 @@ public interface IChain {
     ApiMsg getBalance(Address address, long blockNumber);
 
     /**
+     * GetNonce returns a BigInteger representing the nonce of the account address
+     * at the latest block number.
+     *
+     * @param address
+     *          the class {@link Address Address} of the desired account to get the nonce of.
+     *
+     * @return nonce of the desired account by the class {@link BigInteger BigInteger} wrapped into
+     * ApiMsg. You can retrieve through the method {@link ApiMsg#getObject() getObject}.
+     */
+    ApiMsg getNonce(Address address);
+
+    /**
      * Gets the block corresponding to the block number.
      *
      * @param blockNumber
