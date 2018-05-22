@@ -256,6 +256,13 @@ public interface ITx {
      */
     ApiMsg eventRegister(List<String> evt, ContractEventFilter ef, Address address);
 
+    /**
+     * getNrgPrice returns a Long value representing the recommended energy price.
+     * @return the recommended energy price as a long value wrapped into ApiMsg.
+     * You can retrieve through {@link ApiMsg#getObject() getObject}.
+     */
+    ApiMsg getNrgPrice();
+
 
 //    void removeAllEvents();
 //
