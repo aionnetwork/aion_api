@@ -457,6 +457,7 @@ public final class Chain implements IChain {
                 .receiptTxRoot(Hash256.wrap(rsp.getReceiptTrieRoot().toByteArray()))
                 .number(rsp.getBlockNumber())
                 .txHash(txs)
+                .hash(Hash256.wrap(rsp.getHash().toByteArray()))
                 .parentHash(Hash256.wrap(rsp.getParentHash().toByteArray()))
                 .solution(ByteArrayWrapper.wrap(rsp.getSolution().toByteArray()))
                 .size(rsp.getSize())
