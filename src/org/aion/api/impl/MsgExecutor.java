@@ -372,6 +372,7 @@ public class MsgExecutor implements Runnable {
             hbDealer.bind(HB_BIND_ADDR + addrBindNumber);
 
             nbSocket = ctx.socket(ZMQ.DEALER);
+            nbSocket.setReceiveTimeOut(RECVTIMEOUT);
             nbSocket.connect(NB_BIND_ADDR + addrBindNumber);
 
             if (LOGGER.isDebugEnabled()) {

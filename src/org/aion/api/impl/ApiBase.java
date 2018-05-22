@@ -208,7 +208,16 @@ public class ApiBase {
     byte[] nbProcess(byte[] reqHdr) {
         this.nb = false;
         this.msgExecutor.getNbSocket().send(reqHdr, ZMQ.DONTWAIT);
-        return this.msgExecutor.getNbSocket().recv(0);
+
+        while (this.msgExecutor.isInitialized.get()) {
+            byte[] data = this.msgExecutor.getNbSocket().recv(0);
+
+            if (data != null) {
+                return data;
+            }
+        }
+
+        return null;
     }
 
     MsgRsp Process(byte[] hash, byte[] req) {
