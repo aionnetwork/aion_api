@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-//package org.aion.api.impl.internal;
-package org.aion.api.server.pb;
+package org.aion.api.impl.internal;
+//package org.aion.api.server.pb;
 
 enum Servs {
     s_hb	    = 0;
@@ -996,10 +996,6 @@ message rsp_getNonce {
 //*****************************************************************************
 //      f_getNrgPrice
 //*****************************************************************************
-
-message req_getNrgPrice {
-
-}
 
 message rsp_getNrgPrice {
     uint64 nrgPrice = 1;

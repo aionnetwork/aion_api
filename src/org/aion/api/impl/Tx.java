@@ -747,21 +747,16 @@ public final class Tx implements ITx {
             return new ApiMsg(-1003);
         }
 
-        Message.req_getNrgPrice reqBody = Message.req_getNrgPrice.newBuilder().build();
         byte[] reqHead = ApiUtils.toReqHeader(ApiUtils.PROTOCOL_VER, Servs.s_tx, Funcs.f_getNrgPrice);
-        byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
 
-        byte[] rsp = this.apiInst.nbProcess(reqMsg);
+        byte[] rsp = this.apiInst.nbProcess(reqHead);
         int code = this.apiInst.validRspHeader(rsp);
         if (code != 1) {
             return new ApiMsg(code);
         }
 
         try {
-            Message.rsp_getNrgPrice resp = Message.rsp_getNrgPrice.
-                parseFrom(ApiUtils.parseBody(rsp).getData());
-
-            return new ApiMsg(Retcode.r_success_VALUE, resp.getNrgPrice(), cast.LONG);
+            return new ApiMsg(Message.rsp_getNrgPrice.parseFrom(ApiUtils.parseBody(rsp).getData()).getNrgPrice(), cast.LONG);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getNrgPrice] {}", ErrId.getErrString(-104L) + e.getMessage());

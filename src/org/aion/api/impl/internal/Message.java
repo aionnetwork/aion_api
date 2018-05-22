@@ -70739,393 +70739,6 @@ public final class Message {
 
   }
 
-  public interface req_getNrgPriceOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:org.aion.api.impl.internal.req_getNrgPrice)
-      com.google.protobuf.MessageOrBuilder {
-  }
-  /**
-   * Protobuf type {@code org.aion.api.impl.internal.req_getNrgPrice}
-   */
-  public  static final class req_getNrgPrice extends
-      com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:org.aion.api.impl.internal.req_getNrgPrice)
-      req_getNrgPriceOrBuilder {
-  private static final long serialVersionUID = 0L;
-    // Use req_getNrgPrice.newBuilder() to construct.
-    private req_getNrgPrice(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
-      super(builder);
-    }
-    private req_getNrgPrice() {
-    }
-
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private req_getNrgPrice(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            default: {
-              if (!parseUnknownFieldProto3(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return org.aion.api.impl.internal.Message.internal_static_org_aion_api_impl_internal_req_getNrgPrice_descriptor;
-    }
-
-    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return org.aion.api.impl.internal.Message.internal_static_org_aion_api_impl_internal_req_getNrgPrice_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(
-              org.aion.api.impl.internal.Message.req_getNrgPrice.class, org.aion.api.impl.internal.Message.req_getNrgPrice.Builder.class);
-    }
-
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
-
-      memoizedIsInitialized = 1;
-      return true;
-    }
-
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      unknownFields.writeTo(output);
-    }
-
-    public int getSerializedSize() {
-      int size = memoizedSize;
-      if (size != -1) return size;
-
-      size = 0;
-      size += unknownFields.getSerializedSize();
-      memoizedSize = size;
-      return size;
-    }
-
-    @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
-      if (obj == this) {
-       return true;
-      }
-      if (!(obj instanceof org.aion.api.impl.internal.Message.req_getNrgPrice)) {
-        return super.equals(obj);
-      }
-      org.aion.api.impl.internal.Message.req_getNrgPrice other = (org.aion.api.impl.internal.Message.req_getNrgPrice) obj;
-
-      boolean result = true;
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-      if (memoizedHashCode != 0) {
-        return memoizedHashCode;
-      }
-      int hash = 41;
-      hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (29 * hash) + unknownFields.hashCode();
-      memoizedHashCode = hash;
-      return hash;
-    }
-
-    public static org.aion.api.impl.internal.Message.req_getNrgPrice parseFrom(
-        java.nio.ByteBuffer data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static org.aion.api.impl.internal.Message.req_getNrgPrice parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static org.aion.api.impl.internal.Message.req_getNrgPrice parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static org.aion.api.impl.internal.Message.req_getNrgPrice parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static org.aion.api.impl.internal.Message.req_getNrgPrice parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static org.aion.api.impl.internal.Message.req_getNrgPrice parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static org.aion.api.impl.internal.Message.req_getNrgPrice parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static org.aion.api.impl.internal.Message.req_getNrgPrice parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static org.aion.api.impl.internal.Message.req_getNrgPrice parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input);
-    }
-    public static org.aion.api.impl.internal.Message.req_getNrgPrice parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static org.aion.api.impl.internal.Message.req_getNrgPrice parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static org.aion.api.impl.internal.Message.req_getNrgPrice parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder() {
-      return DEFAULT_INSTANCE.toBuilder();
-    }
-    public static Builder newBuilder(org.aion.api.impl.internal.Message.req_getNrgPrice prototype) {
-      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
-    }
-    public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
-    }
-
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    /**
-     * Protobuf type {@code org.aion.api.impl.internal.req_getNrgPrice}
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:org.aion.api.impl.internal.req_getNrgPrice)
-        org.aion.api.impl.internal.Message.req_getNrgPriceOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return org.aion.api.impl.internal.Message.internal_static_org_aion_api_impl_internal_req_getNrgPrice_descriptor;
-      }
-
-      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return org.aion.api.impl.internal.Message.internal_static_org_aion_api_impl_internal_req_getNrgPrice_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                org.aion.api.impl.internal.Message.req_getNrgPrice.class, org.aion.api.impl.internal.Message.req_getNrgPrice.Builder.class);
-      }
-
-      // Construct using org.aion.api.impl.internal.Message.req_getNrgPrice.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private Builder(
-          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
-      }
-      public Builder clear() {
-        super.clear();
-        return this;
-      }
-
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return org.aion.api.impl.internal.Message.internal_static_org_aion_api_impl_internal_req_getNrgPrice_descriptor;
-      }
-
-      public org.aion.api.impl.internal.Message.req_getNrgPrice getDefaultInstanceForType() {
-        return org.aion.api.impl.internal.Message.req_getNrgPrice.getDefaultInstance();
-      }
-
-      public org.aion.api.impl.internal.Message.req_getNrgPrice build() {
-        org.aion.api.impl.internal.Message.req_getNrgPrice result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      public org.aion.api.impl.internal.Message.req_getNrgPrice buildPartial() {
-        org.aion.api.impl.internal.Message.req_getNrgPrice result = new org.aion.api.impl.internal.Message.req_getNrgPrice(this);
-        onBuilt();
-        return result;
-      }
-
-      public Builder clone() {
-        return (Builder) super.clone();
-      }
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return (Builder) super.setField(field, value);
-      }
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
-      }
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
-      }
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
-      }
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
-      }
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof org.aion.api.impl.internal.Message.req_getNrgPrice) {
-          return mergeFrom((org.aion.api.impl.internal.Message.req_getNrgPrice)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(org.aion.api.impl.internal.Message.req_getNrgPrice other) {
-        if (other == org.aion.api.impl.internal.Message.req_getNrgPrice.getDefaultInstance()) return this;
-        this.mergeUnknownFields(other.unknownFields);
-        onChanged();
-        return this;
-      }
-
-      public final boolean isInitialized() {
-        return true;
-      }
-
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        org.aion.api.impl.internal.Message.req_getNrgPrice parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.aion.api.impl.internal.Message.req_getNrgPrice) e.getUnfinishedMessage();
-          throw e.unwrapIOException();
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
-      public final Builder setUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
-      }
-
-      public final Builder mergeUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.mergeUnknownFields(unknownFields);
-      }
-
-
-      // @@protoc_insertion_point(builder_scope:org.aion.api.impl.internal.req_getNrgPrice)
-    }
-
-    // @@protoc_insertion_point(class_scope:org.aion.api.impl.internal.req_getNrgPrice)
-    private static final org.aion.api.impl.internal.Message.req_getNrgPrice DEFAULT_INSTANCE;
-    static {
-      DEFAULT_INSTANCE = new org.aion.api.impl.internal.Message.req_getNrgPrice();
-    }
-
-    public static org.aion.api.impl.internal.Message.req_getNrgPrice getDefaultInstance() {
-      return DEFAULT_INSTANCE;
-    }
-
-    private static final com.google.protobuf.Parser<req_getNrgPrice>
-        PARSER = new com.google.protobuf.AbstractParser<req_getNrgPrice>() {
-      public req_getNrgPrice parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new req_getNrgPrice(input, extensionRegistry);
-      }
-    };
-
-    public static com.google.protobuf.Parser<req_getNrgPrice> parser() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<req_getNrgPrice> getParserForType() {
-      return PARSER;
-    }
-
-    public org.aion.api.impl.internal.Message.req_getNrgPrice getDefaultInstanceForType() {
-      return DEFAULT_INSTANCE;
-    }
-
-  }
-
   public interface rsp_getNrgPriceOrBuilder extends
       // @@protoc_insertion_point(interface_extends:org.aion.api.impl.internal.rsp_getNrgPrice)
       com.google.protobuf.MessageOrBuilder {
@@ -72099,11 +71712,6 @@ public final class Message {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_org_aion_api_impl_internal_rsp_getNonce_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_org_aion_api_impl_internal_req_getNrgPrice_descriptor;
-  private static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_org_aion_api_impl_internal_req_getNrgPrice_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_org_aion_api_impl_internal_rsp_getNrgPrice_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -72328,69 +71936,69 @@ public final class Message {
       "p_getBlockDetailsByRange\022=\n\nblkDetails\030\001" +
       " \003(\0132).org.aion.api.impl.internal.t_Bloc" +
       "kDetail\"\037\n\014req_getNonce\022\017\n\007address\030\001 \001(\014" +
-      "\"\035\n\014rsp_getNonce\022\r\n\005nonce\030\001 \001(\014\"\021\n\017req_g" +
-      "etNrgPrice\"#\n\017rsp_getNrgPrice\022\020\n\010nrgPric" +
-      "e\030\001 \001(\004*\204\001\n\005Servs\022\010\n\004s_hb\020\000\022\013\n\007s_admin\020\001" +
-      "\022\013\n\007s_chain\020\002\022\r\n\ts_account\020\003\022\010\n\004s_tx\020\004\022\t" +
-      "\n\005s_net\020\005\022\n\n\006s_mine\020\006\022\017\n\013s_privilege\020\007\022\014" +
-      "\n\010s_wallet\020\010\022\010\n\004s_NA\020\t*\310\n\n\005Funcs\022\025\n\021f_pr" +
-      "otocolVersion\020\000\022\022\n\016f_minerAddress\020\001\022\016\n\nf" +
-      "_accounts\020\002\022\021\n\rf_blockNumber\020\003\022\020\n\014f_getB" +
-      "alance\020\004\022\022\n\016f_getStorageAt\020\005\022\023\n\017f_unlock" +
-      "Account\020\006\022\025\n\021f_sendTransaction\020\007\022\032\n\026f_ge" +
-      "tTransactionByHash\020\010\022\r\n\tf_compile\020\t\022\024\n\020f" +
-      "_contractDeploy\020\n\022\031\n\025f_getTransactionCou" +
-      "nt\020\013\022$\n f_getBlockTransactionCountByHash" +
-      "\020\014\022&\n\"f_getBlockTransactionCountByNumber" +
-      "\020\r\022\r\n\tf_getCode\020\016\022\n\n\006f_call\020\017\022\024\n\020f_getBl" +
-      "ockByHash\020\020\022\026\n\022f_getBlockByNumber\020\021\022\'\n#f" +
-      "_getTransactionByBlockHashAndIndex\020\022\022)\n%" +
-      "f_getTransactionByBlockNumberAndIndex\020\023\022" +
-      "\033\n\027f_getTransactionReceipt\020\024\022\022\n\016f_getCom" +
-      "pilers\020\025\022\025\n\021f_compileSolidity\020\026\022\r\n\tf_get" +
-      "Work\020\027\022\020\n\014f_submitWork\020\030\022\035\n\031f_fetchQueue" +
-      "dTransactions\020\031\022\027\n\023f_signedTransaction\020\032" +
-      "\022\024\n\020f_rawTransaction\020\033\022\021\n\rf_estimateNrg\020" +
-      "\034\022\014\n\010f_mining\020\035\022\016\n\nf_hashrate\020\036\022\024\n\020f_get" +
-      "ActiveNodes\020\037\022\024\n\020f_getSolcVersion\020 \022\017\n\013f" +
-      "_isSyncing\020!\022\016\n\nf_syncInfo\020\"\022\023\n\017f_getSys" +
-      "temInfo\020#\022\023\n\017f_eventRegister\020$\022\025\n\021f_even" +
-      "tDeregister\020%\022\023\n\017f_accountCreate\020&\022\021\n\rf_" +
-      "accountLock\020\'\022\023\n\017f_userPrivilege\020(\022\020\n\014f_" +
-      "eventQuery\020)\022\024\n\020f_importAccounts\020*\022\024\n\020f_" +
-      "exportAccounts\020+\022\034\n\030f_getBlockHeaderByNu" +
-      "mber\020,\022\032\n\026f_getBlockHeaderByHash\020-\022\037\n\033f_" +
-      "getCurrentTotalDifficulty\020.\022\024\n\020f_getStat" +
-      "icNodes\020/\022\035\n\031f_getBlockDetailsByNumber\0200" +
-      "\022\035\n\031f_getBlockDetailsByLatest\0201\022\027\n\023f_get" +
-      "BlocksByLatest\0202\022$\n f_getAccountDetailsB" +
-      "yAddressList\0203\022\024\n\020f_backupAccounts\0204\022\010\n\004" +
-      "f_NA\0205\022\030\n\024f_getBlockSqlByRange\0206\022\034\n\030f_ge" +
-      "tBlockDetailsByRange\0207\022\016\n\nf_getNonce\0208\022\021" +
-      "\n\rf_getNrgPrice\0209*\241\007\n\007Retcode\022\n\n\006r_fail\020" +
-      "\000\022\r\n\tr_success\020\001\022\023\n\017r_wallet_nullcb\020\002\022\025\n" +
-      "\021r_heartbeatReturn\020\003\022\025\n\021r_privilegeRetur" +
-      "n\020\004\022\r\n\tr_tx_Init\020d\022\017\n\013r_tx_Recved\020e\022\020\n\014r" +
-      "_tx_Dropped\020f\022\023\n\017r_tx_NewPending\020g\022\020\n\014r_" +
-      "tx_Pending\020h\022\021\n\rr_tx_Included\020i\022\020\n\014r_tx_" +
-      "eventCb\020j\022\010\n\004r_NA\020k\022\036\n\021r_fail_header_len" +
-      "\020\377\377\377\377\377\377\377\377\377\001\022 \n\023r_fail_service_call\020\376\377\377\377\377" +
-      "\377\377\377\377\001\022!\n\024r_fail_function_call\020\375\377\377\377\377\377\377\377\377\001" +
-      "\022&\n\031r_fail_function_exception\020\374\377\377\377\377\377\377\377\377\001" +
-      "\022\037\n\022r_fail_api_version\020\373\377\377\377\377\377\377\377\377\001\022\037\n\022r_f" +
-      "ail_ct_bytecode\020\372\377\377\377\377\377\377\377\377\001\022\034\n\017r_fail_nul" +
-      "l_rsp\020\371\377\377\377\377\377\377\377\377\001\022 \n\023r_fail_invalid_addr\020" +
-      "\370\377\377\377\377\377\377\377\377\001\022\'\n\032r_fail_null_compile_source" +
-      "\020\367\377\377\377\377\377\377\377\377\001\022$\n\027r_fail_compile_contract\020\366" +
-      "\377\377\377\377\377\377\377\377\001\022#\n\026r_fail_sendTx_null_rep\020\365\377\377\377" +
-      "\377\377\377\377\377\001\022\036\n\021r_fail_getcode_to\020\364\377\377\377\377\377\377\377\377\001\022*" +
-      "\n\035r_fail_getTxReceipt_null_recp\020\363\377\377\377\377\377\377\377" +
-      "\377\001\022(\n\033r_fail_zmqHandler_exception\020\362\377\377\377\377\377" +
-      "\377\377\377\001\022(\n\033r_fail_hit_pending_tx_limit\020\361\377\377\377" +
-      "\377\377\377\377\377\001\022%\n\030r_fail_txqueue_exception\020\360\377\377\377\377" +
-      "\377\377\377\377\001\022&\n\031r_fail_function_arguments\020\357\377\377\377\377" +
-      "\377\377\377\377\001\022!\n\024r_fail_unsupport_api\020\356\377\377\377\377\377\377\377\377\001" +
-      "\022\033\n\016r_fail_unknown\020\355\377\377\377\377\377\377\377\377\001b\006proto3"
+      "\"\035\n\014rsp_getNonce\022\r\n\005nonce\030\001 \001(\014\"#\n\017rsp_g" +
+      "etNrgPrice\022\020\n\010nrgPrice\030\001 \001(\004*\204\001\n\005Servs\022\010" +
+      "\n\004s_hb\020\000\022\013\n\007s_admin\020\001\022\013\n\007s_chain\020\002\022\r\n\ts_" +
+      "account\020\003\022\010\n\004s_tx\020\004\022\t\n\005s_net\020\005\022\n\n\006s_mine" +
+      "\020\006\022\017\n\013s_privilege\020\007\022\014\n\010s_wallet\020\010\022\010\n\004s_N" +
+      "A\020\t*\310\n\n\005Funcs\022\025\n\021f_protocolVersion\020\000\022\022\n\016" +
+      "f_minerAddress\020\001\022\016\n\nf_accounts\020\002\022\021\n\rf_bl" +
+      "ockNumber\020\003\022\020\n\014f_getBalance\020\004\022\022\n\016f_getSt" +
+      "orageAt\020\005\022\023\n\017f_unlockAccount\020\006\022\025\n\021f_send" +
+      "Transaction\020\007\022\032\n\026f_getTransactionByHash\020" +
+      "\010\022\r\n\tf_compile\020\t\022\024\n\020f_contractDeploy\020\n\022\031" +
+      "\n\025f_getTransactionCount\020\013\022$\n f_getBlockT" +
+      "ransactionCountByHash\020\014\022&\n\"f_getBlockTra" +
+      "nsactionCountByNumber\020\r\022\r\n\tf_getCode\020\016\022\n" +
+      "\n\006f_call\020\017\022\024\n\020f_getBlockByHash\020\020\022\026\n\022f_ge" +
+      "tBlockByNumber\020\021\022\'\n#f_getTransactionByBl" +
+      "ockHashAndIndex\020\022\022)\n%f_getTransactionByB" +
+      "lockNumberAndIndex\020\023\022\033\n\027f_getTransaction" +
+      "Receipt\020\024\022\022\n\016f_getCompilers\020\025\022\025\n\021f_compi" +
+      "leSolidity\020\026\022\r\n\tf_getWork\020\027\022\020\n\014f_submitW" +
+      "ork\020\030\022\035\n\031f_fetchQueuedTransactions\020\031\022\027\n\023" +
+      "f_signedTransaction\020\032\022\024\n\020f_rawTransactio" +
+      "n\020\033\022\021\n\rf_estimateNrg\020\034\022\014\n\010f_mining\020\035\022\016\n\n" +
+      "f_hashrate\020\036\022\024\n\020f_getActiveNodes\020\037\022\024\n\020f_" +
+      "getSolcVersion\020 \022\017\n\013f_isSyncing\020!\022\016\n\nf_s" +
+      "yncInfo\020\"\022\023\n\017f_getSystemInfo\020#\022\023\n\017f_even" +
+      "tRegister\020$\022\025\n\021f_eventDeregister\020%\022\023\n\017f_" +
+      "accountCreate\020&\022\021\n\rf_accountLock\020\'\022\023\n\017f_" +
+      "userPrivilege\020(\022\020\n\014f_eventQuery\020)\022\024\n\020f_i" +
+      "mportAccounts\020*\022\024\n\020f_exportAccounts\020+\022\034\n" +
+      "\030f_getBlockHeaderByNumber\020,\022\032\n\026f_getBloc" +
+      "kHeaderByHash\020-\022\037\n\033f_getCurrentTotalDiff" +
+      "iculty\020.\022\024\n\020f_getStaticNodes\020/\022\035\n\031f_getB" +
+      "lockDetailsByNumber\0200\022\035\n\031f_getBlockDetai" +
+      "lsByLatest\0201\022\027\n\023f_getBlocksByLatest\0202\022$\n" +
+      " f_getAccountDetailsByAddressList\0203\022\024\n\020f" +
+      "_backupAccounts\0204\022\010\n\004f_NA\0205\022\030\n\024f_getBloc" +
+      "kSqlByRange\0206\022\034\n\030f_getBlockDetailsByRang" +
+      "e\0207\022\016\n\nf_getNonce\0208\022\021\n\rf_getNrgPrice\0209*\241" +
+      "\007\n\007Retcode\022\n\n\006r_fail\020\000\022\r\n\tr_success\020\001\022\023\n" +
+      "\017r_wallet_nullcb\020\002\022\025\n\021r_heartbeatReturn\020" +
+      "\003\022\025\n\021r_privilegeReturn\020\004\022\r\n\tr_tx_Init\020d\022" +
+      "\017\n\013r_tx_Recved\020e\022\020\n\014r_tx_Dropped\020f\022\023\n\017r_" +
+      "tx_NewPending\020g\022\020\n\014r_tx_Pending\020h\022\021\n\rr_t" +
+      "x_Included\020i\022\020\n\014r_tx_eventCb\020j\022\010\n\004r_NA\020k" +
+      "\022\036\n\021r_fail_header_len\020\377\377\377\377\377\377\377\377\377\001\022 \n\023r_fa" +
+      "il_service_call\020\376\377\377\377\377\377\377\377\377\001\022!\n\024r_fail_fun" +
+      "ction_call\020\375\377\377\377\377\377\377\377\377\001\022&\n\031r_fail_function" +
+      "_exception\020\374\377\377\377\377\377\377\377\377\001\022\037\n\022r_fail_api_vers" +
+      "ion\020\373\377\377\377\377\377\377\377\377\001\022\037\n\022r_fail_ct_bytecode\020\372\377\377" +
+      "\377\377\377\377\377\377\001\022\034\n\017r_fail_null_rsp\020\371\377\377\377\377\377\377\377\377\001\022 \n" +
+      "\023r_fail_invalid_addr\020\370\377\377\377\377\377\377\377\377\001\022\'\n\032r_fai" +
+      "l_null_compile_source\020\367\377\377\377\377\377\377\377\377\001\022$\n\027r_fa" +
+      "il_compile_contract\020\366\377\377\377\377\377\377\377\377\001\022#\n\026r_fail" +
+      "_sendTx_null_rep\020\365\377\377\377\377\377\377\377\377\001\022\036\n\021r_fail_ge" +
+      "tcode_to\020\364\377\377\377\377\377\377\377\377\001\022*\n\035r_fail_getTxRecei" +
+      "pt_null_recp\020\363\377\377\377\377\377\377\377\377\001\022(\n\033r_fail_zmqHan" +
+      "dler_exception\020\362\377\377\377\377\377\377\377\377\001\022(\n\033r_fail_hit_" +
+      "pending_tx_limit\020\361\377\377\377\377\377\377\377\377\001\022%\n\030r_fail_tx" +
+      "queue_exception\020\360\377\377\377\377\377\377\377\377\001\022&\n\031r_fail_fun" +
+      "ction_arguments\020\357\377\377\377\377\377\377\377\377\001\022!\n\024r_fail_uns" +
+      "upport_api\020\356\377\377\377\377\377\377\377\377\001\022\033\n\016r_fail_unknown\020" +
+      "\355\377\377\377\377\377\377\377\377\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -73028,14 +72636,8 @@ public final class Message {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_org_aion_api_impl_internal_rsp_getNonce_descriptor,
         new java.lang.String[] { "Nonce", });
-    internal_static_org_aion_api_impl_internal_req_getNrgPrice_descriptor =
-      getDescriptor().getMessageTypes().get(103);
-    internal_static_org_aion_api_impl_internal_req_getNrgPrice_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_org_aion_api_impl_internal_req_getNrgPrice_descriptor,
-        new java.lang.String[] { });
     internal_static_org_aion_api_impl_internal_rsp_getNrgPrice_descriptor =
-      getDescriptor().getMessageTypes().get(104);
+      getDescriptor().getMessageTypes().get(103);
     internal_static_org_aion_api_impl_internal_rsp_getNrgPrice_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_org_aion_api_impl_internal_rsp_getNrgPrice_descriptor,
