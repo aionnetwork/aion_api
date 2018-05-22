@@ -1763,6 +1763,26 @@ public class BaseAPITests {
         api.destroyApi();
     }
 
+    /**
+     * Tests that getNrgPrice does not throw an error but returns an appropriate long value.
+     */
+    @Test
+    public void TestGetNrgPrice() {
+        System.out.println("run TestGetNrgPrice.");
+
+        IAionAPI api = IAionAPI.init();
+        ApiMsg apiMsg = api.connect(url);
+        assertFalse(apiMsg.isError());
+        api.connect(url);
+
+        apiMsg.set(api.getTx().getNrgPrice());
+        assertFalse(apiMsg.isError());
+
+        long nrg = apiMsg.getObject();
+        System.out.println("The recommended energy price is " + nrg);
+        api.destroyApi();
+    }
+
     @Test
     public void TestApiShutdown() {
         for (int i=0; i<3; i++) {
