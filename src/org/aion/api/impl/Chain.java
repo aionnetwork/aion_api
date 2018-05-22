@@ -1,4 +1,4 @@
-/*******************************************************************************
+/* ******************************************************************************
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -26,22 +26,23 @@ package org.aion.api.impl;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import org.aion.api.IChain;
 import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.impl.internal.Message;
+import org.aion.api.impl.internal.Message.Retcode;
 import org.aion.api.log.AionLoggerFactory;
 import org.aion.api.log.LogEnum;
 import org.aion.api.type.ApiMsg;
+import org.aion.api.type.ApiMsg.cast;
 import org.aion.api.type.Block;
 import org.aion.base.type.Address;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
 import org.aion.base.util.ByteUtil;
 import org.slf4j.Logger;
-
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Jay Tseng on 14/11/16.
@@ -70,12 +71,12 @@ public final class Chain implements IChain {
 
         try {
             return new ApiMsg(Message.rsp_blockNumber.parseFrom(ApiUtils.parseBody(rsp).getData()).getBlocknumber(),
-                    org.aion.api.type.ApiMsg.cast.OTHERS);
+                    cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[blockNumber] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
             }
-            return new ApiMsg(-104, e.getMessage(), org.aion.api.type.ApiMsg.cast.OTHERS);
+            return new ApiMsg(-104, e.getMessage(), cast.OTHERS);
         }
 
     }
@@ -115,16 +116,17 @@ public final class Chain implements IChain {
 
             byte[] balance = resp.getBalance().toByteArray();
             if (balance == null) {
-                throw new NullPointerException("null balance");
+                return new ApiMsg(Retcode.r_fail_null_rsp_VALUE, "null balance for address " +
+                    address + " and blockNumber " + blockNumber, cast.OTHERS);
             } else {
-                return new ApiMsg(new BigInteger(balance), org.aion.api.type.ApiMsg.cast.OTHERS);
+                return new ApiMsg(new BigInteger(balance), cast.OTHERS);
             }
 
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getBalance] {}", ErrId.getErrString(-104L) + e.getMessage());
             }
-            return new ApiMsg(-104, e.getMessage(), org.aion.api.type.ApiMsg.cast.OTHERS);
+            return new ApiMsg(-104, e.getMessage(), cast.OTHERS);
         }
     }
 
@@ -140,8 +142,8 @@ public final class Chain implements IChain {
             return new ApiMsg(-129);
         }
 
-        Message.req_getBlockByNumber body = Message.req_getBlockByNumber.newBuilder().setBlockNumber(blockNumber)
-                .build();
+        Message.req_getBlockByNumber body = Message.req_getBlockByNumber.newBuilder().
+            setBlockNumber(blockNumber).build();
 
         byte[] header = ApiUtils
                 .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_chain, Message.Funcs.f_getBlockByNumber);
@@ -156,12 +158,12 @@ public final class Chain implements IChain {
 
         try {
             return new ApiMsg(toBlock(Message.rsp_getBlock.parseFrom(ApiUtils.parseBody(rsp).getData())),
-                    org.aion.api.type.ApiMsg.cast.OTHERS);
+                    cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getBlockByNumber] {}", ErrId.getErrString(-104L) + e.getMessage());
             }
-            return new ApiMsg(-104, e.getMessage(), org.aion.api.type.ApiMsg.cast.OTHERS);
+            return new ApiMsg(-104, e.getMessage(), cast.OTHERS);
         }
     }
 
@@ -193,12 +195,12 @@ public final class Chain implements IChain {
 
         try {
             return new ApiMsg(ApiUtils.toTransaction(Message.rsp_getTransaction.parseFrom(ApiUtils.parseBody(rsp).getData())),
-                    org.aion.api.type.ApiMsg.cast.OTHERS);
+                    cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getTxByBlkHash&TxIdx] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
             }
-            return new ApiMsg(-104, e.getMessage(), org.aion.api.type.ApiMsg.cast.OTHERS);
+            return new ApiMsg(-104, e.getMessage(), cast.OTHERS);
         }
     }
 
@@ -235,13 +237,13 @@ public final class Chain implements IChain {
         }
 
         try {
-            return new ApiMsg(ApiUtils.toTransaction(Message.rsp_getTransaction.parseFrom(ApiUtils.parseBody(rsp).getData())),
-                    org.aion.api.type.ApiMsg.cast.OTHERS);
+            return new ApiMsg(ApiUtils.toTransaction(Message.rsp_getTransaction.parseFrom(
+                ApiUtils.parseBody(rsp).getData())), cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getTxByBlkNbr&TxIdx] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
             }
-            return new ApiMsg(-104, e.getMessage(), org.aion.api.type.ApiMsg.cast.OTHERS);
+            return new ApiMsg(-104, e.getMessage(), cast.OTHERS);
         }
     }
 
@@ -265,8 +267,8 @@ public final class Chain implements IChain {
         }
 
         try {
-            return new ApiMsg(ApiUtils.toTransaction(Message.rsp_getTransaction.parseFrom(ApiUtils.parseBody(rsp).getData())),
-                    org.aion.api.type.ApiMsg.cast.OTHERS);
+            return new ApiMsg(ApiUtils.toTransaction(Message.rsp_getTransaction.parseFrom(
+                ApiUtils.parseBody(rsp).getData())), cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getTxByHash] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
@@ -296,12 +298,12 @@ public final class Chain implements IChain {
 
         try {
             return new ApiMsg(toBlock(Message.rsp_getBlock.parseFrom(ApiUtils.parseBody(rsp).getData())),
-                    org.aion.api.type.ApiMsg.cast.OTHERS);
+                    cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getBlkByHash] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
             }
-            return new ApiMsg(-104, e.getMessage(), org.aion.api.type.ApiMsg.cast.OTHERS);
+            return new ApiMsg(-104, e.getMessage(), cast.OTHERS);
         }
     }
 
@@ -333,12 +335,12 @@ public final class Chain implements IChain {
 
         try {
             return new ApiMsg(Message.rsp_getTransactionCount.parseFrom(ApiUtils.parseBody(rsp).getData()).getTxCount(),
-                    org.aion.api.type.ApiMsg.cast.OTHERS);
+                    cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getTxCount] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
             }
-            return new ApiMsg(-104, e.getMessage(), org.aion.api.type.ApiMsg.cast.OTHERS);
+            return new ApiMsg(-104, e.getMessage(), cast.OTHERS);
         }
     }
 
@@ -361,13 +363,14 @@ public final class Chain implements IChain {
         }
 
         try {
-            return new ApiMsg(1, Message.rsp_getBlockTransactionCount.parseFrom(ApiUtils.parseBody(rsp).getData()).getTxCount(),
-                            org.aion.api.type.ApiMsg.cast.OTHERS);
+            return new ApiMsg(Retcode.r_success_VALUE,
+                Message.rsp_getBlockTransactionCount.parseFrom(ApiUtils.parseBody(rsp).getData()).getTxCount(),
+                            cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getBlkTxCntByHash] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
             }
-            return new ApiMsg(-104, e.getMessage(), org.aion.api.type.ApiMsg.cast.OTHERS);
+            return new ApiMsg(-104, e.getMessage(), cast.OTHERS);
         }
     }
 
@@ -397,13 +400,13 @@ public final class Chain implements IChain {
         }
 
         try {
-            return new ApiMsg(1, Message.rsp_getBlockTransactionCount.parseFrom(ApiUtils.parseBody(rsp).getData()).getTxCount(),
-                            org.aion.api.type.ApiMsg.cast.OTHERS);
+            return new ApiMsg(Retcode.r_success_VALUE, Message.rsp_getBlockTransactionCount.parseFrom(ApiUtils.parseBody(rsp).getData()).getTxCount(),
+                            cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getBlkTxCntByNumber] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
             }
-            return new ApiMsg(-104, e.getMessage(), org.aion.api.type.ApiMsg.cast.OTHERS);
+            return new ApiMsg(-104, e.getMessage(), cast.OTHERS);
         }
     }
 
@@ -464,4 +467,51 @@ public final class Chain implements IChain {
                 .totalDifficulty(new BigInteger(rsp.getTotalDifficulty().toByteArray()))
                 .createBlock();
     }
+
+    /**
+     * GetNonce returns a BigInteger representing the nonce of the account address at the latest
+     * block number.
+     *
+     * @param address
+     *          the class {@link Address Address} of the desired account to get the nonce of.
+     *
+     * @return the account's nonce.
+     */
+    public ApiMsg getNonce(Address address) {
+        if (!apiInst.isInitialized.get()) {
+            return new ApiMsg(-1003);
+        }
+
+        Message.req_getNonce reqBody = Message.req_getNonce.newBuilder()
+            .setAddress(ByteString.copyFrom(address.toBytes())).build();
+
+        byte[] reqHead = ApiUtils.toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_chain,
+            Message.Funcs.f_getNonce);
+        byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
+
+        byte[] rsp = this.apiInst.nbProcess(reqMsg);
+        int code = this.apiInst.validRspHeader(rsp);
+        if (code != 1) {
+            return new ApiMsg(code);
+        }
+
+        try {
+            Message.rsp_getNonce resp = Message.rsp_getNonce.
+                parseFrom(ApiUtils.parseBody(rsp).getData());
+
+            byte[] nonce = resp.getNonce().toByteArray();
+            if (nonce == null) {
+                return new ApiMsg(Retcode.r_fail_null_rsp_VALUE, "null nonce for address " + address, cast.OTHERS);
+            } else {
+                return new ApiMsg(new BigInteger(nonce), cast.OTHERS);
+            }
+
+        } catch (InvalidProtocolBufferException e) {
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("[getNonce] {}", ErrId.getErrString(-104L) + e.getMessage());
+            }
+            return new ApiMsg(-104, e.getMessage(), cast.OTHERS);
+        }
+    }
+
 }

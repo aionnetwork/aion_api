@@ -73,6 +73,7 @@ enum Funcs	 {
 	f_NA                                    = 53;
 	f_getBlockSqlByRange					= 54;
 	f_getBlockDetailsByRange				= 55;
+	f_getNonce                              = 56;
 }
 
 enum Retcode {
@@ -977,4 +978,16 @@ message req_getBlockDetailsByRange{
 
 message rsp_getBlockDetailsByRange{
 	repeated t_BlockDetail blkDetails = 1;
+}
+
+//*****************************************************************************
+//      f_getNonce
+//*****************************************************************************
+
+message req_getNonce {
+    bytes address = 1;
+}
+
+message rsp_getNonce {
+    bytes nonce = 1;
 }
