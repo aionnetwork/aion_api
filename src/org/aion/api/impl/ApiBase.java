@@ -207,8 +207,8 @@ public class ApiBase {
 
     byte[] nbProcess(byte[] reqHdr) {
         this.nb = false;
-        this.msgExecutor.nbSocket.send(reqHdr, ZMQ.DONTWAIT);
-        return this.msgExecutor.nbSocket.recv(0);
+        this.msgExecutor.getNbSocket().send(reqHdr, ZMQ.DONTWAIT);
+        return this.msgExecutor.getNbSocket().recv(0);
     }
 
     MsgRsp Process(byte[] hash, byte[] req) {

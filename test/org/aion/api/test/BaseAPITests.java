@@ -1762,4 +1762,47 @@ public class BaseAPITests {
 
         api.destroyApi();
     }
+
+    @Test
+    public void TestApiShutdown() {
+        for (int i=0; i<3; i++) {
+            System.out.println("run TestGracefulShutdown.");
+
+            IAionAPI api = IAionAPI.init();
+            api.connect(url);
+
+            long t0 = System.currentTimeMillis();
+
+            ApiMsg msg = api.getAdmin().getBlockDetailsByRange(1L, 10L);
+            assertFalse(msg.isError());
+            List<BlockDetails> blks = msg.getObject();
+
+            long t1 = System.currentTimeMillis();
+
+            long totalTime = t1 - t0;
+            long totalTxns = 0;
+            for (BlockDetails b : blks) {
+                System.out.println("#: " + b.getNumber() + " [" + b.getTxDetails().size() + "]");
+                totalTxns += b.getTxDetails().size();
+            }
+
+            System.out.println("bench: " + (t1 - t0) + " ms");
+            System.out.println("time/txn: " + totalTime / (double) totalTxns);
+
+            assertNotNull(blks);
+
+            api.destroyApi();
+
+            System.out.println("Api Destroyed");
+        }
+
+        int nbRunning = 0;
+        for (Thread t : Thread.getAllStackTraces().keySet()) {
+            if (t.getState()==Thread.State.RUNNABLE) nbRunning++;
+        }
+
+        assertEquals(4, nbRunning);
+
+        System.out.println("test done");
+    }
 }

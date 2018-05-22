@@ -64,17 +64,17 @@ public class MsgExecutor implements Runnable {
     private final Logger LOGGER = AionLoggerFactory.getLogger(LogEnum.EXE.name());
     private final String WK_BIND_ADDR = "inproc://apiWkTh";
     private final String CB_BIND_ADDR = "inproc://apicbTh";
-    private final String NB_BIND_ADDR = "inproc://apinbTh";
     private final String HB_BIND_ADDR = "inproc://apihbTh";
 
-    private final int HB_POLL_MS = 500;
-    private final int HB_TOLERANCE = 3;
+    private final static int HB_TOLERANCE = 3;
+    private final static int HB_POLL_MS = 500;
+    private final static int RECVTIMEOUT = 3000;
     // = If api is unresponsive for more than ~2 seconds, kill the api.
     // TODO: implement auto-reconnect on kernel failure
 
     //TODO: update kernel api privilege then remove this flag
     private final boolean PRIVILEGE = true; // temp flag
-    Socket nbSocket;
+    private Socket nbSocket;
     AtomicBoolean isInitialized = new AtomicBoolean(false);
     private Map<ByteArrayWrapper, MsgRsp> hashMap;
     private Map<String, BlockingQueue<Event>> eventMap;
@@ -87,8 +87,6 @@ public class MsgExecutor implements Runnable {
     private int workers = 1;
     private String addrBindNumber;
     private Map<String, Boolean> privilege;
-
-    Set<ByteArrayWrapper> check = new HashSet<>();
 
     static {
         NativeLoader.loadLibrary("zmq");
@@ -120,7 +118,6 @@ public class MsgExecutor implements Runnable {
         this.privilege.put("Net", PRIVILEGE);
         this.privilege.put("Chain", PRIVILEGE);
         this.privilege.put("Wallet", PRIVILEGE);
-        this.privilege.put("Contract", PRIVILEGE);
         this.privilege.put("Admin", PRIVILEGE);
     }
 
@@ -194,9 +191,6 @@ public class MsgExecutor implements Runnable {
 
     private synchronized void process(final byte[] rsp) {
         if (rsp == null) {
-            if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[process] Null response.");
-            }
             return;
         }
 
@@ -334,7 +328,7 @@ public class MsgExecutor implements Runnable {
                 LOGGER.debug("[run] Hb msg: [{}]", IUtils.bytes2Hex(rsp));
             }
 
-            if (!checkHbRspMsg(rsp)) {
+            if (checkNotHbRspMsg(rsp)) {
                 return;
             }
 
@@ -371,6 +365,7 @@ public class MsgExecutor implements Runnable {
             cbSocket.bind(CB_BIND_ADDR + addrBindNumber);
 
             Socket nbDealer = ctx.socket(ZMQ.DEALER);
+            String NB_BIND_ADDR = "inproc://apinbTh";
             nbDealer.bind(NB_BIND_ADDR + addrBindNumber);
 
             Socket hbDealer = ctx.socket(ZMQ.DEALER);
@@ -407,6 +402,9 @@ public class MsgExecutor implements Runnable {
             cbSocket.close();
             beSocket.close();
             feSocket.close();
+            nbSocket.close();
+
+            es.shutdown();
 
         } catch (Exception e) {
             if (LOGGER.isErrorEnabled()) {
@@ -459,7 +457,7 @@ public class MsgExecutor implements Runnable {
                 LOGGER.debug("[heartBeatRun] hbWorker recv msg: [{}]", (rsp != null ? IUtils.bytes2Hex(rsp) : "null"));
             }
 
-            if (!checkHbRspMsg(rsp)) {
+            if (checkNotHbRspMsg(rsp)) {
                 hbTolerance--;
             } else {
                 hbTolerance = HB_TOLERANCE;
@@ -476,46 +474,56 @@ public class MsgExecutor implements Runnable {
             LOGGER.warn("Heartbeat Timeout, disconnect the connection!");
             terminate();
         } else {
-            LOGGER.info("HeartbeatRun closed!");
+            LOGGER.info("Heartbeat worker closing!");
         }
 
         hbWorker.close();
+        LOGGER.info("Heartbeat worker closed!");
     }
 
     private void callbackRun(Context ctx) {
         Socket cbWorker = ctx.socket(ZMQ.DEALER);
+        cbWorker.setReceiveTimeOut(RECVTIMEOUT);
         cbWorker.connect(CB_BIND_ADDR + addrBindNumber);
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("[callbackRun] CbWorker connected!");
         }
 
-        while (this.running) {
+        while (true) {
             byte[] rsp = cbWorker.recv(ZMQ.PAIR);
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("[callbackRun] CbWorker recv msg: [{}]", (rsp != null ? IUtils.bytes2Hex(rsp) : "= null"));
+            if (this.running) {
+                if (LOGGER.isTraceEnabled()) {
+                    LOGGER.trace("[callbackRun] CbWorker recv msg: [{}]", (rsp != null ? IUtils.bytes2Hex(rsp) : "= null"));
+                }
+                process(rsp);
+            } else {
+                break;
             }
-            process(rsp);
         }
 
+        LOGGER.info("Callback worker closing!");
         cbWorker.close();
+        LOGGER.info("Callback worker closed!");
     }
 
     private void workerRun(Context ctx) {
         Socket worker = ctx.socket(ZMQ.DEALER);
         worker.connect(WK_BIND_ADDR + addrBindNumber);
+        worker.setReceiveTimeOut(RECVTIMEOUT);
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("[workerRun] Worker connected!");
         }
 
-        while (this.running) {
+        while (true) {
             MsgReq msg = null;
             try {
-                msg = queue.take();
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("[workerRun] Worker take msg: [{}]", IUtils.bytes2Hex(msg.hash));
-                }
+                msg = queue.poll(RECVTIMEOUT, TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            }
+
+            if (!this.running) {
+                break;
             }
 
             if (msg != null && msg.req != null) {
@@ -531,21 +539,27 @@ public class MsgExecutor implements Runnable {
                 }
 
                 byte[] rsp = worker.recv(ZMQ.PAIR);
-                if (rsp == null) {
-                    if (LOGGER.isErrorEnabled()) {
-                        LOGGER.error("[workerRun] Worker recv msg: [null]");
+                if (this.running) {
+                    if (rsp == null) {
+                        if (LOGGER.isErrorEnabled()) {
+                            LOGGER.error("[workerRun] Worker recv msg: [null]");
+                        }
+                        return;
                     }
-                    return;
-                }
 
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("[workerRun] Worker recv msg: [{}]", IUtils.bytes2Hex(rsp));
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("[workerRun] Worker recv msg: [{}]", IUtils.bytes2Hex(rsp));
+                    }
+                    process(rsp);
+                } else {
+                    break;
                 }
-                process(rsp);
             }
         }
 
+        LOGGER.info("worker closing!");
         worker.close();
+        LOGGER.info("worker closed!");
     }
 
     private void proxy(Socket feSocket, Socket beSocket, Socket cbSocket, Socket nbDealer, Socket hbDealer) {
@@ -580,7 +594,7 @@ public class MsgExecutor implements Runnable {
                 //  Process a request.
                 if (items[1].isReadable()) {
                     while (true) {
-                        if (!msgHandle(beSocket, feSocket)) {
+                        if (invalidMsgHandle(beSocket, feSocket)) {
                             throw new Exception("ZMQ items[1] handle abnormal!");
                         }
                         break;
@@ -590,7 +604,7 @@ public class MsgExecutor implements Runnable {
                 //  Process a request.
                 if (items[2].isReadable()) {
                     while (true) {
-                        if (!msgHandle(nbDealer, feSocket)) {
+                        if (invalidMsgHandle(nbDealer, feSocket)) {
                             throw new Exception("ZMQ items[2] handle abnormal!");
                         }
                         break;
@@ -599,7 +613,7 @@ public class MsgExecutor implements Runnable {
 
                 if (items[3].isReadable()) {
                     while (true) {
-                        if (!msgHandle(hbDealer, feSocket)) {
+                        if (invalidMsgHandle(hbDealer, feSocket)) {
                             throw new Exception("ZMQ items[3] handle abnormal!");
                         }
                         break;
@@ -683,56 +697,56 @@ public class MsgExecutor implements Runnable {
         return true;
     }
 
-    private boolean msgHandle(Socket receiver, Socket sender) {
+    private boolean invalidMsgHandle(Socket receiver, Socket sender) {
 
         byte[] msg = receiver.recv(ZMQ.PAIR);
         if (msg == null) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[msgHandle2] {}", ErrId.getErrString(-322L));
+                LOGGER.error("[invalidMsgHandle] {}", ErrId.getErrString(-322L));
             }
-            return false;
+            return true;
         }
 
         if (!sender.send(msg, ZMQ.DONTWAIT)) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[msgHandle2] {}", ErrId.getErrString(-323L));
+                LOGGER.error("[invalidMsgHandle] {}", ErrId.getErrString(-323L));
             }
-            return false;
+            return true;
         }
 
-        return true;
+        return false;
     }
 
-    private boolean checkHbRspMsg(byte[] rsp) {
+    private boolean checkNotHbRspMsg(byte[] rsp) {
         if (rsp == null || rsp.length < ApiUtils.RSP_HEADER_NOHASH_LEN) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[checkHbRspMsg] {}", ErrId.getErrString(-321L));
             }
-            return false;
+            return true;
         }
 
         if (rsp[0] != this.ver) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[checkHbRspMsg] {}", ErrId.getErrString(-318L));
             }
-            return false;
+            return true;
         }
 
         if (rsp[1] != Message.Retcode.r_heartbeatReturn_VALUE) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[checkHbRspMsg] {}", ErrId.getErrString(-319L));
             }
-            return false;
+            return true;
         }
 
         if (rsp[2] != 0) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[checkHbRspMsg] {}", ErrId.getErrString(-320L));
             }
-            return false;
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     Future<MsgRsp> aSyncSend(byte[] hash, byte[] req) {
@@ -961,6 +975,10 @@ public class MsgExecutor implements Runnable {
 
     void removeAllEvents() {
         this.eventMap.clear();
+    }
+
+    Socket getNbSocket() {
+        return nbSocket;
     }
 
     public static class MsgReq {
