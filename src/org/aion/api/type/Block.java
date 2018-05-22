@@ -49,6 +49,7 @@ public final class Block {
     private final ByteArrayWrapper extraData;
     private final ByteArrayWrapper solution;
     private final List<Hash256> txHash;
+    private final Hash256 hash;
     private final Hash256 parentHash;
     private final BigInteger nonce;
     private final BigInteger difficulty;
@@ -68,6 +69,7 @@ public final class Block {
         this.extraData = builder.extraData;
         this.solution = builder.solution;
         this.txHash = builder.txHash;
+        this.hash = builder.hash;
         this.parentHash = builder.parentHash;
         this.nonce = builder.nonce;
         this.difficulty = builder.difficulty;
@@ -109,6 +111,10 @@ public final class Block {
 
     public Hash256 getParentHash() {
         return parentHash;
+    }
+
+    public Hash256 getHash() {
+        return hash;
     }
 
     public BigInteger getNonce() {
@@ -157,6 +163,7 @@ public final class Block {
         private ByteArrayWrapper extraData;
         private ByteArrayWrapper solution;
         private List<Hash256> txHash;
+        private Hash256 hash;
         private Hash256 parentHash;
         private BigInteger nonce;
         private BigInteger difficulty;
@@ -166,6 +173,7 @@ public final class Block {
         private Hash256 receiptTxRoot;
         private int size;
         private BigInteger totalDifficulty;
+
 
         public BlockBuilder() {
 
@@ -208,6 +216,11 @@ public final class Block {
 
         public BlockBuilder txHash(final List txHash) {
             this.txHash = txHash;
+            return this;
+        }
+
+        public BlockBuilder hash(final Hash256 hash) {
+            this.hash = hash;
             return this;
         }
 
