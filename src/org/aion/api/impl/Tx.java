@@ -30,12 +30,17 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+import java.math.BigInteger;
 import org.aion.api.ITx;
 import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.impl.internal.Message;
+import org.aion.api.impl.internal.Message.Funcs;
+import org.aion.api.impl.internal.Message.Retcode;
+import org.aion.api.impl.internal.Message.Servs;
 import org.aion.api.log.AionLoggerFactory;
 import org.aion.api.log.LogEnum;
 import org.aion.api.type.*;
+import org.aion.api.type.ApiMsg.cast;
 import org.aion.api.type.core.tx.AionTransaction;
 import org.aion.base.type.Address;
 import org.aion.base.type.Hash256;
@@ -734,6 +739,34 @@ public final class Tx implements ITx {
                 LOGGER.error("[eventDeregister] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
             }
             return new ApiMsg(-104, e.getMessage(), ApiMsg.cast.OTHERS);
+        }
+    }
+
+    public ApiMsg getNrgPrice() {
+        if (!this.apiInst.isConnected()) {
+            return new ApiMsg(-1003);
+        }
+
+        Message.req_getNrgPrice reqBody = Message.req_getNrgPrice.newBuilder().build();
+        byte[] reqHead = ApiUtils.toReqHeader(ApiUtils.PROTOCOL_VER, Servs.s_tx, Funcs.f_getNrgPrice);
+        byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
+
+        byte[] rsp = this.apiInst.nbProcess(reqMsg);
+        int code = this.apiInst.validRspHeader(rsp);
+        if (code != 1) {
+            return new ApiMsg(code);
+        }
+
+        try {
+            Message.rsp_getNrgPrice resp = Message.rsp_getNrgPrice.
+                parseFrom(ApiUtils.parseBody(rsp).getData());
+
+            return new ApiMsg(Retcode.r_success_VALUE, resp.getNrgPrice(), cast.LONG);
+        } catch (InvalidProtocolBufferException e) {
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("[getNrgPrice] {}", ErrId.getErrString(-104L) + e.getMessage());
+            }
+            return new ApiMsg(-104, e.getMessage(), cast.OTHERS);
         }
     }
 
