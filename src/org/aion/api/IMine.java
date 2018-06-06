@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,8 +19,7 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
 
 package org.aion.api;
 
@@ -28,6 +27,7 @@ import org.aion.api.type.ApiMsg;
 
 /**
  * This interface provides methods for fetching the miner statistics such as mining and Hashrate.
+ *
  * @author Jay Tseng
  */
 

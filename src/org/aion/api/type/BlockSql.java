@@ -1,8 +1,5 @@
 package org.aion.api.type;
 
-import org.aion.base.type.Hash256;
-import org.libsodium.jni.crypto.Hash;
-
 import java.util.List;
 
 public final class BlockSql {
