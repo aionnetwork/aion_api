@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,8 +19,7 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
 
 package org.aion.api.impl;
 
@@ -63,10 +62,9 @@ public class ApiBase {
 
     ApiBase() {
         cfg = CfgApi.inst();
-
-
         AionLoggerFactory.init(cfg.getLog().getModules());
         LOGGER = AionLoggerFactory.getLogger(LogEnum.BSE.name());
+        Thread.currentThread().setName("api");
     }
 
     public ApiMsg connect(String url) {
@@ -119,8 +117,6 @@ public class ApiBase {
             timeout = 60_000;
         }
 
-        this.msgExecutor = new MsgExecutor(ApiUtils.PROTOCOL_VER, url, timeout);
-
         int numProcs = Math.max(Runtime.getRuntime().availableProcessors() >> 1, 1);
 
         if (workers > numProcs) {
@@ -130,8 +126,12 @@ public class ApiBase {
             }
         }
 
-        while (!this.msgExecutor.isInitialized.get()) {
-            this.msgExecutor.start(workers);
+        while (!isInitialized.get()) {
+            if (this.msgExecutor == null) {
+                this.msgExecutor = new MsgExecutor(ApiUtils.PROTOCOL_VER, url, timeout);
+                this.msgExecutor.start(workers);
+            }
+
             try {
                 Thread.sleep(SLEEPTIME);
             } catch (InterruptedException e) {
@@ -144,15 +144,21 @@ public class ApiBase {
                 LOGGER.debug("[connect]" + " Waiting connect.");
             }
 
-            if (!this.msgExecutor.isInitialized.get() && !this.recon) {
+            if (!this.msgExecutor.isInitialized.get()) {
                 if (LOGGER.isErrorEnabled()) {
                     LOGGER.error("[connect] Connect failed.");
                 }
-                return new ApiMsg(-1009, false, org.aion.api.type.ApiMsg.cast.BOOLEAN);
+                this.msgExecutor.terminate();
+                this.msgExecutor = null;
+
+                if (!this.recon) {
+                    return new ApiMsg(-1009, false, org.aion.api.type.ApiMsg.cast.BOOLEAN);
+                }
+            } else {
+                this.isInitialized.set(true);
             }
         }
 
-        this.isInitialized.set(true);
         this.url = url;
 
         if (LOGGER.isInfoEnabled()) {
@@ -183,7 +189,8 @@ public class ApiBase {
     MsgRsp blockTx(byte[] hash, byte[] req) {
 
         if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("[blockTx] MsgHash: [{}], reqmsg: [{}]", IUtils.bytes2Hex(hash), IUtils.bytes2Hex(req));
+            LOGGER.trace("[blockTx] MsgHash: [{}], reqmsg: [{}]", IUtils.bytes2Hex(hash),
+                IUtils.bytes2Hex(req));
         }
 
         Future<MsgRsp> future = this.msgExecutor.aSyncSend(hash, req);
@@ -192,7 +199,7 @@ public class ApiBase {
 
             if (LOGGER.isTraceEnabled()) {
                 LOGGER.trace("[blockTx] TxRsp: [{}], status: [{}]", msgRsp.getTxHash().toString(),
-                        msgRsp.getStatus());
+                    msgRsp.getStatus());
             }
 
             return msgRsp;
@@ -223,7 +230,8 @@ public class ApiBase {
     MsgRsp Process(byte[] hash, byte[] req) {
 
         if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("[Process] MsgHash: [{}], reqmsg: [{}]", IUtils.bytes2Hex(hash), IUtils.bytes2Hex(req));
+            LOGGER.trace("[Process] MsgHash: [{}], reqmsg: [{}]", IUtils.bytes2Hex(hash),
+                IUtils.bytes2Hex(req));
         }
 
         MsgRsp rsp = this.msgExecutor.send(hash, req);
@@ -237,7 +245,8 @@ public class ApiBase {
         }
 
         long time = System.currentTimeMillis();
-        while ((rsp == null || rsp.getStatus() == 100) && (System.currentTimeMillis() - time < 10000)) {
+        while ((rsp == null || rsp.getStatus() == 100) && (System.currentTimeMillis() - time
+            < 10000)) {
             rsp = this.msgExecutor.getStatus(ByteArrayWrapper.wrap(hash));
 
             try {
@@ -294,8 +303,8 @@ public class ApiBase {
         return this.msgExecutor.getPrivilege();
     }
 
-    public class CheckStatusTask implements Runnable
-    {
+    public class CheckStatusTask implements Runnable {
+
         public void run() {
             // add your code here
         }
