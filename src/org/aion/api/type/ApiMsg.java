@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,8 +19,7 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
 
 package org.aion.api.type;
 
@@ -29,9 +28,10 @@ import org.aion.api.impl.ErrId;
 /**
  * The return type of every API call. Retrieve the actual return object by {@link
  * org.aion.api.type.ApiMsg#getObject() getObject}. To interact with the actual return object, see
- * the documentation of the return type. Before getting the return object, use
- * {@link org.aion.api.type.ApiMsg#isError() isError} to check if an isError occurred. If an isError has
- * has occurred, use {@link org.aion.api.type.ApiMsg#getErrString() getErrString} to get the detailed isError message.
+ * the documentation of the return type. Before getting the return object, use {@link
+ * org.aion.api.type.ApiMsg#isError() isError} to check if an isError occurred. If an isError has
+ * has occurred, use {@link org.aion.api.type.ApiMsg#getErrString() getErrString} to get the
+ * detailed isError message.
  *
  * @author Jay Tseng
  */
@@ -107,14 +107,14 @@ public class ApiMsg {
 
     public <Any> Any getObject() {
         switch (this.castType) {
-        case BOOLEAN:
-            return (Any) ((Boolean) (boolean) this.rtnObj);
-        case INT:
-            return (Any) ((Integer) (int) this.rtnObj);
-        case LONG:
-            return (Any) ((Long) (long) this.rtnObj);
-        default:
-            return (Any) (this.rtnObj);
+            case BOOLEAN:
+                return (Any) ((Boolean) (boolean) this.rtnObj);
+            case INT:
+                return (Any) ((Integer) (int) this.rtnObj);
+            case LONG:
+                return (Any) ((Long) (long) this.rtnObj);
+            default:
+                return (Any) (this.rtnObj);
         }
     }
 

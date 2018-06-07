@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,8 +19,8 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
+
 
 package org.aion.api.type;
 
@@ -33,14 +33,16 @@ import java.math.BigInteger;
 /**
  * The Transaction return data structure, typically used in Transaction getter API.
  *
- * @see org.aion.api.IChain#getTransactionByBlockHashAndIndex(org.aion.base.type.Hash256, int) getTransactionByBlockHashAndIndex
- * @see org.aion.api.IChain#getTransactionByBlockNumberAndIndex(long, int) GetTransactionByBlockNumberAndIndex
- * @see org.aion.api.IChain#getTransactionByHash(org.aion.base.type.Hash256) getTransactionByHash
- *
  * @author Jay Tseng
+ * @see org.aion.api.IChain#getTransactionByBlockHashAndIndex(org.aion.base.type.Hash256, int)
+ * getTransactionByBlockHashAndIndex
+ * @see org.aion.api.IChain#getTransactionByBlockNumberAndIndex(long, int)
+ * GetTransactionByBlockNumberAndIndex
+ * @see org.aion.api.IChain#getTransactionByHash(org.aion.base.type.Hash256) getTransactionByHash
  */
 
 public final class Transaction {
+
     private final int transactionIndex;
     private final long blockNumber;
     private final long timeStamp;
@@ -121,6 +123,7 @@ public final class Transaction {
      * This Builder class is used to build a {@link Transaction} instance.
      */
     public static class TransactionBuilder {
+
         private int transactionIndex;
         private long blockNumber;
         private long timeStamp;
@@ -134,7 +137,7 @@ public final class Transaction {
         private BigInteger value;
         private ByteArrayWrapper data;
 
-        public TransactionBuilder(){
+        public TransactionBuilder() {
         }
 
         public Transaction.TransactionBuilder transactionIndex(final int transactionIndex) {
@@ -201,9 +204,9 @@ public final class Transaction {
         public Transaction createTransaction() {
 
             if (from == null || to == null || blockHash == null || txHash == null ||
-                    nonce == null || value == null || data == null) {
+                nonce == null || value == null || data == null) {
                 throw new NullPointerException(
-                        "From#" + String.valueOf(from) +
+                    "From#" + String.valueOf(from) +
                         " To#" + String.valueOf(to) +
                         " BlockHash#" + String.valueOf(blockHash) +
                         " TxHash#" + String.valueOf(txHash) +
@@ -212,13 +215,14 @@ public final class Transaction {
                         " Nonce#" + String.valueOf(nonce));
             }
 
-            if (transactionIndex < 0 || blockNumber < 0 || timeStamp < 0 || nrgConsumed < 0 || nrgPrice < 0) {
+            if (transactionIndex < 0 || blockNumber < 0 || timeStamp < 0 || nrgConsumed < 0
+                || nrgPrice < 0) {
                 throw new IllegalArgumentException(
-                        "TxIndex#" + transactionIndex +
-                                " BlockNumber#" + blockNumber +
-                                " TimeStamp#" + timeStamp +
-                                " NrgConsumed#" + nrgConsumed +
-                                " NrgPrice#" + nrgPrice);
+                    "TxIndex#" + transactionIndex +
+                        " BlockNumber#" + blockNumber +
+                        " TimeStamp#" + timeStamp +
+                        " NrgConsumed#" + nrgConsumed +
+                        " NrgPrice#" + nrgPrice);
             }
 
             return new Transaction(this);

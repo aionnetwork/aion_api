@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,8 +19,7 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
 
 package org.aion.api.type;
 
@@ -32,15 +31,15 @@ import java.math.BigInteger;
 import java.util.List;
 
 /**
- * TxLog class containing all relevant information to transaction log utilized by
- * {@link org.aion.api.ITx#getTxReceipt(org.aion.base.type.Hash256) getTxReceipt}.
- *
- * @see org.aion.api.type.TxReceipt TxReceipt
+ * TxLog class containing all relevant information to transaction log utilized by {@link
+ * org.aion.api.ITx#getTxReceipt(org.aion.base.type.Hash256) getTxReceipt}.
  *
  * @author Jay Tseng
+ * @see org.aion.api.type.TxReceipt TxReceipt
  */
 
 public final class TxDetails {
+
     private final Address from;
     private final Address to;
     private final Hash256 txHash;
@@ -115,13 +114,19 @@ public final class TxDetails {
         return txIndex;
     }
 
-    public long getTimestamp() { return timestamp; }
+    public long getTimestamp() {
+        return timestamp;
+    }
 
-    public String getError() { return error; }
+    public String getError() {
+        return error;
+    }
+
     /**
      * This Builder class is used to build a {@link TxDetails} instance.
      */
     public static class TxDetailsBuilder {
+
         private Address from;
         private Address to;
         private Address contract;
@@ -136,7 +141,7 @@ public final class TxDetails {
         private long timestamp;
         private String error;
 
-        public TxDetailsBuilder(){
+        public TxDetailsBuilder() {
         }
 
         public TxDetailsBuilder from(final Address from) {
@@ -205,9 +210,10 @@ public final class TxDetails {
         }
 
         public TxDetails createTxDetails() {
-            if (from == null || to == null || contract == null || txHash == null || value == null || nonce == null || data == null) {
+            if (from == null || to == null || contract == null || txHash == null || value == null
+                || nonce == null || data == null) {
                 throw new NullPointerException(
-                        "From#" + String.valueOf(from) +
+                    "From#" + String.valueOf(from) +
                         " To#" + String.valueOf(to) +
                         " Contract#" + String.valueOf(contract) +
                         " Hash#" + String.valueOf(txHash) +
@@ -219,7 +225,7 @@ public final class TxDetails {
 
             if (nrgConsumed < 0 || nrgPrice < 0 || txIndex < 0) {
                 throw new IllegalArgumentException(
-                        "NrgConsumed#" + nrgConsumed +
+                    "NrgConsumed#" + nrgConsumed +
                         " TxIndex#" + String.valueOf(txIndex) +
                         " NrgPrice#" + nrgPrice);
             }

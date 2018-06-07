@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,8 +19,8 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
+
 
 package org.aion.api.type;
 
@@ -46,13 +46,15 @@ import org.aion.base.util.ByteArrayWrapper;
  *
  * @see org.aion.api.ITx#sendTransaction(org.aion.api.type.TxArgs)
  * @see org.aion.api.ITx#sendRawTransaction(org.aion.base.util.ByteArrayWrapper)
- * @see org.aion.api.ITx#sendSignedTransaction(org.aion.api.type.TxArgs, org.aion.base.util.ByteArrayWrapper, java.lang.String)
+ * @see org.aion.api.ITx#sendSignedTransaction(org.aion.api.type.TxArgs, org.aion.base.util.ByteArrayWrapper)
  *
  * </pre>
+ *
  * @author Jay Tseng
  */
 
 public class MsgRsp {
+
     private byte preStatus;
     private byte status;
     private ByteArrayWrapper msgHash;
@@ -61,7 +63,8 @@ public class MsgRsp {
     private ByteArrayWrapper txDeploy;
     private String error;
 
-    private MsgRsp() {}
+    private MsgRsp() {
+    }
 
     public MsgRsp(int rValue, ByteArrayWrapper hash) {
         this.setPreStatus((byte) 106);
@@ -81,7 +84,7 @@ public class MsgRsp {
         newMsg.setTxResult(ByteArrayWrapper.wrap(in.getTxResult().toBytes().clone()));
         newMsg.setTxDeploy(ByteArrayWrapper.wrap(in.getTxDeploy().toBytes().clone()));
         if (in.getError() != null) {
-            newMsg.setError(new StringBuilder(in.getError()).toString());
+            newMsg.setError(in.getError());
         }
         return newMsg;
     }
@@ -134,7 +137,9 @@ public class MsgRsp {
         return error;
     }
 
-    public ByteArrayWrapper getTxDeploy() { return txDeploy; }
+    public ByteArrayWrapper getTxDeploy() {
+        return txDeploy;
+    }
 
     public void setTxDeploy(ByteArrayWrapper txDeploy) {
         this.txDeploy = txDeploy;

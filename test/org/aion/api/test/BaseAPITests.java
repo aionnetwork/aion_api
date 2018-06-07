@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,8 +19,7 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
 
 package org.aion.api.test;
 
@@ -44,15 +43,16 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertSame;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 /**
- * Created by yao on 01/10/16.
- * Contributors Jay Tseng.
+ * Created by yao on 01/10/16. Contributors Jay Tseng.
  */
 public class BaseAPITests {
+
     // Make sure the password of the testing account been set properly
     private final String pw = "";
     private final String url = IAionAPI.LOCALHOST_URL;
@@ -76,7 +76,7 @@ public class BaseAPITests {
     @Test
     public void TestApiMultiConnect() {
         System.out.println("run TestApiMultiConnect.");
-        ApiMsg apiMsg = new ApiMsg();
+        ApiMsg apiMsg;
 
         IAionAPI api1 = IAionAPI.init();
         apiMsg = api1.connect(url);
@@ -90,9 +90,12 @@ public class BaseAPITests {
         apiMsg = api3.connect(url);
         assertFalse(apiMsg.isError());
 
-        System.out.println("api 1 blocknumber: " + api1.getChain().blockNumber().getObject().toString());
-        System.out.println("api 2 blocknumber: " + api1.getChain().blockNumber().getObject().toString());
-        System.out.println("api 3 blocknumber: " + api1.getChain().blockNumber().getObject().toString());
+        System.out
+            .println("api 1 blocknumber: " + api1.getChain().blockNumber().getObject().toString());
+        System.out
+            .println("api 2 blocknumber: " + api1.getChain().blockNumber().getObject().toString());
+        System.out
+            .println("api 3 blocknumber: " + api1.getChain().blockNumber().getObject().toString());
 
         api1.destroyApi();
         api2.destroyApi();
@@ -112,7 +115,7 @@ public class BaseAPITests {
     }
 
     @Test
-    public void TestGetMinerAccount()  {
+    public void TestGetMinerAccount() {
         System.out.println("run TestGetMinerAccount.");
         IAionAPI api = IAionAPI.init();
         api.connect(url);
@@ -147,28 +150,28 @@ public class BaseAPITests {
     }
 
     @Test
-    public void TestGetBlockByNumber()  {
+    public void TestGetBlockByNumber() {
         System.out.println("run TestGetBlockByNumber.");
         IAionAPI api = IAionAPI.init();
 
         api.connect(url);
         Block block = api.getChain().getBlockByNumber(1L).getObject();
 
-        assertTrue(block.getNumber() == 1L);
-        assertTrue(block.getBloom().getData().length == 256);
+        assertEquals(1L, block.getNumber());
+        assertEquals(256, block.getBloom().getData().length);
         assertTrue(block.getDifficulty().compareTo(BigInteger.ZERO) > 0);
-        assertTrue(block.getExtraData().getData().length == 32);
+        assertEquals(32, block.getExtraData().getData().length);
         assertTrue(block.getNrgConsumed() >= 0L);
         assertTrue(block.getNrgLimit() >= 0L);
         assertTrue(block.getTimestamp() <= Instant.now().toEpochMilli());
-        assertTrue(block.getTxHash().size() == 0);
+        assertEquals(0, block.getTxHash().size());
         assertTrue(block.getTotalDifficulty().compareTo(BigInteger.valueOf(100L)) > 0);
         assertTrue(block.getNonce().compareTo(BigInteger.ZERO) != 0);
         api.destroyApi();
     }
 
     @Test
-    public void TestGetTransactionByBlockHashAndIndex()  {
+    public void TestGetTransactionByBlockHashAndIndex() {
         System.out.println("run TestGetTransactionByBlockHashAndIndex.");
         IAionAPI api = IAionAPI.init();
         api.connect(url);
@@ -193,7 +196,7 @@ public class BaseAPITests {
 
         api.getTx().fastTxbuild(builder.createTxArgs());
 
-        long ts = Instant.now().toEpochMilli()*1000;
+        long ts = Instant.now().toEpochMilli() * 1000;
         MsgRsp msgRsp = api.getTx().sendTransaction(null).getObject();
         assertNotNull(msgRsp.getMsgHash());
 
@@ -209,16 +212,16 @@ public class BaseAPITests {
         assertNotNull(transaction.getTxHash());
 
         assertThat(transaction.getBlockNumber(), is(greaterThan(0L)));
-        assertTrue(transaction.getFrom().equals(acc));
+        assertEquals(transaction.getFrom(), acc);
         assertTrue(transaction.getNrgConsumed() > 21000L);
         assertThat(transaction.getNrgPrice(), is(equalTo(NRG_PRICE)));
-        assertTrue(transaction.getTo().equals(acc2));
+        assertEquals(transaction.getTo(), acc2);
 
         assertThat(transaction.getNonce(), is(greaterThanOrEqualTo(BigInteger.ZERO)));
         assertThat(transaction.getTransactionIndex(), is(equalTo(0)));
         assertThat(transaction.getValue(), is(equalTo(BigInteger.ONE)));
         assertThat(transaction.getTimeStamp(), is(greaterThan(ts)));
-        assertTrue(builder.createTxArgs().getData().equals(transaction.getData()));
+        assertEquals(builder.createTxArgs().getData(), transaction.getData());
 
         api.destroyApi();
     }
@@ -248,32 +251,31 @@ public class BaseAPITests {
 
         api.getTx().fastTxbuild(builder.createTxArgs());
 
-        long ts = Instant.now().toEpochMilli()*1000;
+        long ts = Instant.now().toEpochMilli() * 1000;
 
-        Hash256 txHash = ((MsgRsp)api.getTx().sendTransaction(null).getObject()).getTxHash();
+        Hash256 txHash = ((MsgRsp) api.getTx().sendTransaction(null).getObject()).getTxHash();
         assertNotNull(txHash);
 
         TxReceipt txRecpt = api.getTx().getTxReceipt(txHash).getObject();
         assertNotNull(txRecpt);
 
-        Transaction transaction = api.getChain().getTransactionByBlockNumberAndIndex(txRecpt.getBlockNumber(), 0).getObject();
+        Transaction transaction = api.getChain()
+            .getTransactionByBlockNumberAndIndex(txRecpt.getBlockNumber(), 0).getObject();
         assertNotNull(transaction);
-
 
         assertNotNull(transaction.getBlockHash());
         assertNotNull(transaction.getTxHash());
 
         assertThat(transaction.getBlockNumber(), is(greaterThan(0L)));
-        assertTrue(transaction.getFrom().equals(acc));
+        assertEquals(transaction.getFrom(), acc);
         assertThat(transaction.getNrgConsumed(), is(greaterThan(21000L)));
         assertThat(transaction.getNrgPrice(), is(equalTo(NRG_PRICE)));
-        assertTrue(transaction.getTo().equals(acc));
+        assertEquals(transaction.getTo(), acc);
         assertThat(transaction.getNonce(), is(greaterThanOrEqualTo(BigInteger.ZERO)));
         assertThat(transaction.getTransactionIndex(), is(equalTo(0)));
         assertThat(transaction.getValue(), is(equalTo(BigInteger.ONE)));
         assertThat(transaction.getTimeStamp(), is(greaterThan(ts)));
-        assertTrue(builder.createTxArgs().getData().equals(transaction.getData()));
-
+        assertEquals(builder.createTxArgs().getData(), transaction.getData());
 
         api.destroyApi();
     }
@@ -282,7 +284,7 @@ public class BaseAPITests {
     public void TestGetTransactionByBlockNumberAndIndex2() {
         System.out.println("run TestGetTransactionByBlockNumberAndIndex2.");
 
-        IAionAPI api =  IAionAPI.init();
+        IAionAPI api = IAionAPI.init();
         api.connect(url);
 
         List<Address> accs = api.getWallet().getAccounts().getObject();
@@ -297,7 +299,7 @@ public class BaseAPITests {
         List<ContractAbiEntry> abiDef = contracts.get(key).getAbiDefinition();
         assertNotNull(abiDef);
 
-        assertTrue(abiDef.size() == 2);
+        assertEquals(2, abiDef.size());
         assertFalse(abiDef.get(0).anonymous);
         assertFalse(abiDef.get(0).payable);
         assertTrue(abiDef.get(0).constant);
@@ -307,7 +309,7 @@ public class BaseAPITests {
 
         assertTrue(contracts.get(key).getSource().contentEquals(TICKER));
 
-        long ts = Instant.now().toEpochMilli()*1000;
+        long ts = Instant.now().toEpochMilli() * 1000;
         CompileResponse contract = contracts.get(key);
 
         ContractDeploy.ContractDeployBuilder builder = new ContractDeploy.ContractDeployBuilder()
@@ -318,7 +320,8 @@ public class BaseAPITests {
             .nrgPrice(NRG_PRICE)
             .value(BigInteger.ZERO);
 
-        DeployResponse contractResponse = api.getTx().contractDeploy(builder.createContractDeploy()).getObject();
+        DeployResponse contractResponse = api.getTx().contractDeploy(builder.createContractDeploy())
+            .getObject();
 
         assertNotNull(contractResponse);
         assertNotNull(contractResponse.getAddress());
@@ -330,18 +333,19 @@ public class BaseAPITests {
         Transaction tx = apimsg.getObject();
         long blkNr = tx.getBlockNumber();
 
-        Transaction transaction = api.getChain().getTransactionByBlockNumberAndIndex(blkNr, 0).getObject();
+        Transaction transaction = api.getChain().getTransactionByBlockNumberAndIndex(blkNr, 0)
+            .getObject();
         assertNotNull(transaction);
 
         assertNotNull(transaction.getTxHash());
-        assertTrue(transaction.getBlockNumber() == blkNr);
-        assertTrue(transaction.getFrom().equals(accs.get(0)));
+        assertEquals(transaction.getBlockNumber(), blkNr);
+        assertEquals(transaction.getFrom(), accs.get(0));
         assertTrue(transaction.getNrgConsumed() > 21000);
-        assertTrue(transaction.getNrgPrice() == NRG_PRICE);
-        assertTrue(transaction.getTo().equals(Address.EMPTY_ADDRESS()));
+        assertEquals(transaction.getNrgPrice(), NRG_PRICE);
+        assertEquals(transaction.getTo(), Address.EMPTY_ADDRESS());
         assertTrue(transaction.getNonce().compareTo(BigInteger.ZERO) > -1);
-        assertTrue(transaction.getTransactionIndex() == 0);
-        assertTrue(transaction.getValue().equals(BigInteger.ZERO));
+        assertEquals(0, transaction.getTransactionIndex());
+        assertEquals(transaction.getValue(), BigInteger.ZERO);
         assertTrue(transaction.getTimeStamp() > ts);
 
         api.destroyApi();
@@ -362,7 +366,7 @@ public class BaseAPITests {
         assertTrue(api.getWallet().unlockAccount(acc, pw, 300).getObject());
 
         TxArgs.TxArgsBuilder builder = new TxArgs.TxArgsBuilder()
-            .data(ByteArrayWrapper.wrap(IUtils.hex2Bytes("00000000")))
+            .data(ByteArrayWrapper.wrap(Objects.requireNonNull(IUtils.hex2Bytes("00000000"))))
             .from(acc)
             .to(acc)
             .nrgLimit(100000)
@@ -372,7 +376,7 @@ public class BaseAPITests {
 
         api.getTx().fastTxbuild(builder.createTxArgs());
 
-        Hash256 txHash = ((MsgRsp)api.getTx().sendTransaction(null).getObject()).getTxHash();
+        Hash256 txHash = ((MsgRsp) api.getTx().sendTransaction(null).getObject()).getTxHash();
         assertNotNull(txHash);
 
         TxReceipt txRecpt = api.getTx().getTxReceipt(txHash).getObject();
@@ -383,8 +387,8 @@ public class BaseAPITests {
         assertNotNull(txRecpt.getContractAddress());
         assertTrue(txRecpt.getCumulativeNrgUsed() > 21000);
         assertTrue(txRecpt.getNrgConsumed() > 21000);
-        assertTrue(txRecpt.getFrom().equals(acc));
-        assertTrue(txRecpt.getTo().equals(acc));
+        assertEquals(txRecpt.getFrom(), acc);
+        assertEquals(txRecpt.getTo(), acc);
         assertTrue(txRecpt.getTxIndex() > -1);
 
         api.destroyApi();
@@ -400,14 +404,13 @@ public class BaseAPITests {
         assertFalse(msg.isError());
         Thread.sleep(10000);
 
-
         List<Address> accounts = api.getWallet().getAccounts().getObject();
         assertTrue(accounts.size() > 0);
         api.destroyApi();
     }
 
     @Test
-    public void TestUnlockAccount() throws Throwable {
+    public void TestUnlockAccount() {
         System.out.println("run TestUnlockAccount.");
 
         IAionAPI api = IAionAPI.init();
@@ -432,7 +435,9 @@ public class BaseAPITests {
 
         boolean expectGoCatch = false;
         try {
-            Address fakeAcc2 = Address.wrap(new byte[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1});  // 33bytes
+            Address fakeAcc2 = Address.wrap(
+                new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 1});  // 33bytes
             assertTrue(api.getWallet().unlockAccount(fakeAcc2, "", 99999).isError());
         } catch (Exception e) {
             System.out.println("fakeAcc2 exeception#" + e.getMessage());
@@ -445,7 +450,7 @@ public class BaseAPITests {
     }
 
     @Test
-    public void TestSendTransaction() throws Throwable {
+    public void TestSendTransaction() {
         System.out.println("run TestSendTransaction.");
 
         IAionAPI api = IAionAPI.init();
@@ -456,7 +461,6 @@ public class BaseAPITests {
 
         Address acc = (Address) accs.get(0);
         assertTrue(api.getWallet().unlockAccount(acc, pw).getObject());
-
 
         TxArgs.TxArgsBuilder builder = new TxArgs.TxArgsBuilder()
             .data(ByteArrayWrapper.wrap("TestSendTransaction!".getBytes()))
@@ -469,13 +473,13 @@ public class BaseAPITests {
 
         api.getTx().fastTxbuild(builder.createTxArgs());
 
-        Hash256 hash = ((MsgRsp)api.getTx().sendTransaction(null).getObject()).getTxHash();
+        Hash256 hash = ((MsgRsp) api.getTx().sendTransaction(null).getObject()).getTxHash();
         assertNotNull(hash);
         api.destroyApi();
     }
 
     @Test
-    public void TestCompile() throws Throwable {
+    public void TestCompile() {
         System.out.println("run TestCompile.");
 
         IAionAPI api = IAionAPI.init();
@@ -487,7 +491,7 @@ public class BaseAPITests {
 
         List<ContractAbiEntry> abiDef = contracts.get(key).getAbiDefinition();
         assertNotNull(abiDef);
-        assertTrue(abiDef.size() == 2);
+        assertEquals(2, abiDef.size());
         assertFalse(abiDef.get(0).anonymous);
         assertFalse(abiDef.get(0).payable);
         assertTrue(abiDef.get(0).constant);
@@ -500,7 +504,7 @@ public class BaseAPITests {
 
     @Test
     @Ignore
-    public void TestCompileError() throws Throwable {
+    public void TestCompileError() {
         System.out.println("run TestCompileError.");
 
         IAionAPI api = IAionAPI.init();
@@ -508,7 +512,7 @@ public class BaseAPITests {
 
         ApiMsg apiMsg = api.getTx().compile(ERROR_TICKER);
 
-        assertTrue(apiMsg.getErrorCode() == -10);
+        assertEquals(apiMsg.getErrorCode(), -10);
 
         System.out.println("Compile error: " + apiMsg.getObject());
 
@@ -516,10 +520,10 @@ public class BaseAPITests {
     }
 
     @Test
-    public void TestGetTransactionByHash() throws Throwable {
+    public void TestGetTransactionByHash() {
         System.out.println("run TestGetTransactionByHash.");
 
-        IAionAPI api =  IAionAPI.init();
+        IAionAPI api = IAionAPI.init();
         api.connect(url);
 
         List accs = api.getWallet().getAccounts().getObject();
@@ -542,27 +546,28 @@ public class BaseAPITests {
 
         api.getTx().fastTxbuild(builder.createTxArgs());
 
-        long ts = Instant.now().toEpochMilli()*1000;
+        long ts = Instant.now().toEpochMilli() * 1000;
 
-        Hash256 txHash = ((MsgRsp)api.getTx().sendTransaction(null).getObject()).getTxHash();
+        Hash256 txHash = ((MsgRsp) api.getTx().sendTransaction(null).getObject()).getTxHash();
         assertNotNull(txHash);
 
         TxReceipt txRecpt = api.getTx().getTxReceipt(txHash).getObject();
         assertNotNull(txRecpt);
         assertNotNull(txRecpt.getTxLogs());
 
-        Transaction transaction = api.getChain().getTransactionByHash(txRecpt.getTxHash()).getObject();
+        Transaction transaction = api.getChain().getTransactionByHash(txRecpt.getTxHash())
+            .getObject();
         assertNotNull(transaction);
 
         assertNotNull(transaction.getTxHash());
-        assertTrue(transaction.getBlockNumber() == txRecpt.getBlockNumber());
-        assertTrue(transaction.getFrom().equals(acc));
+        assertEquals(transaction.getBlockNumber(), txRecpt.getBlockNumber());
+        assertEquals(transaction.getFrom(), acc);
         assertTrue(transaction.getNrgConsumed() > 21000);
-        assertTrue(transaction.getNrgPrice() == NRG_PRICE);
-        assertTrue(transaction.getTo().equals(acc));
+        assertEquals(transaction.getNrgPrice(), NRG_PRICE);
+        assertEquals(transaction.getTo(), acc);
         assertTrue(transaction.getNonce().compareTo(BigInteger.ZERO) > -1);
-        assertTrue(transaction.getTransactionIndex() == 0);
-        assertTrue(transaction.getValue().equals(BigInteger.ONE));
+        assertEquals(0, transaction.getTransactionIndex());
+        assertEquals(transaction.getValue(), BigInteger.ONE);
         assertTrue(transaction.getTimeStamp() > ts);
         assertEquals(builder.createTxArgs().getData(), transaction.getData());
 
@@ -571,7 +576,7 @@ public class BaseAPITests {
 
     @Test
     @Ignore
-    public void TestGetCode() throws Throwable {
+    public void TestGetCode() {
         System.out.println("run TestGetCode.");
 
         IAionAPI api = IAionAPI.init();
@@ -589,7 +594,7 @@ public class BaseAPITests {
 
         List<ContractAbiEntry> abiDef = contracts.get(key).getAbiDefinition();
         assertNotNull(abiDef);
-        assertTrue(abiDef.size() == 2);
+        assertEquals(2, abiDef.size());
         assertFalse(abiDef.get(0).anonymous);
         assertFalse(abiDef.get(0).payable);
         assertTrue(abiDef.get(0).constant);
@@ -606,7 +611,8 @@ public class BaseAPITests {
             .data(ByteArrayWrapper.wrap(Bytesable.NULL_BYTE))
             .from(accs.get(0));
 
-        DeployResponse contractResponse = api.getTx().contractDeploy(builder.createContractDeploy()).getObject();
+        DeployResponse contractResponse = api.getTx().contractDeploy(builder.createContractDeploy())
+            .getObject();
         assertNotNull(contractResponse);
         assertNotNull(contractResponse.getAddress());
         assertNotNull(contractResponse.getTxid());
@@ -626,7 +632,7 @@ public class BaseAPITests {
     }
 
     @Test
-    public void TestContractDeploy() throws Throwable {
+    public void TestContractDeploy() {
         System.out.println("run TestContractDeploy.");
 
         IAionAPI api = IAionAPI.init();
@@ -644,7 +650,7 @@ public class BaseAPITests {
 
         List<ContractAbiEntry> abiDef = contracts.get(key).getAbiDefinition();
         assertNotNull(abiDef);
-        assertTrue(abiDef.size() == 2);
+        assertEquals(2, abiDef.size());
         assertFalse(abiDef.get(0).anonymous);
         assertFalse(abiDef.get(0).payable);
         assertTrue(abiDef.get(0).constant);
@@ -661,7 +667,8 @@ public class BaseAPITests {
             .data(ByteArrayWrapper.wrap(Bytesable.NULL_BYTE))
             .from(accs.get(0));
 
-        DeployResponse contractResponse = api.getTx().contractDeploy(builder.createContractDeploy()).getObject();
+        DeployResponse contractResponse = api.getTx().contractDeploy(builder.createContractDeploy())
+            .getObject();
         assertNotNull(contractResponse);
         assertNotNull(contractResponse.getAddress());
         assertNotNull(contractResponse.getTxid());
@@ -670,7 +677,7 @@ public class BaseAPITests {
     }
 
     @Test
-    public void GetBlockByHash() throws Throwable {
+    public void GetBlockByHash() {
         System.out.println("run GetBlockByHash.");
 
         IAionAPI api = IAionAPI.init();
@@ -683,7 +690,7 @@ public class BaseAPITests {
         assertTrue(api.getWallet().unlockAccount(acc, pw, 300).getObject());
 
         TxArgs.TxArgsBuilder builder = new TxArgs.TxArgsBuilder()
-            .data(ByteArrayWrapper.wrap(IUtils.hex2Bytes("00000000")))
+            .data(ByteArrayWrapper.wrap(Objects.requireNonNull(IUtils.hex2Bytes("00000000"))))
             .from(acc)
             .to(acc)
             .nrgLimit(100000)
@@ -693,7 +700,7 @@ public class BaseAPITests {
 
         api.getTx().fastTxbuild(builder.createTxArgs());
 
-        Hash256 txHash = ((MsgRsp)api.getTx().sendTransaction(null).getObject()).getTxHash();
+        Hash256 txHash = ((MsgRsp) api.getTx().sendTransaction(null).getObject()).getTxHash();
         assertNotNull(txHash);
 
         TxReceipt txRecpt = api.getTx().getTxReceipt(txHash).getObject();
@@ -703,11 +710,11 @@ public class BaseAPITests {
         Hash256 blockHash = txRecpt.getBlockHash();
         Block block = api.getChain().getBlockByHash(blockHash).getObject();
         assertTrue(block.getDifficulty().compareTo(BigInteger.ZERO) > 0);
-        assertTrue(block.getExtraData().getData().length == 32);
+        assertEquals(32, block.getExtraData().getData().length);
         assertTrue(block.getNrgLimit() > 21000);
         assertTrue(block.getNrgConsumed() > 21000);
         assertNotNull(block.getParentHash());
-        assertTrue(block.getBloom().getData().length == 256);
+        assertEquals(256, block.getBloom().getData().length);
         assertTrue(block.getNonce().compareTo(BigInteger.ZERO) != 0);
         assertTrue(block.getNumber() > 0L);
         assertNotNull(block.getReceiptTxRoot());
@@ -738,7 +745,7 @@ public class BaseAPITests {
         assertTrue(api.getWallet().unlockAccount(acc, pw, 300).getObject());
 
         TxArgs.TxArgsBuilder builder = new TxArgs.TxArgsBuilder()
-            .data(ByteArrayWrapper.wrap(IUtils.hex2Bytes("00000000")))
+            .data(ByteArrayWrapper.wrap(Objects.requireNonNull(IUtils.hex2Bytes("00000000"))))
             .from(acc)
             .to(acc)
             .nrgLimit(100000)
@@ -746,14 +753,13 @@ public class BaseAPITests {
             .value(BigInteger.ZERO)
             .nonce(BigInteger.ZERO);
 
-
         api.getTx().fastTxbuild(builder.createTxArgs());
 
         ApiMsg msg = api.getTx().nonBlock().sendTransaction(null);
 
         assertFalse(msg.isError());
 
-        ByteArrayWrapper msgHash = ((MsgRsp)msg.getObject()).getMsgHash();
+        ByteArrayWrapper msgHash = ((MsgRsp) msg.getObject()).getMsgHash();
 
         Thread.sleep(10000);
 
@@ -761,7 +767,7 @@ public class BaseAPITests {
 
         assertFalse(msg.isError());
 
-        Hash256 txHash = ((MsgRsp)msg.getObject()).getTxHash();
+        Hash256 txHash = ((MsgRsp) msg.getObject()).getTxHash();
         assertNotNull(txHash);
 
         TxReceipt txRecpt = api.getTx().getTxReceipt(txHash).getObject();
@@ -772,11 +778,11 @@ public class BaseAPITests {
         Block block = api.getChain().getBlockByHash(blockHash).getObject();
 
         assertTrue(block.getDifficulty().compareTo(BigInteger.ZERO) > 0);
-        assertTrue(block.getExtraData().getData().length == 32);
+        assertEquals(32, block.getExtraData().getData().length);
         assertTrue(block.getNrgLimit() > 21000);
         assertTrue(block.getNrgConsumed() > 21000);
         assertNotNull(block.getParentHash());
-        assertTrue(block.getBloom().getData().length == 256);
+        assertEquals(256, block.getBloom().getData().length);
         assertTrue(block.getNonce().compareTo(BigInteger.ZERO) != 0);
         assertTrue(block.getNumber() > 0L);
         assertNotNull(block.getReceiptTxRoot());
@@ -795,7 +801,7 @@ public class BaseAPITests {
     }
 
     @Test
-    public void TestGetTransactionCount() throws Throwable {
+    public void TestGetTransactionCount() {
         System.out.println("run TestGetTransactionCount.");
 
         IAionAPI api = IAionAPI.init();
@@ -823,7 +829,8 @@ public class BaseAPITests {
         api.getTx().fastTxbuild(builder.createTxArgs());
 
         final Hash256[] hash = {null};
-        IntStream.range(0, 3).forEach(i -> hash[0] = ((MsgRsp)api.getTx().sendTransaction(null).getObject()).getTxHash());
+        IntStream.range(0, 3).forEach(
+            i -> hash[0] = ((MsgRsp) api.getTx().sendTransaction(null).getObject()).getTxHash());
 
         assertNotNull(hash[0]);
 
@@ -832,12 +839,12 @@ public class BaseAPITests {
         assertNotNull(txRecpt.getTxLogs());
 
         long count2 = api.getChain().getTransactionCount(acc, txRecpt.getBlockNumber()).getObject();
-        assertTrue((count2-count1) > 0);
+        assertTrue((count2 - count1) > 0);
         api.destroyApi();
     }
 
     @Test
-    public void TestGetBlockTransactionCountByHash() throws Throwable {
+    public void TestGetBlockTransactionCountByHash() {
         System.out.println("run TestGetBlockTransactionCountByHash.");
 
         IAionAPI api = IAionAPI.init();
@@ -859,11 +866,11 @@ public class BaseAPITests {
             .value(BigInteger.ZERO)
             .nonce(BigInteger.ZERO);
 
-
         api.getTx().fastTxbuild(builder.createTxArgs());
 
         final Hash256[] hash = {null};
-        IntStream.range(0, 3).forEach(i -> hash[0] = ((MsgRsp)api.getTx().sendTransaction(null).getObject()).getTxHash());
+        IntStream.range(0, 3).forEach(
+            i -> hash[0] = ((MsgRsp) api.getTx().sendTransaction(null).getObject()).getTxHash());
 
         assertNotNull(hash[0]);
 
@@ -871,8 +878,9 @@ public class BaseAPITests {
         assertNotNull(txRecpt);
         assertNotNull(txRecpt.getTxLogs());
 
-        int count = api.getChain().getBlockTransactionCountByHash(txRecpt.getBlockHash()).getObject();
-        assertTrue(count == 1);
+        int count = api.getChain().getBlockTransactionCountByHash(txRecpt.getBlockHash())
+            .getObject();
+        assertEquals(1, count);
 
         api.destroyApi();
     }
@@ -889,7 +897,7 @@ public class BaseAPITests {
 
         Address acc = (Address) accs.get(0);
 
-        assertTrue(api.getWallet().unlockAccount(acc, pw,86400).getObject());
+        assertTrue(api.getWallet().unlockAccount(acc, pw, 86400).getObject());
 
         String testData = "12345678";
         TxArgs.TxArgsBuilder builder = new TxArgs.TxArgsBuilder()
@@ -904,8 +912,9 @@ public class BaseAPITests {
         api.getTx().fastTxbuild(builder.createTxArgs());
 
         final Hash256[] hash = {null};
-        for (int i=0 ; i<1000 ; i++) {
-            hash[0] = ((MsgRsp)api.getTx().nonBlock().sendTransaction(null).getObject()).getTxHash();
+        for (int i = 0; i < 1000; i++) {
+            hash[0] = ((MsgRsp) api.getTx().nonBlock().sendTransaction(null).getObject())
+                .getTxHash();
         }
 
         Thread.sleep(60000);
@@ -915,13 +924,14 @@ public class BaseAPITests {
         assertNotNull(txRecpt);
         assertNotNull(txRecpt.getTxLogs());
 
-        int count = api.getChain().getBlockTransactionCountByNumber(txRecpt.getBlockNumber()).getObject();
+        int count = api.getChain().getBlockTransactionCountByNumber(txRecpt.getBlockNumber())
+            .getObject();
         assertTrue(count > 1);
         api.destroyApi();
     }
 
     @Test
-    public void TestCall() throws Throwable {
+    public void TestCall() {
         System.out.println("run TestCall.");
 
         IAionAPI api = IAionAPI.init();
@@ -937,7 +947,7 @@ public class BaseAPITests {
 
         List<ContractAbiEntry> abiDef = contracts.get(key).getAbiDefinition();
         assertNotNull(abiDef);
-        assertTrue(abiDef.size() == 2);
+        assertEquals(2, abiDef.size());
         assertFalse(abiDef.get(0).anonymous);
         assertFalse(abiDef.get(0).payable);
         assertTrue(abiDef.get(0).constant);
@@ -954,8 +964,8 @@ public class BaseAPITests {
             .data(ByteArrayWrapper.wrap(Bytesable.NULL_BYTE))
             .from(accs.get(0));
 
-
-        DeployResponse contractResponse = api.getTx().contractDeploy(builder.createContractDeploy()).getObject();
+        DeployResponse contractResponse = api.getTx().contractDeploy(builder.createContractDeploy())
+            .getObject();
         assertNotNull(contractResponse);
         assertNotNull(contractResponse.getAddress());
         assertNotNull(contractResponse.getTxid());
@@ -973,7 +983,9 @@ public class BaseAPITests {
         String functionCall = VAL + "()";
 
         // retrieve first 8 bytes of keccak-256 hashed value
-        String hashFunctionCall = IUtils.bytes2Hex(IUtils.sha3(Arrays.copyOfRange(functionCall.getBytes(), 0, 5))).substring(0, 8);
+        String hashFunctionCall = Objects.requireNonNull(IUtils
+            .bytes2Hex(IUtils.sha3(Arrays.copyOfRange(functionCall.getBytes(), 0, 5))))
+            .substring(0, 8);
         byte[] hashFunctionCallBytes = IUtils.hex2Bytes(hashFunctionCall);
         assertThat(hashFunctionCall, is(equalTo("3c6bb436")));
 
@@ -992,12 +1004,13 @@ public class BaseAPITests {
 
         ByteArrayWrapper returnHash = ByteArrayWrapper.wrap(api.getTx().call(txArgs).getObject());
         // 16-bytes
-        assertTrue(returnHash.equals(ByteArrayWrapper.wrap(IUtils.hex2Bytes("00000000000000000000000000000000"))));
+        assertEquals(returnHash, ByteArrayWrapper.wrap(Objects
+            .requireNonNull(IUtils.hex2Bytes("00000000000000000000000000000000"))));
         api.destroyApi();
     }
 
     @Test
-    public void TestEstimateNrg() throws Throwable {
+    public void TestEstimateNrg() {
         System.out.println("run TestEstimateNrg.");
 
         IAionAPI api = IAionAPI.init();
@@ -1013,7 +1026,7 @@ public class BaseAPITests {
 
         List<ContractAbiEntry> abiDef = contracts.get(key).getAbiDefinition();
         assertNotNull(abiDef);
-        assertTrue(abiDef.size() == 2);
+        assertEquals(2, abiDef.size());
         assertFalse(abiDef.get(0).anonymous);
         assertFalse(abiDef.get(0).payable);
         assertTrue(abiDef.get(0).constant);
@@ -1030,8 +1043,8 @@ public class BaseAPITests {
             .data(ByteArrayWrapper.wrap(Bytesable.NULL_BYTE))
             .from(accs.get(0));
 
-
-        DeployResponse contractResponse = api.getTx().contractDeploy(builder.createContractDeploy()).getObject();
+        DeployResponse contractResponse = api.getTx().contractDeploy(builder.createContractDeploy())
+            .getObject();
         assertNotNull(contractResponse);
         assertNotNull(contractResponse.getAddress());
         assertNotNull(contractResponse.getTxid());
@@ -1049,7 +1062,9 @@ public class BaseAPITests {
         String functionCall = VAL + "()";
 
         // retrieve first 8 bytes of keccak-256 hashed value
-        String hashFunctionCall = IUtils.bytes2Hex(IUtils.sha3(Arrays.copyOfRange(functionCall.getBytes(), 0, 5))).substring(0, 8);
+        String hashFunctionCall = Objects.requireNonNull(IUtils
+            .bytes2Hex(IUtils.sha3(Arrays.copyOfRange(functionCall.getBytes(), 0, 5))))
+            .substring(0, 8);
         byte[] hashFunctionCallBytes = IUtils.hex2Bytes(hashFunctionCall);
         assertThat(hashFunctionCall, is(equalTo("3c6bb436")));
 
@@ -1073,7 +1088,7 @@ public class BaseAPITests {
 
 
     @Test
-    public void TestIsSyncing() throws Throwable {
+    public void TestIsSyncing() {
         System.out.println("run TestIsSyncing.");
 
         IAionAPI api = IAionAPI.init();
@@ -1086,7 +1101,7 @@ public class BaseAPITests {
     }
 
     @Test
-    public void TestGetActiveNodes() throws Throwable {
+    public void TestGetActiveNodes() {
         System.out.println("run TestGetActiveNodes.");
 
         IAionAPI api = IAionAPI.init();
@@ -1099,12 +1114,11 @@ public class BaseAPITests {
 
         // TODO: check return data
 
-
         api.destroyApi();
     }
 
     @Test
-    public void TestGetStaticNodes() throws Throwable {
+    public void TestGetStaticNodes() {
         System.out.println("run TestGetStaticNodes.");
 
         IAionAPI api = IAionAPI.init();
@@ -1120,7 +1134,7 @@ public class BaseAPITests {
     }
 
     @Test
-    public void TestGetSolcVersion() throws Throwable {
+    public void TestGetSolcVersion() {
         System.out.println("run TestGetSolcVersion.");
 
         IAionAPI api = IAionAPI.init();
@@ -1136,7 +1150,7 @@ public class BaseAPITests {
     }
 
     @Test
-    public void GetSyncInfo() throws Throwable {
+    public void GetSyncInfo() {
         System.out.println("run GetSyncInfo.");
 
         IAionAPI api = IAionAPI.init();
@@ -1157,7 +1171,7 @@ public class BaseAPITests {
     }
 
     @Test
-    public void GetIsMining() throws Throwable {
+    public void GetIsMining() {
         System.out.println("run GetIsMining.");
 
         IAionAPI api = IAionAPI.init();
@@ -1174,7 +1188,7 @@ public class BaseAPITests {
     }
 
     @Test
-    public void TestApiConnectTwice() throws Throwable {
+    public void TestApiConnectTwice() {
         System.out.println("run TestApiConnectTwice.");
 
         IAionAPI api = IAionAPI.init();
@@ -1191,7 +1205,6 @@ public class BaseAPITests {
 
         api.connect(url);
 
-
         apiMsg.set(api.getNet().getProtocolVersion());
         assertFalse(apiMsg.isError());
 
@@ -1201,7 +1214,7 @@ public class BaseAPITests {
     }
 
     @Test
-    public void TestApiReConnect() throws Throwable {
+    public void TestApiReConnect() {
         System.out.println("run TestApiReConnect.");
 
         IAionAPI api = IAionAPI.init();
@@ -1211,7 +1224,7 @@ public class BaseAPITests {
     }
 
     @Test
-    public void TestAccountCreate() throws Throwable {
+    public void TestAccountCreate() {
         System.out.println("run TestAccountCreate.");
 
         IAionAPI api = IAionAPI.init();
@@ -1224,10 +1237,10 @@ public class BaseAPITests {
 
         List<Key> k = apiMsg.getObject();
         assertNotNull(k);
-        assertTrue(k.size() == 1);
+        assertEquals(1, k.size());
 
         assertNotNull(k.get(0).getPubKey());
-        assertTrue(k.get(0).getPriKey().getData() == ByteArrayWrapper.NULL_BYTE);
+        assertSame(k.get(0).getPriKey().getData(), ByteArrayWrapper.NULL_BYTE);
 
         apiMsg.set(api.getAccount().accountCreate(Collections.singletonList(pw), true));
         assertFalse(apiMsg.isError());
@@ -1238,7 +1251,7 @@ public class BaseAPITests {
         assertNotNull(k.get(0).getPriKey().getData());
 
         List<String> sList = new ArrayList<>();
-        for (int i=0 ; i<10 ; i++) {
+        for (int i = 0; i < 10; i++) {
             sList.add("");
         }
 
@@ -1247,11 +1260,11 @@ public class BaseAPITests {
 
         k = apiMsg.getObject();
         assertNotNull(k);
-        assertTrue(k.size() == 10);
+        assertEquals(10, k.size());
 
-        for (int i=0; i< 10 ; i++) {
+        for (int i = 0; i < 10; i++) {
             assertNotNull(k.get(i).getPubKey());
-            assertTrue(k.get(i).getPriKey().getData() == ByteArrayWrapper.NULL_BYTE);
+            assertSame(k.get(i).getPriKey().getData(), ByteArrayWrapper.NULL_BYTE);
         }
 
         apiMsg.set(api.getAccount().accountCreate(sList, true));
@@ -1259,8 +1272,8 @@ public class BaseAPITests {
 
         k = apiMsg.getObject();
         assertNotNull(k);
-        assertTrue(k.size() == 10);
-        for (int i=0; i< 10 ; i++) {
+        assertEquals(10, k.size());
+        for (int i = 0; i < 10; i++) {
             assertNotNull(k.get(0).getPubKey());
             assertNotNull(k.get(0).getPriKey().getData());
         }
@@ -1269,7 +1282,7 @@ public class BaseAPITests {
     }
 
     @Test
-    public void TestAccountExport() throws Throwable {
+    public void TestAccountExport() {
         System.out.println("run TestAccountExport.");
 
         IAionAPI api = IAionAPI.init();
@@ -1280,7 +1293,7 @@ public class BaseAPITests {
         assertTrue(accs.size() > 0);
 
         List<Key> keys = new ArrayList<>();
-        for (int i=0 ; i<accs.size() && i<2 ; i++) {
+        for (int i = 0; i < accs.size() && i < 2; i++) {
             keys.add(new Key(accs.get(i), pw));
         }
 
@@ -1292,13 +1305,13 @@ public class BaseAPITests {
         assertNotNull(ke);
         assertNotNull(ke.getInvalidAddress());
         assertNotNull(ke.getKeyFiles());
-        assertTrue( keys.size() == ke.getKeyFiles().size() + ke.getInvalidAddress().size());
+        assertEquals(keys.size(), ke.getKeyFiles().size() + ke.getInvalidAddress().size());
 
         api.destroyApi();
     }
 
     @Test
-    public void TestAccountBackup() throws Throwable {
+    public void TestAccountBackup() {
         System.out.println("run TestAccountBackup.");
 
         IAionAPI api = IAionAPI.init();
@@ -1309,7 +1322,7 @@ public class BaseAPITests {
         assertTrue(accs.size() > 0);
 
         List<Key> keys = new ArrayList<>();
-        for (int i=0 ; i<accs.size() && i<2 ; i++) {
+        for (int i = 0; i < accs.size() && i < 2; i++) {
             keys.add(new Key(accs.get(i), pw));
         }
 
@@ -1321,14 +1334,14 @@ public class BaseAPITests {
         assertNotNull(ke);
         assertNotNull(ke.getInvalidAddress());
         assertNotNull(ke.getKeyFiles());
-        assertTrue( keys.size() == ke.getKeyFiles().size() + ke.getInvalidAddress().size());
+        assertEquals(keys.size(), ke.getKeyFiles().size() + ke.getInvalidAddress().size());
 
         api.destroyApi();
     }
 
     @Test
     @Ignore
-    public void TestAccountImport() throws Throwable {
+    public void TestAccountImport() {
         System.out.println("run TestAccountImport.");
 
         IAionAPI api = IAionAPI.init();
@@ -1339,7 +1352,7 @@ public class BaseAPITests {
         assertTrue(accs.size() > 0);
 
         List<Key> keys = new ArrayList<>();
-        for (int i=0 ; i<accs.size() && i<10 ; i++) {
+        for (int i = 0; i < accs.size() && i < 10; i++) {
             keys.add(new Key(accs.get(i), pw));
         }
 
@@ -1349,10 +1362,10 @@ public class BaseAPITests {
         assertNotNull(ke);
         assertNotNull(ke.getInvalidAddress());
         assertNotNull(ke.getKeyFiles());
-        assertTrue( keys.size() == ke.getKeyFiles().size() + ke.getInvalidAddress().size());
+        assertEquals(keys.size(), ke.getKeyFiles().size() + ke.getInvalidAddress().size());
 
         Map<String, String> keyMap = new HashMap<>();
-        for(ByteArrayWrapper s : ke.getKeyFiles()) {
+        for (ByteArrayWrapper s : ke.getKeyFiles()) {
             keyMap.put(s.toString(), pw);
         }
 
@@ -1361,13 +1374,13 @@ public class BaseAPITests {
 
         List<String> invalidKey = apiMsg.getObject();
         assertNotNull(invalidKey);
-        assertTrue(invalidKey.size() == keyMap.size());
+        assertEquals(invalidKey.size(), keyMap.size());
 
         api.destroyApi();
     }
 
     @Test
-    public void TestlockAccount() throws Throwable {
+    public void TestlockAccount() {
         System.out.println("run TestlockAccount.");
 
         IAionAPI api = IAionAPI.init();
@@ -1381,7 +1394,7 @@ public class BaseAPITests {
     }
 
     @Test
-    public void TestSendSignedTransaction() throws Throwable {
+    public void TestSendSignedTransaction() {
         System.out.println("run TestSendSignedTransaction.");
 
         IAionAPI api = IAionAPI.init();
@@ -1398,7 +1411,7 @@ public class BaseAPITests {
 
         KeyExport ke = msg.getObject();
         assertNotNull(ke);
-        assertTrue(ke.getKeyFiles().size() == 1);
+        assertEquals(1, ke.getKeyFiles().size());
 
         ByteArrayWrapper bw = ke.getKeyFiles().get(0);
         assertNotNull(bw);
@@ -1413,16 +1426,16 @@ public class BaseAPITests {
             // make sure the nonce setting is correct
             .nonce(BigInteger.ZERO);
 
-        msg.set(api.getTx().sendSignedTransaction(builder.createTxArgs() ,bw, pw));
+        msg.set(api.getTx().sendSignedTransaction(builder.createTxArgs(), bw));
         assertFalse(msg.isError());
 
-        Hash256 hash = ((MsgRsp)msg.getObject()).getTxHash();
+        Hash256 hash = ((MsgRsp) msg.getObject()).getTxHash();
         assertNotNull(hash);
         api.destroyApi();
     }
 
     @Test
-    public void TestSendRawTransaction() throws Throwable {
+    public void TestSendRawTransaction() {
         System.out.println("run TestSendSignedTransaction.");
 
         IAionAPI api = IAionAPI.init();
@@ -1440,7 +1453,7 @@ public class BaseAPITests {
 
         KeyExport ke = msg.getObject();
         assertNotNull(ke);
-        assertTrue(ke.getKeyFiles().size() == 1);
+        assertEquals(1, ke.getKeyFiles().size());
 
         // create an ECKey object
         ByteArrayWrapper bw = ke.getKeyFiles().get(0);
@@ -1468,7 +1481,7 @@ public class BaseAPITests {
         msg.set(api.getTx().sendRawTransaction(ByteArrayWrapper.wrap(tx0.getEncoded())));
         assertFalse(msg.isError());
 
-        Hash256 hash = ((MsgRsp)msg.getObject()).getTxHash();
+        Hash256 hash = ((MsgRsp) msg.getObject()).getTxHash();
         assertNotNull(hash);
 
         BigInteger b1 = api.getChain().getBalance(acc).getObject();
@@ -1481,13 +1494,13 @@ public class BaseAPITests {
         Transaction tx1 = apimsg.getObject();
         BigInteger diff = b0.subtract(b1);
 
-        assertTrue(((tx1.getNrgConsumed() * NRG_PRICE) + transfer) == diff.longValue());
+        assertEquals(((tx1.getNrgConsumed() * NRG_PRICE) + transfer), diff.longValue());
 
         api.destroyApi();
     }
 
     @Test
-    public void TestGetBlockDetailsByNumber() throws Throwable {
+    public void TestGetBlockDetailsByNumber() {
         System.out.println("run TestGetBlockDetailsByNumber.");
 
         IAionAPI api = IAionAPI.init();
@@ -1499,13 +1512,13 @@ public class BaseAPITests {
 
         List<BlockDetails> bds = msg.getObject();
         assertNotNull(bds);
-        assertTrue(bds.size() == 16);
+        assertEquals(16, bds.size());
 
         api.destroyApi();
     }
 
     @Test
-    public void TestGetBlockDetailsByLatest() throws Throwable {
+    public void TestGetBlockDetailsByLatest() {
         System.out.println("run TestGetBlockDetailsByLatest.");
 
         IAionAPI api = IAionAPI.init();
@@ -1516,13 +1529,13 @@ public class BaseAPITests {
 
         List<BlockDetails> bds = msg.getObject();
         assertNotNull(bds);
-        assertTrue(bds.size() == 100);
+        assertEquals(100, bds.size());
 
         api.destroyApi();
     }
 
     @Test
-    public void TestGetBlocksByLatest() throws Throwable {
+    public void TestGetBlocksByLatest() {
         System.out.println("run TestGetBlocksByLatest.");
 
         IAionAPI api = IAionAPI.init();
@@ -1533,13 +1546,13 @@ public class BaseAPITests {
 
         List<Block> blks = msg.getObject();
         assertNotNull(blks);
-        assertTrue(blks.size() == 100);
+        assertEquals(100, blks.size());
 
         api.destroyApi();
     }
 
     @Test
-    public void TestGetBlocksSqlByRange() throws Throwable {
+    public void TestGetBlocksSqlByRange() {
         System.out.println("run TestGetBlocksSqlByRange.");
 
         IAionAPI api = IAionAPI.init();
@@ -1561,7 +1574,7 @@ public class BaseAPITests {
         }
 
         System.out.println("bench: " + (t1 - t0) + " ms");
-        System.out.println("time/txn: " + totalTime / (double)totalTxns);
+        System.out.println("time/txn: " + totalTime / (double) totalTxns);
 
         assertNotNull(blks);
 
@@ -1570,7 +1583,7 @@ public class BaseAPITests {
 
     @SuppressWarnings("Duplicates")
     @Test
-    public void TestGetBlocksDetailsByRange() throws Throwable {
+    public void TestGetBlocksDetailsByRange() {
         System.out.println("run TestGetBlocksDetailsByRange.");
 
         IAionAPI api = IAionAPI.init();
@@ -1592,7 +1605,7 @@ public class BaseAPITests {
         }
 
         System.out.println("bench: " + (t1 - t0) + " ms");
-        System.out.println("time/txn: " + totalTime / (double)totalTxns);
+        System.out.println("time/txn: " + totalTime / (double) totalTxns);
 
         assertNotNull(blks);
 
@@ -1637,7 +1650,7 @@ public class BaseAPITests {
         }
         while (retry < 100);
 
-        assertFalse(msg == null);
+        assertNotNull(msg);
         assertFalse(msg.isError());
         List<BlockSql> blks = msg.getObject();
 
@@ -1651,7 +1664,7 @@ public class BaseAPITests {
         }
 
         System.out.println("bench: " + (t1 - t0) + " ms");
-        System.out.println("time/txn: " + totalTime / (double)totalTxns);
+        System.out.println("time/txn: " + totalTime / (double) totalTxns);
 
         assertNotNull(blks);
 
@@ -1659,7 +1672,7 @@ public class BaseAPITests {
     }
 
     @Test
-    public void TestGetAccountDetailsByAddressList() throws Throwable {
+    public void TestGetAccountDetailsByAddressList() {
         System.out.println("run TestGetAccountDetailsByAddressList.");
 
         IAionAPI api = IAionAPI.init();
@@ -1695,7 +1708,6 @@ public class BaseAPITests {
         IAionAPI api = IAionAPI.init();
         ApiMsg apiMsg = api.connect(url);
         assertFalse(apiMsg.isError());
-        api.connect(url);
 
         apiMsg.set(api.getWallet().getAccounts());
         assertFalse(apiMsg.isError());
@@ -1736,12 +1748,12 @@ public class BaseAPITests {
         assertFalse(apiMsg.isError());
         BigInteger balance = apiMsg.getObject();
         System.out.println("The account balance is " + balance);
-        assertFalse(balance.equals(BigInteger.ZERO));
+        assertNotEquals(balance, BigInteger.ZERO);
 
         Assert.assertTrue(api.getWallet().unlockAccount(acc, pw, 300).getObject());
 
         TxArgs.TxArgsBuilder builder = new TxArgs.TxArgsBuilder()
-            .data(ByteArrayWrapper.wrap(IUtils.hex2Bytes("00000000")))
+            .data(ByteArrayWrapper.wrap(Objects.requireNonNull(IUtils.hex2Bytes("00000000"))))
             .from(acc)
             .to(acc)
             .nrgLimit(100000)
@@ -1750,7 +1762,7 @@ public class BaseAPITests {
             .nonce(BigInteger.ZERO);
         api.getTx().fastTxbuild(builder.createTxArgs());
 
-        Hash256 txHash = ((MsgRsp)api.getTx().sendTransaction(null).getObject()).getTxHash();
+        Hash256 txHash = ((MsgRsp) api.getTx().sendTransaction(null).getObject()).getTxHash();
         assertNotNull(txHash);
 
         apiMsg.set(api.getChain().getNonce(acc));
@@ -1758,7 +1770,7 @@ public class BaseAPITests {
         BigInteger currNonce = apiMsg.getObject();
         assertNotNull(currNonce);
         System.out.println("Previous nonce " + prevNonce + " current nonce " + currNonce);
-        Assert.assertTrue(currNonce.subtract(prevNonce).equals(BigInteger.ONE));
+        Assert.assertEquals(currNonce.subtract(prevNonce), BigInteger.ONE);
 
         api.destroyApi();
     }
@@ -1785,7 +1797,7 @@ public class BaseAPITests {
 
     @Test
     public void TestApiShutdown() {
-        for (int i=0; i<3; i++) {
+        for (int i = 0; i < 4; i++) {
             System.out.println("run TestGracefulShutdown.");
 
             IAionAPI api = IAionAPI.init();
@@ -1818,7 +1830,10 @@ public class BaseAPITests {
 
         int nbRunning = 0;
         for (Thread t : Thread.getAllStackTraces().keySet()) {
-            if (t.getState()==Thread.State.RUNNABLE) nbRunning++;
+            if (t.getState() == Thread.State.RUNNABLE) {
+                System.out.println("thread " + t.getName() + " Runnable");
+                nbRunning++;
+            }
         }
 
         assertEquals(4, nbRunning);

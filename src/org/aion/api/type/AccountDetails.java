@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,8 +19,7 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
 
 package org.aion.api.type;
 
@@ -34,6 +33,7 @@ import java.math.BigInteger;
  */
 
 public final class AccountDetails {
+
     private final Address address;
     private final BigInteger balance;
 
@@ -42,18 +42,24 @@ public final class AccountDetails {
         this.balance = builder.balance;
     }
 
-    public Address getAddress() { return address; }
+    public Address getAddress() {
+        return address;
+    }
 
-    public BigInteger getBalance() { return balance; }
+    public BigInteger getBalance() {
+        return balance;
+    }
 
     /**
      * This Builder class is used to build a {@link AccountDetails } instance.
      */
     public static class AccountDetailsBuilder {
+
         private Address address;
         private BigInteger balance;
 
-        public AccountDetailsBuilder(){}
+        public AccountDetailsBuilder() {
+        }
 
         public AccountDetailsBuilder address(final Address address) {
             this.address = address;
@@ -67,7 +73,8 @@ public final class AccountDetails {
 
         public AccountDetails createAccountDetails() {
             if (address == null || balance == null) {
-                throw new NullPointerException("Address#" + String.valueOf(address) + " Balance#" + String.valueOf(balance));
+                throw new NullPointerException(
+                    "Address#" + String.valueOf(address) + " Balance#" + String.valueOf(balance));
             }
 
             return new AccountDetails(this);

@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,8 +19,7 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
 
 package org.aion.api.type;
 
@@ -32,17 +31,18 @@ import java.math.BigInteger;
 import java.util.List;
 
 /**
- * The BlockDetails return the detailed block information including the transactions and the transaction logs
+ * The BlockDetails return the detailed block information including the transactions and the
+ * transaction logs
  *
+ * @author Jay Tseng
  * @see org.aion.api.IAdmin#getBlockDetailsByNumber(java.lang.String)  getBlockDetailsByNumber
  * @see org.aion.api.IAdmin#getBlockDetailsByNumber(java.util.List)  getBlockDetailsByNumber
  * @see org.aion.api.type.TxDetails TxDetails
  * @see org.aion.api.type.TxLog TxLog
- *
- * @author Jay Tseng
  */
 
 public final class BlockDetails {
+
     private final long number;
     private final long timestamp;
     private final long nrgConsumed;
@@ -157,9 +157,12 @@ public final class BlockDetails {
         return totalDifficulty;
     }
 
-    public long getBlockTime() { return blockTime; }
+    public long getBlockTime() {
+        return blockTime;
+    }
 
     public static class BlockDetailsBuilder {
+
         private long number;
         private long timestamp;
         private long nrgConsumed;
@@ -218,7 +221,7 @@ public final class BlockDetails {
             return this;
         }
 
-        public BlockDetailsBuilder txDetails(final List txDetails) {
+        public BlockDetailsBuilder txDetails(final List<TxDetails> txDetails) {
             this.txDetails = txDetails;
             return this;
         }
@@ -280,29 +283,31 @@ public final class BlockDetails {
 
         public BlockDetails createBlockDetails() {
 
-            if (bloom == null || extraData == null || solution == null || txDetails == null || parentHash == null || hash == null
-                    || nonce == null || difficulty == null || minerAddress == null || stateRoot == null || txTrieRoot == null
-                    || receiptTxRoot == null || totalDifficulty == null) {
+            if (bloom == null || extraData == null || solution == null || txDetails == null
+                || parentHash == null || hash == null
+                || nonce == null || difficulty == null || minerAddress == null || stateRoot == null
+                || txTrieRoot == null
+                || receiptTxRoot == null || totalDifficulty == null) {
                 throw new NullPointerException(
-                        "bloom#" + String.valueOf(bloom) +
-                                " extraData#" + String.valueOf(extraData) +
-                                " solution#" + String.valueOf(solution) +
-                                " txDetails#" + String.valueOf(txDetails) +
-                                " parentHash#" + String.valueOf(parentHash) +
-                                " hash#" + String.valueOf(hash) +
-                                " nonce#" + String.valueOf(nonce) +
-                                " difficulty#" + String.valueOf(difficulty) +
-                                " total difficulty#" + String.valueOf(totalDifficulty) +
-                                " minerAddress#" + String.valueOf(minerAddress) +
-                                " stateRoot#" + String.valueOf(stateRoot) +
-                                " txTrieRoot#" + String.valueOf(txTrieRoot) +
-                                " receiptTxRoot#" + String.valueOf(receiptTxRoot));
+                    "bloom#" + String.valueOf(bloom) +
+                        " extraData#" + String.valueOf(extraData) +
+                        " solution#" + String.valueOf(solution) +
+                        " txDetails#" + String.valueOf(txDetails) +
+                        " parentHash#" + String.valueOf(parentHash) +
+                        " hash#" + String.valueOf(hash) +
+                        " nonce#" + String.valueOf(nonce) +
+                        " difficulty#" + String.valueOf(difficulty) +
+                        " total difficulty#" + String.valueOf(totalDifficulty) +
+                        " minerAddress#" + String.valueOf(minerAddress) +
+                        " stateRoot#" + String.valueOf(stateRoot) +
+                        " txTrieRoot#" + String.valueOf(txTrieRoot) +
+                        " receiptTxRoot#" + String.valueOf(receiptTxRoot));
             }
 
             if (number < 0 || timestamp < 0 || nrgConsumed < 0 || nrgLimit < 0 || size < 0) {
                 throw new IllegalArgumentException("Block#" + number + " Time#" + timestamp
-                        + " NrgConsumed#" + nrgConsumed + " NrgLimit#" + nrgLimit
-                        + " size#" + size);
+                    + " NrgConsumed#" + nrgConsumed + " NrgLimit#" + nrgLimit
+                    + " size#" + size);
             }
 
             return new BlockDetails(this);

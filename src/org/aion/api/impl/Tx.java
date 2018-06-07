@@ -262,7 +262,7 @@ public final class Tx implements ITx {
     }
 
     @Override
-    public ApiMsg sendSignedTransaction(TxArgs args, ByteArrayWrapper key, String passphrase) {
+    public ApiMsg sendSignedTransaction(TxArgs args, ByteArrayWrapper key) {
         if (!this.apiInst.isConnected()) {
             return new ApiMsg(-1003);
         }
@@ -277,7 +277,7 @@ public final class Tx implements ITx {
             return new ApiMsg(-303);
         }
 
-        if (key == null || passphrase == null) {
+        if (key == null) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[sendTransaction] {}", ErrId.getErrString(-315L));
             }

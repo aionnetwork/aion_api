@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,16 +19,15 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
 
 package org.aion.api.type;
 
 import java.util.List;
 
 /**
- * Represents the name and type of the associated I/O parameter within a ABI
- * Entry (function), typically only type is significant.
+ * Represents the name and type of the associated I/O parameter within a ABI Entry (function),
+ * typically only type is significant.
  *
  * @author Jay Tseng
  */

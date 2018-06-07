@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,8 +19,8 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
+
 
 package org.aion.api.type;
 
@@ -32,16 +32,18 @@ package org.aion.api.type;
 
 
 public final class SyncInfo {
+
     private final boolean syncing;
     private final long networkBestBlock;
     private final long chainBestBlock;
     private final long maxImportBlocks;
 
-    public SyncInfo(boolean syncing, long networkBestBlock, long chainBestBlock, long maxImportBlocks) {
+    public SyncInfo(boolean syncing, long networkBestBlock, long chainBestBlock,
+        long maxImportBlocks) {
         if (networkBestBlock < 0 || chainBestBlock < 0 || maxImportBlocks < 1) {
             throw new IllegalArgumentException("networkBestBlock#" + networkBestBlock +
-                    " chainBestBlock#" + chainBestBlock +
-                    " maxImportBlocks#" + maxImportBlocks);
+                " chainBestBlock#" + chainBestBlock +
+                " maxImportBlocks#" + maxImportBlocks);
         }
 
         this.syncing = syncing;

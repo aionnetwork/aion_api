@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,8 +19,7 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
 
 package org.aion.api.type;
 
@@ -34,13 +33,13 @@ import java.util.List;
 /**
  * The Block return data structure, typically used in Block getter API.
  *
+ * @author Jay Tseng
  * @see org.aion.api.IChain#getBlockByNumber(long) getBlockByNumber
  * @see org.aion.api.IChain#getBlockByHash(Hash256) getBlockByHash
- *
- * @author Jay Tseng
  */
 
 public final class Block {
+
     private final long number;
     private final long timestamp;
     private final long nrgConsumed;
@@ -145,7 +144,9 @@ public final class Block {
         return txHash;
     }
 
-    public int getSize() { return size; }
+    public int getSize() {
+        return size;
+    }
 
     public BigInteger getTotalDifficulty() {
         return totalDifficulty;
@@ -155,6 +156,7 @@ public final class Block {
      * This Builder class is used to build a {@link Block} instance.
      */
     public static class BlockBuilder {
+
         private long number;
         private long timestamp;
         private long nrgConsumed;
@@ -214,7 +216,7 @@ public final class Block {
             return this;
         }
 
-        public BlockBuilder txHash(final List txHash) {
+        public BlockBuilder txHash(final List<Hash256> txHash) {
             this.txHash = txHash;
             return this;
         }
@@ -271,28 +273,30 @@ public final class Block {
 
         public Block createBlock() {
 
-            if (bloom == null || extraData == null || solution == null || txHash == null || parentHash == null
-                    || nonce == null || difficulty == null || minerAddress == null || stateRoot == null || txTrieRoot == null
-                    || receiptTxRoot == null || totalDifficulty == null) {
+            if (bloom == null || extraData == null || solution == null || txHash == null
+                || parentHash == null
+                || nonce == null || difficulty == null || minerAddress == null || stateRoot == null
+                || txTrieRoot == null
+                || receiptTxRoot == null || totalDifficulty == null) {
                 throw new NullPointerException(
-                        "bloom#" + String.valueOf(bloom) +
-                                " extraData#" + String.valueOf(extraData) +
-                                " solution#" + String.valueOf(solution) +
-                                " txHash#" + String.valueOf(txHash) +
-                                " parentHash#" + String.valueOf(parentHash) +
-                                " nonce#" + String.valueOf(nonce) +
-                                " difficulty#" + String.valueOf(difficulty) +
-                                " totalDifficulty#" + String.valueOf(totalDifficulty) +
-                                " minerAddress#" + String.valueOf(minerAddress) +
-                                " stateRoot#" + String.valueOf(stateRoot) +
-                                " txTrieRoot#" + String.valueOf(txTrieRoot) +
-                                " receiptTxRoot#" + String.valueOf(receiptTxRoot));
+                    "bloom#" + String.valueOf(bloom) +
+                        " extraData#" + String.valueOf(extraData) +
+                        " solution#" + String.valueOf(solution) +
+                        " txHash#" + String.valueOf(txHash) +
+                        " parentHash#" + String.valueOf(parentHash) +
+                        " nonce#" + String.valueOf(nonce) +
+                        " difficulty#" + String.valueOf(difficulty) +
+                        " totalDifficulty#" + String.valueOf(totalDifficulty) +
+                        " minerAddress#" + String.valueOf(minerAddress) +
+                        " stateRoot#" + String.valueOf(stateRoot) +
+                        " txTrieRoot#" + String.valueOf(txTrieRoot) +
+                        " receiptTxRoot#" + String.valueOf(receiptTxRoot));
             }
 
             if (number < 0 || timestamp < 0 || nrgConsumed < 0 || nrgLimit < 0 || size < 0) {
                 throw new IllegalArgumentException("Block#" + number + " Time#" + timestamp
-                        + " NrgConsumed#" + nrgConsumed + " NrgLimit#" + nrgLimit
-                        + " size#" + size);
+                    + " NrgConsumed#" + nrgConsumed + " NrgLimit#" + nrgLimit
+                    + " size#" + size);
             }
 
             return new Block(this);

@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,8 +19,8 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
+
 
 package org.aion.api.type;
 
@@ -28,8 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Internal type used in
- * {@link org.aion.api.IContract#build() build}, not user facing.
+ * Internal type used in {@link org.aion.api.IContract#build() build}, not user facing.
  *
  * @author Jay Tseng
  */
@@ -82,6 +81,7 @@ public final class JsonFmt {
      * This Builder class is used to build a {@link JsonFmt} instance.
      */
     public static class JsonFmtBuilder {
+
         private boolean constant;
         private String name;
         private String type;
@@ -106,12 +106,12 @@ public final class JsonFmt {
             return this;
         }
 
-        public JsonFmt.JsonFmtBuilder inputs(final Map inputs) {
+        public JsonFmt.JsonFmtBuilder inputs(final Map<String, String> inputs) {
             this.inputs = inputs;
             return this;
         }
 
-        public JsonFmt.JsonFmtBuilder outputs(final Map outputs) {
+        public JsonFmt.JsonFmtBuilder outputs(final Map<String, String> outputs) {
             this.outputs = outputs;
             return this;
         }
@@ -119,10 +119,10 @@ public final class JsonFmt {
         public JsonFmt createJsonFmt() {
             if (name == null || type == null || inputs == null || outputs == null) {
                 throw new NullPointerException(
-                        "name#" + String.valueOf(name) +
-                                " type#" + String.valueOf(type) +
-                                " inputs#" + String.valueOf(inputs) +
-                                " outputs#" + String.valueOf(outputs));
+                    "name#" + String.valueOf(name) +
+                        " type#" + String.valueOf(type) +
+                        " inputs#" + String.valueOf(inputs) +
+                        " outputs#" + String.valueOf(outputs));
             }
             return new JsonFmt(this);
         }

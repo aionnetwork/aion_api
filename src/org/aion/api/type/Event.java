@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,18 +19,20 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
+
 
 package org.aion.api.type;
 
 /**
- * The abstract class for the class {@link org.aion.api.type.ContractEvent ContractEvent} defines the event type.
+ * The abstract class for the class {@link org.aion.api.type.ContractEvent ContractEvent} defines
+ * the event type.
  *
  * @author Jay Tseng
  */
 
 public abstract class Event {
+
     private final type evType;
 
     Event(type t) {

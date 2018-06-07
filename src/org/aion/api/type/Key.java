@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,8 +19,8 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
+
 
 package org.aion.api.type;
 
@@ -30,14 +30,14 @@ import org.aion.base.util.ByteArrayWrapper;
 /**
  * The key class wrapped the user account information.
  *
+ * @author Jay Tseng
  * @see org.aion.api.IAccount#accountBackup(java.util.List) accountBackup
  * @see org.aion.api.IAccount#accountExport(java.util.List) accountExport
  * @see org.aion.api.IAccount#accountCreate(java.util.List, boolean) accountCreate
- *
- * @author Jay Tseng
  */
 
 public final class Key {
+
     // 32 bytes array
     private final Address publicKey;
     // 64 bytes array
@@ -72,5 +72,7 @@ public final class Key {
         return privateKey;
     }
 
-    public String getPassPhrase() { return passPhrase; }
+    public String getPassPhrase() {
+        return passPhrase;
+    }
 }

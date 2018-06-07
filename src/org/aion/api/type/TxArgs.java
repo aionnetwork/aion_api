@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,8 +19,8 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
+
 
 package org.aion.api.type;
 
@@ -30,12 +30,12 @@ import org.aion.base.util.ByteArrayWrapper;
 import java.math.BigInteger;
 
 /**
- * The transaction input arguments used in
- * {@link org.aion.api.ITx#sendTransaction(org.aion.api.type.TxArgs) sendTransaction} and
- * {@link org.aion.api.ITx#call(org.aion.api.type.TxArgs) call}.
+ * The transaction input arguments used in {@link org.aion.api.ITx#sendTransaction(org.aion.api.type.TxArgs)
+ * sendTransaction} and {@link org.aion.api.ITx#call(org.aion.api.type.TxArgs) call}.
  */
 
 public final class TxArgs {
+
     private final Address from;
     private final Address to;
     private final BigInteger value;
@@ -86,6 +86,7 @@ public final class TxArgs {
      * This Builder class is used to build a {@link TxArgs} instance.
      */
     public static class TxArgsBuilder {
+
         private Address from;
         private Address to;
         private BigInteger value;
@@ -94,7 +95,7 @@ public final class TxArgs {
         private long nrgPrice;
         private ByteArrayWrapper data;
 
-        public TxArgsBuilder(){
+        public TxArgsBuilder() {
         }
 
         public TxArgs.TxArgsBuilder from(final Address from) {
@@ -136,7 +137,7 @@ public final class TxArgs {
         public TxArgs createTxArgs() {
             if (from == null || to == null || value == null || nonce == null || data == null) {
                 throw new NullPointerException(
-                        "From#" + String.valueOf(from) +
+                    "From#" + String.valueOf(from) +
                         " To#" + String.valueOf(to) +
                         " Value#" + String.valueOf(value) +
                         " Nonce#" + String.valueOf(nonce) +
@@ -145,7 +146,7 @@ public final class TxArgs {
 
             if (nrgLimit < 0 || nrgPrice < 0) {
                 throw new IllegalArgumentException(
-                        "NrgLimit#" + nrgLimit +
+                    "NrgLimit#" + nrgLimit +
                         " NrgPrice#" + nrgPrice);
             }
 

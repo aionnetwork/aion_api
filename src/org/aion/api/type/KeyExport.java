@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,8 +19,8 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
+
 
 package org.aion.api.type;
 
@@ -32,17 +32,16 @@ import java.util.List;
 /**
  * The KeyExport class wrapped the keystore information
  *
- * param keyFiles
- *     When execute the accountBackup, the keyFiles will be the whole keystore file wrapped as a byte array, otherwise the keyFiles
- *     will be the 64-bytes private key.
- *
- * @see org.aion.api.IAccount#accountBackup(java.util.List) accountBackup
- * @see org.aion.api.IAccount#accountExport(java.util.List) accountExport
+ * param keyFiles When execute the accountBackup, the keyFiles will be the whole keystore file
+ * wrapped as a byte array, otherwise the keyFiles will be the 64-bytes private key.
  *
  * @author Jay Tseng
+ * @see org.aion.api.IAccount#accountBackup(java.util.List) accountBackup
+ * @see org.aion.api.IAccount#accountExport(java.util.List) accountExport
  */
 
 public final class KeyExport {
+
     private final List<ByteArrayWrapper> keyFiles;
     private final List<Address> invalidAddress;
 

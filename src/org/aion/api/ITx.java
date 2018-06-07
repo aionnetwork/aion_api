@@ -109,14 +109,13 @@ public interface ITx {
      * org.aion.api.type.TxArgs.TxArgsBuilder TxArgsBuilder}.
      * @param key the class {@link ByteArrayWrapper ByteArrayWrapper} represent the sender's private
      * key.
-     * @param passphrase the class {@link String String} represent the sender's passphrase.
      * @return the class {@link MsgRsp MessageResponse} returned from backend and the current
      * progress in the backend wrapped into ApiMsg. You can retrieve through {@link
      * ApiMsg#getObject() getObject}.
      * @see Contract
      * @see MsgRsp
      */
-    ApiMsg sendSignedTransaction(TxArgs args, ByteArrayWrapper key, String passphrase);
+    ApiMsg sendSignedTransaction(TxArgs args, ByteArrayWrapper key);
 
     /**
      * Initiates a transaction given the class {@link ByteArrayWrapper ByteArrayWrapper} represent
@@ -157,8 +156,8 @@ public interface ITx {
      * Retrieves the compiled code for a given contract.
      *
      * @param address the class {@link Address Address} represent the deployed contract address.
-     * @param blockNumber block number of which the contract by long value was commited on. Indicate
-     * -1L to check for the latest block.
+     * @param blockNumber block number of which the contract by long value was committed on.
+     * Indicate -1L to check for the latest block.
      * @return the variable bytes array of the compiled code wrapped into ApiMsg. You can retrieve
      * through {@link ApiMsg#getObject() getObject}.
      */

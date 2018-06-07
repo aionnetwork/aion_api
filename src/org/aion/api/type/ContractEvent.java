@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,8 +19,8 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
+
 
 package org.aion.api.type;
 
@@ -189,7 +189,7 @@ public final class ContractEvent extends Event {
             return this;
         }
 
-        public ContractEvent.ContractEventBuilder results(final List results) {
+        public ContractEvent.ContractEventBuilder results(final List<Object> results) {
             this.results = results;
             return this;
         }

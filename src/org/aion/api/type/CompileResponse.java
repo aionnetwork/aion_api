@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,11 +19,11 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
 
 package org.aion.api.type;
 
+import java.util.Objects;
 import org.aion.api.IUtils;
 import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.log.AionLoggerFactory;
@@ -37,9 +37,9 @@ import java.util.regex.Matcher;
 import static org.aion.api.impl.Contract.*;
 
 /**
- * Contains all relevant information to compile responses, note that some
- * parameters are not yet utilized, but may contain information in future
- * versions. Utilized by {@link org.aion.api.ITx#compile(java.lang.String) compile}.
+ * Contains all relevant information to compile responses, note that some parameters are not yet
+ * utilized, but may contain information in future versions. Utilized by {@link
+ * org.aion.api.ITx#compile(java.lang.String) compile}.
  *
  * @author Jay Tseng
  */
@@ -116,6 +116,7 @@ public final class CompileResponse {
      * This Builder class is used to build a {@link CompileResponse} instance.
      */
     public static class CompileResponseBuilder {
+
         private String code;
         private String source;
         private String language;
@@ -145,17 +146,20 @@ public final class CompileResponse {
             return this;
         }
 
-        public CompileResponse.CompileResponseBuilder languageVersion(final String languageVersion) {
+        public CompileResponse.CompileResponseBuilder languageVersion(
+            final String languageVersion) {
             this.languageVersion = languageVersion;
             return this;
         }
 
-        public CompileResponse.CompileResponseBuilder compilerVersion(final String compilerVersion) {
+        public CompileResponse.CompileResponseBuilder compilerVersion(
+            final String compilerVersion) {
             this.compilerVersion = compilerVersion;
             return this;
         }
 
-        public CompileResponse.CompileResponseBuilder compilerOptions(final String compilerOptions) {
+        public CompileResponse.CompileResponseBuilder compilerOptions(
+            final String compilerOptions) {
             this.compilerOptions = compilerOptions;
             return this;
         }
@@ -165,28 +169,33 @@ public final class CompileResponse {
             return this;
         }
 
-        public CompileResponse.CompileResponseBuilder abiDefinition(final List<ContractAbiEntry> abiDefinition) {
+        public CompileResponse.CompileResponseBuilder abiDefinition(
+            final List<ContractAbiEntry> abiDefinition) {
 
             List<ContractAbiEntry> abiDef = new ArrayList<>();
             for (ContractAbiEntry entry : abiDefinition) {
                 switch (entry.type) {
-                case SC_FN_EVENT:
-                    entry.setEvent(true);
-                    entry.setHashed(IUtils.bytes2Hex(ApiUtils.KC_256.digest(assembleFunctionFn(entry).getBytes()))
+                    case SC_FN_EVENT:
+                        entry.setEvent(true);
+                        entry.setHashed(Objects.requireNonNull(IUtils
+                            .bytes2Hex(
+                                ApiUtils.KC_256.digest(assembleFunctionFn(entry).getBytes())))
                             .substring(0, 64));
-                    break;
-                case SC_FN_FUNC:
-                    entry.setHashed(IUtils.bytes2Hex(ApiUtils.KC_256.digest(assembleFunctionFn(entry).getBytes()))
+                        break;
+                    case SC_FN_FUNC:
+                        entry.setHashed(Objects.requireNonNull(IUtils
+                            .bytes2Hex(
+                                ApiUtils.KC_256.digest(assembleFunctionFn(entry).getBytes())))
                             .substring(0, 8));
-                    break;
-                case SC_FN_CONSTRUCTOR:
-                    entry.setConstructor();
-                    break;
-                case SC_FN_FALLBACK:
-                    entry.setFallback();
-                    break;
-                default:
-                    throw new IllegalArgumentException("entry.type#" + entry.type);
+                        break;
+                    case SC_FN_CONSTRUCTOR:
+                        entry.setConstructor();
+                        break;
+                    case SC_FN_FALLBACK:
+                        entry.setFallback();
+                        break;
+                    default:
+                        throw new IllegalArgumentException("entry.type#" + entry.type);
                 }
 
                 List<ContractAbiIOParam> in = new ArrayList<>();
@@ -211,7 +220,6 @@ public final class CompileResponse {
                 abiDef.add(entry);
             }
 
-
             this.abiDefinition = abiDef;
             return this;
         }
@@ -228,20 +236,22 @@ public final class CompileResponse {
 
         public CompileResponse createCompileResponse() {
 
-            if (code == null || source == null || language == null || languageVersion == null || compilerVersion == null
-                    || compilerOptions == null || abiDefString == null || abiDefinition == null || userDoc == null
-                    || developerDoc == null) {
+            if (code == null || source == null || language == null || languageVersion == null
+                || compilerVersion == null
+                || compilerOptions == null || abiDefString == null || abiDefinition == null
+                || userDoc == null
+                || developerDoc == null) {
                 throw new NullPointerException(
-                        "code#" + String.valueOf(code) +
-                                " source#" + String.valueOf(source) +
-                                " language#" + String.valueOf(language) +
-                                " languageVersion#" + String.valueOf(languageVersion) +
-                                " compilerVersion#" + String.valueOf(compilerVersion) +
-                                " compilerOptions#" + String.valueOf(compilerOptions) +
-                                " abiDefString#" + String.valueOf(abiDefString) +
-                                " abiDefinition#" + String.valueOf(abiDefinition) +
-                                " userDoc#" + String.valueOf(userDoc) +
-                                " developerDoc#" + String.valueOf(developerDoc));
+                    "code#" + String.valueOf(code) +
+                        " source#" + String.valueOf(source) +
+                        " language#" + String.valueOf(language) +
+                        " languageVersion#" + String.valueOf(languageVersion) +
+                        " compilerVersion#" + String.valueOf(compilerVersion) +
+                        " compilerOptions#" + String.valueOf(compilerOptions) +
+                        " abiDefString#" + String.valueOf(abiDefString) +
+                        " abiDefinition#" + String.valueOf(abiDefinition) +
+                        " userDoc#" + String.valueOf(userDoc) +
+                        " developerDoc#" + String.valueOf(developerDoc));
             }
 
             return new CompileResponse(this);

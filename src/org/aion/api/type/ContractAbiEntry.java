@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,20 +19,17 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
 
 package org.aion.api.type;
 
 import java.util.List;
 
 /**
- * Represents an internal representation of a single entry in the JSON ABI
- * Contains all relevant information pertaining to that entry. Typically the
- * API does not require the manual creation of such a class, instead it is
- * returned by {@link org.aion.api.IContract IContract} or
- * {@link org.aion.api.ITx#compile(java.lang.String) compile}
- * related API.
+ * Represents an internal representation of a single entry in the JSON ABI Contains all relevant
+ * information pertaining to that entry. Typically the API does not require the manual creation of
+ * such a class, instead it is returned by {@link org.aion.api.IContract IContract} or {@link
+ * org.aion.api.ITx#compile(java.lang.String) compile} related API.
  *
  * @author Jay Tseng
  */
@@ -98,7 +95,6 @@ public final class ContractAbiEntry {
 //    // addtional member
 //    private final boolean isEvent;
 //    private final String hashed;
-
 
 //    private ContractAbiEntry(AbiEntryBuilder builder) {
 //        this.constant = builder.constant;

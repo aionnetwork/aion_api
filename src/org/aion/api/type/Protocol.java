@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,20 +19,20 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
+
 
 package org.aion.api.type;
 
 /**
  * Represents the version of each Aion blockchain module.
  *
- * @see org.aion.api.INet#getProtocolVersion()  getProtocolVersion
- *
  * @author Jay Tseng
+ * @see org.aion.api.INet#getProtocolVersion()  getProtocolVersion
  */
 
 public class Protocol {
+
     private final String kernel;
     private final String net;
     private final String api;
@@ -80,6 +80,7 @@ public class Protocol {
     }
 
     public static class ProtocolBuilder {
+
         private String kernel;
         private String net;
         private String api;
@@ -88,7 +89,8 @@ public class Protocol {
         private String miner;
         private String txpool;
 
-        public ProtocolBuilder() {}
+        public ProtocolBuilder() {
+        }
 
         public ProtocolBuilder kernel(String kernel) {
             this.kernel = kernel;
@@ -128,14 +130,14 @@ public class Protocol {
         public Protocol createProtocol() {
 
             if (kernel == null || net == null || api == null ||
-                    vm == null || db == null || miner == null || txpool == null) {
+                vm == null || db == null || miner == null || txpool == null) {
                 throw new NullPointerException("kernel#" + String.valueOf(kernel) +
-                        " net#" + String.valueOf(net) +
-                        " api#" + String.valueOf(api) +
-                        " vm#" + String.valueOf(vm) +
-                        " db#" + String.valueOf(db) +
-                        " miner#" + String.valueOf(miner) +
-                        " txpool#" + String.valueOf(txpool));
+                    " net#" + String.valueOf(net) +
+                    " api#" + String.valueOf(api) +
+                    " vm#" + String.valueOf(vm) +
+                    " db#" + String.valueOf(db) +
+                    " miner#" + String.valueOf(miner) +
+                    " txpool#" + String.valueOf(txpool));
             }
 
             return new Protocol(this);

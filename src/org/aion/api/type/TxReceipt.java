@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,8 +19,8 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
+
 
 package org.aion.api.type;
 
@@ -30,12 +30,12 @@ import org.aion.base.type.Hash256;
 import java.util.List;
 
 /**
- * TxReceipt class containing all relevant information to
- * transaction receipts utilized by
- * {@link org.aion.api.ITx#getTxReceipt(Hash256) getTxReceipt}.
+ * TxReceipt class containing all relevant information to transaction receipts utilized by {@link
+ * org.aion.api.ITx#getTxReceipt(Hash256) getTxReceipt}.
  */
 
 public final class TxReceipt {
+
     private final int txIndex;
     private final long blockNumber;
     private final long nrgConsumed;
@@ -104,6 +104,7 @@ public final class TxReceipt {
      * This Builder class is used to build a {@link TxReceipt} instance.
      */
     public static class TxReceiptBuilder {
+
         private int txIndex;
         private long blockNumber;
         private long nrgConsumed;
@@ -115,7 +116,7 @@ public final class TxReceipt {
         private Address contractAddress;
         private List<TxLog> txLogs;
 
-        public TxReceiptBuilder(){
+        public TxReceiptBuilder() {
         }
 
         public TxReceipt.TxReceiptBuilder txIndex(final int txIndex) {
@@ -163,30 +164,30 @@ public final class TxReceipt {
             return this;
         }
 
-        public TxReceipt.TxReceiptBuilder txLogs(final List txLogs) {
+        public TxReceipt.TxReceiptBuilder txLogs(final List<TxLog> txLogs) {
             this.txLogs = txLogs;
             return this;
         }
 
         public TxReceipt createTxReceipt() {
             if (blockHash == null || txHash == null ||
-                    from == null || to == null || contractAddress == null || txLogs == null) {
+                from == null || to == null || contractAddress == null || txLogs == null) {
 
                 throw new NullPointerException(
-                        "TxHash#" + String.valueOf(txHash) +
+                    "TxHash#" + String.valueOf(txHash) +
                         " BlockHash#" + String.valueOf(blockHash) +
                         " From#" + String.valueOf(from) +
                         " To#" + String.valueOf(to) +
                         " ContractAddress#" + String.valueOf(contractAddress) +
                         " TxLogs#" + String.valueOf(txLogs)
-                    );
+                );
             }
 
-            if (txIndex < 0 || blockNumber < 0  || nrgConsumed < 0 || cumulativeNrgUsed < 0) {
+            if (txIndex < 0 || blockNumber < 0 || nrgConsumed < 0 || cumulativeNrgUsed < 0) {
                 throw new IllegalArgumentException("TxIdx#" + txIndex +
-                        " Block#" + blockNumber +
-                        " NrgConsumed#" + nrgConsumed +
-                        " CumulativeNrg#" + cumulativeNrgUsed);
+                    " Block#" + blockNumber +
+                    " NrgConsumed#" + nrgConsumed +
+                    " CumulativeNrg#" + cumulativeNrgUsed);
             }
 
             return new TxReceipt(this);

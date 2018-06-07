@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,20 +19,20 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
+
 
 package org.aion.api.type;
 
 /**
  * Represents the latest network status and the Aion blockchain status of the node.
  *
- * @see org.aion.api.INet#getActiveNodes() getActiveNodes
- *
  * @author Jay Tseng
+ * @see org.aion.api.INet#getActiveNodes() getActiveNodes
  */
 
 public final class Node {
+
     private final long blockNumber;
     private final int p2pPort;
     private final int latency;
@@ -71,6 +71,7 @@ public final class Node {
      * This Builder class is used to build a {@link Node} instance.
      */
     public static class NodeBuilder {
+
         private long blockNumber;
         private int p2pPort;
         private int latency;
@@ -108,15 +109,15 @@ public final class Node {
         public Node createNode() {
             if (nodeId == null || p2pIP == null) {
                 throw new NullPointerException(
-                        "NodeId#" + String.valueOf(nodeId) +
-                                " P2pIP#" + String.valueOf(p2pIP));
+                    "NodeId#" + String.valueOf(nodeId) +
+                        " P2pIP#" + String.valueOf(p2pIP));
             }
 
             if (blockNumber < 0 || p2pPort < 0 || latency < 0) {
                 throw new IllegalArgumentException(
-                        "Block#" + blockNumber +
-                                " P2pPort#" + p2pPort +
-                                " Latency#" + latency);
+                    "Block#" + blockNumber +
+                        " P2pPort#" + p2pPort +
+                        " Latency#" + latency);
             }
 
             return new Node(this);

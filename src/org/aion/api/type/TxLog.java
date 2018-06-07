@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,8 +19,8 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
+
 
 package org.aion.api.type;
 
@@ -30,15 +30,15 @@ import org.aion.base.util.ByteArrayWrapper;
 import java.util.List;
 
 /**
- * TxLog class containing all relevant information to transaction log utilized by
- * {@link org.aion.api.ITx#getTxReceipt(org.aion.base.type.Hash256) getTxReceipt}.
- *
- * @see org.aion.api.type.TxReceipt TxReceipt
+ * TxLog class containing all relevant information to transaction log utilized by {@link
+ * org.aion.api.ITx#getTxReceipt(org.aion.base.type.Hash256) getTxReceipt}.
  *
  * @author Jay Tseng
+ * @see org.aion.api.type.TxReceipt TxReceipt
  */
 
 public final class TxLog {
+
     private final Address address;
     private final ByteArrayWrapper data;
     private final List<String> topics;
