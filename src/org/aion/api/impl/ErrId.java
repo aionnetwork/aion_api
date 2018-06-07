@@ -90,8 +90,8 @@ public final class ErrId {
         ERROR_CODES.put(-304L, "Invalid account length!");
         ERROR_CODES.put(-305L, "Null Smart contract source code!");
         ERROR_CODES.put(-306L, "Null CompileResponse!");
-        ERROR_CODES.put(-307L, "Negative gas!");
-        ERROR_CODES.put(-308L, "Negative gas price!");
+        ERROR_CODES.put(-307L, "Negative Nrg!");
+        ERROR_CODES.put(-308L, "Negative Nrg price!");
         ERROR_CODES.put(-309L, "Null smart contract constructor data!");
         ERROR_CODES.put(-310L, "Negative block number!");
         ERROR_CODES.put(-311L, "Negative transaction index!");

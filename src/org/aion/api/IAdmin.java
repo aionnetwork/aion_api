@@ -41,7 +41,7 @@ public interface IAdmin {
      * string of block numbers.*
      *
      * @param blkNum the class {@link java.lang.String String} represent by the list of blocks
-     * separated by comma [,] &/or dash [-]. eg. 600-650 eg. 700,701,750 eg. 700,800-900 eg.
+     * separated by comma [,] and/or dash [-]. eg. 600-650 eg. 700,701,750 eg. 700,800-900 eg.
      * 500-200
      * @return the interface {@link java.util.List List} of the class {@link
      * org.aion.api.type.BlockDetails BlockDetails} wrapped into ApiMsg. You can retrieve through

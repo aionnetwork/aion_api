@@ -60,6 +60,7 @@ public final class ContractResponse {
 
     /**
      * The helper function for get detailed Contract transaction processing information.
+     * @return return a the class {@link java.lang.String String} represent the status.
      */
     public final String statusToString() {
         switch (getStatus()) {
@@ -124,6 +125,7 @@ public final class ContractResponse {
      * The helper function to check the number of pending transactions stored in the API has reached
      * the limitation of the transaction pool. If yes, the user should stop sending transactions to
      * the kernel.
+     * @return return a boolean value represent the pending transaction reach the client API limit.
      */
     public boolean hitTxPendingPoolLimit() {
         return (getStatus() == -15);

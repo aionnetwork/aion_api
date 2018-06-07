@@ -120,15 +120,21 @@ public interface IContract {
     IContract setParam(ISolidityArg val);
 
     /**
-     * Sets the transaction gas for function be executed.
+     * Sets the transaction energy for function be executed.
      *
+     * @param val set the max energy consume for the desiring transaction. The transaction will not
+     * been executed when the energy is not enough. Current kernel limitations for one transaction
+     * must be higher than 21K but lower than 2M for the regular transaction and the contract
+     * transaction. For a contract create transaction, it can be maximum 5M energy.
      * @return the contract interface {@link IContract IContract}.
      */
     IContract setTxNrgLimit(long val);
 
     /**
-     * Sets the transaction gas price for function be executed.
+     * Sets the transaction energy price for function be executed.
      *
+     * @param val given the energy price for each energy unit consume. Currently the price can not
+     * lower than 10 amp AION and higher than 9 AION. (10^10 to 9^18)
      * @return the contract interface {@link IContract IContract}.
      */
     IContract setTxNrgPrice(long val);

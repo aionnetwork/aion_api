@@ -861,8 +861,8 @@ public final class Tx implements ITx {
 				.setFrom(ByteString.copyFrom(trans.from))
 				.setTo(ByteString.copyFrom(trans.to))
 				.setNonce(trans.nonce)
-				.setGas(trans.gas)
-				.setGasPrice(trans.gasPrice)
+				.setNrg(trans.gas)
+				.setNrgPrice(trans.gasPrice)
 				.setValue(trans.Value)
 				.build();
 

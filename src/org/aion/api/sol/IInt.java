@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,8 +19,7 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
 
 package org.aion.api.sol;
 
@@ -29,19 +28,19 @@ import org.aion.api.sol.impl.Int;
 import java.util.List;
 
 /**
- * IInt is an interface of the class Int inherited from the class SolidityAbstractType. Contains functions for
- * encoding String, decoding String and datatype checking. Most functions used are
- * not intended to be user facing, and should be left unused by the user.
+ * IInt is an interface of the class Int inherited from the class SolidityAbstractType. Contains
+ * functions for encoding String, decoding String and datatype checking. Most functions used are not
+ * intended to be user facing, and should be left unused by the user.
  *
  * @author Jay Tseng
  */
 
 public interface IInt extends ISolidityArg {
+
     /**
      * Generates an Integer object from a String object.
      *
-     * @param in
-     *         {@link java.lang.String}.
+     * @param in {@link java.lang.String}.
      * @return the class {@link Int Int}.
      */
     static IInt copyFrom(String in) {
@@ -51,8 +50,7 @@ public interface IInt extends ISolidityArg {
     /**
      * Generates an Integer object from a Integer object.
      *
-     * @param in
-     *         {@link java.lang.Integer}
+     * @param in {@link java.lang.Integer}
      * @return interface itself.
      */
     static IInt copyFrom(Integer in) {
@@ -62,8 +60,7 @@ public interface IInt extends ISolidityArg {
     /**
      * Generates an Int object from a Long object.
      *
-     * @param in
-     *         {@link java.lang.Long}
+     * @param in {@link java.lang.Long}
      * @return interface itself.
      */
     static IInt copyFrom(Long in) {
@@ -71,12 +68,11 @@ public interface IInt extends ISolidityArg {
     }
 
     /**
-     * Generates an Int object from an ArrayList, String or byte array, this
-     * structure should match the list structure defined in the ABI and consist
-     * only of Bytes.
+     * Generates an Int object from an ArrayList, String or byte array, this structure should match
+     * the list structure defined in the ABI and consist only of Bytes.
      *
-     * @param l
-     *         {@link java.util.List} of {@link java.lang.String}, {@link java.lang.Integer} or {@link java.lang.Long}.
+     * @param l {@link java.util.List} of {@link java.lang.String}, {@link java.lang.Integer} or
+     * {@link java.lang.Long}.
      * @return interface itself.
      */
     static IInt copyFrom(List l) {

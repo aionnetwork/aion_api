@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,8 +19,7 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
 
 package org.aion.api.sol;
 
@@ -31,12 +30,13 @@ import java.util.List;
 /**
  * This interface dedicate to the solidity class method operation and the type casting
  *
+ * @author Jay Tseng
  * @see org.aion.api.IContract#getInputParams() getInputParams
  * @see org.aion.api.IContract#getOutputParams() getOutputParams
- * @see org.aion.api.IContractController#createFromSource(java.lang.String, org.aion.base.type.Address, long, long, java.util.List) createFromSource
- * @see org.aion.api.IContractController#createFromSource(java.lang.String, org.aion.base.type.Address, long, long, java.math.BigInteger, java.util.Map) createFromSource
- *
- * @author Jay Tseng
+ * @see org.aion.api.IContractController#createFromSource(java.lang.String,
+ * org.aion.base.type.Address, long, long, java.util.List) createFromSource
+ * @see org.aion.api.IContractController#createFromSource(java.lang.String,
+ * org.aion.base.type.Address, long, long, java.math.BigInteger, java.util.Map) createFromSource
  */
 
 public interface ISolidityArg {

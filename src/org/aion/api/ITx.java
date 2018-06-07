@@ -64,7 +64,7 @@ public interface ITx {
     ApiMsg call(TxArgs args);
 
     /**
-     * Estimates the gas required to execute transaction.
+     * Estimates the Nrg required to execute transaction.
      *
      * @param args given a class {@link TxArgs TxArgs} created by the builder class {@link
      * org.aion.api.type.TxArgs.TxArgsBuilder TxArgsBuilder}.
@@ -99,11 +99,8 @@ public interface ITx {
 
     /**
      * Initiates a transaction given the class {@link TxArgs TxArgs}, the class {@link
-     * ByteArrayWrapper ByteArrayWrapper} represent the private key of the transaction sender and
-     * the class {@link java.lang.String String} reresent the passphrase of the key. Then send a
-     * transaction signed with the sender's key.This function provides no functionality to assist
-     * with encoding or decoding transaction data. Users may choose to either use the more
-     * convenient {@link Contract Contract} class for contract transactions.
+     * ByteArrayWrapper ByteArrayWrapper} represent the private key of the transaction sender. Then
+     * send a transaction including the raw transaction data and signed with the sender's key.
      *
      * @param args given a class {@link TxArgs TxArgs} created by the builder class {@link
      * org.aion.api.type.TxArgs.TxArgsBuilder TxArgsBuilder}.
@@ -112,7 +109,6 @@ public interface ITx {
      * @return the class {@link MsgRsp MessageResponse} returned from backend and the current
      * progress in the backend wrapped into ApiMsg. You can retrieve through {@link
      * ApiMsg#getObject() getObject}.
-     * @see Contract
      * @see MsgRsp
      */
     ApiMsg sendSignedTransaction(TxArgs args, ByteArrayWrapper key);

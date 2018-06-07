@@ -61,11 +61,10 @@ public interface IWallet {
      * @param acc the class {@link Address Address} represent the account address.
      * @param passphrase the class {@link java.lang.String String} represent the passphrase of the
      * account.
-     * @param duration the duration by int value that account stays unlocked (seconds).
+     * @param duration the duration by int value that account stays unlocked (seconds). If the
+     * duration set more then 86400 (1 day), if the kernel will unlock the given account 1 day.
      * @return returns a Boolean indicating the success of the unlock wrapped into ApiMsg. You can
      * retrieve through the method {@link ApiMsg#getObject() getObject}.
-     * @note If the duration set more then 86400 (1 day), if the kernel will unlock the given
-     * account 1 day.
      */
     ApiMsg unlockAccount(Address acc, String passphrase, int duration);
 
