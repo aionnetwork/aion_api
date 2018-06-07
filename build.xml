@@ -46,7 +46,7 @@
         <javac
             debug="${compile.debug}"
             debuglevel="source,lines,vars"
-	    release="9"
+	    release="10"
             includeantruntime="false"
             srcdir="${main.src.dir}"
             destdir="${main.build.dir}"
@@ -84,9 +84,19 @@
         </move>
     </target>
 
+    <target name="build_fatjar" depends="compile, copy-deps" description="package, output to JAR">
+      
+
+
+    </target>
+
+
     <target name="clean_build" depends="clean" >
 	<antcall target="pre_build" />
         <antcall target="build">
+            <param name="compile.debug" value="${compile.debug}"/>
+        </antcall>
+        <antcall target="build_fatjar">
             <param name="compile.debug" value="${compile.debug}"/>
         </antcall>
 	<antcall target="post_pack" />
