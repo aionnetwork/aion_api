@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,8 +19,7 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
 
 package org.aion.api.impl;
 
@@ -58,6 +57,7 @@ import java.util.*;
  * Created by Jay Tseng on 15/11/16.
  */
 public final class Tx implements ITx {
+
     private final Logger LOGGER = AionLoggerFactory.getLogger(LogEnum.TRX.name());
     final AionAPIImpl apiInst;
 
@@ -82,20 +82,21 @@ public final class Tx implements ITx {
         }
 
         byte[] code = cd.isConstructor()
-                ? ByteUtil.merge(cd.getCompileResponse().getCode().getBytes(), cd.getData().getData())
-                : cd.getCompileResponse().getCode().getBytes();
+            ? ByteUtil.merge(cd.getCompileResponse().getCode().getBytes(), cd.getData().getData())
+            : cd.getCompileResponse().getCode().getBytes();
 
         Message.req_contractDeploy reqBody = Message.req_contractDeploy.newBuilder()
-                .setFrom(ByteString.copyFrom(cd.getFrom().toBytes()))
-                .setNrgLimit(cd.getNrgLimit())
-                .setNrgPrice(cd.getNrgPrice())
-                .setData(ByteString.copyFrom(code))
-                .setValue(ByteString.copyFrom(cd.getValue().toByteArray()))
-                .build();
+            .setFrom(ByteString.copyFrom(cd.getFrom().toBytes()))
+            .setNrgLimit(cd.getNrgLimit())
+            .setNrgPrice(cd.getNrgPrice())
+            .setData(ByteString.copyFrom(code))
+            .setValue(ByteString.copyFrom(cd.getValue().toByteArray()))
+            .build();
 
         ByteArrayWrapper hash = ByteArrayWrapper.wrap(ApiUtils.genHash(ApiUtils.MSG_HASH_LEN));
         byte[] reqHead = ApiUtils
-                .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_tx, Message.Funcs.f_contractDeploy, hash);
+            .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_tx, Message.Funcs.f_contractDeploy,
+                hash);
         byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
 
         MsgRsp rsp = this.apiInst.blockTx(hash.getData(), reqMsg);
@@ -108,14 +109,17 @@ public final class Tx implements ITx {
         }
 
         try {
-            Message.rsp_contractDeploy msgRsp = Message.rsp_contractDeploy.parseFrom(rsp.getTxDeploy().toBytes());
-            return new ApiMsg(new DeployResponse(Address.wrap(msgRsp.getContractAddress().toByteArray()),
-                                    Hash256.wrap(msgRsp.getTxHash().toByteArray())),
-                                    ApiMsg.cast.OTHERS);
+            Message.rsp_contractDeploy msgRsp = Message.rsp_contractDeploy
+                .parseFrom(rsp.getTxDeploy().toBytes());
+            return new ApiMsg(
+                new DeployResponse(Address.wrap(msgRsp.getContractAddress().toByteArray()),
+                    Hash256.wrap(msgRsp.getTxHash().toByteArray())),
+                ApiMsg.cast.OTHERS);
 
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[contractDeploy] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
+                LOGGER.error("[contractDeploy] {} exception: [{}]", ErrId.getErrString(-104L),
+                    e.getMessage());
             }
             return new ApiMsg(-104, e.getMessage(), ApiMsg.cast.OTHERS);
         }
@@ -127,16 +131,16 @@ public final class Tx implements ITx {
         }
 
         Message.req_call reqBody = Message.req_call.newBuilder()
-                .setData(ByteString.copyFrom(args.getData().toBytes()))
-                .setFrom(ByteString.copyFrom(args.getFrom().toBytes()))
-                .setTo(ByteString.copyFrom(args.getTo().toBytes()))
-                .setNrg(args.getNrgLimit())
-                .setNrgPrice(args.getNrgPrice())
-                .setValue(ByteString.copyFrom(args.getValue().toByteArray()))
-                .build();
+            .setData(ByteString.copyFrom(args.getData().toBytes()))
+            .setFrom(ByteString.copyFrom(args.getFrom().toBytes()))
+            .setTo(ByteString.copyFrom(args.getTo().toBytes()))
+            .setNrg(args.getNrgLimit())
+            .setNrgPrice(args.getNrgPrice())
+            .setValue(ByteString.copyFrom(args.getValue().toByteArray()))
+            .build();
 
-
-        byte[] reqHead = ApiUtils.toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_tx, Message.Funcs.f_call);
+        byte[] reqHead = ApiUtils
+            .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_tx, Message.Funcs.f_call);
         byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
 
@@ -148,11 +152,14 @@ public final class Tx implements ITx {
         }
 
         try {
-            return new ApiMsg(Message.rsp_call.parseFrom(ApiUtils.parseBody(rsp).getData()).getResult().toByteArray(),
-                    ApiMsg.cast.OTHERS);
+            return new ApiMsg(
+                Message.rsp_call.parseFrom(ApiUtils.parseBody(rsp).getData()).getResult()
+                    .toByteArray(),
+                ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[call] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
+                LOGGER
+                    .error("[call] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
             }
             return new ApiMsg(-104, e.getMessage(), ApiMsg.cast.OTHERS);
         }
@@ -163,12 +170,12 @@ public final class Tx implements ITx {
             return new ApiMsg(-1003);
         }
 
-
         Message.req_getTransactionReceipt reqBody = Message.req_getTransactionReceipt.newBuilder()
-                .setTxHash(ByteString.copyFrom(txHash.toBytes())).build();
+            .setTxHash(ByteString.copyFrom(txHash.toBytes())).build();
 
         byte[] reqHead = ApiUtils
-                .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_tx, Message.Funcs.f_getTransactionReceipt);
+            .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_tx,
+                Message.Funcs.f_getTransactionReceipt);
         byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
 
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
@@ -179,12 +186,13 @@ public final class Tx implements ITx {
 
         try {
             Message.rsp_getTransactionReceipt mrsp = Message.rsp_getTransactionReceipt
-                    .parseFrom(ApiUtils.parseBody(rsp).getData());
+                .parseFrom(ApiUtils.parseBody(rsp).getData());
             return new ApiMsg(ApiUtils.toTransactionReceipt(mrsp), ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             //Todo : kernel return message change
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[getTxReceipt] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
+                LOGGER.error("[getTxReceipt] {} exception: [{}]", ErrId.getErrString(-104L),
+                    e.getMessage());
             }
             return new ApiMsg(-104, e.getMessage(), ApiMsg.cast.OTHERS);
         }
@@ -210,8 +218,9 @@ public final class Tx implements ITx {
                 int msglen = fmsg.getData().length;
                 reqMsg = new byte[msglen];
 
-                System.arraycopy(fmsg.getData(), 0, reqMsg, 0,  msglen);
-                System.arraycopy(hash, 0, reqMsg, ApiUtils.REQ_HEADER_NOHASH_LEN, ApiUtils.MSG_HASH_LEN);
+                System.arraycopy(fmsg.getData(), 0, reqMsg, 0, msglen);
+                System.arraycopy(hash, 0, reqMsg, ApiUtils.REQ_HEADER_NOHASH_LEN,
+                    ApiUtils.MSG_HASH_LEN);
             } else {
                 throw new IllegalArgumentException();
             }
@@ -224,17 +233,18 @@ public final class Tx implements ITx {
             }
 
             byte[] reqHead = ApiUtils
-                    .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_tx, Message.Funcs.f_sendTransaction, ByteArrayWrapper.wrap(hash));
+                .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_tx,
+                    Message.Funcs.f_sendTransaction, ByteArrayWrapper.wrap(hash));
 
             Message.req_sendTransaction reqBody = Message.req_sendTransaction.newBuilder()
-                    .setFrom(ByteString.copyFrom(args.getFrom().toBytes()))
-                    .setTo(ByteString.copyFrom(args.getTo().toBytes()))
-                    .setData(ByteString.copyFrom(args.getData().toBytes()))
-                    .setNonce(ByteString.copyFrom(args.getNonce().toByteArray()))
-                    .setValue(ByteString.copyFrom(args.getValue().toByteArray()))
-                    .setNrg(args.getNrgLimit())
-                    .setNrgPrice(args.getNrgPrice())
-                    .build();
+                .setFrom(ByteString.copyFrom(args.getFrom().toBytes()))
+                .setTo(ByteString.copyFrom(args.getTo().toBytes()))
+                .setData(ByteString.copyFrom(args.getData().toBytes()))
+                .setNonce(ByteString.copyFrom(args.getNonce().toByteArray()))
+                .setValue(ByteString.copyFrom(args.getValue().toByteArray()))
+                .setNrg(args.getNrgLimit())
+                .setNrgPrice(args.getNrgPrice())
+                .build();
 
             reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
         }
@@ -270,7 +280,7 @@ public final class Tx implements ITx {
         byte[] reqMsg;
         byte[] hash = ApiUtils.genHash(ApiUtils.MSG_HASH_LEN);
 
-        if (args == null ) {
+        if (args == null) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[sendTransaction] {}", ErrId.getErrString(-303L));
             }
@@ -285,7 +295,8 @@ public final class Tx implements ITx {
         }
 
         byte[] reqHead = ApiUtils
-                .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_tx, Message.Funcs.f_signedTransaction, ByteArrayWrapper.wrap(hash));
+            .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_tx,
+                Message.Funcs.f_signedTransaction, ByteArrayWrapper.wrap(hash));
 
         ECKey ecKey = ECKeyFac.inst().create().fromPrivate(key.toBytes());
         if (ecKey == null) {
@@ -296,16 +307,16 @@ public final class Tx implements ITx {
         }
 
         AionTransaction tx = new AionTransaction(args.getNonce().toByteArray()
-                                                , args.getTo()
-                                                , args.getValue().toByteArray()
-                                                , args.getData().getData()
-                                                , args.getNrgLimit()
-                                                , args.getNrgPrice());
+            , args.getTo()
+            , args.getValue().toByteArray()
+            , args.getData().getData()
+            , args.getNrgLimit()
+            , args.getNrgPrice());
         tx.sign(ecKey);
 
         Message.req_rawTransaction reqBody = Message.req_rawTransaction.newBuilder()
-                .setEncodedTx(ByteString.copyFrom(tx.getEncoded()))
-                .build();
+            .setEncodedTx(ByteString.copyFrom(tx.getEncoded()))
+            .build();
 
         reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
 
@@ -348,11 +359,12 @@ public final class Tx implements ITx {
         }
 
         byte[] reqHead = ApiUtils
-                .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_tx, Message.Funcs.f_signedTransaction, ByteArrayWrapper.wrap(hash));
+            .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_tx,
+                Message.Funcs.f_signedTransaction, ByteArrayWrapper.wrap(hash));
 
         Message.req_rawTransaction reqBody = Message.req_rawTransaction.newBuilder()
-                .setEncodedTx(ByteString.copyFrom(tx.toBytes()))
-                .build();
+            .setEncodedTx(ByteString.copyFrom(tx.toBytes()))
+            .build();
 
         reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
 
@@ -387,7 +399,8 @@ public final class Tx implements ITx {
             throw new NullPointerException();
         }
 
-        byte[] reqHead = ApiUtils.toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_tx, Message.Funcs.f_compile);
+        byte[] reqHead = ApiUtils
+            .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_tx, Message.Funcs.f_compile);
         Message.req_compile reqBody = Message.req_compile.newBuilder().setCode(code).build();
 
         byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
@@ -418,11 +431,13 @@ public final class Tx implements ITx {
 
         Map<String, Message.t_Contract> ctMap;
         try {
-            ctMap = Message.rsp_compile.parseFrom(ApiUtils.parseBody(rsp).getData()).getConstractsMap();
+            ctMap = Message.rsp_compile.parseFrom(ApiUtils.parseBody(rsp).getData())
+                .getConstractsMap();
 
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[compile] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
+                LOGGER.error("[compile] {} exception: [{}]", ErrId.getErrString(-104L),
+                    e.getMessage());
             }
             return new ApiMsg(-104, e.getMessage(), ApiMsg.cast.OTHERS);
         }
@@ -446,36 +461,40 @@ public final class Tx implements ITx {
             CompileResponse.CompileResponseBuilder builder = new CompileResponse.CompileResponseBuilder();
 
             builder.code(ct.getValue().getCode())
-                    .compilerOptions(ct.getValue().getCompilerOptions())
-                    .compilerVersion(ct.getValue().getCompilerVersion())
-                    .source(ct.getValue().getSource())
-                    //**@Jay TODO :
-                    //** figure out these four features from the solidity compiler
-                        .language("")
-                        .languageVersion("")
-                        .developerDoc(JsonFmt.JsonFmtBuilder.emptyJsonFmt())
-                        .userDoc(JsonFmt.JsonFmtBuilder.emptyJsonFmt());
-                    //**
+                .compilerOptions(ct.getValue().getCompilerOptions())
+                .compilerVersion(ct.getValue().getCompilerVersion())
+                .source(ct.getValue().getSource())
+                //**@Jay TODO :
+                //** figure out these four features from the solidity compiler
+                .language("")
+                .languageVersion("")
+                .developerDoc(JsonFmt.JsonFmtBuilder.emptyJsonFmt())
+                .userDoc(JsonFmt.JsonFmtBuilder.emptyJsonFmt());
+            //**
 
             // parsing ABI file
             try {
                 builder.abiDefString(ct.getValue().getAbiDef().toString(ASCII))
-                        .abiDefinition(new Gson().fromJson(ct.getValue().getAbiDef().toString(ASCII), abiType));
+                    .abiDefinition(
+                        new Gson().fromJson(ct.getValue().getAbiDef().toString(ASCII), abiType));
 
                 rtn.put(ct.getKey(), builder.createCompileResponse());
             } catch (JsonSyntaxException e) {
                 if (LOGGER.isErrorEnabled()) {
-                    LOGGER.error("[compile] {} exception: [{}]", ErrId.getErrString(-105L), e.toString());
+                    LOGGER.error("[compile] {} exception: [{}]", ErrId.getErrString(-105L),
+                        e.toString());
                 }
                 return new ApiMsg(-105, e.getMessage(), ApiMsg.cast.OTHERS);
             } catch (JsonParseException e) {
                 if (LOGGER.isErrorEnabled()) {
-                    LOGGER.error("[compile] {} exception: [{}]", ErrId.getErrString(-106L), e.toString());
+                    LOGGER.error("[compile] {} exception: [{}]", ErrId.getErrString(-106L),
+                        e.toString());
                 }
                 return new ApiMsg(-106, e.getMessage(), ApiMsg.cast.OTHERS);
             } catch (UnsupportedEncodingException e) {
                 if (LOGGER.isErrorEnabled()) {
-                    LOGGER.error("[compile] {} exception: [{}]", ErrId.getErrString(-200L), e.toString());
+                    LOGGER.error("[compile] {} exception: [{}]", ErrId.getErrString(-200L),
+                        e.toString());
                 }
                 return new ApiMsg(-200, e.getMessage(), ApiMsg.cast.OTHERS);
             }
@@ -490,7 +509,7 @@ public final class Tx implements ITx {
         }
 
         byte[] reqHead = ApiUtils
-                .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_tx, Message.Funcs.f_getSolcVersion);
+            .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_tx, Message.Funcs.f_getSolcVersion);
 
         byte[] rsp = this.apiInst.nbProcess(reqHead);
         int code = this.apiInst.validRspHeader(rsp);
@@ -499,10 +518,13 @@ public final class Tx implements ITx {
         }
 
         try {
-            return new ApiMsg(Message.rsp_getSolcVersion.parseFrom(ApiUtils.parseBody(rsp).getData()).getVer(), ApiMsg.cast.OTHERS);
+            return new ApiMsg(
+                Message.rsp_getSolcVersion.parseFrom(ApiUtils.parseBody(rsp).getData()).getVer(),
+                ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[getSolcVersion] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
+                LOGGER.error("[getSolcVersion] {} exception: [{}]", ErrId.getErrString(-104L),
+                    e.getMessage());
             }
             return new ApiMsg(-104, e.getMessage(), ApiMsg.cast.OTHERS);
         }
@@ -520,10 +542,12 @@ public final class Tx implements ITx {
             return new ApiMsg(-310);
         }
 
-        Message.req_getCode reqBody = Message.req_getCode.newBuilder().setAddress(ByteString.copyFrom(address.toBytes()))
-                .setBlocknumber(blockNumber).build();
+        Message.req_getCode reqBody = Message.req_getCode.newBuilder()
+            .setAddress(ByteString.copyFrom(address.toBytes()))
+            .setBlocknumber(blockNumber).build();
 
-        byte[] reqHead = ApiUtils.toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_tx, Message.Funcs.f_getCode);
+        byte[] reqHead = ApiUtils
+            .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_tx, Message.Funcs.f_getCode);
         byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
 
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
@@ -533,11 +557,14 @@ public final class Tx implements ITx {
         }
 
         try {
-            return new ApiMsg(Message.rsp_getCode.parseFrom(ApiUtils.parseBody(rsp).getData()).getCode().toByteArray(),
-                    ApiMsg.cast.OTHERS);
+            return new ApiMsg(
+                Message.rsp_getCode.parseFrom(ApiUtils.parseBody(rsp).getData()).getCode()
+                    .toByteArray(),
+                ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[getCode] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
+                LOGGER.error("[getCode] {} exception: [{}]", ErrId.getErrString(-104L),
+                    e.getMessage());
             }
             return new ApiMsg(-104, e.getMessage(), ApiMsg.cast.OTHERS);
         }
@@ -553,20 +580,21 @@ public final class Tx implements ITx {
         }
 
         byte[] reqHead = call ?
-                ApiUtils.toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_tx, Message.Funcs.f_sendTransaction) :
-                ApiUtils.toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_tx, Message.Funcs.f_sendTransaction,
-                        ByteArrayWrapper.wrap(ApiUtils.EMPTY_MSG_HASH));
+            ApiUtils.toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_tx,
+                Message.Funcs.f_sendTransaction) :
+            ApiUtils.toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_tx,
+                Message.Funcs.f_sendTransaction,
+                ByteArrayWrapper.wrap(ApiUtils.EMPTY_MSG_HASH));
 
         Message.req_sendTransaction reqBody = Message.req_sendTransaction.newBuilder()
-                .setFrom(ByteString.copyFrom(args.getFrom().toBytes()))
-                .setTo(ByteString.copyFrom(args.getTo().toBytes()))
-                .setData(ByteString.copyFrom(args.getData().toBytes()))
-                .setNonce(ByteString.copyFrom(args.getNonce().toByteArray()))
-                .setValue(ByteString.copyFrom(args.getValue().toByteArray()))
-                .setNrg(args.getNrgLimit())
-                .setNrgPrice(args.getNrgPrice())
-                .build();
-
+            .setFrom(ByteString.copyFrom(args.getFrom().toBytes()))
+            .setTo(ByteString.copyFrom(args.getTo().toBytes()))
+            .setData(ByteString.copyFrom(args.getData().toBytes()))
+            .setNonce(ByteString.copyFrom(args.getNonce().toByteArray()))
+            .setValue(ByteString.copyFrom(args.getValue().toByteArray()))
+            .setNrg(args.getNrgLimit())
+            .setNrgPrice(args.getNrgPrice())
+            .build();
 
         this.fmsg = ByteArrayWrapper.wrap(ByteUtil.merge(reqHead, reqBody.toByteArray()));
 
@@ -603,8 +631,9 @@ public final class Tx implements ITx {
                 int msglen = fmsg.getData().length;
                 reqMsg = new byte[msglen];
 
-                System.arraycopy(fmsg.getData(), 0, reqMsg, 0,  msglen);
-                System.arraycopy(hash, 0, reqMsg, ApiUtils.REQ_HEADER_NOHASH_LEN, ApiUtils.MSG_HASH_LEN);
+                System.arraycopy(fmsg.getData(), 0, reqMsg, 0, msglen);
+                System.arraycopy(hash, 0, reqMsg, ApiUtils.REQ_HEADER_NOHASH_LEN,
+                    ApiUtils.MSG_HASH_LEN);
             } else {
                 throw new IllegalArgumentException();
             }
@@ -617,16 +646,17 @@ public final class Tx implements ITx {
             }
 
             byte[] reqHead = ApiUtils
-                    .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_tx, Message.Funcs.f_estimateNrg);
+                .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_tx,
+                    Message.Funcs.f_estimateNrg);
 
             Message.req_estimateNrg reqBody = Message.req_estimateNrg.newBuilder()
-                    .setFrom(ByteString.copyFrom(args.getFrom().toBytes()))
-                    .setTo(ByteString.copyFrom(args.getTo().toBytes()))
-                    .setData(ByteString.copyFrom(args.getData().toBytes()))
-                    .setValue(ByteString.copyFrom(args.getValue().toByteArray()))
-                    .setNrg(args.getNrgLimit())
-                    .setNrgPrice(args.getNrgPrice())
-                    .build();
+                .setFrom(ByteString.copyFrom(args.getFrom().toBytes()))
+                .setTo(ByteString.copyFrom(args.getTo().toBytes()))
+                .setData(ByteString.copyFrom(args.getData().toBytes()))
+                .setValue(ByteString.copyFrom(args.getValue().toByteArray()))
+                .setNrg(args.getNrgLimit())
+                .setNrgPrice(args.getNrgPrice())
+                .build();
 
             reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
         }
@@ -638,11 +668,13 @@ public final class Tx implements ITx {
         }
 
         try {
-            return new ApiMsg(Message.rsp_estimateNrg.parseFrom(ApiUtils.parseBody(rsp).getData()).getNrg(),
-                    ApiMsg.cast.LONG);
+            return new ApiMsg(
+                Message.rsp_estimateNrg.parseFrom(ApiUtils.parseBody(rsp).getData()).getNrg(),
+                ApiMsg.cast.LONG);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[getCode] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
+                LOGGER.error("[getCode] {} exception: [{}]", ErrId.getErrString(-104L),
+                    e.getMessage());
             }
             return new ApiMsg(-104, e.getMessage(), ApiMsg.cast.OTHERS);
         }
@@ -656,8 +688,8 @@ public final class Tx implements ITx {
 
         if (evt == null || ef == null || address == null) {
             throw new NullPointerException("evt#" + String.valueOf(evt)
-            + " ContractEventFilter#" + String.valueOf(ef)
-            + " Address#" + String.valueOf(address));
+                + " ContractEventFilter#" + String.valueOf(ef)
+                + " Address#" + String.valueOf(address));
         }
 
         if (!this.apiInst.isConnected()) {
@@ -674,20 +706,21 @@ public final class Tx implements ITx {
         topics.addAll(ef.getTopics());
 
         Message.t_FilterCt filter = Message.t_FilterCt.newBuilder()
-                .addAllAddresses(addrList)
-                .setFrom((ef.getFromBlock()))
-                .setTo(ef.getToBlock())
-                .setContractAddr(ByteString.copyFrom(address.toBytes()))
-                .setExpireTime(ef.getExpireTime())
-                .addAllTopics(topics)
-                .build();
+            .addAllAddresses(addrList)
+            .setFrom((ef.getFromBlock()))
+            .setTo(ef.getToBlock())
+            .setContractAddr(ByteString.copyFrom(address.toBytes()))
+            .setExpireTime(ef.getExpireTime())
+            .addAllTopics(topics)
+            .build();
 
         Message.req_eventRegister reqBody = Message.req_eventRegister.newBuilder()
-                .addAllEvents(evt)
-                .setFilter(filter)
-                .build();
+            .addAllEvents(evt)
+            .setFilter(filter)
+            .build();
 
-        byte[] reqHead = ApiUtils.toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_tx, Message.Funcs.f_eventRegister);
+        byte[] reqHead = ApiUtils
+            .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_tx, Message.Funcs.f_eventRegister);
         byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
 
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
@@ -697,11 +730,14 @@ public final class Tx implements ITx {
         }
 
         try {
-            return new ApiMsg(Message.rsp_eventDeregister.parseFrom(ApiUtils.parseBody(rsp).getData()).getResult(),
-                    ApiMsg.cast.BOOLEAN);
+            return new ApiMsg(
+                Message.rsp_eventDeregister.parseFrom(ApiUtils.parseBody(rsp).getData())
+                    .getResult(),
+                ApiMsg.cast.BOOLEAN);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[eventRegister] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
+                LOGGER.error("[eventRegister] {} exception: [{}]", ErrId.getErrString(-104L),
+                    e.getMessage());
             }
             return new ApiMsg(-104, e.getMessage(), ApiMsg.cast.OTHERS);
         }
@@ -709,20 +745,22 @@ public final class Tx implements ITx {
 
     public ApiMsg eventDeregister(List<String> evt, Address address) {
 
-        if (evt == null  || address == null) {
+        if (evt == null || address == null) {
             throw new NullPointerException("evt#" + String.valueOf(evt)
-                    + " Address#" + String.valueOf(address));
+                + " Address#" + String.valueOf(address));
         }
 
         if (!this.apiInst.isConnected()) {
             return new ApiMsg(-1003);
         }
 
-        Message.req_eventDeregister reqBody = Message.req_eventDeregister.newBuilder().addAllEvents(evt)
-                .setContractAddr(ByteString.copyFrom(address.toBytes())).build();
+        Message.req_eventDeregister reqBody = Message.req_eventDeregister.newBuilder()
+            .addAllEvents(evt)
+            .setContractAddr(ByteString.copyFrom(address.toBytes())).build();
 
         byte[] reqHead = ApiUtils
-                .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_tx, Message.Funcs.f_eventDeregister);
+            .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_tx,
+                Message.Funcs.f_eventDeregister);
         byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
 
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
@@ -732,11 +770,14 @@ public final class Tx implements ITx {
         }
 
         try {
-            return new ApiMsg(Message.rsp_eventDeregister.parseFrom(ApiUtils.parseBody(rsp).getData()).getResult(),
-                    ApiMsg.cast.BOOLEAN);
+            return new ApiMsg(
+                Message.rsp_eventDeregister.parseFrom(ApiUtils.parseBody(rsp).getData())
+                    .getResult(),
+                ApiMsg.cast.BOOLEAN);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[eventDeregister] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
+                LOGGER.error("[eventDeregister] {} exception: [{}]", ErrId.getErrString(-104L),
+                    e.getMessage());
             }
             return new ApiMsg(-104, e.getMessage(), ApiMsg.cast.OTHERS);
         }
@@ -747,7 +788,8 @@ public final class Tx implements ITx {
             return new ApiMsg(-1003);
         }
 
-        byte[] reqHead = ApiUtils.toReqHeader(ApiUtils.PROTOCOL_VER, Servs.s_tx, Funcs.f_getNrgPrice);
+        byte[] reqHead = ApiUtils
+            .toReqHeader(ApiUtils.PROTOCOL_VER, Servs.s_tx, Funcs.f_getNrgPrice);
 
         byte[] rsp = this.apiInst.nbProcess(reqHead);
         int code = this.apiInst.validRspHeader(rsp);
@@ -756,7 +798,9 @@ public final class Tx implements ITx {
         }
 
         try {
-            return new ApiMsg(Message.rsp_getNrgPrice.parseFrom(ApiUtils.parseBody(rsp).getData()).getNrgPrice(), cast.LONG);
+            return new ApiMsg(
+                Message.rsp_getNrgPrice.parseFrom(ApiUtils.parseBody(rsp).getData()).getNrgPrice(),
+                cast.LONG);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getNrgPrice] {}", ErrId.getErrString(-104L) + e.getMessage());

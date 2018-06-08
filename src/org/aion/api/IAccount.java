@@ -23,6 +23,7 @@
 
 package org.aion.api;
 
+import org.aion.api.impl.Account;
 import org.aion.api.type.ApiMsg;
 import org.aion.api.type.Key;
 
@@ -96,7 +97,7 @@ public interface IAccount {
      */
     ApiMsg accountImport(Map<String, String> keys);
 
-    // Todo:
-    //ApiMsg accountCreateLocal(List<String> passphrase, boolean privateKey);
+    static ApiMsg keystoreCreateLocal(List<String> passphrase) { return Account
+        .keystoreCreateLocal(passphrase);}
 
 }

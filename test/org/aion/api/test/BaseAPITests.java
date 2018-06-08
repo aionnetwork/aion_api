@@ -23,6 +23,7 @@
 
 package org.aion.api.test;
 
+import org.aion.api.IAccount;
 import org.aion.api.IAionAPI;
 import org.aion.api.IUtils;
 import org.aion.api.type.*;
@@ -1839,5 +1840,20 @@ public class BaseAPITests {
         assertEquals(4, nbRunning);
 
         System.out.println("test done");
+    }
+
+    @Test
+    public void TestKeystoreCreateLocal() {
+
+        List<String> passphrase = new ArrayList<>();
+        for (int i=0; i<10; i++) {
+            passphrase.add(String.valueOf(i));
+        }
+
+        ApiMsg msg = IAccount.keystoreCreateLocal(passphrase);
+        assertFalse(msg.isError());
+
+        List<String> newAddrs = msg.getObject();
+        assertEquals(newAddrs.size(), 10);
     }
 }

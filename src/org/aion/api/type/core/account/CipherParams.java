@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,15 +19,13 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
 
 package org.aion.api.type.core.account;
 
+import java.io.UnsupportedEncodingException;
 import org.aion.rlp.RLP;
 import org.aion.rlp.RLPList;
-
-import java.io.UnsupportedEncodingException;
 
 public class CipherParams {
 
@@ -35,12 +33,12 @@ public class CipherParams {
 
     // rlp
 
-    byte[] toRlp() {
+    public byte[] toRlp() {
         byte[] bytesIv = RLP.encodeString(this.iv);
         return RLP.encodeList(bytesIv);
     }
 
-    static CipherParams parse(byte[] bytes) throws UnsupportedEncodingException {
+    public static CipherParams parse(byte[] bytes) throws UnsupportedEncodingException {
         RLPList list = (RLPList) RLP.decode2(bytes).get(0);
         CipherParams cp = new CipherParams();
         cp.setIv(new String(list.get(0).getRLPData(), "US-ASCII"));

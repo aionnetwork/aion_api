@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,17 +19,16 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
 
 package org.aion.api.type.core.account;
 
+import java.io.UnsupportedEncodingException;
 import org.aion.rlp.RLP;
 import org.aion.rlp.RLPList;
 
-import java.io.UnsupportedEncodingException;
-
 public class KeystoreCrypto {
+
     private String cipher;
     private String cipherText;
     private String kdf;
@@ -44,10 +43,11 @@ public class KeystoreCrypto {
         byte[] bytesMac = RLP.encodeString(this.mac);
         byte[] bytesCipherParams = RLP.encodeElement(this.cipherParams.toRlp());
         byte[] bytesKdfParams = RLP.encodeElement(this.kdfParams.toRlp());
-        return RLP.encodeList(bytesCipher, bytesCipherText, bytesKdf, bytesMac, bytesCipherParams, bytesKdfParams);
+        return RLP.encodeList(bytesCipher, bytesCipherText, bytesKdf, bytesMac, bytesCipherParams,
+            bytesKdfParams);
     }
 
-    static KeystoreCrypto parse(byte[] bytes) throws UnsupportedEncodingException {
+    public static KeystoreCrypto parse(byte[] bytes) throws UnsupportedEncodingException {
         RLPList list = (RLPList) RLP.decode2(bytes).get(0);
         KeystoreCrypto kc = new KeystoreCrypto();
         kc.setCipher(new String(list.get(0).getRLPData(), "UTF-8"));
@@ -73,7 +73,7 @@ public class KeystoreCrypto {
         this.kdf = kdf;
     }
 
-    void setMac(String mac) {
+    public void setMac(String mac) {
         this.mac = mac;
     }
 
@@ -99,7 +99,7 @@ public class KeystoreCrypto {
         return kdf;
     }
 
-    String getMac() {
+    public String getMac() {
         return mac;
     }
 

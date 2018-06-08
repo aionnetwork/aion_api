@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,8 +19,7 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
 
 package org.aion.api.impl;
 
@@ -1111,6 +1110,8 @@ public final class Contract implements IContract {
                 .fromBlock(s)
                 .toBlock(s)
                 .topics(new ArrayList<>(this.eventMapping.values()));
+
+
 
         return register(builder.createContractEventFilter());
     }

@@ -23,6 +23,7 @@
 
 package org.aion.api;
 
+
 import org.aion.api.impl.ErrId;
 import org.aion.api.impl.internal.ApiUtils;
 
@@ -141,4 +142,5 @@ public interface IUtils {
     static byte[] sha3(byte[] in) {
         return ApiUtils.keccak(in);
     }
+
 }

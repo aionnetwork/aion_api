@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,27 +19,29 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
 
 package org.aion.api.type.core.account;
+
+import java.io.UnsupportedEncodingException;
 
 import org.aion.base.util.ByteUtil;
 import org.aion.rlp.RLP;
 import org.aion.rlp.RLPList;
 
-import java.io.UnsupportedEncodingException;
-
+/**
+ * keystore item class.
+ */
 public class KeystoreItem {
 
-    String id;
+    public String id;
     public int version;
     public String address;
-    KeystoreCrypto crypto;
+    public KeystoreCrypto crypto;
 
     // rlp
 
-    byte[] toRlp() {
+    public byte[] toRlp() {
         byte[] bytesId = RLP.encodeString(this.id);
         byte[] bytesVersion = RLP.encodeInt(this.version);
         byte[] bytesAddress = RLP.encodeString(this.address);
@@ -47,7 +49,7 @@ public class KeystoreItem {
         return RLP.encodeList(bytesId, bytesVersion, bytesAddress, bytesCrypto);
     }
 
-    static KeystoreItem parse(byte[] bytes) throws UnsupportedEncodingException {
+    public static KeystoreItem parse(byte[] bytes) throws UnsupportedEncodingException {
         RLPList list = (RLPList) RLP.decode2(bytes).get(0);
         KeystoreItem ki = new KeystoreItem();
         ki.setId(new String(list.get(0).getRLPData(), "UTF-8"));
@@ -59,7 +61,7 @@ public class KeystoreItem {
 
     // setters
 
-    private void setId(String id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -93,3 +95,4 @@ public class KeystoreItem {
         return crypto;
     }
 }
+

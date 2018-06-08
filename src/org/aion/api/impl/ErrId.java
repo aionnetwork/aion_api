@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,8 +19,7 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
 
 package org.aion.api.impl;
 
@@ -36,7 +35,7 @@ import java.util.Map;
  */
 public final class ErrId {
 
-    public static final Map<Long, String> ERROR_CODES;
+    private static final Map<Long, String> ERROR_CODES;
 
     static {
         ERROR_CODES = new HashMap<>();
@@ -53,7 +52,8 @@ public final class ErrId {
         ERROR_CODES.put(-111L, "Cannot execute without function definition.");
         ERROR_CODES.put(-112L, "Input Parameter type unmatched.");
         ERROR_CODES.put(-113L, "Function has not been built!");
-        ERROR_CODES.put(-114L, "Internal type should only consist of byte[] and ArrayList! What happened?");
+        ERROR_CODES.put(-114L,
+            "Internal type should only consist of byte[] and ArrayList! What happened?");
         ERROR_CODES.put(-115L, "Input too large, keep within 256bits.");
         ERROR_CODES.put(-116L, "Arraylist is empty or null!");
         ERROR_CODES.put(-117L, "Unsupported input type to instantiate Uint!");
@@ -65,21 +65,20 @@ public final class ErrId {
         ERROR_CODES.put(-124L, "Unsupported input type to instantiate Ureal!");
         ERROR_CODES.put(-125L, "Should not reach here! Something is wrong!");
         ERROR_CODES.put(-126L, "Server return empty contract!");
-        ERROR_CODES.put(-127L, "Contract compile failed! Please check your solidity compiler and SmartContract!");
+        ERROR_CODES.put(-127L,
+            "Contract compile failed! Please check your solidity compiler and SmartContract!");
         ERROR_CODES.put(-128L, "Contract deploy timeout!");
         ERROR_CODES.put(-129L, "Null api call msg!");
-        ERROR_CODES.put(-130L, "Null api call msg!");
+        ERROR_CODES.put(-130L, "The event filter input is null.");
         ERROR_CODES.put(-131L, "Inconsistency params input match with this contract!");
         ERROR_CODES.put(-132L, "Cannot find event: ");
         ERROR_CODES.put(-133L, "Incorrect string format ");
-        ERROR_CODES.put(-133L, "The event filter input is null.");
         ERROR_CODES.put(-134L, "The empty event name input.");
         ERROR_CODES.put(-135L, "No matched events compare with the input strings.");
         ERROR_CODES.put(-136L, "No event been registered.");
         ERROR_CODES.put(-137L, "The contract event put into queue cause exception.");
         ERROR_CODES.put(-138L, "The tx nrglimit equal to 0, check your tx nrg settings");
         ERROR_CODES.put(-139L, "The tx nrgPrice equal to 0, check your tx nrg settings.");
-
 
         ERROR_CODES.put(-200L, "UnsupportedEncodingException!");
 
