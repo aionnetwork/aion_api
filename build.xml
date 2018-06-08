@@ -35,7 +35,7 @@
         <delete dir="${main.build.dir}" includeEmptyDirs="true" />
         <delete dir="${test.build.dir}" includeEmptyDirs="true" />
         <delete dir="${test.report.dir}" includeEmptyDirs="true" />
-        <delete file="${dir.pack}/modAionApi*.jar" />
+        <delete dir="${dir.pack}" includeEmptyDirs="true" />
 	<delete file="${dir.mod}/modAionApi*.jar" />
     </target>
 
@@ -84,12 +84,42 @@
         </move>
     </target>
 
-    <target name="build_fatjar" depends="compile, copy-deps" description="package, output to JAR">
-      
 
+    <target name="build_fatjar" depends="compile, copy-deps" description="package, output to a fatjar">
+        <jar
+            destfile="libAionApi.jar"
+            filesetmanifest="mergewithoutmain"
+            duplicate="preserve"
+            basedir="${main.build.dir}"
+            >
+
+            <manifest>
+                <attribute name="Main-Class" value="org.aion.api.tools.ApiDemo"/>
+                <attribute name="Implementation-Vendor" value="The Aion Foundation"/>
+                <attribute name="Implementation-Vendor-Id" value="aion.network"/>
+                <attribute name="Specification-Title" value="Aion Foundation Java API"/>
+            </manifest>
+
+            <zipfileset src="${dir.pack}/deps-all.jar" 
+                excludes="META-INF/*.SF" />
+        </jar>        
+
+        <move includeemptydirs="false" todir="${dir.pack}">
+            <file file="libAionApi.jar"/>
+        </move>
 
     </target>
 
+    <target name="copy-deps">
+        <jar jarfile="${dir.pack}/deps-all.jar">
+            <zipgroupfileset dir="${dir.mod}">
+                <include name="modRlp.jar" />
+                <include name="modAionBase.jar" />
+                <include name="modCrypto.jar" />
+                <include name="modLogger.jar" />
+            </zipgroupfileset>
+        </jar>
+    </target>
 
     <target name="clean_build" depends="clean" >
 	<antcall target="pre_build" />
