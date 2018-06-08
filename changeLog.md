@@ -1,5 +1,10 @@
 New Updates (most recent on top)
 
+Aion Java API v0.1.8
+- fixed connection issue
+- updated API document
+- updated JDK version to JDK10
+
 Aion Java API v0.1.7
 - fix connection issue
 
