@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,8 +19,7 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
 
 package org.aion.api.test;
 
@@ -41,6 +40,9 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static junit.framework.TestCase.assertTrue;
+import static org.aion.api.ITx.NRG_LIMIT_CONTRACT_CREATE_MAX;
+import static org.aion.api.ITx.NRG_LIMIT_TX_MAX;
+import static org.aion.api.ITx.NRG_PRICE_MIN;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -54,24 +56,24 @@ public class SimpleBench {
     // Make sure the password of the testing account been set properly
     private static final String DEFAULT_PASSWORD = "";
     private static final String sc = "pragma solidity ^0.4.0;\n" +
-            "\n" +
-            "contract Simple {\n" +
-            "    uint counter;\n" +
-            "\n" +
-            "    function f(uint n) returns(uint) {\n" +
-            "\n" +
-            "        uint sum = 0;\n" +
-            "        for (uint i = 0; i < n; i++) {\n" +
-            "            sum = sum + i;\n" +
-            "        }\n" +
-            "\n" +
-            "        return sum;\n" +
-            "    }\n" +
-            "    \n" +
-            "    function g(uint n) {\n" +
-            "        counter++;\n" +
-            "    }\n" +
-            "}";
+        "\n" +
+        "contract Simple {\n" +
+        "    uint counter;\n" +
+        "\n" +
+        "    function f(uint n) returns(uint) {\n" +
+        "\n" +
+        "        uint sum = 0;\n" +
+        "        for (uint i = 0; i < n; i++) {\n" +
+        "            sum = sum + i;\n" +
+        "        }\n" +
+        "\n" +
+        "        return sum;\n" +
+        "    }\n" +
+        "    \n" +
+        "    function g(uint n) {\n" +
+        "        counter++;\n" +
+        "    }\n" +
+        "}";
 
     private static IAionAPI api = null;
     private static IContract ct = null;
@@ -89,7 +91,8 @@ public class SimpleBench {
         assertTrue(api.getWallet().unlockAccount(cb, DEFAULT_PASSWORD, 3600).getObject());
 
         /* deploy contract */
-        ApiMsg msg = api.getContractController().createFromSource(sc, cb, 5_000_000L, 1L);
+        ApiMsg msg = api.getContractController()
+            .createFromSource(sc, cb, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
         if (msg.isError()) {
             System.out.println("Deploy contract failed! " + msg.getErrString());
         }
@@ -113,7 +116,7 @@ public class SimpleBench {
                     int qSize = queue.size();
                     long duration = (System.currentTimeMillis() - startTime) / 1000;
                     System.out.println("proccessed tx: " + count + ", queue size: " + qSize
-                            + ", throughput (tx/sec): " + count.get() / duration);
+                        + ", throughput (tx/sec): " + count.get() / duration);
 
                     for (int i = 0; i < qSize; i++) {
                         byte[] msgHash = queue.take();
@@ -132,16 +135,16 @@ public class SimpleBench {
         t.start();
 
         IContract tmp = ct.newFunction("g")
-                .setParam(IUint.copyFrom(1))
-                .setTxNrgPrice(1L)
-                .setTxNrgLimit(50_000L)
-                .build();
+            .setParam(IUint.copyFrom(1))
+            .setTxNrgPrice(NRG_PRICE_MIN)
+            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+            .build();
 
         while (true) {
             try {
                 ContractResponse rsp = tmp.nonBlock()
-                        .execute()
-                        .getObject();
+                    .execute()
+                    .getObject();
                 assertNotNull(rsp.getMsgHash());
                 assertTrue(!rsp.isTxError());
                 queue.add(rsp.getMsgHash().getData());

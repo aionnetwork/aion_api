@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,8 +19,7 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
 
 package org.aion.api.test;
 
@@ -36,7 +35,7 @@ import org.junit.Test;
 public class MiscTests {
 
     @Test
-    public void SolTypeTests() throws Throwable {
+    public void SolTypeTests() {
         System.out.println(IUtils.bytes2Hex(ApiUtils.toTwosComplement(-2)));
 
         Uint a = Uint.copyFrom(1);
@@ -49,7 +48,7 @@ public class MiscTests {
         System.out.println(bytes.isType("bytes32"));
         System.out.println(bytes.isType("bytes8"));
         System.out.println(bytes.isType("bytes16"));
-        System.out.println(bytes.isType("bytes256"));
+        System.out.println(bytes.isType("bytes128"));
         System.out.println(bytes.isType("bytes"));
     }
 

@@ -1105,7 +1105,7 @@ public final class Contract implements IContract {
         }
 
         ContractEventFilter.ContractEventFilterBuilder builder = new ContractEventFilter.ContractEventFilterBuilder()
-                .addresses(new ArrayList())
+                .addresses(new ArrayList<>())
                 .expireTime(0)
                 .fromBlock(s)
                 .toBlock(s)

@@ -41,6 +41,15 @@ import java.util.List;
 public interface ITx {
 
     /**
+     * Transaction price and limit is following by the current Aion-0 kernel definition.
+     */
+    long NRG_PRICE_MIN = 10_000_000_000L; // 10 PLAT  (10 * 10 ^ -9 AION)
+    long NRG_PRICE_MAX = 9_000_000_000_000_000_000L; //  9 AION
+    long NRG_LIMIT_CONTRACT_CREATE_MAX = 5_000_000L;
+    long NRG_LIMIT_TX_MAX = 2_000_000L;
+    long NRG_LIMIT_TX_MIN = 21_000L;
+
+    /**
      * Deploys a new contract onto the Aion blockchain. Note that contract response via successful
      * execution does <b>not</b> indicate that the contract has been deployed if you use async
      * mode.

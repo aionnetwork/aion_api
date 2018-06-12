@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,8 +19,7 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
 
 package org.aion.api.test;
 
@@ -43,7 +42,8 @@ public class HashTests {
 
         Keccak256 hasher = new Keccak256();
         byte[] hashed = hasher.digest(input.getBytes());
-        assertThat(hashed, is(equalTo(ApiUtils.hex2Bytes("3c6bb436052bdd000ec25d32e5747129050bc7b2b9eaf3b17fdf2ce964a1dd8a"))));
+        assertThat(hashed, is(equalTo(ApiUtils
+            .hex2Bytes("3c6bb436052bdd000ec25d32e5747129050bc7b2b9eaf3b17fdf2ce964a1dd8a"))));
     }
 
     @Test

@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,8 +19,7 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
 
 package org.aion.api.test;
 
@@ -38,6 +37,9 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.aion.api.ITx.NRG_LIMIT_CONTRACT_CREATE_MAX;
+import static org.aion.api.ITx.NRG_LIMIT_TX_MAX;
+import static org.aion.api.ITx.NRG_PRICE_MIN;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -60,14 +62,14 @@ public class MyToken {
 
         assertTrue(api.getWallet().unlockAccount(acc, password, 300).getObject());
 
-
         ArrayList<ISolidityArg> param = new ArrayList<>();
         param.add(IUint.copyFrom(100000));
-            param.add(ISString.copyFrom("Aion Token"));
-            param.add(IUint.copyFrom(10));
-            param.add(ISString.copyFrom("AION"));
+        param.add(ISString.copyFrom("Aion Token"));
+        param.add(IUint.copyFrom(10));
+        param.add(ISString.copyFrom("AION"));
 
-        ApiMsg msg = api.getContractController().createFromSource(s, acc, 5_000_000L, 1L, param);
+        ApiMsg msg = api.getContractController()
+            .createFromSource(s, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN, param);
         if (msg.isError()) {
             System.out.println("Deploy contract failed! " + msg.getErrString());
         }
@@ -76,13 +78,13 @@ public class MyToken {
 
         //Check initial default account balance
         ContractResponse cr = contract.newFunction("balanceOf")
-                .setFrom(acc)
-                .setParam(IAddress.copyFrom(acc.toString()))
-                .setTxNrgLimit(500_000L)
-                .setTxNrgPrice(1L)
-                .build()
-                .execute()
-                .getObject();
+            .setFrom(acc)
+            .setParam(IAddress.copyFrom(acc.toString()))
+            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+            .setTxNrgPrice(NRG_PRICE_MIN)
+            .build()
+            .execute()
+            .getObject();
 
         for (Object a : cr.getData()) {
             System.out.println("balanceOf " + acc.toString() + ": " + a.toString());
@@ -91,22 +93,22 @@ public class MyToken {
 
         //Transfer balance to another account
         cr = contract.newFunction("transfer")
-                .setParam(IAddress.copyFrom(acc2.toString()))
-                .setParam(IUint.copyFrom(1))
-                .setTxNrgLimit(5_000_000L)
-                .setTxNrgPrice(1L)
-                .build()
-                .execute()
-                .getObject();
+            .setParam(IAddress.copyFrom(acc2.toString()))
+            .setParam(IUint.copyFrom(1))
+            .setTxNrgLimit(5_000_000L)
+            .setTxNrgPrice(1L)
+            .build()
+            .execute()
+            .getObject();
 
         //Check account2's balance
         cr = contract.newFunction("balanceOf")
-                .setParam(IAddress.copyFrom(acc2.toString()))
-                .setTxNrgLimit(500_000L)
-                .setTxNrgPrice(1L)
-                .build()
-                .execute()
-                .getObject();
+            .setParam(IAddress.copyFrom(acc2.toString()))
+            .setTxNrgLimit(500_000L)
+            .setTxNrgPrice(1L)
+            .build()
+            .execute()
+            .getObject();
 
         for (Object a : cr.getData()) {
             System.out.println("new balanceOf " + acc2.toString() + ": " + a.toString());
@@ -115,12 +117,12 @@ public class MyToken {
 
         //Check account1's balance
         cr = contract.newFunction("balanceOf")
-                .setParam(IAddress.copyFrom(acc.toString()))
-                .setTxNrgLimit(500_000L)
-                .setTxNrgPrice(1L)
-                .build()
-                .execute()
-                .getObject();
+            .setParam(IAddress.copyFrom(acc.toString()))
+            .setTxNrgLimit(500_000L)
+            .setTxNrgPrice(1L)
+            .build()
+            .execute()
+            .getObject();
 
         for (Object a : cr.getData()) {
             System.out.println("new balanceOf " + acc.toString() + ": " + a.toString());

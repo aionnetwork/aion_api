@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,8 +19,7 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
 
 package org.aion.api.test;
 
@@ -36,6 +35,9 @@ import org.junit.Test;
 import java.util.List;
 import java.util.Scanner;
 
+import static org.aion.api.ITx.NRG_LIMIT_CONTRACT_CREATE_MAX;
+import static org.aion.api.ITx.NRG_LIMIT_TX_MAX;
+import static org.aion.api.ITx.NRG_PRICE_MIN;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
@@ -57,19 +59,20 @@ public class TickerTest {
     }
 
     @Test
-    public void testTickerOperation() throws Throwable {
+    public void testTickerOperation() {
         String sc = readContract();
 
         IAionAPI api = IAionAPI.init();
         api.connect(AionAPIImpl.LOCALHOST_URL);
 
         /* unlock account */
-        Address cb = ((List<Address>)api.getWallet().getAccounts().getObject()).get(0);
+        Address cb = ((List<Address>) api.getWallet().getAccounts().getObject()).get(0);
         assertThat(cb, not(equalTo(null)));
         assertTrue(api.getWallet().unlockAccount(cb, DEFAULT_PASSWORD, 86400).getObject());
 
         /* deploy contract */
-        ApiMsg msg = api.getContractController().createFromSource(sc, cb, 5_000_000L, 1L);
+        ApiMsg msg = api.getContractController()
+            .createFromSource(sc, cb, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
         if (msg.isError()) {
             System.out.println("Deploy contract failed! " + msg.getErrString());
         }
@@ -85,49 +88,49 @@ public class TickerTest {
 
         /* getData */
         ContractResponse rsp = ct.newFunction("getData")
-                .setTxNrgLimit(5_000_000L)
-                .setTxNrgPrice(1L)
-                .build()
-                .execute()
-                .getObject();
+            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+            .setTxNrgPrice(NRG_PRICE_MIN)
+            .build()
+            .execute()
+            .getObject();
         assertThat(rsp.getData().get(0), is(equalTo(1L)));
 
         /* setData and getData */
         ct.newFunction("tick")
-                .setTxNrgLimit(5_000_000L)
-                .setTxNrgPrice(1L)
-                .build()
-                .execute()
-                .getObject();
+            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+            .setTxNrgPrice(NRG_PRICE_MIN)
+            .build()
+            .execute()
+            .getObject();
 
         rsp = ct.newFunction("getData")
-                .setTxNrgLimit(5_000_000L)
-                .setTxNrgPrice(1L)
-                .build()
-                .execute()
-                .getObject();
+            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+            .setTxNrgPrice(NRG_PRICE_MIN)
+            .build()
+            .execute()
+            .getObject();
         assertThat(rsp.getData().get(0), is(equalTo(2L)));
 
         ct.newFunction("tick")
-                .setTxNrgLimit(5_000_000L)
-                .setTxNrgPrice(1L)
-                .build()
-                .execute()
-                .getObject();
+            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+            .setTxNrgPrice(NRG_PRICE_MIN)
+            .build()
+            .execute()
+            .getObject();
 
         ct.newFunction("tick")
-                .setTxNrgLimit(5_000_000L)
-                .setTxNrgPrice(1L)
-                .build()
-                .execute()
-                .getObject();
+            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+            .setTxNrgPrice(NRG_PRICE_MIN)
+            .build()
+            .execute()
+            .getObject();
 
         rsp = ct.newFunction("getData")
-                .setTxNrgLimit(5_000_000L)
-                .setTxNrgPrice(1L)
-                .build()
-                .execute()
-                .getObject();
+            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+            .setTxNrgPrice(NRG_PRICE_MIN)
+            .build()
+            .execute()
+            .getObject();
         assertThat(rsp.getData().get(0), is(equalTo(4L)));
 
         List<ContractEvent> ce = ct.getEvents();

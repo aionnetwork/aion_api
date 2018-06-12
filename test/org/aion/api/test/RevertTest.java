@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,8 +19,7 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
 
 package org.aion.api.test;
 
@@ -36,6 +35,9 @@ import org.junit.Test;
 import java.util.List;
 import java.util.Scanner;
 
+import static org.aion.api.ITx.NRG_LIMIT_CONTRACT_CREATE_MAX;
+import static org.aion.api.ITx.NRG_LIMIT_TX_MAX;
+import static org.aion.api.ITx.NRG_LIMIT_TX_MIN;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
@@ -57,7 +59,7 @@ public class RevertTest {
     }
 
     @Test
-    public void testRevertOperation() throws Throwable {
+    public void testRevertOperation() {
         String contract = readContract();
 
         IAionAPI api = IAionAPI.init();
@@ -69,7 +71,9 @@ public class RevertTest {
         assertTrue(api.getWallet().unlockAccount(accs.get(0), DEFAULT_PASSWORD, 3600).getObject());
 
         /* deploy contract */
-        ApiMsg msg = api.getContractController().createFromSource(contract, accs.get(0), 5_000_000L, 1L);
+        ApiMsg msg = api.getContractController()
+            .createFromSource(contract, accs.get(0), NRG_LIMIT_CONTRACT_CREATE_MAX,
+                NRG_LIMIT_TX_MIN);
         if (msg.isError()) {
             System.out.println("Deploy contract failed! " + msg.getErrString());
         }
@@ -80,46 +84,46 @@ public class RevertTest {
 
         /* getData */
         ContractResponse rsp = ct.newFunction("getData")
-                .setTxNrgLimit(5_000_000L)
-                .setTxNrgPrice(1L)
-                .build()
-                .execute()
-                .getObject();
+            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+            .setTxNrgPrice(NRG_LIMIT_TX_MIN)
+            .build()
+            .execute()
+            .getObject();
         assertThat(rsp.getData().get(0), is(equalTo(3L)));
 
         /* setData and getData */
         ct.newFunction("setData")
-                .setParam(IUint.copyFrom(5L))
-                .setTxNrgLimit(5_000_000L)
-                .setTxNrgPrice(1L)
-                .build()
-                .execute()
-                .getObject();
+            .setParam(IUint.copyFrom(5L))
+            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+            .setTxNrgPrice(NRG_LIMIT_TX_MIN)
+            .build()
+            .execute()
+            .getObject();
 
         rsp = ct.newFunction("getData")
-                .setTxNrgLimit(5_000_000L)
-                .setTxNrgPrice(1L)
-                .build()
-                .execute()
-                .getObject();
+            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+            .setTxNrgPrice(NRG_LIMIT_TX_MIN)
+            .build()
+            .execute()
+            .getObject();
 
         assertThat(rsp.getData().get(0), is(equalTo(5L)));
 
         /* setData2 and getData */
         ct.newFunction("setData2")
-                .setParam(IUint.copyFrom(7L))
-                .setTxNrgLimit(5_000_000L)
-                .setTxNrgPrice(1L)
-                .build()
-                .execute()
-                .getObject();
+            .setParam(IUint.copyFrom(7L))
+            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+            .setTxNrgPrice(NRG_LIMIT_TX_MIN)
+            .build()
+            .execute()
+            .getObject();
 
         rsp = ct.newFunction("getData")
-                .setTxNrgLimit(5_000_000L)
-                .setTxNrgPrice(1L)
-                .build()
-                .execute()
-                .getObject();
+            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+            .setTxNrgPrice(NRG_LIMIT_TX_MIN)
+            .build()
+            .execute()
+            .getObject();
 
         assertThat(rsp.getData().get(0), is(equalTo(5L)));
 

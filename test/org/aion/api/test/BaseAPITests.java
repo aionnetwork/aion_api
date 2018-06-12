@@ -23,10 +23,53 @@
 
 package org.aion.api.test;
 
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertSame;
+import static junit.framework.TestCase.assertTrue;
+import static org.aion.api.ITx.NRG_LIMIT_CONTRACT_CREATE_MAX;
+import static org.aion.api.ITx.NRG_LIMIT_TX_MAX;
+import static org.aion.api.ITx.NRG_LIMIT_TX_MIN;
+import static org.aion.api.ITx.NRG_PRICE_MIN;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+
+import java.math.BigInteger;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.IntStream;
 import org.aion.api.IAccount;
 import org.aion.api.IAionAPI;
 import org.aion.api.IUtils;
-import org.aion.api.type.*;
+import org.aion.api.type.AccountDetails;
+import org.aion.api.type.ApiMsg;
+import org.aion.api.type.Block;
+import org.aion.api.type.BlockDetails;
+import org.aion.api.type.BlockSql;
+import org.aion.api.type.CompileResponse;
+import org.aion.api.type.ContractAbiEntry;
+import org.aion.api.type.ContractDeploy;
+import org.aion.api.type.DeployResponse;
+import org.aion.api.type.Key;
+import org.aion.api.type.KeyExport;
+import org.aion.api.type.MsgRsp;
+import org.aion.api.type.Node;
+import org.aion.api.type.Protocol;
+import org.aion.api.type.SyncInfo;
+import org.aion.api.type.Transaction;
+import org.aion.api.type.TxArgs;
+import org.aion.api.type.TxReceipt;
 import org.aion.api.type.core.tx.AionTransaction;
 import org.aion.base.type.Address;
 import org.aion.base.type.Hash256;
@@ -37,17 +80,6 @@ import org.aion.crypto.ECKeyFac;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import java.math.BigInteger;
-import java.time.Instant;
-import java.util.*;
-import java.util.stream.IntStream;
-
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertSame;
-import static junit.framework.TestCase.assertTrue;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
 
 /**
  * Created by yao on 01/10/16. Contributors Jay Tseng.
@@ -61,7 +93,6 @@ public class BaseAPITests {
     private static final String ERROR_TICKER = "pragma solidity ^0.4.6;\n contract ticker { uint public val; function tick () { val+= 1; } }";
     private static final String VAL = "val";
     private static final String FUNCTION = "function";
-    private static final long NRG_PRICE = 10000000000L;
 
     @Test
     public void TestApiConnect() {
@@ -190,8 +221,8 @@ public class BaseAPITests {
             .data(ByteArrayWrapper.wrap(testData.getBytes()))
             .from(acc)
             .to(acc2)
-            .nrgLimit(100000)
-            .nrgPrice(NRG_PRICE)
+            .nrgLimit(NRG_LIMIT_TX_MAX)
+            .nrgPrice(NRG_PRICE_MIN)
             .value(BigInteger.ONE)
             .nonce(BigInteger.ZERO);
 
@@ -214,8 +245,8 @@ public class BaseAPITests {
 
         assertThat(transaction.getBlockNumber(), is(greaterThan(0L)));
         assertEquals(transaction.getFrom(), acc);
-        assertTrue(transaction.getNrgConsumed() > 21000L);
-        assertThat(transaction.getNrgPrice(), is(equalTo(NRG_PRICE)));
+        assertTrue(transaction.getNrgConsumed() > NRG_LIMIT_TX_MIN);
+        assertThat(transaction.getNrgPrice(), is(equalTo(NRG_PRICE_MIN)));
         assertEquals(transaction.getTo(), acc2);
 
         assertThat(transaction.getNonce(), is(greaterThanOrEqualTo(BigInteger.ZERO)));
@@ -245,8 +276,8 @@ public class BaseAPITests {
             .data(ByteArrayWrapper.wrap(testData.getBytes()))
             .from(acc)
             .to(acc)
-            .nrgLimit(100000)
-            .nrgPrice(NRG_PRICE)
+            .nrgLimit(NRG_LIMIT_TX_MAX)
+            .nrgPrice(NRG_PRICE_MIN)
             .value(BigInteger.ONE)
             .nonce(BigInteger.ZERO);
 
@@ -269,8 +300,8 @@ public class BaseAPITests {
 
         assertThat(transaction.getBlockNumber(), is(greaterThan(0L)));
         assertEquals(transaction.getFrom(), acc);
-        assertThat(transaction.getNrgConsumed(), is(greaterThan(21000L)));
-        assertThat(transaction.getNrgPrice(), is(equalTo(NRG_PRICE)));
+        assertThat(transaction.getNrgConsumed(), is(greaterThan(NRG_LIMIT_TX_MIN)));
+        assertThat(transaction.getNrgPrice(), is(equalTo(NRG_PRICE_MIN)));
         assertEquals(transaction.getTo(), acc);
         assertThat(transaction.getNonce(), is(greaterThanOrEqualTo(BigInteger.ZERO)));
         assertThat(transaction.getTransactionIndex(), is(equalTo(0)));
@@ -317,8 +348,8 @@ public class BaseAPITests {
             .compileResponse(contract)
             .from(accs.get(0))
             .data(ByteArrayWrapper.wrap(Bytesable.NULL_BYTE))
-            .nrgLimit(500_000)
-            .nrgPrice(NRG_PRICE)
+            .nrgLimit(NRG_LIMIT_TX_MAX)
+            .nrgPrice(NRG_PRICE_MIN)
             .value(BigInteger.ZERO);
 
         DeployResponse contractResponse = api.getTx().contractDeploy(builder.createContractDeploy())
@@ -341,8 +372,8 @@ public class BaseAPITests {
         assertNotNull(transaction.getTxHash());
         assertEquals(transaction.getBlockNumber(), blkNr);
         assertEquals(transaction.getFrom(), accs.get(0));
-        assertTrue(transaction.getNrgConsumed() > 21000);
-        assertEquals(transaction.getNrgPrice(), NRG_PRICE);
+        assertTrue(transaction.getNrgConsumed() > NRG_LIMIT_TX_MIN);
+        assertEquals(transaction.getNrgPrice(), NRG_PRICE_MIN);
         assertEquals(transaction.getTo(), Address.EMPTY_ADDRESS());
         assertTrue(transaction.getNonce().compareTo(BigInteger.ZERO) > -1);
         assertEquals(0, transaction.getTransactionIndex());
@@ -370,8 +401,8 @@ public class BaseAPITests {
             .data(ByteArrayWrapper.wrap(Objects.requireNonNull(IUtils.hex2Bytes("00000000"))))
             .from(acc)
             .to(acc)
-            .nrgLimit(100000)
-            .nrgPrice(NRG_PRICE)
+            .nrgLimit(NRG_LIMIT_TX_MAX)
+            .nrgPrice(NRG_PRICE_MIN)
             .value(BigInteger.ZERO)
             .nonce(BigInteger.ZERO);
 
@@ -386,8 +417,8 @@ public class BaseAPITests {
         assertNotNull(txRecpt.getBlockHash());
         assertTrue(txRecpt.getBlockNumber() > 0);
         assertNotNull(txRecpt.getContractAddress());
-        assertTrue(txRecpt.getCumulativeNrgUsed() > 21000);
-        assertTrue(txRecpt.getNrgConsumed() > 21000);
+        assertTrue(txRecpt.getCumulativeNrgUsed() > NRG_LIMIT_TX_MIN);
+        assertTrue(txRecpt.getNrgConsumed() > NRG_LIMIT_TX_MIN);
         assertEquals(txRecpt.getFrom(), acc);
         assertEquals(txRecpt.getTo(), acc);
         assertTrue(txRecpt.getTxIndex() > -1);
@@ -396,17 +427,16 @@ public class BaseAPITests {
     }
 
     @Test
-    public void TestGetAccounts() throws Throwable {
+    public void TestGetAccounts() {
         System.out.println("run TestGetAccounts.");
 
         IAionAPI api = IAionAPI.init();
         ApiMsg msg = api.connect(url);
 
         assertFalse(msg.isError());
-        Thread.sleep(10000);
 
         List<Address> accounts = api.getWallet().getAccounts().getObject();
-        assertTrue(accounts.size() > 0);
+        assertFalse(accounts.isEmpty());
         api.destroyApi();
     }
 
@@ -467,8 +497,8 @@ public class BaseAPITests {
             .data(ByteArrayWrapper.wrap("TestSendTransaction!".getBytes()))
             .from(acc)
             .to(acc)
-            .nrgLimit(100000)
-            .nrgPrice(NRG_PRICE)
+            .nrgLimit(NRG_LIMIT_TX_MAX)
+            .nrgPrice(NRG_PRICE_MIN)
             .value(BigInteger.ZERO)
             .nonce(BigInteger.ZERO);
 
@@ -540,8 +570,8 @@ public class BaseAPITests {
             .data(ByteArrayWrapper.wrap(testData.getBytes()))
             .from(acc)
             .to(acc)
-            .nrgLimit(100000)
-            .nrgPrice(NRG_PRICE)
+            .nrgLimit(NRG_LIMIT_TX_MAX)
+            .nrgPrice(NRG_PRICE_MIN)
             .value(BigInteger.ONE)
             .nonce(BigInteger.ZERO);
 
@@ -563,8 +593,8 @@ public class BaseAPITests {
         assertNotNull(transaction.getTxHash());
         assertEquals(transaction.getBlockNumber(), txRecpt.getBlockNumber());
         assertEquals(transaction.getFrom(), acc);
-        assertTrue(transaction.getNrgConsumed() > 21000);
-        assertEquals(transaction.getNrgPrice(), NRG_PRICE);
+        assertTrue(transaction.getNrgConsumed() > NRG_LIMIT_TX_MIN);
+        assertEquals(transaction.getNrgPrice(), NRG_PRICE_MIN);
         assertEquals(transaction.getTo(), acc);
         assertTrue(transaction.getNonce().compareTo(BigInteger.ZERO) > -1);
         assertEquals(0, transaction.getTransactionIndex());
@@ -607,8 +637,8 @@ public class BaseAPITests {
         ContractDeploy.ContractDeployBuilder builder = new ContractDeploy.ContractDeployBuilder()
             .compileResponse(contract)
             .value(BigInteger.ZERO)
-            .nrgPrice(NRG_PRICE)
-            .nrgLimit(500_000)
+            .nrgPrice(NRG_PRICE_MIN)
+            .nrgLimit(NRG_LIMIT_CONTRACT_CREATE_MAX)
             .data(ByteArrayWrapper.wrap(Bytesable.NULL_BYTE))
             .from(accs.get(0));
 
@@ -663,8 +693,8 @@ public class BaseAPITests {
         ContractDeploy.ContractDeployBuilder builder = new ContractDeploy.ContractDeployBuilder()
             .compileResponse(contract)
             .value(BigInteger.ZERO)
-            .nrgPrice(NRG_PRICE)
-            .nrgLimit(500_000)
+            .nrgPrice(NRG_PRICE_MIN)
+            .nrgLimit(NRG_LIMIT_CONTRACT_CREATE_MAX)
             .data(ByteArrayWrapper.wrap(Bytesable.NULL_BYTE))
             .from(accs.get(0));
 
@@ -694,8 +724,8 @@ public class BaseAPITests {
             .data(ByteArrayWrapper.wrap(Objects.requireNonNull(IUtils.hex2Bytes("00000000"))))
             .from(acc)
             .to(acc)
-            .nrgLimit(100000)
-            .nrgPrice(NRG_PRICE)
+            .nrgLimit(NRG_LIMIT_TX_MAX)
+            .nrgPrice(NRG_PRICE_MIN)
             .value(BigInteger.ZERO)
             .nonce(BigInteger.ZERO);
 
@@ -712,8 +742,8 @@ public class BaseAPITests {
         Block block = api.getChain().getBlockByHash(blockHash).getObject();
         assertTrue(block.getDifficulty().compareTo(BigInteger.ZERO) > 0);
         assertEquals(32, block.getExtraData().getData().length);
-        assertTrue(block.getNrgLimit() > 21000);
-        assertTrue(block.getNrgConsumed() > 21000);
+        assertTrue(block.getNrgLimit() > NRG_LIMIT_TX_MIN);
+        assertTrue(block.getNrgConsumed() > NRG_LIMIT_TX_MIN);
         assertNotNull(block.getParentHash());
         assertEquals(256, block.getBloom().getData().length);
         assertTrue(block.getNonce().compareTo(BigInteger.ZERO) != 0);
@@ -749,8 +779,8 @@ public class BaseAPITests {
             .data(ByteArrayWrapper.wrap(Objects.requireNonNull(IUtils.hex2Bytes("00000000"))))
             .from(acc)
             .to(acc)
-            .nrgLimit(100000)
-            .nrgPrice(NRG_PRICE)
+            .nrgLimit(NRG_LIMIT_TX_MAX)
+            .nrgPrice(NRG_PRICE_MIN)
             .value(BigInteger.ZERO)
             .nonce(BigInteger.ZERO);
 
@@ -780,8 +810,8 @@ public class BaseAPITests {
 
         assertTrue(block.getDifficulty().compareTo(BigInteger.ZERO) > 0);
         assertEquals(32, block.getExtraData().getData().length);
-        assertTrue(block.getNrgLimit() > 21000);
-        assertTrue(block.getNrgConsumed() > 21000);
+        assertTrue(block.getNrgLimit() > NRG_LIMIT_TX_MIN);
+        assertTrue(block.getNrgConsumed() > NRG_LIMIT_TX_MIN);
         assertNotNull(block.getParentHash());
         assertEquals(256, block.getBloom().getData().length);
         assertTrue(block.getNonce().compareTo(BigInteger.ZERO) != 0);
@@ -822,8 +852,8 @@ public class BaseAPITests {
             .data(ByteArrayWrapper.wrap(testData.getBytes()))
             .from(acc)
             .to(acc)
-            .nrgLimit(100000)
-            .nrgPrice(NRG_PRICE)
+            .nrgLimit(NRG_LIMIT_TX_MAX)
+            .nrgPrice(NRG_PRICE_MIN)
             .value(BigInteger.ZERO)
             .nonce(BigInteger.ZERO);
 
@@ -862,8 +892,8 @@ public class BaseAPITests {
             .data(ByteArrayWrapper.wrap(testData.getBytes()))
             .from(acc)
             .to(acc)
-            .nrgLimit(100000)
-            .nrgPrice(NRG_PRICE)
+            .nrgLimit(NRG_LIMIT_TX_MAX)
+            .nrgPrice(NRG_PRICE_MIN)
             .value(BigInteger.ZERO)
             .nonce(BigInteger.ZERO);
 
@@ -905,8 +935,8 @@ public class BaseAPITests {
             .data(ByteArrayWrapper.wrap(testData.getBytes()))
             .from(acc)
             .to(acc)
-            .nrgLimit(40_000L)
-            .nrgPrice(NRG_PRICE)
+            .nrgLimit(NRG_LIMIT_TX_MAX)
+            .nrgPrice(NRG_PRICE_MIN)
             .value(BigInteger.ZERO)
             .nonce(BigInteger.ZERO);
 
@@ -960,8 +990,8 @@ public class BaseAPITests {
         ContractDeploy.ContractDeployBuilder builder = new ContractDeploy.ContractDeployBuilder()
             .compileResponse(contract)
             .value(BigInteger.ZERO)
-            .nrgPrice(NRG_PRICE)
-            .nrgLimit(500_000)
+            .nrgPrice(NRG_PRICE_MIN)
+            .nrgLimit(NRG_LIMIT_CONTRACT_CREATE_MAX)
             .data(ByteArrayWrapper.wrap(Bytesable.NULL_BYTE))
             .from(accs.get(0));
 
@@ -997,8 +1027,8 @@ public class BaseAPITests {
             .data(ByteArrayWrapper.wrap(hashFunctionCallBytes))
             .from(acc)
             .to(contractResponse.getAddress())
-            .nrgLimit(40_000L)
-            .nrgPrice(NRG_PRICE)
+            .nrgLimit(NRG_LIMIT_TX_MAX)
+            .nrgPrice(NRG_PRICE_MIN)
             .value(BigInteger.ZERO)
             .nonce(BigInteger.ZERO)
             .createTxArgs();
@@ -1039,8 +1069,8 @@ public class BaseAPITests {
         ContractDeploy.ContractDeployBuilder builder = new ContractDeploy.ContractDeployBuilder()
             .compileResponse(contract)
             .value(BigInteger.ZERO)
-            .nrgPrice(NRG_PRICE)
-            .nrgLimit(500_000)
+            .nrgPrice(NRG_PRICE_MIN)
+            .nrgLimit(NRG_LIMIT_CONTRACT_CREATE_MAX)
             .data(ByteArrayWrapper.wrap(Bytesable.NULL_BYTE))
             .from(accs.get(0));
 
@@ -1076,14 +1106,14 @@ public class BaseAPITests {
             .data(ByteArrayWrapper.wrap(hashFunctionCallBytes))
             .from(acc)
             .to(contractResponse.getAddress())
-            .nrgLimit(40_000L)
-            .nrgPrice(NRG_PRICE)
+            .nrgLimit(NRG_LIMIT_TX_MAX)
+            .nrgPrice(NRG_PRICE_MIN)
             .value(BigInteger.ZERO)
             .nonce(BigInteger.ZERO)
             .createTxArgs();
 
         long nrg = api.getTx().estimateNrg(txArgs).getObject();
-        assertTrue(nrg > 21000L);
+        assertTrue(nrg > NRG_LIMIT_TX_MIN);
         api.destroyApi();
     }
 
@@ -1421,8 +1451,8 @@ public class BaseAPITests {
             .data(ByteArrayWrapper.wrap("TestSendTransaction!".getBytes()))
             .from(acc)
             .to(acc)
-            .nrgLimit(100000)
-            .nrgPrice(NRG_PRICE)
+            .nrgLimit(NRG_LIMIT_TX_MAX)
+            .nrgPrice(NRG_PRICE_MIN)
             .value(BigInteger.ZERO)
             // make sure the nonce setting is correct
             .nonce(BigInteger.ZERO);
@@ -1475,8 +1505,8 @@ public class BaseAPITests {
             , (Address) accs.get(1)
             , (BigInteger.valueOf(transfer)).toByteArray()
             , "TestSendTransaction!".getBytes()
-            , 100000L
-            , NRG_PRICE);
+            , NRG_LIMIT_TX_MAX
+            , NRG_PRICE_MIN);
         tx0.sign(ecKey);
 
         msg.set(api.getTx().sendRawTransaction(ByteArrayWrapper.wrap(tx0.getEncoded())));
@@ -1495,7 +1525,7 @@ public class BaseAPITests {
         Transaction tx1 = apimsg.getObject();
         BigInteger diff = b0.subtract(b1);
 
-        assertEquals(((tx1.getNrgConsumed() * NRG_PRICE) + transfer), diff.longValue());
+        assertEquals(((tx1.getNrgConsumed() * NRG_PRICE_MIN) + transfer), diff.longValue());
 
         api.destroyApi();
     }
@@ -1757,8 +1787,8 @@ public class BaseAPITests {
             .data(ByteArrayWrapper.wrap(Objects.requireNonNull(IUtils.hex2Bytes("00000000"))))
             .from(acc)
             .to(acc)
-            .nrgLimit(100000)
-            .nrgPrice(10000000000L)
+            .nrgLimit(NRG_LIMIT_TX_MAX)
+            .nrgPrice(NRG_PRICE_MIN)
             .value(BigInteger.ZERO)
             .nonce(BigInteger.ZERO);
         api.getTx().fastTxbuild(builder.createTxArgs());
