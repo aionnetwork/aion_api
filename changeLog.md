@@ -1,5 +1,8 @@
 New Updates (most recent on top)
 
+Aion Java API v0.1.9
+- fixed getSyncInfo issue
+
 Aion Java API v0.1.8
 - fixed connection issue
 - updated API document
