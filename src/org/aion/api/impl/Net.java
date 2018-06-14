@@ -65,8 +65,8 @@ public class Net implements INet {
 
         try {
             Message.rsp_syncInfo msgRsp = Message.rsp_syncInfo.parseFrom(ApiUtils.parseBody(rsp).getData());
-            SyncInfo syncInfo = new SyncInfo(msgRsp.getSyncing(), msgRsp.getChainBestBlock(),
-                    msgRsp.getNetworkBestBlock(), msgRsp.getMaxImportBlocks());
+            SyncInfo syncInfo = new SyncInfo(msgRsp.getSyncing(),
+                    msgRsp.getNetworkBestBlock(), msgRsp.getChainBestBlock(), msgRsp.getMaxImportBlocks());
             
             return new ApiMsg(syncInfo, ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
