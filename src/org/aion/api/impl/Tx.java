@@ -29,12 +29,10 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import java.math.BigInteger;
 import org.aion.api.ITx;
 import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.impl.internal.Message;
 import org.aion.api.impl.internal.Message.Funcs;
-import org.aion.api.impl.internal.Message.Retcode;
 import org.aion.api.impl.internal.Message.Servs;
 import org.aion.api.log.AionLoggerFactory;
 import org.aion.api.log.LogEnum;
@@ -51,7 +49,10 @@ import org.slf4j.Logger;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Jay Tseng on 15/11/16.
@@ -86,7 +87,8 @@ public final class Tx implements ITx {
             : cd.getCompileResponse().getCode().getBytes();
 
         Message.req_contractDeploy reqBody = Message.req_contractDeploy.newBuilder()
-            .setFrom(ByteString.copyFrom(cd.getFrom().toBytes()))
+            .setFrom(ByteString.copyFrom(
+                cd.getFrom() == null ? apiInst.defaultAccount.toBytes() : cd.getFrom().toBytes()))
             .setNrgLimit(cd.getNrgLimit())
             .setNrgPrice(cd.getNrgPrice())
             .setData(ByteString.copyFrom(code))
@@ -132,7 +134,8 @@ public final class Tx implements ITx {
 
         Message.req_call reqBody = Message.req_call.newBuilder()
             .setData(ByteString.copyFrom(args.getData().toBytes()))
-            .setFrom(ByteString.copyFrom(args.getFrom().toBytes()))
+            .setFrom(ByteString.copyFrom(args.getFrom() == null ? apiInst.defaultAccount.toBytes()
+                : args.getFrom().toBytes()))
             .setTo(ByteString.copyFrom(args.getTo().toBytes()))
             .setNrg(args.getNrgLimit())
             .setNrgPrice(args.getNrgPrice())
@@ -237,7 +240,9 @@ public final class Tx implements ITx {
                     Message.Funcs.f_sendTransaction, ByteArrayWrapper.wrap(hash));
 
             Message.req_sendTransaction reqBody = Message.req_sendTransaction.newBuilder()
-                .setFrom(ByteString.copyFrom(args.getFrom().toBytes()))
+                .setFrom(ByteString.copyFrom(
+                    args.getFrom() == null ? apiInst.defaultAccount.toBytes()
+                        : args.getFrom().toBytes()))
                 .setTo(ByteString.copyFrom(args.getTo().toBytes()))
                 .setData(ByteString.copyFrom(args.getData().toBytes()))
                 .setNonce(ByteString.copyFrom(args.getNonce().toByteArray()))
@@ -587,7 +592,8 @@ public final class Tx implements ITx {
                 ByteArrayWrapper.wrap(ApiUtils.EMPTY_MSG_HASH));
 
         Message.req_sendTransaction reqBody = Message.req_sendTransaction.newBuilder()
-            .setFrom(ByteString.copyFrom(args.getFrom().toBytes()))
+            .setFrom(ByteString.copyFrom(args.getFrom() == null ? apiInst.defaultAccount.toBytes()
+                : args.getFrom().toBytes()))
             .setTo(ByteString.copyFrom(args.getTo().toBytes()))
             .setData(ByteString.copyFrom(args.getData().toBytes()))
             .setNonce(ByteString.copyFrom(args.getNonce().toByteArray()))
@@ -650,7 +656,9 @@ public final class Tx implements ITx {
                     Message.Funcs.f_estimateNrg);
 
             Message.req_estimateNrg reqBody = Message.req_estimateNrg.newBuilder()
-                .setFrom(ByteString.copyFrom(args.getFrom().toBytes()))
+                .setFrom(
+                    ByteString.copyFrom(args.getFrom() == null ? apiInst.defaultAccount.toBytes()
+                        : args.getFrom().toBytes()))
                 .setTo(ByteString.copyFrom(args.getTo().toBytes()))
                 .setData(ByteString.copyFrom(args.getData().toBytes()))
                 .setValue(ByteString.copyFrom(args.getValue().toByteArray()))
@@ -697,13 +705,12 @@ public final class Tx implements ITx {
         }
 
         List<ByteString> addrList = new ArrayList<>();
-        List<String> topics = new ArrayList<>();
 
         for (Address ad : ef.getAddresses()) {
             addrList.add(ByteString.copyFrom(ad.toBytes()));
         }
 
-        topics.addAll(ef.getTopics());
+        List<String> topics = new ArrayList<>(ef.getTopics());
 
         Message.t_FilterCt filter = Message.t_FilterCt.newBuilder()
             .addAllAddresses(addrList)

@@ -24,10 +24,14 @@
 
 package org.aion.api.type;
 
+import org.aion.api.ITx;
 import org.aion.base.type.Address;
 import org.aion.base.util.ByteArrayWrapper;
 
 import java.math.BigInteger;
+
+import static org.aion.api.ITx.NRG_LIMIT_TX_MIN;
+import static org.aion.api.ITx.NRG_PRICE_MIN;
 
 /**
  * The transaction input arguments used in {@link org.aion.api.ITx#sendTransaction(org.aion.api.type.TxArgs)
@@ -135,16 +139,33 @@ public final class TxArgs {
 
 
         public TxArgs createTxArgs() {
-            if (from == null || to == null || value == null || nonce == null || data == null) {
-                throw new NullPointerException(
-                    "From#" + String.valueOf(from) +
-                        " To#" + String.valueOf(to) +
-                        " Value#" + String.valueOf(value) +
-                        " Nonce#" + String.valueOf(nonce) +
-                        " Data#" + String.valueOf(data));
+
+            if (value == null) {
+                value = BigInteger.ZERO;
             }
 
-            if (nrgLimit < 0 || nrgPrice < 0) {
+            if (nonce == null) {
+                nonce = BigInteger.ZERO;
+            }
+
+            if (data == null) {
+                data = ByteArrayWrapper.wrap(new byte[0]);
+            }
+
+            if (to == null) {
+                to = Address.EMPTY_ADDRESS();
+            }
+
+            if (nrgLimit == 0) {
+                nrgLimit = to.equals(Address.EMPTY_ADDRESS()) ? ITx.NRG_LIMIT_CONTRACT_CREATE_MAX
+                    : ITx.NRG_LIMIT_TX_MAX;
+            }
+
+            if (nrgPrice == 0) {
+                nrgPrice = NRG_PRICE_MIN;
+            }
+
+            if (nrgLimit < NRG_LIMIT_TX_MIN || nrgPrice < NRG_PRICE_MIN) {
                 throw new IllegalArgumentException(
                     "NrgLimit#" + nrgLimit +
                         " NrgPrice#" + nrgPrice);
