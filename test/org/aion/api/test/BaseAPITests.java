@@ -1886,4 +1886,21 @@ public class BaseAPITests {
         List<String> newAddrs = msg.getObject();
         assertEquals(newAddrs.size(), 10);
     }
+
+    @Test
+    public void TestGetBlocksDetailsByHash() {
+        System.out.println("run TestGetBlocksDetailsByHash.");
+
+        IAionAPI api = IAionAPI.init();
+        api.connect(url);
+
+        ApiMsg msg = api.getAdmin().getBlockDetailsByHash(Hash256.wrap("3336fcac1df37da66506a778bf24e2fcf47f4bc2d92da26323a47c78231d613e"));
+        assertFalse(msg.isError());
+        BlockDetails blk = msg.getObject();
+
+        assertNotNull(blk);
+        assertEquals(blk.getHash(), Hash256.wrap("3336fcac1df37da66506a778bf24e2fcf47f4bc2d92da26323a47c78231d613e"));
+
+        api.destroyApi();
+    }
 }

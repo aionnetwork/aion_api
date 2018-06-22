@@ -402,6 +402,10 @@ public final class Message {
      */
     f_backupAccounts(52),
     /**
+     * <code>f_NA = 53;</code>
+     */
+    f_NA(53),
+    /**
      * <code>f_getBlockSqlByRange = 54;</code>
      */
     f_getBlockSqlByRange(54),
@@ -421,14 +425,6 @@ public final class Message {
      * <code>f_getBlockDetailsByHash = 58;</code>
      */
     f_getBlockDetailsByHash(58),
-    /**
-     * <pre>
-     *Alway keep this in the button
-     * </pre>
-     *
-     * <code>f_NA = 59;</code>
-     */
-    f_NA(59),
     UNRECOGNIZED(-1),
     ;
 
@@ -645,6 +641,10 @@ public final class Message {
      */
     public static final int f_backupAccounts_VALUE = 52;
     /**
+     * <code>f_NA = 53;</code>
+     */
+    public static final int f_NA_VALUE = 53;
+    /**
      * <code>f_getBlockSqlByRange = 54;</code>
      */
     public static final int f_getBlockSqlByRange_VALUE = 54;
@@ -664,14 +664,6 @@ public final class Message {
      * <code>f_getBlockDetailsByHash = 58;</code>
      */
     public static final int f_getBlockDetailsByHash_VALUE = 58;
-    /**
-     * <pre>
-     *Alway keep this in the button
-     * </pre>
-     *
-     * <code>f_NA = 59;</code>
-     */
-    public static final int f_NA_VALUE = 59;
 
 
     public final int getNumber() {
@@ -745,12 +737,12 @@ public final class Message {
         case 50: return f_getBlocksByLatest;
         case 51: return f_getAccountDetailsByAddressList;
         case 52: return f_backupAccounts;
+        case 53: return f_NA;
         case 54: return f_getBlockSqlByRange;
         case 55: return f_getBlockDetailsByRange;
         case 56: return f_getNonce;
         case 57: return f_getNrgPrice;
         case 58: return f_getBlockDetailsByHash;
-        case 59: return f_NA;
         default: return null;
       }
     }
@@ -75689,11 +75681,11 @@ public final class Message {
       "ticNodes\020/\022\035\n\031f_getBlockDetailsByNumber\020" +
       "0\022\035\n\031f_getBlockDetailsByLatest\0201\022\027\n\023f_ge" +
       "tBlocksByLatest\0202\022$\n f_getAccountDetails" +
-      "ByAddressList\0203\022\024\n\020f_backupAccounts\0204\022\030\n" +
-      "\024f_getBlockSqlByRange\0206\022\034\n\030f_getBlockDet" +
-      "ailsByRange\0207\022\016\n\nf_getNonce\0208\022\021\n\rf_getNr" +
-      "gPrice\0209\022\033\n\027f_getBlockDetailsByHash\020:\022\010\n" +
-      "\004f_NA\020;*\241\007\n\007Retcode\022\n\n\006r_fail\020\000\022\r\n\tr_suc" +
+      "ByAddressList\0203\022\024\n\020f_backupAccounts\0204\022\010\n" +
+      "\004f_NA\0205\022\030\n\024f_getBlockSqlByRange\0206\022\034\n\030f_g" +
+      "etBlockDetailsByRange\0207\022\016\n\nf_getNonce\0208\022" +
+      "\021\n\rf_getNrgPrice\0209\022\033\n\027f_getBlockDetailsB" +
+      "yHash\020:*\241\007\n\007Retcode\022\n\n\006r_fail\020\000\022\r\n\tr_suc" +
       "cess\020\001\022\023\n\017r_wallet_nullcb\020\002\022\025\n\021r_heartbe" +
       "atReturn\020\003\022\025\n\021r_privilegeReturn\020\004\022\r\n\tr_t" +
       "x_Init\020d\022\017\n\013r_tx_Recved\020e\022\020\n\014r_tx_Droppe" +

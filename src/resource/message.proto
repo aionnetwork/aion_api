@@ -70,12 +70,12 @@ enum Funcs	 {
 	f_getBlocksByLatest		        		= 50;
 	f_getAccountDetailsByAddressList  		= 51;
 	f_backupAccounts			            = 52;
+    f_NA                                    = 53;
     f_getBlockSqlByRange					= 54;
     f_getBlockDetailsByRange				= 55;
     f_getNonce                              = 56;
     f_getNrgPrice                           = 57;
     f_getBlockDetailsByHash 		        = 58;
-    f_NA                                    = 59;    //Always keep this at the bottom
 }
 
 enum Retcode {
