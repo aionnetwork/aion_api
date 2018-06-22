@@ -152,9 +152,8 @@ public class MsgExecutor implements Runnable {
                     }
 
                     if (status == 105) {
-                        msgRsp.setTxResult(ByteArrayWrapper.wrap(ByteBuffer
-                            .wrap(rsp.getData(), rsp.getData()[0] + 1,
-                                rsp.getData().length - (rsp.getData()[0] + 1)).array()));
+                        msgRsp.setTxResult(ByteArrayWrapper.wrap(
+                            Arrays.copyOfRange(rsp.getData(), rsp.getData()[0] + 1, rsp.getData().length)));
                     }
                 } else {
                     // if response message = 68, that is a contract deploy
