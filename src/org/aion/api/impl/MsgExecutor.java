@@ -46,7 +46,6 @@ import org.zeromq.ZMQ.Context;
 import org.zeromq.ZMQ.PollItem;
 import org.zeromq.ZMQ.Socket;
 
-import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
