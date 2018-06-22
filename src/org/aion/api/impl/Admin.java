@@ -27,14 +27,18 @@ package org.aion.api.impl;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.sun.nio.sctp.IllegalReceiveException;
+import java.util.Collections;
 import org.aion.api.IAdmin;
 import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.impl.internal.Message;
+import org.aion.api.impl.internal.Message.Funcs;
+import org.aion.api.impl.internal.Message.rsp_getBlockDetailsByHash;
 import org.aion.api.log.AionLoggerFactory;
 import org.aion.api.log.LogEnum;
 import org.aion.api.type.*;
 import org.aion.api.type.ApiMsg.cast;
 import org.aion.base.type.Address;
+import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteUtil;
 import org.slf4j.Logger;
 
@@ -96,6 +100,47 @@ public class Admin implements IAdmin {
 
         return new ApiMsg(1, bdl.get(0), cast.OTHERS);
     }
+
+    @Override
+    public ApiMsg getBlockDetailsByHash(Hash256 blockHash) {
+        if (!this.apiInst.isConnected()) {
+            return new ApiMsg(-1003);
+        }
+
+        if (blockHash == null) {
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("[getBlockDetailsByHash]" + ErrId.getErrString(-17L));
+            }
+            return new ApiMsg(-17);
+        }
+
+        Message.req_getBlockDetailsByHash reqBody = Message.req_getBlockDetailsByHash.newBuilder()
+            .setBlockHash(ByteString.copyFrom(blockHash.toBytes()))
+            .build();
+
+        byte[] reqHead = ApiUtils
+            .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_admin, Funcs.f_getBlockDetailsByHash);
+        byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
+
+        byte[] rsp = this.apiInst.nbProcess(reqMsg);
+        int code = this.apiInst.validRspHeader(rsp);
+        if (code != 1) {
+            return new ApiMsg(code);
+        }
+
+        try {
+            List<BlockDetails> k = ApiUtils.toBlockDetails(Collections.singletonList(
+                rsp_getBlockDetailsByHash.parseFrom(ApiUtils.parseBody(rsp).getData())
+                    .getBlkDetails()));
+            return new ApiMsg(k.get(0), org.aion.api.type.ApiMsg.cast.OTHERS);
+        } catch (InvalidProtocolBufferException e) {
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("[getBlockDetailsByHash]" + ErrId.getErrString(-104L) + e.getMessage());
+            }
+            return new ApiMsg(-104, e.getMessage(), org.aion.api.type.ApiMsg.cast.OTHERS);
+        }
+    }
+
 
     private List<Long> parseBlockList(String blks) {
         if (blks == null) {
