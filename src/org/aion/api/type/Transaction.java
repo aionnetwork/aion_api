@@ -119,6 +119,21 @@ public final class Transaction {
         return data;
     }
 
+    @Override
+    public String toString() {
+        return "nrgPrice: " + nrgPrice + ",\n"
+            + "nrg: " + nrgConsumed + ",\n"
+            + "nonce: " + nonce.toString() + ",\n"
+            + "transactionIndex: " + transactionIndex + ",\n"
+            + "input: " + "0x" + data.toString() + ",\n"
+            + "blockNumber: " + blockNumber + ",\n"
+            + "from: " + "0x" + from.toString() + ",\n"
+            + "to: " + "0x" + to.toString() + ",\n"
+            + "value: " + value.toString() + ",\n"
+            + "hash: " + "0x" + txHash.toString() + ",\n"
+            + "timestamp: " + timeStamp + "\n";
+    }
+
     /**
      * This Builder class is used to build a {@link Transaction} instance.
      */

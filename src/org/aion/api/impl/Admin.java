@@ -26,12 +26,14 @@ package org.aion.api.impl;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.sun.nio.sctp.IllegalReceiveException;
 import org.aion.api.IAdmin;
 import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.impl.internal.Message;
 import org.aion.api.log.AionLoggerFactory;
 import org.aion.api.log.LogEnum;
 import org.aion.api.type.*;
+import org.aion.api.type.ApiMsg.cast;
 import org.aion.base.type.Address;
 import org.aion.base.util.ByteUtil;
 import org.slf4j.Logger;
@@ -76,6 +78,23 @@ public class Admin implements IAdmin {
             return  new ApiMsg(-17);
         }
 
+    }
+
+    @Override
+    public ApiMsg getBlockDetailsByNumber(long blkNum) {
+        ApiMsg msg = getBlockDetailsByNumber(String.valueOf(blkNum));
+
+        if (msg.isError()) {
+            return msg;
+        }
+
+        List<BlockDetails> bdl = msg.getObject();
+
+        if (bdl.size() != 1) {
+            throw new IllegalReceiveException("wrong return block size! Should not happen");
+        }
+
+        return new ApiMsg(1, bdl.get(0), cast.OTHERS);
     }
 
     private List<Long> parseBlockList(String blks) {
