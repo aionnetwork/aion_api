@@ -353,7 +353,8 @@ public final class Account implements IAccount {
 
         if (!Files.exists(PATH)) {
             try {
-                Files.createDirectory(PATH, attr);
+                //Files.createDirectory(PATH, attr);
+                Files.createDirectory(PATH);
             } catch (IOException e) {
                 LOGGER.error("keystore folder create failed!");
                 return "";

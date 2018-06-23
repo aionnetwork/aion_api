@@ -88,7 +88,9 @@ public class BaseAPITests {
 
     // Make sure the password of the testing account been set properly
     private final String pw = "";
-    private final String url = IAionAPI.LOCALHOST_URL;
+    //private final String url = IAionAPI.LOCALHOST_URL;
+
+    private final String url = "tcp://10.0.2.2:8547";
     private static final String TICKER = "contract ticker { uint public val; function tick () { val+= 1; } }";
     private static final String ERROR_TICKER = "pragma solidity ^0.4.6;\n contract ticker { uint public val; function tick () { val+= 1; } }";
     private static final String VAL = "val";
