@@ -105,6 +105,7 @@ public class ApiMsg {
         return this;
     }
 
+    @SuppressWarnings("unchecked")
     public <Any> Any getObject() {
         switch (this.castType) {
             case BOOLEAN:

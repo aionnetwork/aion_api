@@ -122,6 +122,48 @@ public final class TxDetails {
         return error;
     }
 
+    @Override
+    public String toString() {
+        return toString(0);
+    }
+
+    public String toString(int _level) {
+
+        StringBuilder lv = new StringBuilder();
+        int level = _level;
+        while (level-- > 0) {
+            lv.append("  ");
+        }
+
+        StringBuilder sb = new StringBuilder()
+            .append(lv).append("nrgPrice: ").append(nrgPrice).append(",\n")
+            .append(lv).append("nrg: ").append(nrgConsumed).append(",\n")
+            .append(lv).append("transactionIndex: ").append(txIndex).append(",\n")
+            .append(lv).append("nonce: ").append(nonce.toString()).append(",\n")
+            .append(lv).append("input: ").append("0x").append(data.toString()).append(",\n")
+            .append(lv).append("from: ").append("0x").append(from.toString()).append(",\n")
+            .append(lv).append("to: ").append("0x").append(to.toString()).append(",\n")
+            .append(lv).append("value: ").append(value.toString()).append(",\n")
+            .append(lv).append("hash: ").append("0x").append(txHash.toString()).append(",\n")
+            .append(lv).append("timestamp: ").append(timestamp).append(",\n")
+            .append(lv).append("error: ").append(error).append(",\n")
+            .append(lv).append("log: ").append("\n");
+
+        int cnt = logs.size();
+        for (TxLog tl : logs) {
+            sb.append(lv).append("[").append("\n");
+            sb.append(lv).append(tl.toString(++_level));
+            sb.append(lv).append("]");
+
+            if (--cnt > 0) {
+                sb.append(",");
+            }
+            sb.append("\n");
+        }
+
+        return sb.toString();
+    }
+
     /**
      * This Builder class is used to build a {@link TxDetails} instance.
      */
@@ -208,6 +250,7 @@ public final class TxDetails {
             this.error = error;
             return this;
         }
+
 
         public TxDetails createTxDetails() {
             if (from == null || to == null || contract == null || txHash == null || value == null

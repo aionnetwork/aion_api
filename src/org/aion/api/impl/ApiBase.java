@@ -52,7 +52,7 @@ public class ApiBase {
     AtomicBoolean isInitialized = new AtomicBoolean(false);
     // END PRIVATE MEMBERS --------------------------------------------
     Address minerAddress;
-    Address defaultAccount;
+    Address defaultAccount = Address.EMPTY_ADDRESS();
     String url;
     boolean nb = false;
     int timeout = 300_000;

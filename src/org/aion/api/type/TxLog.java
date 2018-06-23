@@ -49,6 +49,39 @@ public final class TxLog {
         this.topics = topics;
     }
 
+    @Override
+    public String toString() {
+        return toString(0);
+    }
+
+    public String toString(int _level) {
+
+        StringBuilder lv = new StringBuilder();
+        int level = _level;
+        while (level-- > 0) {
+            lv.append("  ");
+        }
+
+        StringBuilder sb = new StringBuilder()
+            .append(lv).append("address: ").append("0x").append(address.toString()).append(",\n")
+            .append(lv).append("data: ").append("0x").append(data.toString()).append(",\n")
+            .append(lv).append("topics: ").append("\n")
+            .append(lv).append("[").append("\n");
+
+        int cnt = topics.size();
+        for (String s : topics) {
+            sb.append(lv).append("  0x").append(s);
+            if (--cnt > 0) {
+                sb.append(",");
+            }
+            sb.append("\n");
+        }
+
+        sb.append(lv).append("]").append("\n");
+
+        return sb.toString();
+    }
+
     public Address getAddress() {
         return address;
     }

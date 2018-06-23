@@ -4,15 +4,15 @@ package org.aion.api.impl.internal;
 //package org.aion.api.server.pb;
 
 enum Servs {
-    s_hb	    = 0;
-    s_admin         = 1;
-    s_chain         = 2;
-    s_account       = 3;
+    s_hb        = 0;
+    s_admin     = 1;
+    s_chain     = 2;
+    s_account   = 3;
     s_tx	    = 4;
     s_net	    = 5;
     s_mine	    = 6;
-    s_privilege	    = 7;
-    s_wallet	    = 8;
+    s_privilege	= 7;
+    s_wallet	= 8;
     s_NA	    = 9;
 }
 
@@ -70,47 +70,48 @@ enum Funcs	 {
 	f_getBlocksByLatest		        		= 50;
 	f_getAccountDetailsByAddressList  		= 51;
 	f_backupAccounts			            = 52;
-	f_NA                                    = 53;
-	f_getBlockSqlByRange					= 54;
-	f_getBlockDetailsByRange				= 55;
-	f_getNonce                              = 56;
-	f_getNrgPrice                           = 57;
+    f_NA                                    = 53;
+    f_getBlockSqlByRange					= 54;
+    f_getBlockDetailsByRange				= 55;
+    f_getNonce                              = 56;
+    f_getNrgPrice                           = 57;
+    f_getBlockDetailsByHash 		        = 58;
 }
 
 enum Retcode {
     r_fail                          = 0;
-    r_success		            = 1;
+    r_success                       = 1;
     r_wallet_nullcb                 = 2;
     r_heartbeatReturn               = 3;
     r_privilegeReturn               = 4;
-    r_tx_Init		            = 100;
-    r_tx_Recved		            = 101;
-    r_tx_Dropped		    = 102;
-    r_tx_NewPending		    = 103;
-    r_tx_Pending		    = 104;
-    r_tx_Included		    = 105;
-    r_tx_eventCb                    = 106; 
-    r_NA			    = 107;
+    r_tx_Init                       = 100;
+    r_tx_Recved                     = 101;
+    r_tx_Dropped                    = 102;
+    r_tx_NewPending                 = 103;
+    r_tx_Pending                    = 104;
+    r_tx_Included                   = 105;
+    r_tx_eventCb                    = 106;
+    r_NA                            = 107;
 
     r_fail_header_len	            = -1;
     r_fail_service_call	            = -2;
-    r_fail_function_call	    = -3;
+    r_fail_function_call            = -3;
     r_fail_function_exception       = -4;
     r_fail_api_version	            = -5;
     r_fail_ct_bytecode	            = -6;
-    r_fail_null_rsp		    = -7;
+    r_fail_null_rsp                 = -7;
     r_fail_invalid_addr	            = -8;
     r_fail_null_compile_source      = -9;
-    r_fail_compile_contract	    = -10;
-    r_fail_sendTx_null_rep	    = -11;
+    r_fail_compile_contract	        = -10;
+    r_fail_sendTx_null_rep	        = -11;
     r_fail_getcode_to	            = -12;
     r_fail_getTxReceipt_null_recp   = -13;
     r_fail_zmqHandler_exception     = -14;
     r_fail_hit_pending_tx_limit	    = -15;
     r_fail_txqueue_exception	    = -16;
     r_fail_function_arguments	    = -17;
-    r_fail_unsupport_api	    = -18;
-    r_fail_unknown		    = -19;
+    r_fail_unsupport_api	        = -18;
+    r_fail_unknown		            = -19;
 }
 
 message t_Contract {
@@ -126,45 +127,45 @@ message t_Contract {
 
 
 message t_AionTx {
-	bytes txHash	= 1;
-        bytes from      = 2;
-        bytes to        = 3;
-        bytes value     = 4;
-        bytes data      = 5;
-        bytes nonce     = 6;
+	bytes txHash	       = 1;
+        bytes from         = 2;
+        bytes to           = 3;
+        bytes value        = 4;
+        bytes data         = 5;
+        bytes nonce        = 6;
         uint64 nrgConsumed = 7;
         uint64 nrgPrice    = 8;
 }
 
 message t_Node {
-	uint64 blockNumber     = 1;
-        string nodeId          = 2;
+    uint64 blockNumber     = 1;
+    string nodeId          = 2;
 	string remote_p2p_ip   = 3;
 	uint32 remote_p2p_port = 4;
-        uint32 latency         = 5;
+    uint32 latency         = 5;
 }
 
 message t_LgEle {
-	bytes address	= 1;
-	bytes data	= 2;
+	bytes address          = 1;
+	bytes data             = 2;
 	repeated string topics = 3;	
 }
 
 message t_FilterCt {
-	string from			= 1;
-	string to			= 2;
-        bytes contractAddr		= 3;
-	repeated bytes addresses	= 4;
-	repeated string topics		= 5;
-	uint64 expireTime		= 6;
+	string from              = 1;
+	string to                = 2;
+    bytes contractAddr       = 3;
+	repeated bytes addresses = 4;
+	repeated string topics   = 5;
+	uint64 expireTime        = 6;
 }
 
 message t_EventCt {
-        bytes address		= 1;
-        bytes data              = 2;
-        bytes blockHash		= 3;
-	uint64 blockNumber      = 4;
-        uint32 logIndex		= 5;
+    bytes address		= 1;
+    bytes data          = 2;
+    bytes blockHash		= 3;
+	uint64 blockNumber  = 4;
+    uint32 logIndex		= 5;
 	string eventName	= 6;
 	bool removed		= 7;
 	uint32 txIndex		= 8;
@@ -346,11 +347,11 @@ message rsp_getBlockHeader {
 //*****************************************************************************
 
 message req_sendTransaction {
-	bytes from	= 1;
+	bytes from      = 1;
 	bytes to        = 2;
-	bytes value	= 3;
+	bytes value	    = 3;
 	bytes data      = 4;
-	bytes nonce	= 5;
+	bytes nonce     = 5;
 	uint64 nrg      = 6;
 	uint64 nrgPrice = 7;
 }
@@ -368,14 +369,14 @@ message req_getTransactionByHash {
 }
 
 message rsp_getTransaction {
-        uint32 txIndex         		= 1;
-        uint64 blocknumber              = 2;
-        uint64 timeStamp                = 3;
-        uint64 nrgConsume               = 4;
-        uint64 nrgPrice                 = 5;
-	bytes blockhash		        = 6;
-	bytes from		    	= 7;
-	bytes txHash			= 8;
+    uint32 txIndex      = 1;
+    uint64 blocknumber  = 2;
+    uint64 timeStamp    = 3;
+    uint64 nrgConsume   = 4;
+    uint64 nrgPrice     = 5;
+	bytes blockhash		= 6;
+	bytes from		    = 7;
+	bytes txHash		= 8;
 	bytes data			= 9;
 	bytes nonce			= 10;
 	bytes to			= 11;
@@ -435,9 +436,9 @@ message rsp_getCode {
 message req_contractDeploy {
 	uint64 nrgLimit = 1;
 	uint64 nrgPrice = 2;
-        bytes from      = 3;
-        bytes data      = 4;
-        bytes value     = 5;
+    bytes from      = 3;
+    bytes data      = 4;
+    bytes value     = 5;
 }
 
 message rsp_contractDeploy {
@@ -452,8 +453,8 @@ message rsp_contractDeploy {
 message req_call {
 	bytes from      = 1;
 	bytes to        = 2;
-        bytes data      = 3;	
-        bytes value     = 4;
+    bytes data      = 3;
+    bytes value     = 4;
 	uint64 nrg      = 5;
 	uint64 nrgPrice = 6;
 }
@@ -479,7 +480,7 @@ message req_getBlockByHash {
 //*****************************************************************************
 
 message req_getBlockHeaderByHash {
-        bytes blockHash = 1;
+    bytes blockHash = 1;
 }
 
 //message rsp_getBlockHeaderByHash
@@ -599,14 +600,14 @@ message req_getTransactionReceipt {
 }
 
 message rsp_getTransactionReceipt {
-        uint32  txIndex        = 1;
-	uint64  blockNumber    = 2;
-        uint64  nrgConsumed       = 3;
+    uint32  txIndex           = 1;
+	uint64  blockNumber       = 2;
+    uint64  nrgConsumed       = 3;
 	uint64  cumulativeNrgUsed = 4;
-	bytes  blockHash	  = 5;
-	bytes  txHash	  	  = 6;
-	bytes  from		  = 7;
-	bytes  to		  = 8;
+	bytes  blockHash	      = 5;
+	bytes  txHash	  	      = 6;
+	bytes  from		          = 7;
+	bytes  to		          = 8;
 	bytes  contractAddress	  = 9;
 	repeated t_LgEle logs	  = 10;
 }
@@ -678,7 +679,7 @@ message rsp_fetchQueuedTransactions {
 //*****************************************************************************
 
 message req_rawTransaction {
-        bytes encodedTx	= 1;
+    bytes encodedTx	= 1;
 }
 
 //*****************************************************************************
@@ -690,8 +691,8 @@ message req_estimateNrg {
 	bytes to		= 2;
 	bytes value		= 3;
 	bytes data		= 4;
-        uint64 nrg              = 5;
-        uint64 nrgPrice         = 6;
+    uint64 nrg      = 5;
+    uint64 nrgPrice = 6;
 }
 
 message rsp_estimateNrg {
@@ -738,7 +739,7 @@ message rsp_getActiveNodes{
 //*****************************************************************************
 
 message rsp_getStaticNodes{
-        repeated t_Node node = 1;
+    repeated t_Node node = 1;
 }
 
 
@@ -816,8 +817,8 @@ message rsp_EventCtCallback{
 //*****************************************************************************
 
 message req_accountCreate{
-        repeated string password = 1;
-	bool privateKey = 2;
+    repeated string password = 1;
+    bool privateKey = 2;
 }
 
 message rsp_accountCreate{
@@ -831,12 +832,12 @@ message rsp_accountCreate{
 //*****************************************************************************
 
 message req_accountlock{
-        bytes  account  = 1;
-        string password	= 2;
+    bytes  account  = 1;
+    string password	= 2;
 }
 
 message rsp_accountlock{
-        bool locked   = 1;
+    bool locked   = 1;
 }
 
 
@@ -845,12 +846,12 @@ message rsp_accountlock{
 //*****************************************************************************
 
 message req_userPrivilege {
-        string username = 1;
-        string password = 2;
+    string username = 1;
+    string password = 2;
 }
 
 message rsp_userPrivilege {
-        repeated string privilege = 1;
+    repeated string privilege = 1;
 }
 
 message req_queryCtEvents{
@@ -858,7 +859,7 @@ message req_queryCtEvents{
 }
 
 message rsp_queryCtEvents{
-        repeated t_EventCt ec	= 1;
+    repeated t_EventCt ec	= 1;
 }
 
 
@@ -867,16 +868,16 @@ message rsp_queryCtEvents{
 //*****************************************************************************
 
 message t_PrivateKey {
-        string privateKey = 1;
-        string password   = 2;
+    string privateKey = 1;
+    string password   = 2;
 }
 
 message req_importAccounts{
-        repeated t_PrivateKey privateKey = 1;
+    repeated t_PrivateKey privateKey = 1;
 }
 
 message rsp_importAccounts{
-        repeated string invalidKey = 1;
+    repeated string invalidKey = 1;
 }
 
 //*****************************************************************************
@@ -999,4 +1000,16 @@ message rsp_getNonce {
 
 message rsp_getNrgPrice {
     uint64 nrgPrice = 1;
+}
+
+//*****************************************************************************
+//      f_getBlockDetailsByHash
+//*****************************************************************************
+
+message req_getBlockDetailsByHash {
+    bytes blockHash = 1;
+}
+
+message rsp_getBlockDetailsByHash {
+	t_BlockDetail blkDetails = 1;
 }
