@@ -58,6 +58,30 @@ public final class ContractResponse {
         this.error = builder.error;
     }
 
+    @Override
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("constant: ").append(String.valueOf(constant)).append(",\n")
+            .append("data: ").append("\n");
+
+        int cnt = data.size();
+        for (Object o : data) {
+            sb.append("[").append(ByteArrayWrapper.wrap((byte[]) o).toString()).append("]");
+
+            if (--cnt > 0) {
+                sb.append(",");
+            }
+
+            sb.append("\n");
+        }
+
+        sb.append("transactionHash: ").append(txHash.toString()).append(",\n")
+            .append("status: ").append(statusToString()).append(",\n")
+            .append("error: ").append(error).append("\n");
+
+        return sb.toString();
+    }
+
     /**
      * The helper function for get detailed Contract transaction processing information.
      * @return return a the class {@link java.lang.String String} represent the status.

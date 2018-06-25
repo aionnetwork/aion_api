@@ -40,6 +40,33 @@ public final class ContractAbiIOParam {
 
     private List<Integer> paramLengths;
 
+    @Override
+    public String toString() {
+        return toString(0);
+    }
+
+    public String toString(int _lv) {
+        StringBuilder lv = new StringBuilder();
+        int level = _lv;
+        while (level-- > 0) {
+            lv.append("  ");
+        }
+
+        StringBuilder sb = new StringBuilder()
+            .append(lv).append("indexed: ").append(String.valueOf(indexed)).append(",\n")
+            .append(lv).append("type: ").append(type).append(",\n")
+            .append(lv).append("name: ").append(name).append(",\n")
+            .append(lv).append("paramLengths: ").append("\n")
+            .append(lv).append("[").append("\n");
+
+        for (Integer i : paramLengths) {
+            sb.append(lv).append(String.valueOf(i)).append(",");
+        }
+        sb.append(lv).append("]").append("\n");
+
+        return sb.toString();
+    }
+
     public List<Integer> getParamLengths() {
         return paramLengths;
     }
