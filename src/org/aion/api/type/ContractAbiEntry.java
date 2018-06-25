@@ -51,6 +51,61 @@ public final class ContractAbiEntry {
     private String hashed;
     private boolean isFallback;
 
+    @Override
+    public String toString() {
+        return toString(0);
+    }
+
+    public String toString(int _lv) {
+        StringBuilder lv = new StringBuilder();
+        int level = _lv;
+        while (level-- > 0) {
+            lv.append("  ");
+        }
+
+        StringBuilder sb = new StringBuilder()
+            .append(lv).append("constant: ").append(String.valueOf(constant)).append(",\n")
+            .append(lv).append("anonymous: ").append(String.valueOf(anonymous)).append(",\n")
+            .append(lv).append("payable: ").append(String.valueOf(payable)).append(",\n")
+            .append(lv).append("type: ").append(type).append(",\n")
+            .append(lv).append("name: ").append(name).append(",\n")
+            .append(lv).append("inputs: ").append("\n");
+
+        int cnt = inputs.size();
+        for (ContractAbiIOParam io : inputs) {
+            sb.append(lv).append("[").append("\n")
+                .append(lv).append(io.toString(++_lv)).append("\n")
+                .append(lv).append("]");
+
+            if(--cnt > 0) {
+                sb.append(",");
+            }
+
+            sb.append("\n");
+        }
+
+        sb.append(lv).append("outputs: ").append("\n");
+        cnt = outputs.size();
+        for (ContractAbiIOParam io : outputs) {
+            sb.append(lv).append("[").append("\n")
+                .append(lv).append(io.toString(_lv)).append("\n")
+                .append(lv).append("]");
+
+            if(--cnt > 0) {
+                sb.append(",");
+            }
+
+            sb.append("\n");
+        }
+
+        sb.append(lv).append("isEvent: ").append(String.valueOf(isEvent)).append(",\n")
+            .append(lv).append("isConstructor: ").append(String.valueOf(isConstructor)).append(",\n")
+            .append(lv).append("isFallback: ").append(String.valueOf(isFallback)).append(",\n")
+            .append(lv).append("hashed: ").append(hashed).append("\n");
+
+        return sb.toString();
+    }
+
     public boolean isEvent() {
         return isEvent;
     }

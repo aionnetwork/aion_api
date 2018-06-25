@@ -52,6 +52,7 @@ import java.util.stream.IntStream;
 import org.aion.api.IAccount;
 import org.aion.api.IAionAPI;
 import org.aion.api.IUtils;
+import org.aion.api.impl.internal.Message.Retcode;
 import org.aion.api.type.AccountDetails;
 import org.aion.api.type.ApiMsg;
 import org.aion.api.type.Block;
@@ -1894,14 +1895,31 @@ public class BaseAPITests {
         System.out.println("run TestGetBlocksDetailsByHash.");
 
         IAionAPI api = IAionAPI.init();
-        api.connect(url);
-
-        ApiMsg msg = api.getAdmin().getBlockDetailsByHash(Hash256.wrap("3336fcac1df37da66506a778bf24e2fcf47f4bc2d92da26323a47c78231d613e"));
+        ApiMsg msg = api.connect(url);
         assertFalse(msg.isError());
-        BlockDetails blk = msg.getObject();
 
+        msg = api.getChain().blockNumber();
+        assertFalse(msg.isError());
+
+        msg = api.getChain().getBlockByNumber(msg.getObject());
+        assertFalse(msg.isError());
+
+        Block blk = msg.getObject();
         assertNotNull(blk);
-        assertEquals(blk.getHash(), Hash256.wrap("3336fcac1df37da66506a778bf24e2fcf47f4bc2d92da26323a47c78231d613e"));
+        msg = api.getAdmin().getBlockDetailsByHash(blk.getHash());
+
+        if (msg.isError()) {
+            if (msg.getErrorCode() == Retcode.r_fail_function_call_VALUE) {
+                System.out.println("Can't find the block by given hash");
+            } else {
+                System.out.println(msg.getErrString());
+            }
+        }
+        assertFalse(msg.isError());
+
+        BlockDetails bd = msg.getObject();
+        assertNotNull(bd);
+        assertEquals(blk.getHash(), bd.getHash());
 
         api.destroyApi();
     }
