@@ -82,6 +82,14 @@ public interface ITx {
     ApiMsg estimateNrg(TxArgs args);
 
     /**
+     * Estimates the Nrg required to execute contract deploy.
+     *
+     * @param code the class {@link java.lang.String String} of the source code to be compiled.
+     * @return amount of energy by long value required to execute the transaction.
+     */
+    ApiMsg estimateNrg(String code);
+
+    /**
      * Retrieves the transaction receipt given a transaction hash in the format of {@link TxReceipt
      * TxReceipt}.
      *
