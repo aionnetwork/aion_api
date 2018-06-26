@@ -29,6 +29,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+import java.math.BigInteger;
 import org.aion.api.ITx;
 import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.impl.internal.Message;
@@ -38,6 +39,7 @@ import org.aion.api.log.AionLoggerFactory;
 import org.aion.api.log.LogEnum;
 import org.aion.api.type.*;
 import org.aion.api.type.ApiMsg.cast;
+import org.aion.api.type.TxArgs.TxArgsBuilder;
 import org.aion.api.type.core.tx.AionTransaction;
 import org.aion.base.type.Address;
 import org.aion.base.type.Hash256;
@@ -619,6 +621,16 @@ public final class Tx implements ITx {
     public Tx timeout(int t) {
         this.apiInst.timeout = (t < 300_000 ? 300_000 : t);
         return this;
+    }
+
+    public ApiMsg estimateNrg(String code) {
+        TxArgs txArgs = new TxArgsBuilder()
+            .data(ByteArrayWrapper.wrap(code.getBytes()))
+            .from(apiInst.defaultAccount)
+            .value(BigInteger.ZERO)
+            .createTxArgs();
+
+        return estimateNrg(txArgs);
     }
 
     public ApiMsg estimateNrg(TxArgs args) {
