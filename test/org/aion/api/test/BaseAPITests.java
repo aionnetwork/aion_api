@@ -1746,8 +1746,8 @@ public class BaseAPITests {
 
         k = apiMsg.getObject();
         assertNotNull(k);
-        assertEquals(10, k.size());
-        for (int i = 0; i < 10; i++) {
+        assertEquals(3, k.size());
+        for (int i = 0; i < 3; i++) {
             assertNotNull(k.get(0).getPubKey());
             assertNotNull(k.get(0).getPriKey().getData());
         }
@@ -1821,7 +1821,6 @@ public class BaseAPITests {
     }
 
     @Test
-    @Ignore
     public void TestAccountImport() {
         System.out.println("run TestAccountImport.");
 
@@ -1837,7 +1836,7 @@ public class BaseAPITests {
         }
 
         List<Key> keys = new ArrayList<>();
-        for (int i = 0; i < accs.size() && i < 10; i++) {
+        for (int i = 0; i < accs.size() && i < 3; i++) {
             keys.add(new Key(accs.get(i), pw));
         }
 
@@ -1892,7 +1891,6 @@ public class BaseAPITests {
     }
 
     @Test
-    @Ignore
     public void TestSendSignedTransaction() {
         System.out.println("run TestSendSignedTransaction.");
 
@@ -1927,6 +1925,11 @@ public class BaseAPITests {
         ByteArrayWrapper bw = ke.getKeyFiles().get(0);
         assertNotNull(bw);
 
+        apiMsg = api.getChain().getNonce(acc);
+        assertFalse(apiMsg.isError());
+        BigInteger nonce = apiMsg.getObject();
+        assertNotNull(nonce);
+
         TxArgs.TxArgsBuilder builder = new TxArgs.TxArgsBuilder()
             .data(ByteArrayWrapper.wrap("TestSendTransaction!".getBytes()))
             .from(acc)
@@ -1934,8 +1937,7 @@ public class BaseAPITests {
             .nrgLimit(NRG_LIMIT_TX_MAX)
             .nrgPrice(NRG_PRICE_MIN)
             .value(BigInteger.ZERO)
-            // make sure the nonce setting is correct
-            .nonce(BigInteger.ZERO);
+            .nonce(nonce);
 
         apiMsg = api.getTx().sendSignedTransaction(builder.createTxArgs(), bw);
         assertFalse(apiMsg.isError());
@@ -2421,7 +2423,7 @@ public class BaseAPITests {
             }
         }
 
-        assertEquals(3, nbRunning);
+        assertEquals(4, nbRunning);
 
         System.out.println("test done");
     }
@@ -2430,7 +2432,7 @@ public class BaseAPITests {
     public void TestKeystoreCreateLocal() {
 
         List<String> passphrase = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 3; i++) {
             passphrase.add(String.valueOf(i));
         }
 
@@ -2439,7 +2441,7 @@ public class BaseAPITests {
 
         List<String> newAddrs = apiMsg.getObject();
         assertNotNull(newAddrs);
-        assertEquals(newAddrs.size(), 10);
+        assertEquals(newAddrs.size(), 3);
     }
 
     @Test

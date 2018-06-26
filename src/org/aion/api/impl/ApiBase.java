@@ -93,7 +93,7 @@ public class ApiBase {
 
         // connection check and then reconnect later.
         if (this.isInitialized.get()) {
-            ApiMsg msg = destroyApi();
+            ApiMsg msg = destroyApiBase();
             if (msg.isError()) {
                 return msg.set(false, org.aion.api.type.ApiMsg.cast.BOOLEAN);
             }
@@ -167,7 +167,7 @@ public class ApiBase {
         return new ApiMsg(true, org.aion.api.type.ApiMsg.cast.BOOLEAN);
     }
 
-    public ApiMsg destroyApi() {
+    protected ApiMsg destroyApiBase() {
         if (!this.isInitialized.get()) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[destroyApi]" + ErrId.getErrString(-1003L));

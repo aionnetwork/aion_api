@@ -824,6 +824,10 @@ public final class Tx implements ITx {
         }
     }
 
+    protected void reset() {
+        this.fastbuild = false;
+    }
+
     //public ApiMsg queryEvents(ContractEventFilter ef, Address address) {
     //
     //    if ( ef == null || address == null) {
