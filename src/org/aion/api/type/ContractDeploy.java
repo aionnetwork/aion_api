@@ -28,6 +28,7 @@ import org.aion.base.type.Address;
 import org.aion.base.util.ByteArrayWrapper;
 
 import java.math.BigInteger;
+import org.aion.base.util.Bytesable;
 
 /**
  * The helper class for gather all of the deploy arguments to deploy the contract. Use the builder
@@ -102,14 +103,17 @@ public final class ContractDeploy {
         }
 
         public ContractDeploy createContractDeploy() {
-            if (cr == null || data == null) {
+            if (cr == null)  {
                 throw new NullPointerException(
-                    "CompileResponse#" + String.valueOf(cr) +
-                        " data#" + String.valueOf(data));
+                    "CompileResponse is null");
             }
 
             if (value == null) {
                 value = BigInteger.ZERO;
+            }
+
+            if (data == null) {
+                data = ByteArrayWrapper.wrap(Bytesable.NULL_BYTE);
             }
 
             if (nrgLimit == 0) {

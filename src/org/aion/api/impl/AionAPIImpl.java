@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,21 +19,29 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
+
 
 package org.aion.api.impl;
 
-import org.aion.api.*;
-
 import java.util.Optional;
+import org.aion.api.IAccount;
+import org.aion.api.IAdmin;
+import org.aion.api.IAionAPI;
+import org.aion.api.IChain;
+import org.aion.api.IContractController;
+import org.aion.api.IMine;
+import org.aion.api.INet;
+import org.aion.api.ITx;
+import org.aion.api.IUtils;
+import org.aion.api.IWallet;
+import org.aion.api.type.ApiMsg;
 
 /**
- * Nucoapi base class, contains the majority of Nuco frontend Java APIs. High
- * chance of finding what you're looking for here, unless it is related to
- * contract transactions. Nucoapij provides a static method that returns an
- * instance. All API functionality requires the user to connect to the backend
- * utilizing {@link #connect(String)}.
+ * Nucoapi base class, contains the majority of Aion frontend Java APIs. High chance of finding what
+ * you're looking for here, unless it is related to contract transactions. AionAPI provides a
+ * static method that returns an instance. All API functionality requires the user to connect to the
+ * backend utilizing {@link #connect(String)}.
  *
  * @see Contract
  */
@@ -49,7 +57,9 @@ public final class AionAPIImpl extends ApiBase implements IAionAPI {
     private IAdmin admin;
     private IContractController controller;
 
-    public static IAionAPI inst() { return new AionAPIImpl(); }
+    public static IAionAPI inst() {
+        return new AionAPIImpl();
+    }
 
     private AionAPIImpl() {
         super();
@@ -78,7 +88,8 @@ public final class AionAPIImpl extends ApiBase implements IAionAPI {
     }
 
     public INet getNet() {
-        if (Optional.ofNullable(this.getPrivilege().get("Net")).isPresent() && this.getPrivilege().get("Net")) {
+        if (Optional.ofNullable(this.getPrivilege().get("Net")).isPresent() && this.getPrivilege()
+            .get("Net")) {
             return net;
         }
 
@@ -90,7 +101,8 @@ public final class AionAPIImpl extends ApiBase implements IAionAPI {
     }
 
     public IChain getChain() {
-        if (Optional.ofNullable(this.getPrivilege().get("Chain")).isPresent() && this.getPrivilege().get("Chain")) {
+        if (Optional.ofNullable(this.getPrivilege().get("Chain")).isPresent() && this.getPrivilege()
+            .get("Chain")) {
             return chain;
         }
 
@@ -105,11 +117,14 @@ public final class AionAPIImpl extends ApiBase implements IAionAPI {
         return mine;
     }
 
-    public IAdmin getAdmin() {return admin;}
+    public IAdmin getAdmin() {
+        return admin;
+    }
 
     public ITx getTx() {
-        if (Optional.ofNullable(this.getPrivilege().get("Transaction")).isPresent() && this.getPrivilege()
-                .get("Transaction")) {
+        if (Optional.ofNullable(this.getPrivilege().get("Transaction")).isPresent() && this
+            .getPrivilege()
+            .get("Transaction")) {
             return tx;
         }
 
@@ -121,8 +136,9 @@ public final class AionAPIImpl extends ApiBase implements IAionAPI {
     }
 
     public IWallet getWallet() {
-        if (Optional.ofNullable(this.getPrivilege().get("Wallet")).isPresent() && this.msgExecutor.getPrivilege()
-                .get("Wallet")) {
+        if (Optional.ofNullable(this.getPrivilege().get("Wallet")).isPresent() && this.msgExecutor
+            .getPrivilege()
+            .get("Wallet")) {
             return wallet;
         }
 
@@ -138,7 +154,8 @@ public final class AionAPIImpl extends ApiBase implements IAionAPI {
     }
 
     public IAccount getAccount() {
-        if (Optional.ofNullable(this.getPrivilege().get("Account")).isPresent() && this.getPrivilege().get("Account")) {
+        if (Optional.ofNullable(this.getPrivilege().get("Account")).isPresent() && this
+            .getPrivilege().get("Account")) {
             return account;
         }
 
@@ -168,4 +185,17 @@ public final class AionAPIImpl extends ApiBase implements IAionAPI {
         return this.controller;
     }
 
+    @Override
+    public ApiMsg destroyApi() {
+
+        if (getTx() != null) {
+            ((Tx) getTx()).reset();
+        }
+
+        if (getContractController() != null) {
+            getContractController().clear();
+        }
+
+        return destroyApiBase();
+    }
 }

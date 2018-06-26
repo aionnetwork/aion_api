@@ -375,7 +375,7 @@ public final class Contract implements IContract {
             throw  new NullPointerException();
         }
 
-        StringBuilder assembled = new StringBuilder("");
+        StringBuilder assembled = new StringBuilder();
         if (!this.isConstructor) {
                 assembled.append(func.getHashed());
         }
@@ -496,7 +496,7 @@ public final class Contract implements IContract {
      */
     @Override
     public Hash256 getDeployTxId() {
-        return null;
+        return this.deployTxId;
     }
 
     /**
@@ -1221,10 +1221,15 @@ public final class Contract implements IContract {
         return msg;
     }
 
+    @SuppressWarnings("unchecked")
     public List<ContractEvent> getEvents() {
-        List<ContractEvent> evts = (List<ContractEvent>) (List<?>) (((Tx) this.api.getTx()) != null ?
+        List<ContractEvent> evts = (List<ContractEvent>) (List<?>) (this.api.getTx() != null ?
                 ((Tx) this.api.getTx()).apiInst.msgExecutor.getEvents(new ArrayList<>(this.eventsIssued.values())) :
                 null);
+
+        if (evts == null) {
+            return new ArrayList<>();
+        }
 
         List<ContractEvent> res = new ArrayList<>();
         for (ContractEvent evt : evts) {

@@ -164,6 +164,6 @@ public final class ErrId {
 
     public static String getErrString(long code) {
         String rtn = ERROR_CODES.get(code);
-        return (rtn == null ? "No matached Error string" : rtn);
+        return (rtn == null ? "No matched Error string" : rtn);
     }
 }

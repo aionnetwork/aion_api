@@ -75,7 +75,9 @@ enum Funcs	 {
     f_getBlockDetailsByRange				= 55;
     f_getNonce                              = 56;
     f_getNrgPrice                           = 57;
-    f_getBlockDetailsByHash 		        = 58;
+    f_getBlockDetailsByHash 		    = 58;
+    f_listening                             = 59;
+    f_peerCount                             = 60;
 }
 
 enum Retcode {
@@ -535,7 +537,7 @@ message rsp_getBalance {
 
 message req_getStorageAt {
 	bytes address       = 1;
-	string key          = 2;
+	uint32 position     = 2;
 	uint64 blocknumber  = 3;
 }
 
@@ -708,16 +710,6 @@ message rsp_mining{
 }
 
 //*****************************************************************************
-//	syncing
-//*****************************************************************************
-
-message rsp_syncing{
-	bool syncing        = 1;
-	uint64 currentBlock  = 2;
-	uint64 highestBlock  = 3;
-}
-
-//*****************************************************************************
 //      hashrate
 //*****************************************************************************
 
@@ -769,6 +761,7 @@ message rsp_syncInfo{
     uint64 networkBestBlock = 2;
     uint64 chainBestBlock   = 3;
     uint32 maxImportBlocks  = 4;
+    uint64 startingBlock    = 5;
 }
 
 //*****************************************************************************
@@ -1012,4 +1005,21 @@ message req_getBlockDetailsByHash {
 
 message rsp_getBlockDetailsByHash {
 	t_BlockDetail blkDetails = 1;
+}
+
+//*****************************************************************************
+//      f_listening
+//*****************************************************************************
+
+message rsp_listening {
+    bool isListening = 1;	    
+}
+
+
+//*****************************************************************************
+//      f_peerCount
+//*****************************************************************************
+
+message rsp_peerCount {
+    uint32 peers = 1;
 }

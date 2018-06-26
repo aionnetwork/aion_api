@@ -152,6 +152,10 @@ public final class TxArgs {
                 data = ByteArrayWrapper.wrap(new byte[0]);
             }
 
+            if (from == null) {
+                from = Address.EMPTY_ADDRESS();
+            }
+
             if (to == null) {
                 to = Address.EMPTY_ADDRESS();
             }
