@@ -417,23 +417,6 @@ public final class Tx implements ITx {
 
         int val = this.apiInst.validRspHeader(rsp);
 
-//        if (val == Message.Retcode.r_fail_compile_contract_VALUE) {
-//            Map<String, Message.t_Contract> ctMap;
-//            try {
-//                ctMap = Message.rsp_compile.parseFrom(ApiUtils.parseBody(rsp)).getConstractsMap();
-//            } catch (InvalidProtocolBufferException e) {
-//                if (LOGGER.isErrorEnabled()) {
-//                    LOGGER.error("[compile] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
-//                }
-//                return apiMsg.set(-104, e.getMessage(), ApiMsg.cast.OTHERS);
-//            }
-//
-//            if (ctMap.containsKey("NucoCompileError")) {
-//                return apiMsg.set(val, ctMap.get("NucoCompileError").getError(), ApiMsg.cast.OTHERS);
-//            }
-//        } else
-        //
-
         if (val != 1) {
             return new ApiMsg(val);
         }
