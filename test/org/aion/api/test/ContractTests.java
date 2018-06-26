@@ -23,8 +23,12 @@
 
 package org.aion.api.test;
 
+import java.math.BigInteger;
+import java.util.Objects;
+import java.util.Scanner;
 import org.aion.api.IAionAPI;
 import org.aion.api.IContract;
+import org.aion.api.ITx;
 import org.aion.api.IUtils;
 import org.aion.api.impl.AionAPIImpl;
 import org.aion.api.sol.*;
@@ -45,6 +49,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertTrue;
 import static org.aion.api.ITx.NRG_LIMIT_CONTRACT_CREATE_MAX;
 import static org.aion.api.ITx.NRG_LIMIT_TX_MAX;
 import static org.aion.api.ITx.NRG_PRICE_MIN;
@@ -54,9 +60,37 @@ import static org.junit.Assert.*;
 public class ContractTests {
 
     // Make sure the password of the testing account been set properly
-    private String pw = "";
+    private String pw = "PLAT4life";
 
     private IAionAPI api;
+
+    private static String readFile(String fileName) {
+        StringBuilder contract = new StringBuilder();
+        Scanner s = new Scanner(ContractTests.class.getResourceAsStream("./contract/" + fileName));
+        while (s.hasNextLine()) {
+            contract.append(s.nextLine());
+            contract.append("\n");
+        }
+        s.close();
+
+        return contract.toString();
+    }
+
+    private void connectAPI() {
+        ApiMsg apiMsg = api.connect(AionAPIImpl.LOCALHOST_URL);
+        assertFalse(apiMsg.isError());
+        assertTrue(apiMsg.getObject());
+    }
+
+    private boolean isEnoughBalance(Address address) {
+        ApiMsg apiMsg = api.getChain().getBalance(address);
+        assertFalse(apiMsg.isError());
+        BigInteger balance = apiMsg.getObject();
+        assertNotNull(balance);
+
+        return balance.compareTo(BigInteger.valueOf(ITx.NRG_LIMIT_CONTRACT_CREATE_MAX)
+            .multiply(BigInteger.valueOf(ITx.NRG_PRICE_MIN))) > 0;
+    }
 
     @Before
     public void Setup() {
@@ -66,45 +100,38 @@ public class ContractTests {
     @Test(timeout = 180000)
     public void TestCreateContractFromSource() {
 
-        String source = "contract testContract {\n"
-            + "    bytes32 public a;\n"
-            + "    bytes public b;\n"
-            + "    bytes8 public c;\n"
-            + "    bytes16 public d;\n"
-            + "    \n"
-            + "    function input32(bytes32 _a) {\n"
-            + "        a = _a;\n"
-            + "    }\n"
-            + "    \n"
-            + "    function input(bytes _b) {\n"
-            + "        b = _b;\n"
-            + "    }\n"
-            + "    \n"
-            + "    function input8(bytes8 _c) {\n"
-            + "        c = _c;\n"
-            + "    }\n"
-            + "    \n"
-            + "    function input16(bytes16 _d) {\n"
-            + "        d = _d;\n"
-            + "    }\n"
-            + "}";
+        connectAPI();
 
-        // hardcoded msgHash to block 1
-        api.connect(AionAPIImpl.LOCALHOST_URL);
-        api.getContractController().clear();
+        ApiMsg apiMsg = api.getWallet().getAccounts();
+        assertFalse(apiMsg.isError());
+        List accs = apiMsg.getObject();
+        assertNotNull(accs);
 
-        Address cb = ((List<Address>) api.getWallet().getAccounts().getObject()).get(0);
-        assertNotNull(cb);
-        assertTrue(api.getWallet().unlockAccount(cb, pw).getObject());
-
-        ApiMsg msg = api.getContractController()
-            .createFromSource(source, cb, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
-        if (msg.isError()) {
-            System.out.println("deploy contract failed! " + msg.getErrString());
+        if (accs.isEmpty()) {
+            System.out.println("Empty account, skip this test!");
+            return;
         }
 
+        Address acc = (Address) accs.get(0);
+        if (!isEnoughBalance(acc)) {
+            System.out.println("balance of the account is not enough, skip this test!");
+            return;
+        }
+
+        apiMsg = api.getWallet().unlockAccount(acc, pw, 300);
+        assertFalse(apiMsg.isError());
+        assertTrue(apiMsg.getObject());
+
+        String tc = readFile("testContract.sol");
+
+        apiMsg = api.getContractController()
+            .createFromSource(tc, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
+        assertFalse(apiMsg.isError());
+
         IContract contract = api.getContractController().getContract();
-        assertEquals(contract.getFrom(), cb);
+        assertNotNull(contract);
+
+        assertEquals(contract.getFrom(), acc);
         assertNotNull(contract.getContractAddress());
         assertEquals(8, contract.getAbiDefinition().size());
         api.destroyApi();
@@ -113,138 +140,88 @@ public class ContractTests {
 
     @Test(timeout = 180000)
     public void TestCreateContract2() {
+        connectAPI();
 
-        String source = "contract ByteArrayMap {\n" + "    mapping(uint128 => bytes) public data;\n"
-            + "    function f() {\n" + "        bytes memory d = new bytes(1024);\n"
-            + "        data[32] = d;\n"
-            + "    }\n" + "    function g() constant returns (bytes) {\n"
-            + "        return data[32];\n"
-            + "    }\n" + "}";
+        ApiMsg apiMsg = api.getWallet().getAccounts();
+        assertFalse(apiMsg.isError());
+        List accs = apiMsg.getObject();
+        assertNotNull(accs);
 
-        // hardcoded msgHash to block 1
-        String url = IAionAPI.LOCALHOST_URL;
-        api.connect(url);
-        api.getContractController().clear();
-
-        Address cb = ((List<Address>) api.getWallet().getAccounts().getObject()).get(0);
-        assertNotNull(cb);
-        assertTrue(api.getWallet().unlockAccount(cb, pw).getObject());
-
-        ApiMsg msg = api.getContractController()
-            .createFromSource(source, cb, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
-        if (msg.isError()) {
-            System.out.println("deploy contract failed! " + msg.getErrString());
+        if (accs.isEmpty()) {
+            System.out.println("Empty account, skip this test!");
+            return;
         }
 
+        Address acc = (Address) accs.get(0);
+        if (!isEnoughBalance(acc)) {
+            System.out.println("balance of the account is not enough, skip this test!");
+            return;
+        }
+
+        apiMsg = api.getWallet().unlockAccount(acc, pw, 300);
+        assertFalse(apiMsg.isError());
+        assertTrue(apiMsg.getObject());
+
+        String tc = readFile("byteArrayMap.sol");
+
+        apiMsg = api.getContractController()
+            .createFromSource(tc, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
+        assertFalse(apiMsg.isError());
+
         IContract contract = api.getContractController().getContract();
-        assertEquals(contract.getFrom(), cb);
+        assertNotNull(contract);
+        assertEquals(contract.getFrom(), acc);
         assertNotNull(contract.getContractAddress());
         assertEquals(3, contract.getAbiDefinition().size());
 
         api.destroyApi();
     }
 
-    @Deprecated
-    // TestCallGetPrescription included this testcase purpose
+    @Test
     public void TestCreateContractFromAddress() {
 
-        api.connect(AionAPIImpl.LOCALHOST_URL);
-        api.getContractController().clear();
+        connectAPI();
 
-        Address cb = ((List<Address>) api.getWallet().getAccounts().getObject()).get(0);
-        assertNotNull(cb);
-        assertTrue(api.getWallet().unlockAccount(cb, pw).getObject());
+        ApiMsg apiMsg = api.getWallet().getAccounts();
+        assertFalse(apiMsg.isError());
+        List accs = apiMsg.getObject();
+        assertNotNull(accs);
 
-        String abiDefinition = "[\n"
-            + "    {\n"
-            + "        \"constant\": true,\n"
-            + "        \"inputs\": [],\n"
-            + "        \"name\": \"val\",\n"
-            + "        \"outputs\": [\n"
-            + "            {\n"
-            + "                \"name\": \"\",\n"
-            + "                \"type\": \"uint128\"\n"
-            + "            }\n"
-            + "        ],\n"
-            + "        \"payable\": false,\n"
-            + "        \"type\": \"function\"\n"
-            + "    },\n"
-            + "    {\n"
-            + "        \"constant\": true,\n"
-            + "        \"inputs\": [],\n"
-            + "        \"name\": \"bo\",\n"
-            + "        \"outputs\": [\n"
-            + "            {\n"
-            + "                \"name\": \"\",\n"
-            + "                \"type\": \"bool\"\n"
-            + "            }\n"
-            + "        ],\n"
-            + "        \"payable\": false,\n"
-            + "        \"type\": \"function\"\n"
-            + "    },\n"
-            + "    {\n"
-            + "        \"constant\": true,\n"
-            + "        \"inputs\": [],\n"
-            + "        \"name\": \"addr\",\n"
-            + "        \"outputs\": [\n"
-            + "            {\n"
-            + "                \"name\": \"\",\n"
-            + "                \"type\": \"address\"\n"
-            + "            }\n"
-            + "        ],\n"
-            + "        \"payable\": false,\n"
-            + "        \"type\": \"function\"\n"
-            + "    },\n"
-            + "    {\n"
-            + "        \"constant\": true,\n"
-            + "        \"inputs\": [],\n"
-            + "        \"name\": \"s\",\n"
-            + "        \"outputs\": [\n"
-            + "            {\n"
-            + "                \"name\": \"\",\n"
-            + "                \"type\": \"string\"\n"
-            + "            }\n"
-            + "        ],\n"
-            + "        \"payable\": false,\n"
-            + "        \"type\": \"function\"\n"
-            + "    },\n"
-            + "    {\n"
-            + "        \"constant\": false,\n"
-            + "        \"inputs\": [\n"
-            + "            {\n"
-            + "                \"name\": \"_add\",\n"
-            + "                \"type\": \"uint128\"\n"
-            + "            },\n"
-            + "            {\n"
-            + "                \"name\": \"_s\",\n"
-            + "                \"type\": \"string\"\n"
-            + "            },\n"
-            + "            {\n"
-            + "                \"name\": \"_addr\",\n"
-            + "                \"type\": \"address\"\n"
-            + "            },\n"
-            + "            {\n"
-            + "                \"name\": \"_bool\",\n"
-            + "                \"type\": \"bool\"\n"
-            + "            }\n"
-            + "        ],\n"
-            + "        \"name\": \"tick\",\n"
-            + "        \"outputs\": [],\n"
-            + "        \"payable\": false,\n"
-            + "        \"type\": \"function\"\n"
-            + "    }\n"
-            + "]";
-
-        //byte[] contractAddress = IUtils.hex2Bytes("11c32489bf9209fec54d8ca5649ec53cda381c92");
-        Address contractAddress = Address.ZERO_ADDRESS();
-        IContract ct = api.getContractController()
-            .getContractAt(cb, contractAddress, abiDefinition);
-        if (ct.error()) {
-            System.out.println("deploy contract failed! " + ct.getErrString());
+        if (accs.isEmpty()) {
+            System.out.println("Empty account, skip this test!");
+            return;
         }
 
+        Address acc = (Address) accs.get(0);
+        if (!isEnoughBalance(acc)) {
+            System.out.println("balance of the account is not enough, skip this test!");
+            return;
+        }
+
+        apiMsg = api.getWallet().unlockAccount(acc, pw, 300);
+        assertFalse(apiMsg.isError());
+        assertTrue(apiMsg.getObject());
+
+        String tc = readFile("testContract.sol");
+
+        apiMsg = api.getContractController()
+            .createFromSource(tc, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
+        assertFalse(apiMsg.isError());
+
+        IContract ct = api.getContractController().getContract();
+        assertNotNull(ct);
+
+        Address ctAddr = ct.getContractAddress();
+
+        String abiDef = readFile("testContract.abi");
+
+        IContract ctAt = api.getContractController()
+            .getContractAt(acc, ctAddr, abiDef);
+
+        assertFalse(ctAt.error());
+
         IContract contract = api.getContractController().getContract();
-        assertEquals(contract.getContractAddress(), contractAddress);
+        assertEquals(contract.getContractAddress(), ctAddr);
         assertEquals(0, contract.getInputParams().size());
         assertEquals(0, contract.getOutputParams().size());
 
@@ -254,65 +231,46 @@ public class ContractTests {
     @Test
     public void TestCallWithParameterDecode() {
 
-        String sc = "contract SolTypes{ \n" +
-            "    function getValues() constant returns (uint128, bool, address, bytes32, string, int128) {\n"
-            +
-            "        return (1234, true,0x1234567890123456789012345678901234567890123456789012345678901234,0x1234567890123456789012345678901234567890123456789012345678901234,\"Aion!\",-1234);\n"
-            +
-            "    }\n" +
-            "    \n" +
-            "    function boolVal() constant returns (bool) {\n" +
-            "        return true;\n" +
-            "    }\n" +
-            "    \n" +
-            "    function addressVal() constant returns (address) {\n" +
-            "        return 0x1234567890123456789012345678901234567890;\n" +
-            "    }\n" +
-            "    \n" +
-            "    function stringVal() constant returns (string) {\n" +
-            "        return \"1234\";\n" +
-            "    }\n" +
-            "    \n" +
-            "    function setValues() {\n" +
-            "        \n" +
-            "    }    \n" +
-            "    \n" +
-            "    function intVal() constant returns (int128) {\n" +
-            "        return -1234;\n" +
-            "    }    \n" +
-            "    \n" +
-            "    function uintVal() constant returns (uint128) {\n" +
-            "        return 1234;\n" +
-            "    }  \n" +
-            "    \n" +
-            "    function bytes32Val() constant returns (bytes32) {\n" +
-            "        return 0x1234567890123456789012345678901234567890123456789012345678901234;\n" +
-            "    }      \n" +
-            "}";
+        connectAPI();
 
-        api.connect(AionAPIImpl.LOCALHOST_URL);
-        api.getContractController().clear();
+        ApiMsg apiMsg = api.getWallet().getAccounts();
+        assertFalse(apiMsg.isError());
+        List accs = apiMsg.getObject();
+        assertNotNull(accs);
 
-        Address cb = ((List<Address>) api.getWallet().getAccounts().getObject()).get(0);
-        assertNotNull(cb);
-        assertTrue(api.getWallet().unlockAccount(cb, pw, 3600).getObject());
-
-        ApiMsg msg = api.getContractController()
-            .createFromSource(sc, cb, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
-        if (msg.isError()) {
-            System.out.println("deploy contract failed! " + msg.getErrString());
+        if (accs.isEmpty()) {
+            System.out.println("Empty account, skip this test!");
+            return;
         }
 
+        Address acc = (Address) accs.get(0);
+        if (!isEnoughBalance(acc)) {
+            System.out.println("balance of the account is not enough, skip this test!");
+            return;
+        }
+
+        apiMsg = api.getWallet().unlockAccount(acc, pw, 300);
+        assertFalse(apiMsg.isError());
+        assertTrue(apiMsg.getObject());
+
+        String sc = readFile("solTypes.sol");
+        apiMsg = api.getContractController()
+            .createFromSource(sc, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
+        assertFalse(apiMsg.isError());
+
         IContract ct = api.getContractController().getContract();
-        assertEquals(ct.getFrom(), cb);
+        assertEquals(ct.getFrom(), acc);
         assertNotNull(ct.getContractAddress());
 
-        ContractResponse cr = ct.newFunction("getValues")
+        apiMsg = ct.newFunction("getValues")
             .setTxNrgLimit(NRG_LIMIT_TX_MAX)
             .setTxNrgPrice(NRG_PRICE_MIN)
             .build()
-            .execute()
-            .getObject();
+            .execute();
+
+        assertFalse(apiMsg.isError());
+        ContractResponse cr = apiMsg.getObject();
+        assertNotNull(ct);
 
         assertEquals(1234L, (long) (Long) cr.getData().get(0));
         assertTrue((boolean) cr.getData().get(1));
@@ -321,8 +279,8 @@ public class ContractTests {
                 Address.wrap("1234567890123456789012345678901234567890123456789012345678901234")
                     .toBytes()));
         assertEquals(ByteArrayWrapper.wrap((byte[]) cr.getData().get(3))
-            , ByteArrayWrapper.wrap(IUtils
-                .hex2Bytes("1234567890123456789012345678901234567890123456789012345678901234")));
+            , ByteArrayWrapper.wrap(Objects.requireNonNull(IUtils
+                .hex2Bytes("1234567890123456789012345678901234567890123456789012345678901234"))));
         assertTrue(((String) cr.getData().get(4)).contentEquals("Aion!"));
         assertEquals((long) ((Long) cr.getData().get(5)), -1234L);
 
@@ -330,53 +288,55 @@ public class ContractTests {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void TestCallGetStaticArray() {
 
-        String sc = "contract SolArrayTypes{ \n" +
-            " \n" +
-            "    bool[4] bo = [true,false,true,false];\n" +
-            "    address[4] ad = [0x1111111111111111111111111111111111111111111111111111111111111111,\n"
-            +
-            "        0x2222222222222222222222222222222222222222222222222222222222222222,\n" +
-            "        0x3333333333333333333333333333333333333333333333333333333333333333,\n" +
-            "        0x4444444444444444444444444444444444444444444444444444444444444444];\n" +
-            "    uint128[4] ui = [1111,2222,3333,4444];    \n" +
-            "    \n" +
-            "    function getStaticArray() constant returns (bool[4], address[4], uint128[4]) {\n" +
-            "        return (bo,ad,ui);\n" +
-            "    }\n" +
-            "}";
+        connectAPI();
 
-        api.connect(AionAPIImpl.LOCALHOST_URL);
-        api.getContractController().clear();
+        ApiMsg apiMsg = api.getWallet().getAccounts();
+        assertFalse(apiMsg.isError());
+        List accs = apiMsg.getObject();
+        assertNotNull(accs);
 
-        Address cb = ((List<Address>) api.getWallet().getAccounts().getObject()).get(0);
-        assertNotNull(cb);
-        assertTrue(api.getWallet().unlockAccount(cb, pw, 3600).getObject());
-
-        ApiMsg msg = api.getContractController()
-            .createFromSource(sc, cb, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
-        if (msg.isError()) {
-            System.out.println("deploy contract failed! " + msg.getErrString());
+        if (accs.isEmpty()) {
+            System.out.println("Empty account, skip this test!");
+            return;
         }
 
+        Address acc = (Address) accs.get(0);
+        if (!isEnoughBalance(acc)) {
+            System.out.println("balance of the account is not enough, skip this test!");
+            return;
+        }
+
+        apiMsg = api.getWallet().unlockAccount(acc, pw, 300);
+        assertFalse(apiMsg.isError());
+        assertTrue(apiMsg.getObject());
+
+        String sc = readFile("solArrayTypes.sol");
+        apiMsg = api.getContractController()
+            .createFromSource(sc, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
+        assertFalse(apiMsg.isError());
+
         IContract ct = api.getContractController().getContract();
-        assertEquals(ct.getFrom(), cb);
+        assertEquals(ct.getFrom(), acc);
         assertNotNull(ct.getContractAddress());
 
-        ContractResponse cr = ct.newFunction("getStaticArray")
+        apiMsg = ct.newFunction("getStaticArray")
             .setTxNrgLimit(NRG_LIMIT_TX_MAX)
             .setTxNrgPrice(NRG_PRICE_MIN)
             .build()
-            .execute()
-            .getObject();
+            .execute();
+        assertFalse(apiMsg.isError());
+
+        ContractResponse cr = apiMsg.getObject();
 
         List<Boolean> bool = Arrays.asList(true, false, true, false);
         List<Address> addr = Arrays.asList(
-            Address.wrap("1111111111111111111111111111111111111111111111111111111111111111"),
-            Address.wrap("2222222222222222222222222222222222222222222222222222222222222222"),
-            Address.wrap("3333333333333333333333333333333333333333333333333333333333333333"),
-            Address.wrap("4444444444444444444444444444444444444444444444444444444444444444"));
+            Address.wrap("a011111111111111111111111111111111111111111111111111111111111111"),
+            Address.wrap("a022222222222222222222222222222222222222222222222222222222222222"),
+            Address.wrap("a033333333333333333333333333333333333333333333333333333333333333"),
+            Address.wrap("a044444444444444444444444444444444444444444444444444444444444444"));
 
         List<Long> uint = Arrays.asList(1111L, 2222L, 3333L, 4444L);
         assertEquals(cr.getData().get(0), bool);
@@ -385,7 +345,7 @@ public class ContractTests {
         List<Address> addrTran = addrAry.stream().map(Address::wrap).collect(Collectors.toList());
 
         IntStream.range(0, 4).forEach(i -> {
-            assertTrue(addrTran.get(i).equals(addr.get(i)));
+            assertEquals(addrTran.get(i), addr.get(i));
         });
         assertEquals(cr.getData().get(2), uint);
 
@@ -469,164 +429,51 @@ public class ContractTests {
     }
 
     @Test
+    @Ignore
     public void TestCallGetPrescription() {
-        String sc = "contract Prescription {\n" +
-            "\n" +
-            "    struct prescinfo {\n" +
-            "        address docID;\n" +
-            "        address pharmacyID;\n" +
-            "        string drugName;\n" +
-            "        uint drugQuant;\n" +
-            "        bool redeemed;\n" +
-            "        uint attempts;\n" +
-            "    }\n" +
-            "\n" +
-            "    struct patientHistory {\n" +
-            "        address[] pid;\n" +
-            "        uint attempts;\n" +
-            "    }\n" +
-            "\n" +
-            "    struct doctorHistory {\n" +
-            "        address[] pid;\n" +
-            "        address[] patientID;\n" +
-            "        uint attempts;\n" +
-            "    }\n" +
-            "\n" +
-            "    uint public pidCount;\n" +
-            "\n" +
-            "    address[] public doctors;\n" +
-            "    mapping(address => prescinfo) public prescription;\n" +
-            "    mapping(address => doctorHistory) doctor_history;\n" +
-            "    mapping(address => patientHistory) patient_history;\n" +
-            "\n" +
-            "    // events\n" +
-            "    event NewDoctor(address _doctorId);\n" +
-            "    event NewPrescription(address _patient, address doctorID, address _pid);\n" +
-            "\n" +
-            "    // public methods\n" +
-            "    function prescribe (address _patient, string _drugName, uint _drugQuant, address _pid) {\n"
-            +
-            "\n" +
-            "        if (!checkExists(msg.sender, doctors)) {\n" +
-            "            NewDoctor(msg.sender);\n" +
-            "            doctors.push(msg.sender);\n" +
-            "        }\n" +
-            "\n" +
-            "        if (prescription[_pid].docID == address(0x0)) {\n" +
-            "            // emit event\n" +
-            "            NewPrescription(_patient, msg.sender, _pid);\n" +
-            "\n" +
-            "            // set\n" +
-            "            prescription[_pid].docID = msg.sender;\n" +
-            "            prescription[_pid].drugName  = _drugName;\n" +
-            "            prescription[_pid].drugQuant = _drugQuant;\n" +
-            "            prescription[_pid].redeemed = false;\n" +
-            "            patient_history[_patient].pid.push(_pid);\n" +
-            "            doctor_history[msg.sender].pid.push(_pid);\n" +
-            "            doctor_history[msg.sender].patientID.push(_patient);\n" +
-            "            pidCount += 1;\n" +
-            "        }\n" +
-            "\n" +
-            "    }\n" +
-            "\n" +
-            "    function redeem (address _pid, address _pharmacyID) {\n" +
-            "        prescription[_pid].redeemed = true;\n" +
-            "        prescription[_pid].attempts += 1;\n" +
-            "        prescription[_pid].pharmacyID = _pharmacyID;\n" +
-            "    }\n" +
-            "\n" +
-            "    function getPatientHistoryCount (address _patient) constant returns (uint) {\n" +
-            "        return patient_history[_patient].pid.length;\n" +
-            "    }\n" +
-            "\n" +
-            "    function getPatientHistory (address _patient, uint index) constant returns (address) {\n"
-            +
-            "        return patient_history[_patient].pid[index];\n" +
-            "    }\n" +
-            "\n" +
-            "    function getPatientFraudCount (address _patient) constant returns (uint) {\n" +
-            "        uint fraudCount = 0;\n" +
-            "        for (uint i = 0; i < patient_history[_patient].pid.length; i++) {\n" +
-            "            if (prescription[patient_history[_patient].pid[i]].attempts > 1) {\n" +
-            "                fraudCount += 1;\n" +
-            "            }\n" +
-            "        }\n" +
-            "\n" +
-            "        return fraudCount;\n" +
-            "    }\n" +
-            "\n" +
-            "    function getFraudPatients () constant returns (uint) {\n" +
-            "        uint fraudCount = 0;\n" +
-            "        for (uint i = 0; i < doctor_history[msg.sender].patientID.length; i++) {\n" +
-            "            fraudCount += getPatientFraudCount(doctor_history[msg.sender].patientID[i]);\n"
-            +
-            "        }\n" +
-            "\n" +
-            "        return fraudCount;\n" +
-            "    }\n" +
-            "\n" +
-            "    \n" +
-            "\n" +
-            "    function getDoctorCount () constant returns (uint) {\n" +
-            "        return doctors.length;\n" +
-            "    }\n" +
-            "\n" +
-            "    function getDoctor (uint index) constant returns (address) {\n" +
-            "        return doctors[index];\n" +
-            "    }\n" +
-            "\n" +
-            "    function getDoctorPrescriptionsCount (address doctor_address) constant returns (uint) {\n"
-            +
-            "        return doctor_history[doctor_address].pid.length;\n" +
-            "    }\n" +
-            "\n" +
-            "    function getDoctorPrescription(address doctor_address, uint index) constant returns (address){\n"
-            +
-            "        return doctor_history[doctor_address].pid[index]; \n" +
-            "    }    \n" +
-            "\n" +
-            "\n" +
-            "\n" +
-            "\n" +
-            "\n" +
-            "    // private methods\n" +
-            "    function checkExists (address _id, address[] addr) private returns (bool) {\n" +
-            "        bool exists = false;\n" +
-            "        for (uint i = 0; i < addr.length; i++) {\n" +
-            "            if (_id == addr[i]) {\n" +
-            "                exists = true;\n" +
-            "            }\n" +
-            "        }\n" +
-            "\n" +
-            "        return exists;\n" +
-            "    }\n" +
-            "}";
 
-        api.connect(AionAPIImpl.LOCALHOST_URL);
-        api.getContractController().clear();
+        connectAPI();
 
-        Address cb = ((List<Address>) api.getWallet().getAccounts().getObject()).get(0);
-        assertNotNull(cb);
-        assertTrue(api.getWallet().unlockAccount(cb, pw, 3600).getObject());
+        ApiMsg apiMsg = api.getWallet().getAccounts();
+        assertFalse(apiMsg.isError());
+        List accs = apiMsg.getObject();
+        assertNotNull(accs);
 
-        ApiMsg msg = api.getContractController()
-            .createFromSource(sc, cb, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
-        if (msg.isError()) {
-            System.out.println("deploy contract failed! " + msg.getErrString());
+        if (accs.isEmpty()) {
+            System.out.println("Empty account, skip this test!");
+            return;
         }
 
+        Address acc = (Address) accs.get(0);
+        if (!isEnoughBalance(acc)) {
+            System.out.println("balance of the account is not enough, skip this test!");
+            return;
+        }
+
+        apiMsg = api.getWallet().unlockAccount(acc, pw, 300);
+        assertFalse(apiMsg.isError());
+        assertTrue(apiMsg.getObject());
+
+        String sc = readFile("prescription.sol");
+        apiMsg = api.getContractController()
+            .createFromSource(sc, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
+        assertFalse(apiMsg.isError());
+
         IContract ct = api.getContractController().getContract();
-        assertEquals(ct.getFrom(), cb);
+        assertEquals(ct.getFrom(), acc);
+        assertNotNull(ct.getContractAddress());
+
+        assertEquals(ct.getFrom(), acc);
         assertNotNull(ct.getContractAddress());
         assertEquals(15, ct.getAbiDefinition().size());
         assertEquals(2, ct.getContractEventList().size());
 
-        String abi = "[{\"constant\":true,\"inputs\":[{\"name\":\"_patient\",\"type\":\"address\"}],\"name\":\"getPatientHistoryCount\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_patient\",\"type\":\"address\"},{\"name\":\"_drugName\",\"type\":\"string\"},{\"name\":\"_drugQuant\",\"type\":\"uint128\"},{\"name\":\"_pid\",\"type\":\"address\"}],\"name\":\"prescribe\",\"outputs\":[],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"address\"}],\"name\":\"prescription\",\"outputs\":[{\"name\":\"docID\",\"type\":\"address\"},{\"name\":\"pharmacyID\",\"type\":\"address\"},{\"name\":\"drugName\",\"type\":\"string\"},{\"name\":\"drugQuant\",\"type\":\"uint128\"},{\"name\":\"redeemed\",\"type\":\"bool\"},{\"name\":\"attempts\",\"type\":\"uint128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getFraudPatients\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_patient\",\"type\":\"address\"},{\"name\":\"index\",\"type\":\"uint128\"}],\"name\":\"getPatientHistory\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"doctor_address\",\"type\":\"address\"},{\"name\":\"index\",\"type\":\"uint128\"}],\"name\":\"getDoctorPrescription\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"doctor_address\",\"type\":\"address\"}],\"name\":\"getDoctorPrescriptionsCount\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"index\",\"type\":\"uint128\"}],\"name\":\"getDoctor\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"name\":\"doctors\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getDoctorCount\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_pid\",\"type\":\"address\"},{\"name\":\"_pharmacyID\",\"type\":\"address\"}],\"name\":\"redeem\",\"outputs\":[],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_patient\",\"type\":\"address\"}],\"name\":\"getPatientFraudCount\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"pidCount\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"payable\":false,\"type\":\"function\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"_doctorId\",\"type\":\"address\"}],\"name\":\"NewDoctor\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"_patient\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"doctorID\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"_pid\",\"type\":\"address\"}],\"name\":\"NewPrescription\",\"type\":\"event\"}]";
-
-        IContract ct2 = api.getContractController().getContractAt(cb, ct.getContractAddress(), abi);
+        String abi = readFile("prescription.abi");
+        IContract ct2 = api.getContractController()
+            .getContractAt(acc, ct.getContractAddress(), abi);
         assertNotNull(ct2);
 
-        msg.set(ct2.newFunction("prescribe")
+        apiMsg = ct2.newFunction("prescribe")
             .setParam(IAddress.copyFrom(
                 Address.wrap("0000000000000000000000000000000000000000000000000000000000000001")
                     .toBytes()))
@@ -638,14 +485,11 @@ public class ContractTests {
             .setTxNrgLimit(NRG_LIMIT_TX_MAX)
             .setTxNrgPrice(NRG_PRICE_MIN)
             .build()
-            .execute());
+            .execute();
 
-        if (msg.isError()) {
-            System.out.println("execute contract tx failed! " + msg.getErrString());
-            return;
-        }
+        assertFalse(apiMsg.isError());
 
-        ContractResponse cr = msg.getObject();
+        ContractResponse cr = apiMsg.getObject();
         assertNotNull(cr);
 
         cr = ct2.newFunction("prescription")
@@ -672,125 +516,130 @@ public class ContractTests {
 
     @Test
     public void TestTransactionParameterBytes() {
-        String source = "contract testContract {\n"
-            + "    bytes32 public a;\n"
-            + "    bytes public b;\n"
-            + "    bytes8 public c;\n"
-            + "    bytes16 public d;\n"
-            + "    string public e;\n"
-            + "    \n"
-            + "    function input32(bytes32 _a) {\n"
-            + "        a = _a;\n"
-            + "    }\n"
-            + "    \n"
-            + "    function input(bytes _b) {\n"
-            + "        b = _b;\n"
-            + "    }\n"
-            + "    \n"
-            + "    function input8(bytes8 _c) {\n"
-            + "        c = _c;\n"
-            + "    }\n"
-            + "    \n"
-            + "    function input16(bytes16 _d) {\n"
-            + "        d = _d;\n"
-            + "    }\n"
-            + "    function inputS(string _e) {\n"
-            + "        e = _e;\n"
-            + "    }\n"
-            + "}";
+        connectAPI();
 
-        api.connect(IAionAPI.LOCALHOST_URL);
-        api.getContractController().clear();
+        ApiMsg apiMsg = api.getWallet().getAccounts();
+        assertFalse(apiMsg.isError());
+        List accs = apiMsg.getObject();
+        assertNotNull(accs);
 
-        Address from = ((List<Address>) api.getWallet().getAccounts().getObject()).get(0);
-        // ensure deployment account is unlocked
-        assertTrue(api.getWallet().unlockAccount(from, pw, 600).getObject());
-
-        ApiMsg msg = api.getContractController()
-            .createFromSource(source, from, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
-        if (msg.isError()) {
-            System.out.println("deploy contract failed! " + msg.getErrString());
+        if (accs.isEmpty()) {
+            System.out.println("Empty account, skip this test!");
+            return;
         }
 
+        Address acc = (Address) accs.get(0);
+        if (!isEnoughBalance(acc)) {
+            System.out.println("balance of the account is not enough, skip this test!");
+            return;
+        }
+
+        apiMsg = api.getWallet().unlockAccount(acc, pw, 300);
+        assertFalse(apiMsg.isError());
+        assertTrue(apiMsg.getObject());
+
+        String tc = readFile("testContract2.sol");
+
+        apiMsg = api.getContractController()
+            .createFromSource(tc, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
+        assertFalse(apiMsg.isError());
+
         IContract ct = api.getContractController().getContract();
-        assertEquals(ct.getFrom(), from);
+        assertNotNull(ct);
+        assertEquals(ct.getFrom(), acc);
         assertNotNull(ct.getContractAddress());
 
-        ContractResponse cr = ct.newFunction("input32")
+        apiMsg = ct.newFunction("input32")
             .setParam(IBytes.copyFrom(
                 new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 1}))
             .setTxNrgLimit(NRG_LIMIT_TX_MAX)
             .setTxNrgPrice(NRG_PRICE_MIN)
             .build()
-            .execute()
-            .getObject();
+            .execute();
 
+        assertFalse(apiMsg.isError());
+
+        ContractResponse cr = apiMsg.getObject();
         System.out.println("Response Hash: " + cr.getTxHash().toString());
 
-        cr = ct.newFunction("a")
+        apiMsg = ct.newFunction("a")
             .setTxNrgLimit(NRG_LIMIT_TX_MAX)
             .setTxNrgPrice(NRG_PRICE_MIN)
             .build()
-            .execute()
-            .getObject();
+            .execute();
+        assertFalse(apiMsg.isError());
+
+        cr = apiMsg.getObject();
 
         assertThat(cr.getData().get(0), is(equalTo(
             new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 1})));
 
-        cr = ct.newFunction("inputS")
+        apiMsg = ct.newFunction("inputS")
             .setParam(ISString.copyFrom("25"))
             .setTxNrgLimit(NRG_LIMIT_TX_MAX)
             .setTxNrgPrice(NRG_PRICE_MIN)
             .build()
-            .execute()
-            .getObject();
+            .execute();
+        assertFalse(apiMsg.isError());
+
+        cr = apiMsg.getObject();
 
         System.out.println("Response Hash: " + cr.getTxHash().toString());
 
-        cr = ct.newFunction("e")
+        apiMsg = ct.newFunction("e")
             .setTxNrgLimit(NRG_LIMIT_TX_MAX)
             .setTxNrgPrice(NRG_PRICE_MIN)
             .build()
-            .execute()
-            .getObject();
+            .execute();
+        assertFalse(apiMsg.isError());
 
-        cr = ct.newFunction("input")
+        cr = apiMsg.getObject();
+
+        apiMsg = ct.newFunction("input")
             .setParam(IDynamicBytes.copyFrom(new byte[]{2, 5}))
             .setTxNrgLimit(NRG_LIMIT_TX_MAX)
             .setTxNrgPrice(NRG_PRICE_MIN)
             .build()
-            .execute()
-            .getObject();
+            .execute();
+        assertFalse(apiMsg.isError());
+
+        cr = apiMsg.getObject();
 
         System.out.println("Response Hash: " + cr.getTxHash().toString());
 
-        cr = ct.newFunction("b")
+        apiMsg = ct.newFunction("b")
             .setTxNrgLimit(NRG_LIMIT_TX_MAX)
             .setTxNrgPrice(NRG_PRICE_MIN)
             .build()
-            .execute()
-            .getObject();
+            .execute();
+        assertFalse(apiMsg.isError());
+
+        cr = apiMsg.getObject();
 
         assertTrue(Arrays.equals((byte[]) cr.getData().get(0), new byte[]{2, 5}));
 
-        cr = ct.newFunction("input8")
+        apiMsg = ct.newFunction("input8")
             .setParam(IBytes.copyFrom(new byte[]{0, 0, 0, 0, 0, 0, 0, 1}))
             .setTxNrgLimit(NRG_LIMIT_TX_MAX)
             .setTxNrgPrice(NRG_PRICE_MIN)
             .build()
-            .execute()
-            .getObject();
+            .execute();
+        assertFalse(apiMsg.isError());
+
+        cr = apiMsg.getObject();
 
         System.out.println("Response Hash: " + cr.getTxHash().toString());
 
-        cr = ct.newFunction("c")
+        apiMsg = ct.newFunction("c")
             .setTxNrgLimit(NRG_LIMIT_TX_MAX)
             .setTxNrgPrice(NRG_PRICE_MIN)
             .build()
-            .execute()
-            .getObject();
+            .execute();
+        assertFalse(apiMsg.isError());
+
+        cr = apiMsg.getObject();
 
         assertThat(cr.getData().get(0),
             is(equalTo(new byte[]{0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0})));
@@ -805,12 +654,14 @@ public class ContractTests {
 
         System.out.println("Response Hash: " + cr.getTxHash().toString());
 
-        cr = ct.newFunction("d")
+        apiMsg = ct.newFunction("d")
             .setTxNrgLimit(NRG_LIMIT_TX_MAX)
             .setTxNrgPrice(NRG_PRICE_MIN)
             .build()
-            .execute()
-            .getObject();
+            .execute();
+        assertFalse(apiMsg.isError());
+
+        cr = apiMsg.getObject();
 
         assertThat(cr.getData().get(0),
             is(equalTo(new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1})));
@@ -820,45 +671,33 @@ public class ContractTests {
 
     @Test
     public void TestTransactionWithDynamicParam() {
-        // formatted into something remotely readable
-        String s = "contract ticker { \n"
-            + "    uint public val;\n"
-            + "    uint[] public pub;\n"
-            + "    \n"
-            + "    struct myStruct {\n"
-            + "        uint a;\n"
-            + "        uint b;\n"
-            + "        uint[10] someList;\n"
-            + "    }\n"
-            + "    \n"
-            + "    mapping(address => myStruct) public myHash;\n"
-            + "    \n"
-            + "    function tick (uint[] inFromUser) {\n"
-            + "        val+= inFromUser[0];\n"
-            + "        val+= 1;\n"
-            + "    }\n"
-            + "}";
+        connectAPI();
 
-        api.connect(IAionAPI.LOCALHOST_URL);
-        api.getContractController().clear();
+        ApiMsg apiMsg = api.getWallet().getAccounts();
+        assertFalse(apiMsg.isError());
+        List accs = apiMsg.getObject();
+        assertNotNull(accs);
 
-        Address from = ((List<Address>) api.getWallet().getAccounts().getObject()).get(0);
-
-        // ensure deployment account is unlocked
-        assertTrue(api.getWallet().unlockAccount(from, pw, 600).getObject());
-
-        Map<String, CompileResponse> compileResponse = api.getTx().compile(s).getObject();
-
-        CompileResponse c = compileResponse.get("ticker");
-        for (ContractAbiEntry entry : c.getAbiDefinition()) {
-            System.out.println("ABI Function: " + entry.name);
+        if (accs.isEmpty()) {
+            System.out.println("Empty account, skip this test!");
+            return;
         }
 
-        ApiMsg msg = api.getContractController()
-            .createFromSource(s, from, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
-        if (msg.isError()) {
-            System.out.println("deploy contract failed! " + msg.getErrString());
+        Address acc = (Address) accs.get(0);
+        if (!isEnoughBalance(acc)) {
+            System.out.println("balance of the account is not enough, skip this test!");
+            return;
         }
+
+        apiMsg = api.getWallet().unlockAccount(acc, pw, 300);
+        assertFalse(apiMsg.isError());
+        assertTrue(apiMsg.getObject());
+
+        String ticker = readFile("ticker.sol");
+
+        apiMsg = api.getContractController()
+            .createFromSource(ticker, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
+        assertFalse(apiMsg.isError());
 
         IContract contract = api.getContractController().getContract();
         assertNotNull(contract);
@@ -869,13 +708,16 @@ public class ContractTests {
         inputUint.add(3);
         inputUint.add(4);
 
-        ContractResponse contractResponse = contract.newFunction("tick")
+        apiMsg = contract.newFunction("tick")
             .setParam(IUint.copyFrom(inputUint))
             .setTxNrgLimit(NRG_LIMIT_TX_MAX)
             .setTxNrgPrice(NRG_PRICE_MIN)
             .build()
-            .execute()
-            .getObject();
+            .execute();
+
+        assertFalse(apiMsg.isError());
+
+        ContractResponse contractResponse = apiMsg.getObject();
 
         System.out.println("Hash Response: " + contractResponse.getTxHash().toString());
         api.destroyApi();
@@ -883,49 +725,33 @@ public class ContractTests {
 
     @Test
     public void TestTransactionWithMoreDynamicParam() {
-        // formatted into something remotely readable
-        String s = "contract ticker { \n"
-            + "    uint public val;\n"
-            + "    uint[] public pub;\n"
-            + "    \n"
-            + "    struct myStruct {\n"
-            + "        uint a;\n"
-            + "        uint b;\n"
-            + "        uint[10] someList;\n"
-            + "    }\n"
-            + "    \n"
-            + "    struct a {\n"
-            + "        string s;\n"
-            + "        uint b;\n"
-            + "    }\n"
-            + "    \n"
-            + "    mapping(address => myStruct) public myHash;\n"
-            + "    \n"
-            + "    function tick (bool b, uint[] inFromUser, address[5] staticInFromUser) {\n"
-            + "    }\n"
-            + "    \n"
-            + "}";
+        connectAPI();
 
-        api.connect(IAionAPI.LOCALHOST_URL);
-        api.getContractController().clear();
+        ApiMsg apiMsg = api.getWallet().getAccounts();
+        assertFalse(apiMsg.isError());
+        List accs = apiMsg.getObject();
+        assertNotNull(accs);
 
-        Address from = ((List<Address>) api.getWallet().getAccounts().getObject()).get(0);
-
-        // ensure deployment account is unlocked
-        assertTrue(api.getWallet().unlockAccount(from, pw, 600).getObject());
-
-        Map<String, CompileResponse> compileResponse = api.getTx().compile(s).getObject();
-
-        CompileResponse c = compileResponse.get("ticker");
-        for (ContractAbiEntry entry : c.getAbiDefinition()) {
-            System.out.println("ABI Function: " + entry.name);
+        if (accs.isEmpty()) {
+            System.out.println("Empty account, skip this test!");
+            return;
         }
 
-        ApiMsg msg = api.getContractController()
-            .createFromSource(s, from, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
-        if (msg.isError()) {
-            System.out.println("deploy contract failed! " + msg.getErrString());
+        Address acc = (Address) accs.get(0);
+        if (!isEnoughBalance(acc)) {
+            System.out.println("balance of the account is not enough, skip this test!");
+            return;
         }
+
+        apiMsg = api.getWallet().unlockAccount(acc, pw, 300);
+        assertFalse(apiMsg.isError());
+        assertTrue(apiMsg.getObject());
+
+        String ticker = readFile("ticker2.sol");
+
+        apiMsg = api.getContractController()
+            .createFromSource(ticker, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
+        assertFalse(apiMsg.isError());
 
         IContract contract = api.getContractController().getContract();
         assertNotNull(contract);
@@ -943,256 +769,185 @@ public class ContractTests {
         inputAddress.add("0000000000000000000000000000000000000000000000000000000000001004");
         inputAddress.add("0000000000000000000000000000000000000000000000000000000000001005");
 
-        ContractResponse contractResponse = contract.newFunction("tick")
+        apiMsg = contract.newFunction("tick")
             .setParam(IBool.copyFrom(true))
             .setParam(IUint.copyFrom(inputUint))
             .setParam(IAddress.copyFrom(inputAddress))
             .setTxNrgLimit(NRG_LIMIT_TX_MAX)
             .setTxNrgPrice(NRG_PRICE_MIN)
             .build()
-            .execute()
-            .getObject();
+            .execute();
+
+        ContractResponse contractResponse = apiMsg.getObject();
+        assertNotNull(contractResponse);
 
         System.out.println("Hash Response: " + contractResponse.getTxHash().toString());
         api.destroyApi();
     }
 
     @Test
-    public void TestContractTicker() throws Throwable {
-        String s = "contract ticker { uint public val; function tick () { val+= 1; } }";
-        api.connect(AionAPIImpl.LOCALHOST_URL);
-        api.getContractController().clear();
+    public void TestContractTicker() {
+        connectAPI();
 
-        List<Address> accs = api.getWallet().getAccounts().getObject();
-        assertTrue(accs.size() > 0);
-        assertTrue(api.getWallet().unlockAccount(accs.get(0), pw).getObject());
+        ApiMsg apiMsg = api.getWallet().getAccounts();
+        assertFalse(apiMsg.isError());
+        List accs = apiMsg.getObject();
+        assertNotNull(accs);
 
-        ApiMsg msg = api.getContractController()
-            .createFromSource(s, accs.get(0), NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
-        if (msg.isError()) {
-            System.out.println("deploy contract failed! " + msg.getErrString());
+        if (accs.isEmpty()) {
+            System.out.println("Empty account, skip this test!");
+            return;
         }
 
-        IContract ct = api.getContractController().getContract();
+        Address acc = (Address) accs.get(0);
+        if (!isEnoughBalance(acc)) {
+            System.out.println("balance of the account is not enough, skip this test!");
+            return;
+        }
+
+        apiMsg = api.getWallet().unlockAccount(acc, pw, 300);
+        assertFalse(apiMsg.isError());
+        assertTrue(apiMsg.getObject());
+
+        String ticker = readFile("ticker3.sol");
+
+        apiMsg = api.getContractController()
+            .createFromSource(ticker, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
+        assertFalse(apiMsg.isError());
+
+        IContract contract = api.getContractController().getContract();
+        assertNotNull(contract);
+
+        apiMsg = api.getChain().blockNumber();
+        assertFalse(apiMsg.isError());
+        long blkNumber = apiMsg.getObject();
 
         ContractResponse cr;
         long cnt = 100;
         for (int i = 0; i < cnt; i++) {
-            cr = ct.newFunction("tick")
-                .setFrom(accs.get(0))
+            apiMsg = contract.newFunction("tick")
+                .setFrom(acc)
                 .setTxNrgLimit(NRG_LIMIT_TX_MAX)
                 .setTxNrgPrice(NRG_PRICE_MIN)
                 .build()
                 .nonBlock()
-                .execute()
-                .getObject();
+                .execute();
+            assertFalse(apiMsg.isError());
         }
 
-        long timeout = 60000;
-        long start = System.currentTimeMillis();
-        long res = 0;
-        while ((System.currentTimeMillis() - start < timeout)) {
-            cr = ct.newFunction("val")
-                .setFrom(accs.get(1))
-                .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-                .setTxNrgPrice(NRG_PRICE_MIN)
-                .build()
-                .execute()
-                .getObject();
+        // assume the transaction should get within next 2 blocks
+        while (true) {
+            apiMsg = api.getChain().blockNumber();
+            assertFalse(apiMsg.isError());
+            long bestBlock = apiMsg.getObject();
 
-            res = (Long) cr.getData().get(0);
-            System.out.println("val: " + res);
-
-            if (cnt == res) {
+            if (bestBlock > blkNumber + 1) {
                 break;
             }
-            Thread.sleep(500);
         }
 
-        assertEquals(res, cnt);
+        apiMsg = contract.newFunction("val")
+            .setFrom(acc)
+            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+            .setTxNrgPrice(NRG_PRICE_MIN)
+            .build()
+            .execute();
+        assertFalse(apiMsg.isError());
+
+        cr = apiMsg.getObject();
+        assertNotNull(cr);
+        assertNotNull(cr.getData());
+
+        cnt = (Long) cr.getData().get(0);
+
+        assertEquals(100L, cnt);
 
         api.destroyApi();
     }
 
     @Test
     public void TestContractThrow() {
+        connectAPI();
 
-        String s = "contract Token {\n" + "\n" + "    function Token() {}\n" + "   \n"
-            + "    function throwMe(){\n"
-            + "   \t\tthrow;\n" + "    }\n" + "\n" + "}";
+        ApiMsg apiMsg = api.getWallet().getAccounts();
+        assertFalse(apiMsg.isError());
+        List accs = apiMsg.getObject();
+        assertNotNull(accs);
 
-        api.connect(AionAPIImpl.LOCALHOST_URL);
-        api.getContractController().clear();
-
-        List<Address> accs = api.getWallet().getAccounts().getObject();
-        assertThat(accs.size(), is(greaterThan(0)));
-        assertTrue(api.getWallet().unlockAccount(accs.get(1), pw).getObject());
-
-        ApiMsg apiMsg = api.getContractController()
-            .createFromSource(s, accs.get(1), NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
-        if (apiMsg.isError()) {
-            System.out.println("Deploy contract failed! " + apiMsg.getErrString());
+        if (accs.isEmpty()) {
+            System.out.println("Empty account, skip this test!");
             return;
         }
 
-        IContract ct = api.getContractController().getContract();
+        Address acc = (Address) accs.get(0);
+        if (!isEnoughBalance(acc)) {
+            System.out.println("balance of the account is not enough, skip this test!");
+            return;
+        }
 
-        apiMsg = ct.newFunction("throwMe")
-            .setFrom(accs.get(1))
+        apiMsg = api.getWallet().unlockAccount(acc, pw, 300);
+        assertFalse(apiMsg.isError());
+        assertTrue(apiMsg.getObject());
+
+        String throwMe = readFile("throw.sol");
+
+        apiMsg = api.getContractController()
+            .createFromSource(throwMe, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
+        assertFalse(apiMsg.isError());
+
+        IContract contract = api.getContractController().getContract();
+        assertNotNull(contract);
+
+        apiMsg = contract.newFunction("throwMe")
+            .setFrom(acc)
             .setTxNrgLimit(NRG_LIMIT_TX_MAX)
             .setTxNrgPrice(NRG_PRICE_MIN)
             .build()
             .execute();
-
         assertFalse(apiMsg.isError());
-        System.out.println("throwMe transaction status! " + apiMsg.getErrString());
+
+        ContractResponse cr = apiMsg.getObject();
+        assertNotNull(cr);
+
+        assertTrue(cr.getError().contentEquals("REVERT"));
 
         api.destroyApi();
     }
 
     @Test
-    public void TestCreateContractFromSourceDe() {
-        String source = "pragma solidity ^0.4.0;\n" +
-            "\n" +
-            "contract Customer_Payee {\n" +
-            "    \n" +
-            "   modifier onlyIfParticipant(address partic) {\n" +
-            "        bool flag = false;\n" +
-            "        for (uint i = 0; i < participants.length; i++) {\n" +
-            "            if (participants[i] == partic) {\n" +
-            "                flag = true;\n" +
-            "            }\n" +
-            "        }\n" +
-            "        if(!flag) {\n" +
-            "            throw;\n" +
-            "        }\n" +
-            "        _;\n" +
-            "    }\n" +
-            "    \n" +
-            "   enum CONTRACT_STATE {\n" +
-            "        PREAPPROVED_CREATED,\n" +
-            "        WITHDRAWAL_REQ,\n" +
-            "        VALIDATE_WITHDRAWAL_REQ,\n" +
-            "        MONEY_TRANSFERRED\n" +
-            "    }\n" +
-            "\n" +
-            "   CONTRACT_STATE state;\n" +
-            "    address customer;\n" +
-            "    address payee;\n" +
-            "    uint preapproved_pmt_amt;\n" +
-            "    uint creation_date;\n" +
-            "    uint due_pmt_amt;\n" +
-            "    uint due_date;\n" +
-            "    uint pmt_date;\n" +
-            "    address [] participants;\n" +
-            "    \n" +
-            "   event onPreApprovedCreate(address from, address to, uint preapproved_pmt_amt, uint creation_date, CONTRACT_STATE state);\n"
-            +
-            "    event onAddParticipant(address participant);\n" +
-            "    event onWithdrawalRequest(address from, address to, uint due_pmt_amt, uint due_date, CONTRACT_STATE state);\n"
-            +
-            "    event onWithdrawalAmtValidate(CONTRACT_STATE state);\n" +
-            "    event onMoneyTransfer(address from, address to, uint due_pmt_amt, uint pmt_date, CONTRACT_STATE state);\n"
-            +
-            "    \n" +
-            "   \n" +
-            "   function Customer_Payee(address _customer, address _payee, uint _preapproved_pmt_amt, uint _creation_date) public {\n"
-            +
-            "        customer = _customer;\n" +
-            "        payee = _payee;\n" +
-            "        preapproved_pmt_amt = _preapproved_pmt_amt;\n" +
-            "        creation_date = _creation_date;\n" +
-            "        state = CONTRACT_STATE.PREAPPROVED_CREATED;\n" +
-            "        onPreApprovedCreate(customer, payee, preapproved_pmt_amt, creation_date, state);\n"
-            +
-            "        participants.push(customer);\n" +
-            "        participants.push(payee);\n" +
-            "        onAddParticipant(customer);\n" +
-            "        onAddParticipant(payee);\n" +
-            "    }\n" +
-            "    \n" +
-            "   /*function add_customer(address _customer) {\n" +
-            "        participants.push(_customer);\n" +
-            "        onAddParticipant(customer);\n" +
-            "        onPreApprovedCreate(_customer, payee, preapproved_pmt_amt, creation_date, state);\n"
-            +
-            "    }*/\n" +
-            "    \n" +
-            "   function get_participants() constant returns (address []) {\n" +
-            "        return participants;\n" +
-            "    }\n" +
-            "    \n" +
-            "   function bill_posted(address _payee, uint _due_pmt_amt, uint _due_date)\n" +
-            "    onlyIfParticipant(_payee) {\n" +
-            "        due_pmt_amt = _due_pmt_amt;\n" +
-            "        due_date = _due_date;\n" +
-            "        state = CONTRACT_STATE.WITHDRAWAL_REQ;\n" +
-            "        onWithdrawalRequest(payee, customer, due_pmt_amt, due_date, state);\n" +
-            "        \n" +
-            "   }\n" +
-            "    \n" +
-            "   function view_payee_customer_authorization() constant returns (address, address, uint, uint){\n"
-            +
-            "        return (payee, customer, preapproved_pmt_amt, creation_date);\n" +
-            "    }\n" +
-            "    \n" +
-            "   function validate_contract () {\n" +
-            "        state = CONTRACT_STATE.VALIDATE_WITHDRAWAL_REQ;\n" +
-            "        onWithdrawalAmtValidate(state);\n" +
-            "    }\n" +
-            "    \n" +
-            "   function make_payment(address _payee, uint _pmt_date)\n" +
-            "    onlyIfParticipant(_payee) {\n" +
-            "        pmt_date = _pmt_date;\n" +
-            "        state = CONTRACT_STATE.MONEY_TRANSFERRED;\n" +
-            "        onMoneyTransfer(payee, customer, preapproved_pmt_amt, _pmt_date, state);\n" +
-            "    }\n" +
-            "    \n" +
-            "   function get_bill_info() constant returns (address, address, uint, uint) {\n" +
-            "        return (payee, customer, due_pmt_amt, due_date);\n" +
-            "    }\n" +
-            "    \n" +
-            "   function get_money_transferred_info() constant returns (address, address, uint, uint) {\n"
-            +
-            "        return (payee, customer, preapproved_pmt_amt, pmt_date);\n" +
-            "    }\n" +
-            "    \n" +
-            "   function contract_state() constant returns (int) {\n" +
-            "        if (state == CONTRACT_STATE.PREAPPROVED_CREATED) {\n" +
-            "           return 0;\n" +
-            "        }\n" +
-            "        else if (state == CONTRACT_STATE.WITHDRAWAL_REQ) {\n" +
-            "           return 1;\n" +
-            "        }\n" +
-            "        else if (state == CONTRACT_STATE.VALIDATE_WITHDRAWAL_REQ) {\n" +
-            "           return 2;\n" +
-            "        }\n" +
-            "        else if (state == CONTRACT_STATE.MONEY_TRANSFERRED) {\n" +
-            "           return 3;\n" +
-            "        }\n" +
-            "        else {\n" +
-            "            return -1;\n" +
-            "        }\n" +
-            "    }\n" +
-            "}";
+    public void TestCustomerPayee2() {
+        connectAPI();
 
-        // hardcoded msgHash to block 1
-        api.connect(AionAPIImpl.LOCALHOST_URL);
-        api.getContractController().clear();
+        ApiMsg apiMsg = api.getWallet().getAccounts();
+        assertFalse(apiMsg.isError());
+        List accs = apiMsg.getObject();
+        assertNotNull(accs);
 
-        Address cb = ((List<Address>) api.getWallet().getAccounts().getObject()).get(0);
-        assertThat(cb, not(equalTo(null)));
-        assertTrue(api.getWallet().unlockAccount(cb, pw).getObject());
-
-        ApiMsg apiMsg = api.getContractController()
-            .createFromSource(source, cb, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
-        if (apiMsg.isError()) {
-            System.out.println("Deploy contract failed! " + apiMsg.getErrString());
+        if (accs.isEmpty()) {
+            System.out.println("Empty account, skip this test!");
             return;
         }
 
+        Address acc = (Address) accs.get(0);
+        if (!isEnoughBalance(acc)) {
+            System.out.println("balance of the account is not enough, skip this test!");
+            return;
+        }
+
+        apiMsg = api.getWallet().unlockAccount(acc, pw, 300);
+        assertFalse(apiMsg.isError());
+        assertTrue(apiMsg.getObject());
+
+        String payee = readFile("customerPayee.sol");
+
+        apiMsg = api.getContractController()
+            .createFromSource(payee, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
+        assertFalse(apiMsg.isError());
+
         IContract contract = api.getContractController().getContract();
-        assertThat(contract.getFrom(), is(equalTo(cb)));
+        assertNotNull(contract);
+
+        assertThat(contract.getFrom(), is(equalTo(acc)));
         assertThat(contract.getContractAddress(), not(equalTo(null)));
         assertThat(contract.getAbiDefinition().size(), is(equalTo(14)));
 
@@ -1201,182 +956,31 @@ public class ContractTests {
 
     @Test
     public void TestCustomerPayee() {
-        String token = "pragma solidity ^0.4.0;\n" +
-            "\n" +
-            "contract Customer_Payee {\n" +
-            "    \n" +
-            "   modifier onlyIfParticipant(address partic) {\n" +
-            "        bool flag = false;\n" +
-            "        for (uint i = 0; i < participants.length; i++) {\n" +
-            "            if (participants[i] == partic) {\n" +
-            "                flag = true;\n" +
-            "            }\n" +
-            "        }\n" +
-            "        if(!flag) {\n" +
-            "            throw;\n" +
-            "        }\n" +
-            "        _;\n" +
-            "    }\n" +
-            "    \n" +
-            "   enum CONTRACT_STATE {\n" +
-            "        PREAPPROVED_CREATED,\n" +
-            "        WITHDRAWAL_REQ,\n" +
-            "        VALIDATE_WITHDRAWAL_REQ,\n" +
-            "        MONEY_TRANSFERRED\n" +
-            "    }\n" +
-            "\n" +
-            "   CONTRACT_STATE state;\n" +
-            "    address customer;\n" +
-            "    address payee;\n" +
-            "    uint preapproved_pmt_amt;\n" +
-            "    uint creation_date;\n" +
-            "    uint due_pmt_amt;\n" +
-            "    uint due_date;\n" +
-            "    uint pmt_date;\n" +
-            "    address [] participants;\n" +
-            "    \n" +
-            "   event onPreApprovedCreate(address from, address to, uint preapproved_pmt_amt, uint creation_date, CONTRACT_STATE state);\n"
-            +
-            "    event onAddParticipant(address participant);\n" +
-            "    event onWithdrawalRequest(address from, address to, uint due_pmt_amt, uint due_date, CONTRACT_STATE state);\n"
-            +
-            "    event onWithdrawalAmtValidate(CONTRACT_STATE state);\n" +
-            "    event onMoneyTransfer(address from, address to, uint due_pmt_amt, uint pmt_date, CONTRACT_STATE state);\n"
-            +
-            "    \n" +
-            "   \n" +
-            "   function Customer_Payee(address _customer, address _payee, uint _preapproved_pmt_amt, uint _creation_date) public {\n"
-            +
-            "        customer = _customer;\n" +
-            "        payee = _payee;\n" +
-            "        preapproved_pmt_amt = _preapproved_pmt_amt;\n" +
-            "        creation_date = _creation_date;\n" +
-            "        state = CONTRACT_STATE.PREAPPROVED_CREATED;\n" +
-            "        onPreApprovedCreate(customer, payee, preapproved_pmt_amt, creation_date, state);\n"
-            +
-            "        participants.push(customer);\n" +
-            "        participants.push(payee);\n" +
-            "        onAddParticipant(customer);\n" +
-            "        onAddParticipant(payee);\n" +
-            "    }\n" +
-            "    \n" +
-            "   /*function add_customer(address _customer) {\n" +
-            "        participants.push(_customer);\n" +
-            "        onAddParticipant(customer);\n" +
-            "        onPreApprovedCreate(_customer, payee, preapproved_pmt_amt, creation_date, state);\n"
-            +
-            "    }*/\n" +
-            "    \n" +
-            "   function get_participants() constant returns (address []) {\n" +
-            "        return participants;\n" +
-            "    }\n" +
-            "    \n" +
-            "   function bill_posted(address _payee, uint _due_pmt_amt, uint _due_date)\n" +
-            "    onlyIfParticipant(_payee) {\n" +
-            "        due_pmt_amt = _due_pmt_amt;\n" +
-            "        due_date = _due_date;\n" +
-            "        state = CONTRACT_STATE.WITHDRAWAL_REQ;\n" +
-            "        onWithdrawalRequest(payee, customer, due_pmt_amt, due_date, state);\n" +
-            "        \n" +
-            "   }\n" +
-            "    \n" +
-            "   function view_payee_customer_authorization() constant returns (address, address, uint, uint){\n"
-            +
-            "        return (payee, customer, preapproved_pmt_amt, creation_date);\n" +
-            "    }\n" +
-            "    \n" +
-            "   function validate_contract () {\n" +
-            "        state = CONTRACT_STATE.VALIDATE_WITHDRAWAL_REQ;\n" +
-            "        onWithdrawalAmtValidate(state);\n" +
-            "    }\n" +
-            "    \n" +
-            "   function make_payment(address _payee, uint _pmt_date)\n" +
-            "    onlyIfParticipant(_payee) {\n" +
-            "        pmt_date = _pmt_date;\n" +
-            "        state = CONTRACT_STATE.MONEY_TRANSFERRED;\n" +
-            "        onMoneyTransfer(payee, customer, preapproved_pmt_amt, _pmt_date, state);\n" +
-            "    }\n" +
-            "    \n" +
-            "   function get_bill_info() constant returns (address, address, uint, uint) {\n" +
-            "        return (payee, customer, due_pmt_amt, due_date);\n" +
-            "    }\n" +
-            "    \n" +
-            "   function get_money_transferred_info() constant returns (address, address, uint, uint) {\n"
-            +
-            "        return (payee, customer, preapproved_pmt_amt, pmt_date);\n" +
-            "    }\n" +
-            "    \n" +
-            "   function contract_state() constant returns (int) {\n" +
-            "        if (state == CONTRACT_STATE.PREAPPROVED_CREATED) {\n" +
-            "           return 0;\n" +
-            "        }\n" +
-            "        else if (state == CONTRACT_STATE.WITHDRAWAL_REQ) {\n" +
-            "           return 1;\n" +
-            "        }\n" +
-            "        else if (state == CONTRACT_STATE.VALIDATE_WITHDRAWAL_REQ) {\n" +
-            "           return 2;\n" +
-            "        }\n" +
-            "        else if (state == CONTRACT_STATE.MONEY_TRANSFERRED) {\n" +
-            "           return 3;\n" +
-            "        }\n" +
-            "        else {\n" +
-            "            return -1;\n" +
-            "        }\n" +
-            "    }\n" +
-            "}";
+        connectAPI();
 
-        ApiMsg apiMsg = api.connect(IAionAPI.LOCALHOST_URL);
-        api.getContractController().clear();
-
-        if (apiMsg.isError()) {
-            System.out.println("Connect server failed, exit test! " + apiMsg.getErrString());
-            return;
-        }
-        System.out.println("Get server connected!");
-        System.out.println();
-
-        apiMsg.set(api.getWallet().getAccounts());
-        if (apiMsg.isError()) {
-            System.out.println("GetAccounts failed! " + apiMsg.getErrString());
-            return;
-        }
+        ApiMsg apiMsg = api.getWallet().getAccounts();
+        assertFalse(apiMsg.isError());
         List accs = apiMsg.getObject();
+        assertNotNull(accs);
 
-        if (accs.size() < 3) {
-            System.out.println(
-                "The number of accounts in the server is lower than 3, please check the server has a least 3 accounts to support the test!");
+        if (accs.isEmpty()) {
+            System.out.println("Empty account, skip this test!");
             return;
         }
-
-        System.out.println("Get " + accs.size() + " accounts!");
 
         Address acc = (Address) accs.get(0);
-        System.out.println("Get the first account: " + acc.toString());
-        Address acc2 = (Address) accs.get(1);
-        System.out.println("Get the second account: " + acc2.toString());
-        Address acc3 = (Address) accs.get(2);
-        System.out.println("Get the third account: " + acc3.toString());
-        System.out.println();
-
-        // unlockAccount before deployContract or send a transaction.
-        System.out.println("Unlock account before deploy smart contract or send transactions.");
-
-        apiMsg.set(api.getWallet().unlockAccount(acc, pw, 300));
-        if (apiMsg.isError() || !(boolean) apiMsg.getObject()) {
-            System.out.println("Unlock account failed! Please check your password input! " + apiMsg
-                .getErrString());
+        if (!isEnoughBalance(acc)) {
+            System.out.println("balance of the account is not enough, skip this test!");
             return;
         }
 
-        apiMsg.set(api.getWallet().unlockAccount(acc3, pw, 300));
-        if (apiMsg.isError() || !(boolean) apiMsg.getObject()) {
-            System.out.println("Unlock account failed! Please check your password input! " + apiMsg
-                .getErrString());
-            return;
-        }
-
+        apiMsg = api.getWallet().unlockAccount(acc, pw, 300);
+        assertFalse(apiMsg.isError());
+        assertTrue(apiMsg.getObject());
         System.out.println("Account unlocked!");
         System.out.println();
+
+        String payee = readFile("customerPayee.sol");
 
         ArrayList<ISolidityArg> param = new ArrayList<>();
         param.add(
@@ -1389,17 +993,12 @@ public class ContractTests {
         System.out.println("Prepare to deploy the token contract.");
 
         apiMsg = api.getContractController()
-            .createFromSource(token, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN, param);
-        if (apiMsg.isError()) {
-            System.out.println("Deploy contract failed! " + apiMsg.getErrString());
-            return;
-        }
+            .createFromSource(payee, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN, param);
+        assertFalse(apiMsg.isError());
 
         IContract ct = api.getContractController().getContract();
         assertNotNull(ct);
 
         System.out.println("Contract deployed!");
-        System.out.println();
-
     }
 }

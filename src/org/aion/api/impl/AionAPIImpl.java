@@ -185,6 +185,10 @@ public final class AionAPIImpl extends ApiBase implements IAionAPI {
             ((Tx) getTx()).reset();
         }
 
+        if (getContractController() != null) {
+            getContractController().clear();
+        }
+
         return destroyApiBase();
     }
 }

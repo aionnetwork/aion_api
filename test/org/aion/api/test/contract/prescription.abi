@@ -1,0 +1,302 @@
+[
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_patient",
+				"type": "address"
+			}
+		],
+		"name": "getPatientHistoryCount",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"type": "function",
+		"stateMutability": "view"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_patient",
+				"type": "address"
+			},
+			{
+				"name": "_drugName",
+				"type": "string"
+			},
+			{
+				"name": "_drugQuant",
+				"type": "uint256"
+			},
+			{
+				"name": "_pid",
+				"type": "address"
+			}
+		],
+		"name": "prescribe",
+		"outputs": [],
+		"payable": false,
+		"type": "function",
+		"stateMutability": "nonpayable"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "prescription",
+		"outputs": [
+			{
+				"name": "docID",
+				"type": "address"
+			},
+			{
+				"name": "pharmacyID",
+				"type": "address"
+			},
+			{
+				"name": "drugName",
+				"type": "string"
+			},
+			{
+				"name": "drugQuant",
+				"type": "uint256"
+			},
+			{
+				"name": "redeemed",
+				"type": "bool"
+			},
+			{
+				"name": "attempts",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"type": "function",
+		"stateMutability": "view"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getFraudPatients",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"type": "function",
+		"stateMutability": "view"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_patient",
+				"type": "address"
+			},
+			{
+				"name": "index",
+				"type": "uint256"
+			}
+		],
+		"name": "getPatientHistory",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"type": "function",
+		"stateMutability": "view"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "doctor_address",
+				"type": "address"
+			},
+			{
+				"name": "index",
+				"type": "uint256"
+			}
+		],
+		"name": "getDoctorPrescription",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"type": "function",
+		"stateMutability": "view"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "doctor_address",
+				"type": "address"
+			}
+		],
+		"name": "getDoctorPrescriptionsCount",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"type": "function",
+		"stateMutability": "view"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "index",
+				"type": "uint256"
+			}
+		],
+		"name": "getDoctor",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"type": "function",
+		"stateMutability": "view"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "doctors",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"type": "function",
+		"stateMutability": "view"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getDoctorCount",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"type": "function",
+		"stateMutability": "view"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_pid",
+				"type": "address"
+			},
+			{
+				"name": "_pharmacyID",
+				"type": "address"
+			}
+		],
+		"name": "redeem",
+		"outputs": [],
+		"payable": false,
+		"type": "function",
+		"stateMutability": "nonpayable"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_patient",
+				"type": "address"
+			}
+		],
+		"name": "getPatientFraudCount",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"type": "function",
+		"stateMutability": "view"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "pidCount",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"type": "function",
+		"stateMutability": "view"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "_doctorId",
+				"type": "address"
+			}
+		],
+		"name": "NewDoctor",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "_patient",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "doctorID",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "_pid",
+				"type": "address"
+			}
+		],
+		"name": "NewPrescription",
+		"type": "event"
+	}
+]
