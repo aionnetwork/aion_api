@@ -31,6 +31,7 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.math.BigInteger;
 import org.aion.api.ITx;
+import org.aion.api.IUtils;
 import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.impl.internal.Message;
 import org.aion.api.impl.internal.Message.Funcs;
@@ -45,6 +46,7 @@ import org.aion.base.type.Address;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
 import org.aion.base.util.ByteUtil;
+import org.aion.base.util.Hex;
 import org.aion.crypto.ECKey;
 import org.aion.crypto.ECKeyFac;
 import org.slf4j.Logger;
@@ -624,10 +626,21 @@ public final class Tx implements ITx {
     }
 
     public ApiMsg estimateNrg(String code) {
+
+        if (code.contains("0x") || code.contains("0X")) {
+            code = code.substring(2);
+        }
+
+        byte[] byteCode = Hex.decode(code);
+        if (byteCode == null) {
+            return new ApiMsg(-17);
+        }
+
         TxArgs txArgs = new TxArgsBuilder()
-            .data(ByteArrayWrapper.wrap(code.getBytes()))
-            .from(apiInst.defaultAccount)
-            .value(BigInteger.ZERO)
+            .data(ByteArrayWrapper.wrap(byteCode))
+            .from(apiInst.defaultAccount.equals(Address.EMPTY_ADDRESS()) ? Address
+                .wrap("0xa000000000000000000000000000000000000000000000000000000000000000")
+                : apiInst.defaultAccount)
             .createTxArgs();
 
         return estimateNrg(txArgs);

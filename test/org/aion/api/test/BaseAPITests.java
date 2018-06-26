@@ -1921,4 +1921,23 @@ public class BaseAPITests {
 
         api.destroyApi();
     }
+
+    @Test
+    public void TestContractEstimateNrg() {
+        System.out.println("run TestContractEstimateNrg.");
+
+        IAionAPI api = IAionAPI.init();
+        api.connect(url);
+
+        // compile code
+        String key = "ticker";
+        Map<String, CompileResponse> result = api.getTx()
+            .compile("contract ticker { uint public val; function tick () { val+= 1; } }").getObject();
+        CompileResponse contract = result.get(key);
+
+        // get NRG estimate
+        long estimate = api.getTx().estimateNrg(contract.getCode()).getObject();
+        assertEquals(estimate, 233661);
+        api.destroyApi();
+    }
 }
