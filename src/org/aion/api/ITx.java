@@ -166,6 +166,15 @@ public interface ITx {
     ApiMsg getSolcVersion();
 
     /**
+     * Retrieves the compiled code for a given contract with checking latest block.
+     *
+     * @param address the class {@link Address Address} represent the deployed contract address.
+     * @return the variable bytes array of the compiled code wrapped into ApiMsg. You can retrieve
+     * through {@link ApiMsg#getObject() getObject}.
+     */
+    ApiMsg getCode(Address address);
+
+    /**
      * Retrieves the compiled code for a given contract.
      *
      * @param address the class {@link Address Address} represent the deployed contract address.

@@ -522,6 +522,10 @@ public final class Tx implements ITx {
         }
     }
 
+    public ApiMsg getCode(Address address) {
+        return getCode(address, -1L);
+    }
+
     public ApiMsg getCode(Address address, long blockNumber) {
         if (!this.apiInst.isConnected()) {
             return new ApiMsg(-1003);

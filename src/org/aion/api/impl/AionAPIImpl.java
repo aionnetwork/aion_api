@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,20 +19,27 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
+ */
+
 
 package org.aion.api.impl;
 
-import java.util.Objects;
-import org.aion.api.*;
-
 import java.util.Optional;
+import org.aion.api.IAccount;
+import org.aion.api.IAdmin;
+import org.aion.api.IAionAPI;
+import org.aion.api.IChain;
+import org.aion.api.IContractController;
+import org.aion.api.IMine;
+import org.aion.api.INet;
+import org.aion.api.ITx;
+import org.aion.api.IUtils;
+import org.aion.api.IWallet;
 import org.aion.api.type.ApiMsg;
 
 /**
- * Nucoapi base class, contains the majority of Nuco frontend Java APIs. High chance of finding what
- * you're looking for here, unless it is related to contract transactions. Nucoapij provides a
+ * Nucoapi base class, contains the majority of Aion frontend Java APIs. High chance of finding what
+ * you're looking for here, unless it is related to contract transactions. AionAPI provides a
  * static method that returns an instance. All API functionality requires the user to connect to the
  * backend utilizing {@link #connect(String)}.
  *
