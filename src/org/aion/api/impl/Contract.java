@@ -496,7 +496,7 @@ public final class Contract implements IContract {
      */
     @Override
     public Hash256 getDeployTxId() {
-        return null;
+        return this.deployTxId;
     }
 
     /**
