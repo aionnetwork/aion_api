@@ -23,39 +23,45 @@
 
 package org.aion.api.test;
 
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertTrue;
+import static org.aion.api.ITx.NRG_LIMIT_CONTRACT_CREATE_MAX;
+import static org.aion.api.ITx.NRG_LIMIT_TX_MAX;
+import static org.aion.api.ITx.NRG_PRICE_MIN;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.aion.api.IAionAPI;
 import org.aion.api.IContract;
 import org.aion.api.ITx;
 import org.aion.api.IUtils;
 import org.aion.api.impl.AionAPIImpl;
-import org.aion.api.sol.*;
+import org.aion.api.sol.IAddress;
+import org.aion.api.sol.IBool;
+import org.aion.api.sol.IBytes;
+import org.aion.api.sol.IDynamicBytes;
+import org.aion.api.sol.ISString;
+import org.aion.api.sol.ISolidityArg;
+import org.aion.api.sol.IUint;
 import org.aion.api.type.ApiMsg;
-import org.aion.api.type.CompileResponse;
-import org.aion.api.type.ContractAbiEntry;
 import org.aion.api.type.ContractResponse;
 import org.aion.base.type.Address;
 import org.aion.base.util.ByteArrayWrapper;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertTrue;
-import static org.aion.api.ITx.NRG_LIMIT_CONTRACT_CREATE_MAX;
-import static org.aion.api.ITx.NRG_LIMIT_TX_MAX;
-import static org.aion.api.ITx.NRG_PRICE_MIN;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
 
 public class ContractTests {
 
@@ -1000,5 +1006,350 @@ public class ContractTests {
         assertNotNull(ct);
 
         System.out.println("Contract deployed!");
+    }
+
+    @Test
+    public void tokenTest() {
+        connectAPI();
+
+        ApiMsg apiMsg = api.getWallet().getAccounts();
+        assertFalse(apiMsg.isError());
+        List accs = apiMsg.getObject();
+        assertNotNull(accs);
+
+        if (accs.size() < 2) {
+            System.out.println("this test need 2 accounts, skip this test!");
+            return;
+        }
+
+        Address acc = (Address) accs.get(0);
+        Address acc2 = (Address) accs.get(1);
+
+        if (!isEnoughBalance(acc)) {
+            System.out.println("balance of the account is not enough, skip this test!");
+            return;
+        }
+
+        apiMsg = api.getWallet().unlockAccount(acc, pw, 300);
+        assertFalse(apiMsg.isError());
+        assertTrue(apiMsg.getObject());
+        System.out.println("Account unlocked!");
+        System.out.println();
+
+        String token = readFile("token.sol");
+
+        ArrayList<ISolidityArg> param = new ArrayList<>();
+        param.add(IUint.copyFrom(100000));
+        param.add(ISString.copyFrom("Aion Token"));
+        param.add(IUint.copyFrom(10));
+        param.add(ISString.copyFrom("AION"));
+
+        apiMsg = api.getContractController()
+            .createFromSource(token, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN, param);
+        assertFalse(apiMsg.isError());
+
+        IContract contract = api.getContractController().getContract();
+
+        //Check initial default account balance
+        apiMsg = contract.newFunction("balanceOf")
+            .setFrom(acc)
+            .setParam(IAddress.copyFrom(acc.toString()))
+            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+            .setTxNrgPrice(NRG_PRICE_MIN)
+            .build()
+            .execute();
+        assertFalse(apiMsg.isError());
+
+        ContractResponse cr = apiMsg.getObject();
+        assertNotNull(cr);
+        assertNotNull(cr.getData());
+
+        for (Object a : cr.getData()) {
+            System.out.println("balanceOf " + acc.toString() + ": " + a.toString());
+            assertThat(a.toString(), is(equalTo("100000")));
+        }
+
+        //Transfer balance to another account
+        apiMsg = contract.newFunction("transfer")
+            .setParam(IAddress.copyFrom(acc2.toString()))
+            .setParam(IUint.copyFrom(1))
+            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+            .setTxNrgPrice(NRG_PRICE_MIN)
+            .build()
+            .execute();
+        assertFalse(apiMsg.isError());
+
+        cr = apiMsg.getObject();
+        assertNotNull(cr);
+
+        //Check account2's balance
+        apiMsg = contract.newFunction("balanceOf")
+            .setParam(IAddress.copyFrom(acc2.toString()))
+            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+            .setTxNrgPrice(NRG_PRICE_MIN)
+            .build()
+            .execute();
+        assertFalse(apiMsg.isError());
+
+        cr = apiMsg.getObject();
+        assertNotNull(cr);
+        assertNotNull(cr.getData());
+
+        for (Object a : cr.getData()) {
+            System.out.println("new balanceOf " + acc2.toString() + ": " + a.toString());
+            assertThat(a.toString(), is(equalTo("1")));
+        }
+
+        //Check account1's balance
+        apiMsg = contract.newFunction("balanceOf")
+            .setParam(IAddress.copyFrom(acc.toString()))
+            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+            .setTxNrgPrice(NRG_PRICE_MIN)
+            .build()
+            .execute();
+        assertFalse(apiMsg.isError());
+
+        cr = apiMsg.getObject();
+        assertNotNull(cr);
+
+        for (Object a : cr.getData()) {
+            System.out.println("new balanceOf " + acc.toString() + ": " + a.toString());
+            assertThat(a.toString(), is(equalTo("99999")));
+        }
+
+        api.destroyApi();
+    }
+
+    @Test
+    public void testRevertOperation() {
+        connectAPI();
+
+        ApiMsg apiMsg = api.getWallet().getAccounts();
+        assertFalse(apiMsg.isError());
+        List accs = apiMsg.getObject();
+        assertNotNull(accs);
+
+        if (accs.isEmpty()) {
+            System.out.println("Empty account, skip this test!");
+            return;
+        }
+
+        Address acc = (Address) accs.get(0);
+        if (!isEnoughBalance(acc)) {
+            System.out.println("balance of the account is not enough, skip this test!");
+            return;
+        }
+
+        apiMsg = api.getWallet().unlockAccount(acc, pw, 300);
+        assertFalse(apiMsg.isError());
+        assertTrue(apiMsg.getObject());
+        System.out.println("Account unlocked!");
+        System.out.println();
+        /* deploy contract */
+        String contract = readFile("revert.sol");
+
+        apiMsg = api.getContractController()
+            .createFromSource(contract, acc, NRG_LIMIT_CONTRACT_CREATE_MAX,
+                NRG_PRICE_MIN);
+        assertFalse(apiMsg.isError());
+
+        IContract ct = api.getContractController().getContract();
+        assertNotNull(ct);
+        assertNotNull(ct.getContractAddress());
+        System.out.println("Contract Address: " + ct.getContractAddress().toString());
+
+        /* getData */
+        apiMsg = ct.newFunction("getData")
+            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+            .setTxNrgPrice(NRG_PRICE_MIN)
+            .build()
+            .execute();
+        assertFalse(apiMsg.isError());
+
+        ContractResponse rsp = apiMsg.getObject();
+        assertNotNull(rsp);
+        assertNotNull(rsp.getData());
+        assertThat(rsp.getData().get(0), is(equalTo(3L)));
+
+        /* setData and getData */
+        apiMsg = ct.newFunction("setData")
+            .setParam(IUint.copyFrom(5L))
+            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+            .setTxNrgPrice(NRG_PRICE_MIN)
+            .build()
+            .execute();
+        assertFalse(apiMsg.isError());
+
+        rsp = apiMsg.getObject();
+        assertNotNull(rsp);
+
+        apiMsg = ct.newFunction("getData")
+            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+            .setTxNrgPrice(NRG_PRICE_MIN)
+            .build()
+            .execute();
+        assertFalse(apiMsg.isError());
+
+        rsp = apiMsg.getObject();
+        assertNotNull(rsp);
+        assertNotNull(rsp.getData());
+
+        assertThat(rsp.getData().get(0), is(equalTo(5L)));
+
+        /* setData2 and getData */
+        apiMsg = ct.newFunction("setData2")
+            .setParam(IUint.copyFrom(7L))
+            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+            .setTxNrgPrice(NRG_PRICE_MIN)
+            .build()
+            .execute();
+        assertFalse(apiMsg.isError());
+
+        rsp = apiMsg.getObject();
+        assertNotNull(rsp);
+        assertNotNull(rsp.getData());
+
+        apiMsg = ct.newFunction("getData")
+            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+            .setTxNrgPrice(NRG_PRICE_MIN)
+            .build()
+            .execute();
+        assertFalse(apiMsg.isError());
+
+        rsp = apiMsg.getObject();
+        assertNotNull(rsp);
+        assertNotNull(rsp.getData());
+
+        assertThat(rsp.getData().get(0), is(equalTo(5L)));
+
+        api.destroyApi();
+    }
+
+    @Test
+    public void testTickerOperation() {
+        connectAPI();
+
+        ApiMsg apiMsg = api.getWallet().getAccounts();
+        assertFalse(apiMsg.isError());
+        List accs = apiMsg.getObject();
+        assertNotNull(accs);
+
+        if (accs.isEmpty()) {
+            System.out.println("Empty account, skip this test!");
+            return;
+        }
+
+        Address acc = (Address) accs.get(0);
+        if (!isEnoughBalance(acc)) {
+            System.out.println("balance of the account is not enough, skip this test!");
+            return;
+        }
+
+        apiMsg = api.getWallet().unlockAccount(acc, pw, 300);
+        assertFalse(apiMsg.isError());
+        assertTrue(apiMsg.getObject());
+        System.out.println("Account unlocked!");
+        System.out.println();
+        /* deploy contract */
+        String contract = readFile("ticker4.sol");
+
+        apiMsg = api.getContractController()
+            .createFromSource(contract, acc, NRG_LIMIT_CONTRACT_CREATE_MAX,
+                NRG_PRICE_MIN);
+        assertFalse(apiMsg.isError());
+
+        IContract ct = api.getContractController().getContract();
+        assertNotNull(ct);
+        assertNotNull(ct.getContractAddress());
+        System.out.println("Contract Address: " + ct.getContractAddress().toString());
+
+        /* getData */
+        apiMsg = ct.newFunction("getData")
+            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+            .setTxNrgPrice(NRG_PRICE_MIN)
+            .build()
+            .execute();
+        assertFalse(apiMsg.isError());
+
+        ContractResponse rsp = apiMsg.getObject();
+        assertNotNull(rsp);
+        assertNotNull(rsp.getData());
+        assertThat(rsp.getData().get(0), is(equalTo(1L)));
+
+        /* setData and getData */
+        apiMsg = ct.newFunction("tick")
+            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+            .setTxNrgPrice(NRG_PRICE_MIN)
+            .build()
+            .execute();
+        assertFalse(apiMsg.isError());
+
+        apiMsg = ct.newFunction("getData")
+            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+            .setTxNrgPrice(NRG_PRICE_MIN)
+            .build()
+            .execute();
+        assertFalse(apiMsg.isError());
+
+        rsp = apiMsg.getObject();
+        assertNotNull(rsp);
+        assertNotNull(rsp.getData());
+        assertThat(rsp.getData().get(0), is(equalTo(2L)));
+
+        for (int i = 0; i < 2; i++) {
+            apiMsg = ct.newFunction("tick")
+                .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                .setTxNrgPrice(NRG_PRICE_MIN)
+                .build()
+                .execute();
+            assertFalse(apiMsg.isError());
+        }
+
+        apiMsg = ct.newFunction("getData")
+            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+            .setTxNrgPrice(NRG_PRICE_MIN)
+            .build()
+            .execute();
+        assertFalse(apiMsg.isError());
+
+        rsp = apiMsg.getObject();
+        assertNotNull(rsp);
+        assertNotNull(rsp.getData());
+        assertThat(rsp.getData().get(0), is(equalTo(4L)));
+
+        // need to register event to the kernel
+//        List<ContractEvent> ce = ct.getEvents();
+//        assertThat(ce.size(), is(equalTo(3)));
+
+        //TODO: test ContractEventFilter
+        //ContractEventFilter.ContractEventFilterBuilder builder = new ContractEventFilter.ContractEventFilterBuilder()
+        //        .fromBlock("latest")
+        //        .toBlock("10")
+        //        .topics(new ArrayList())
+        //        .expireTime(0)
+        //        .addresses(new ArrayList());
+
+        //msg = ct.queryEvents(builder.createContractEventFilter());
+        //if (msg.isError()) {
+        //    throw new Exception();
+        //}
+        //
+        //List<ContractEvent> cts = msg.getObject();
+        //assertThat(cts.size(), is(equalTo(4)));
+        //
+        //List<String> topics = new ArrayList();
+        //topics.add("Ti");
+        //
+        //builder.topics(topics);
+        //
+        //msg = ct.queryEvents(builder.createContractEventFilter());
+        //if (msg.isError()) {
+        //    throw new Exception();
+        //}
+        //
+        //cts = msg.getObject();
+        //assertThat(cts.size(), is(equalTo(1)));
+
+        api.destroyApi();
     }
 }
