@@ -48,6 +48,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Scanner;
 import java.util.stream.IntStream;
 import org.aion.api.IAccount;
 import org.aion.api.IAionAPI;
@@ -96,6 +97,18 @@ public class BaseAPITests {
     private static final String VAL = "val";
     private static final String FUNCTION = "function";
     private static final IAionAPI api = IAionAPI.init();
+
+    private static String readFile(String fileName) {
+        StringBuilder contract = new StringBuilder();
+        Scanner s = new Scanner(ContractTests.class.getResourceAsStream("./contract/" + fileName));
+        while (s.hasNextLine()) {
+            contract.append(s.nextLine());
+            contract.append("\n");
+        }
+        s.close();
+
+        return contract.toString();
+    }
 
     @Test public void TestApiConnect() {
         System.out.println("run TestApiConnect.");
@@ -2500,6 +2513,82 @@ public class BaseAPITests {
 
         long estimate = apiMsg.getObject();
         assertEquals(estimate, 233661);
+        api.destroyApi();
+    }
+
+    @Test
+    public void TestGetStorageAt() {
+        System.out.println("run TestGetStorageAt.");
+
+        connectAPI();
+
+        ApiMsg apiMsg = api.getWallet().getAccounts();
+        assertFalse(apiMsg.isError());
+
+        List<Address> accs = apiMsg.getObject();
+        assertNotNull(accs);
+
+        if (accs.isEmpty()) {
+            System.out.println("Empty account, skip this test!");
+            return;
+        }
+
+        if (!isEnoughBalance(accs.get(0))) {
+            System.out.println("balance of the account is not enough, skip this test!");
+            return;
+        }
+
+        apiMsg = api.getWallet().unlockAccount(accs.get(0), pw, 300);
+        assertFalse(apiMsg.isError());
+        assertTrue(apiMsg.getObject());
+
+        apiMsg = api.getTx().compile(TICKER);
+        assertFalse(apiMsg.isError());
+
+        Map<String, CompileResponse> contracts = apiMsg.getObject();
+        assertNotNull(contracts);
+
+        String key = "ticker";
+        assertTrue(contracts.containsKey(key));
+
+        List<ContractAbiEntry> abiDef = contracts.get(key).getAbiDefinition();
+        assertNotNull(abiDef);
+
+        assertEquals(2, abiDef.size());
+        assertFalse(abiDef.get(0).anonymous);
+        assertFalse(abiDef.get(0).payable);
+        assertTrue(abiDef.get(0).constant);
+
+        assertTrue(abiDef.get(0).name.contentEquals(VAL));
+        assertTrue(abiDef.get(0).type.contentEquals(FUNCTION));
+
+        assertTrue(contracts.get(key).getSource().contentEquals(TICKER));
+
+        long ts = Instant.now().toEpochMilli() * 1000;
+        CompileResponse contract = contracts.get(key);
+
+        ContractDeploy.ContractDeployBuilder builder = new ContractDeploy.ContractDeployBuilder()
+            .compileResponse(contract)
+            .from(accs.get(0))
+            .data(ByteArrayWrapper.wrap(Bytesable.NULL_BYTE))
+            .nrgLimit(NRG_LIMIT_TX_MAX)
+            .nrgPrice(NRG_PRICE_MIN)
+            .value(BigInteger.ZERO);
+
+        apiMsg = api.getTx().contractDeploy(builder.createContractDeploy());
+        assertFalse(apiMsg.isError());
+
+        DeployResponse contractResponse = apiMsg.getObject();
+        assertNotNull(contractResponse);
+        assertNotNull(contractResponse.getAddress());
+        assertNotNull(contractResponse.getTxid());
+
+        apiMsg = api.getChain().getStorageAt(contractResponse.getAddress(), 0);
+        assertFalse(apiMsg.isError());
+
+        String storage = apiMsg.getObject();
+        assertNotNull(storage);
+
         api.destroyApi();
     }
 }
