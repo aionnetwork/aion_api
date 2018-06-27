@@ -37,19 +37,22 @@ public final class SyncInfo {
     private final long networkBestBlock;
     private final long chainBestBlock;
     private final long maxImportBlocks;
+    private final long startingBlock;
 
     public SyncInfo(boolean syncing, long networkBestBlock, long chainBestBlock,
-        long maxImportBlocks) {
-        if (networkBestBlock < 0 || chainBestBlock < 0 || maxImportBlocks < 1) {
+        long maxImportBlocks, long startingBlock) {
+        if (networkBestBlock < 0 || chainBestBlock < 0 || startingBlock < 0 || maxImportBlocks < 1) {
             throw new IllegalArgumentException("networkBestBlock#" + networkBestBlock +
                 " chainBestBlock#" + chainBestBlock +
-                " maxImportBlocks#" + maxImportBlocks);
+                " maxImportBlocks#" + maxImportBlocks +
+                " startingBlock#" + startingBlock);
         }
 
         this.syncing = syncing;
         this.networkBestBlock = networkBestBlock;
         this.chainBestBlock = chainBestBlock;
         this.maxImportBlocks = maxImportBlocks;
+        this.startingBlock = startingBlock;
     }
 
     public boolean isSyncing() {
@@ -67,4 +70,9 @@ public final class SyncInfo {
     public long getMaxImportBlocks() {
         return maxImportBlocks;
     }
+
+    public long getStartingBlock() {
+        return startingBlock;
+    }
+
 }

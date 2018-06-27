@@ -76,4 +76,19 @@ public interface INet {
      */
     ApiMsg getStaticNodes();
 
+    /**
+     * Returns a boolean value if the client is actively listening for network connections.
+     *
+     * @return the boolean value wrapped into ApiMsg. You can retrieve through this method {@link
+     * ApiMsg#getObject() getObject}.
+     */
+    ApiMsg isListening();
+
+    /**
+     * Returns a int value the connecting peers number of the connecting kernel.
+     *
+     * @return the int value wrapped into ApiMsg. You can retrieve through this method {@link
+     * ApiMsg#getObject() getObject}.
+     */
+    ApiMsg getPeerCounts();
 }

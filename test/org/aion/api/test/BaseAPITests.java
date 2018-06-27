@@ -110,7 +110,8 @@ public class BaseAPITests {
         return contract.toString();
     }
 
-    @Test public void TestApiConnect() {
+    @Test
+    public void TestApiConnect() {
         System.out.println("run TestApiConnect.");
         connectAPI();
 
@@ -1672,6 +1673,8 @@ public class BaseAPITests {
         assertTrue(info.getChainBestBlock() > -1L);
         assertTrue(info.getNetworkBestBlock() > -1L);
         assertTrue(info.getMaxImportBlocks() > 0L);
+        assertTrue(info.getStartingBlock() > 0L);
+
         System.out.println("Is Syncing:" + (info.isSyncing() ? "true" : "false"));
 
         api.destroyApi();
@@ -2588,6 +2591,40 @@ public class BaseAPITests {
 
         String storage = apiMsg.getObject();
         assertNotNull(storage);
+
+        api.destroyApi();
+    }
+
+    @Test
+    public void TestIsListening() {
+        System.out.println("run TestIsListening.");
+
+        connectAPI();
+
+        ApiMsg apiMsg = api.getNet().isListening();
+        assertFalse(apiMsg.isError());
+
+        boolean listening = apiMsg.getObject();
+
+        // currently, the kernel is always listening for peers and is active
+        assertTrue(listening);
+
+        api.destroyApi();
+    }
+
+    @Test
+    public void TestGetPeerCounts() {
+        System.out.println("run TestGetPeerCounts.");
+
+        connectAPI();
+
+        ApiMsg apiMsg = api.getNet().getPeerCounts();
+        assertFalse(apiMsg.isError());
+
+        int peers = apiMsg.getObject();
+
+        //assume you are running a standalone
+        assertEquals(0, peers);
 
         api.destroyApi();
     }
