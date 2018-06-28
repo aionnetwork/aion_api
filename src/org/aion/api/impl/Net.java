@@ -228,7 +228,7 @@ public class Net implements INet {
         }
     }
 
-    public ApiMsg getPeerCounts() {
+    public ApiMsg getPeerCount() {
         if (!this.apiInst.isConnected()) {
             return new ApiMsg(-1003);
         }
@@ -246,7 +246,7 @@ public class Net implements INet {
             return new ApiMsg(1, Message.rsp_peerCount.parseFrom(ApiUtils.parseBody(rsp).getData()).getPeers(), cast.INT);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[getPeerCounts] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
+                LOGGER.error("[getPeerCount] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
             }
             return new ApiMsg(-104);
         }

@@ -49,9 +49,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Scanner;
-import java.util.stream.IntStream;
 import org.aion.api.IAccount;
 import org.aion.api.IAionAPI;
+import org.aion.api.IContract;
 import org.aion.api.ITx;
 import org.aion.api.IUtils;
 import org.aion.api.impl.internal.Message.Retcode;
@@ -63,6 +63,7 @@ import org.aion.api.type.BlockSql;
 import org.aion.api.type.CompileResponse;
 import org.aion.api.type.ContractAbiEntry;
 import org.aion.api.type.ContractDeploy;
+import org.aion.api.type.ContractResponse;
 import org.aion.api.type.DeployResponse;
 import org.aion.api.type.Key;
 import org.aion.api.type.KeyExport;
@@ -1493,6 +1494,66 @@ public class BaseAPITests {
         api.destroyApi();
     }
 
+    @Test
+    public void TestCallbyContract() {
+        System.out.println("run TestCallbyContract.");
+
+        connectAPI();
+
+        ApiMsg apiMsg = api.getWallet().getAccounts();
+        assertFalse(apiMsg.isError());
+
+        List<Address> accs = apiMsg.getObject();
+        assertNotNull(accs);
+
+        if (accs.isEmpty()) {
+            System.out.println("Empty account, skip this test!");
+            return;
+        }
+
+        if (!isEnoughBalance(accs.get(0))) {
+            System.out.println("balance of the account is not enough, skip this test!");
+            return;
+        }
+
+        Address acc = accs.get(0);
+        apiMsg = api.getWallet().unlockAccount(acc, pw, 300);
+        assertFalse(apiMsg.isError());
+        assertTrue(apiMsg.getObject());
+
+        apiMsg = api.getContractController()
+            .createFromSource(TICKER, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
+        assertFalse(apiMsg.isError());
+
+        IContract ct = api.getContractController().getContract();
+        assertNotNull(ct);
+        assertEquals(ct.getFrom(), acc);
+        assertNotNull(ct.getContractAddress());
+
+        apiMsg = ct.newFunction("val").build().call();
+        assertFalse(apiMsg.isError());
+
+        ContractResponse cr = apiMsg.getObject();
+        assertNotNull(cr);
+        assertNotNull(cr.getData());
+        assertEquals(0L, (long) cr.getData().get(0));
+
+        apiMsg = ct.newFunction("tick").setTxNrgPrice(NRG_PRICE_MIN).setTxNrgLimit(NRG_LIMIT_TX_MAX)
+            .build().execute();
+        assertFalse(apiMsg.isError());
+
+        apiMsg = ct.newFunction("val").build().call();
+        assertFalse(apiMsg.isError());
+
+        cr = apiMsg.getObject();
+        assertNotNull(cr);
+        assertNotNull(cr.getData());
+        assertEquals(1L, (long) cr.getData().get(0));
+
+        api.destroyApi();
+    }
+
+
     private void connectAPI() {
         ApiMsg apiMsg = api.connect(url);
         assertFalse(apiMsg.isError());
@@ -2613,12 +2674,12 @@ public class BaseAPITests {
     }
 
     @Test
-    public void TestGetPeerCounts() {
-        System.out.println("run TestGetPeerCounts.");
+    public void TestGetPeerCount() {
+        System.out.println("run TestGetPeerCount.");
 
         connectAPI();
 
-        ApiMsg apiMsg = api.getNet().getPeerCounts();
+        ApiMsg apiMsg = api.getNet().getPeerCount();
         assertFalse(apiMsg.isError());
 
         int peers = apiMsg.getObject();

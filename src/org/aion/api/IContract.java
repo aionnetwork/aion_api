@@ -164,6 +164,15 @@ public interface IContract {
     IContract build();
 
     /**
+     * Executes the built transaction in the VM of the connection kernel for evaluating the execution
+     * result. Refer to {@link #newFunction(String)} for function use.
+     *
+     * @return the class {@link ContractResponse} containing all relevant information wrapped by the
+     * class {@link ApiMsg ApiMsg}.
+     */
+    ApiMsg call();
+
+    /**
      * Executes the built transaction. Refer to {@link #newFunction(String)} for function use.
      *
      * @return the class {@link ContractResponse} containing all relevant information wrapped by the

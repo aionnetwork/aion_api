@@ -90,5 +90,5 @@ public interface INet {
      * @return the int value wrapped into ApiMsg. You can retrieve through this method {@link
      * ApiMsg#getObject() getObject}.
      */
-    ApiMsg getPeerCounts();
+    ApiMsg getPeerCount();
 }
