@@ -31,27 +31,32 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.math.BigInteger;
 import org.aion.api.ITx;
+import org.aion.api.IUtils;
 import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.impl.internal.Message;
 import org.aion.api.impl.internal.Message.Funcs;
-import org.aion.api.impl.internal.Message.Retcode;
 import org.aion.api.impl.internal.Message.Servs;
 import org.aion.api.log.AionLoggerFactory;
 import org.aion.api.log.LogEnum;
 import org.aion.api.type.*;
 import org.aion.api.type.ApiMsg.cast;
+import org.aion.api.type.TxArgs.TxArgsBuilder;
 import org.aion.api.type.core.tx.AionTransaction;
 import org.aion.base.type.Address;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
 import org.aion.base.util.ByteUtil;
+import org.aion.base.util.Hex;
 import org.aion.crypto.ECKey;
 import org.aion.crypto.ECKeyFac;
 import org.slf4j.Logger;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Jay Tseng on 15/11/16.
@@ -86,7 +91,8 @@ public final class Tx implements ITx {
             : cd.getCompileResponse().getCode().getBytes();
 
         Message.req_contractDeploy reqBody = Message.req_contractDeploy.newBuilder()
-            .setFrom(ByteString.copyFrom(cd.getFrom().toBytes()))
+            .setFrom(ByteString.copyFrom(
+                cd.getFrom() == null ? apiInst.defaultAccount.toBytes() : cd.getFrom().toBytes()))
             .setNrgLimit(cd.getNrgLimit())
             .setNrgPrice(cd.getNrgPrice())
             .setData(ByteString.copyFrom(code))
@@ -132,7 +138,8 @@ public final class Tx implements ITx {
 
         Message.req_call reqBody = Message.req_call.newBuilder()
             .setData(ByteString.copyFrom(args.getData().toBytes()))
-            .setFrom(ByteString.copyFrom(args.getFrom().toBytes()))
+            .setFrom(ByteString.copyFrom(args.getFrom() == null ? apiInst.defaultAccount.toBytes()
+                : args.getFrom().toBytes()))
             .setTo(ByteString.copyFrom(args.getTo().toBytes()))
             .setNrg(args.getNrgLimit())
             .setNrgPrice(args.getNrgPrice())
@@ -237,7 +244,9 @@ public final class Tx implements ITx {
                     Message.Funcs.f_sendTransaction, ByteArrayWrapper.wrap(hash));
 
             Message.req_sendTransaction reqBody = Message.req_sendTransaction.newBuilder()
-                .setFrom(ByteString.copyFrom(args.getFrom().toBytes()))
+                .setFrom(ByteString.copyFrom(
+                    args.getFrom() == null ? apiInst.defaultAccount.toBytes()
+                        : args.getFrom().toBytes()))
                 .setTo(ByteString.copyFrom(args.getTo().toBytes()))
                 .setData(ByteString.copyFrom(args.getData().toBytes()))
                 .setNonce(ByteString.copyFrom(args.getNonce().toByteArray()))
@@ -408,23 +417,6 @@ public final class Tx implements ITx {
 
         int val = this.apiInst.validRspHeader(rsp);
 
-//        if (val == Message.Retcode.r_fail_compile_contract_VALUE) {
-//            Map<String, Message.t_Contract> ctMap;
-//            try {
-//                ctMap = Message.rsp_compile.parseFrom(ApiUtils.parseBody(rsp)).getConstractsMap();
-//            } catch (InvalidProtocolBufferException e) {
-//                if (LOGGER.isErrorEnabled()) {
-//                    LOGGER.error("[compile] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
-//                }
-//                return apiMsg.set(-104, e.getMessage(), ApiMsg.cast.OTHERS);
-//            }
-//
-//            if (ctMap.containsKey("NucoCompileError")) {
-//                return apiMsg.set(val, ctMap.get("NucoCompileError").getError(), ApiMsg.cast.OTHERS);
-//            }
-//        } else
-        //
-
         if (val != 1) {
             return new ApiMsg(val);
         }
@@ -530,6 +522,10 @@ public final class Tx implements ITx {
         }
     }
 
+    public ApiMsg getCode(Address address) {
+        return getCode(address, -1L);
+    }
+
     public ApiMsg getCode(Address address, long blockNumber) {
         if (!this.apiInst.isConnected()) {
             return new ApiMsg(-1003);
@@ -587,7 +583,8 @@ public final class Tx implements ITx {
                 ByteArrayWrapper.wrap(ApiUtils.EMPTY_MSG_HASH));
 
         Message.req_sendTransaction reqBody = Message.req_sendTransaction.newBuilder()
-            .setFrom(ByteString.copyFrom(args.getFrom().toBytes()))
+            .setFrom(ByteString.copyFrom(args.getFrom() == null ? apiInst.defaultAccount.toBytes()
+                : args.getFrom().toBytes()))
             .setTo(ByteString.copyFrom(args.getTo().toBytes()))
             .setData(ByteString.copyFrom(args.getData().toBytes()))
             .setNonce(ByteString.copyFrom(args.getNonce().toByteArray()))
@@ -613,6 +610,27 @@ public final class Tx implements ITx {
     public Tx timeout(int t) {
         this.apiInst.timeout = (t < 300_000 ? 300_000 : t);
         return this;
+    }
+
+    public ApiMsg estimateNrg(String code) {
+
+        if (code.contains("0x") || code.contains("0X")) {
+            code = code.substring(2);
+        }
+
+        byte[] byteCode = Hex.decode(code);
+        if (byteCode == null) {
+            return new ApiMsg(-17);
+        }
+
+        TxArgs txArgs = new TxArgsBuilder()
+            .data(ByteArrayWrapper.wrap(byteCode))
+            .from(apiInst.defaultAccount.equals(Address.EMPTY_ADDRESS()) ? Address
+                .wrap("0xa000000000000000000000000000000000000000000000000000000000000000")
+                : apiInst.defaultAccount)
+            .createTxArgs();
+
+        return estimateNrg(txArgs);
     }
 
     public ApiMsg estimateNrg(TxArgs args) {
@@ -650,7 +668,9 @@ public final class Tx implements ITx {
                     Message.Funcs.f_estimateNrg);
 
             Message.req_estimateNrg reqBody = Message.req_estimateNrg.newBuilder()
-                .setFrom(ByteString.copyFrom(args.getFrom().toBytes()))
+                .setFrom(
+                    ByteString.copyFrom(args.getFrom() == null ? apiInst.defaultAccount.toBytes()
+                        : args.getFrom().toBytes()))
                 .setTo(ByteString.copyFrom(args.getTo().toBytes()))
                 .setData(ByteString.copyFrom(args.getData().toBytes()))
                 .setValue(ByteString.copyFrom(args.getValue().toByteArray()))
@@ -697,13 +717,12 @@ public final class Tx implements ITx {
         }
 
         List<ByteString> addrList = new ArrayList<>();
-        List<String> topics = new ArrayList<>();
 
         for (Address ad : ef.getAddresses()) {
             addrList.add(ByteString.copyFrom(ad.toBytes()));
         }
 
-        topics.addAll(ef.getTopics());
+        List<String> topics = new ArrayList<>(ef.getTopics());
 
         Message.t_FilterCt filter = Message.t_FilterCt.newBuilder()
             .addAllAddresses(addrList)
@@ -807,6 +826,10 @@ public final class Tx implements ITx {
             }
             return new ApiMsg(-104, e.getMessage(), cast.OTHERS);
         }
+    }
+
+    protected void reset() {
+        this.fastbuild = false;
     }
 
     //public ApiMsg queryEvents(ContractEventFilter ef, Address address) {

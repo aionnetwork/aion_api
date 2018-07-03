@@ -161,6 +161,47 @@ public final class BlockDetails {
         return blockTime;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder()
+            .append("logsBloom: ").append("0x").append(bloom.toString()).append(",\n")
+            .append("totalDifficulty: ").append(totalDifficulty.toString()).append(",\n")
+            .append("receiptsRoot: ").append("0x").append(receiptTxRoot.toString()).append(",\n")
+            .append("extraData: ").append("0x").append(extraData.toString()).append(",\n")
+            .append("nrgUsed: ").append(nrgConsumed).append(",\n")
+            .append("transactions: ").append("\n");
+
+        int cnt = txDetails.size();
+        for (TxDetails td : txDetails) {
+            sb.append("[").append("\n");
+            sb.append(td.toString(1));
+            sb.append("]");
+
+            if (--cnt > 0) {
+                sb.append(",");
+            }
+
+            sb.append("\n");
+        }
+
+        sb.append(",").append("\n");
+
+        sb.append("nonce: ").append("0x").append(nonce.toString()).append(",\n")
+            .append("miner: ").append("0x").append(minerAddress.toString()).append(",\n")
+            .append("difficulty: ").append(difficulty.toString()).append(",\n")
+            .append("number: ").append(number).append(",\n")
+            .append("nrgLimit: ").append(nrgLimit).append(",\n")
+            .append("solution: ").append("0x").append(solution.toString()).append(",\n")
+            .append("size: ").append(size).append(",\n")
+            .append("transactionsRoot: ").append("0x").append(txTrieRoot.toString()).append(",\n")
+            .append("stateRoot: ").append("0x").append(stateRoot.toString()).append(",\n")
+            .append("parentHash: ").append("0x").append(parentHash.toString()).append(",\n")
+            .append("hash: ").append("0x").append(hash.toString()).append(",\n")
+            .append("timeStamp: ").append(timestamp).append("\n");
+
+        return sb.toString();
+    }
+
     public static class BlockDetailsBuilder {
 
         private long number;
@@ -280,6 +321,7 @@ public final class BlockDetails {
             this.blockTime = blockTime;
             return this;
         }
+
 
         public BlockDetails createBlockDetails() {
 

@@ -82,6 +82,14 @@ public interface ITx {
     ApiMsg estimateNrg(TxArgs args);
 
     /**
+     * Estimates the Nrg required to execute contract deploy.
+     *
+     * @param code the class {@link java.lang.String String} of the source code to be compiled.
+     * @return amount of energy by long value required to execute the transaction.
+     */
+    ApiMsg estimateNrg(String code);
+
+    /**
      * Retrieves the transaction receipt given a transaction hash in the format of {@link TxReceipt
      * TxReceipt}.
      *
@@ -156,6 +164,15 @@ public interface ITx {
      * through the method {@link ApiMsg#getObject() getObject}.
      */
     ApiMsg getSolcVersion();
+
+    /**
+     * Retrieves the compiled code for a given contract with checking latest block.
+     *
+     * @param address the class {@link Address Address} represent the deployed contract address.
+     * @return the variable bytes array of the compiled code wrapped into ApiMsg. You can retrieve
+     * through {@link ApiMsg#getObject() getObject}.
+     */
+    ApiMsg getCode(Address address);
 
     /**
      * Retrieves the compiled code for a given contract.

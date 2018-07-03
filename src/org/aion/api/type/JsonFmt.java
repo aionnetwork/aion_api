@@ -26,6 +26,7 @@ package org.aion.api.type;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Internal type used in {@link org.aion.api.IContract#build() build}, not user facing.
@@ -55,6 +56,54 @@ public final class JsonFmt {
         type = "";
         inputs = new HashMap<>();
         outputs = new HashMap<>();
+    }
+
+    @Override
+    public String toString() {
+        return toString(0);
+    }
+
+    public String toString(int _lv) {
+        StringBuilder lv = new StringBuilder();
+        int level = _lv;
+        while (level-- > 0) {
+            lv.append("  ");
+        }
+
+        StringBuilder sb = new StringBuilder()
+            .append(lv).append("constant: ").append(String.valueOf(constant)).append(",\n")
+            .append(lv).append("name: ").append(name).append(",\n")
+            .append(lv).append("type: ").append(type).append(",\n")
+            .append(lv).append("inputs: ").append("\n");
+
+        int cnt = inputs.size();
+        for (Entry e : inputs.entrySet()) {
+            sb.append(lv).append("[").append("\n")
+                .append(lv).append(e.getKey()).append(",").append(e.getValue()).append("\n")
+                .append(lv).append("]");
+
+            if(--cnt > 0) {
+                sb.append(",");
+            }
+
+            sb.append("\n");
+        }
+
+        sb.append(lv).append("outputs: ").append("\n");
+        cnt = outputs.size();
+        for (Entry e : outputs.entrySet()) {
+            sb.append(lv).append("[").append("\n")
+                .append(lv).append(e.getKey()).append(",").append(e.getValue()).append("\n")
+                .append(lv).append("]");
+
+            if(--cnt > 0) {
+                sb.append(",");
+            }
+
+            sb.append("\n");
+        }
+
+        return sb.toString();
     }
 
     public boolean isConstant() {

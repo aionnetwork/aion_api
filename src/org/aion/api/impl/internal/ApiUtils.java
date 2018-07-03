@@ -643,4 +643,20 @@ public class ApiUtils {
 
         return rtn;
     }
+
+    public static String getOsName() {
+        String osName = System.getProperty("os.name");
+        if (osName.toLowerCase().contains("windows")) {
+            osName = "Windows";
+        } else if (osName.toLowerCase().contains("mac os x")) {
+            osName = "Darwin";
+        } else {
+            osName = osName.replaceAll("\\s+", "_");
+        }
+        return osName;
+    }
+
+    public static boolean isWindows() {
+        return getOsName().equals("Windows");
+    }
 }

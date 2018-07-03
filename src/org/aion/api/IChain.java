@@ -165,6 +165,29 @@ public interface IChain {
      */
     ApiMsg getTransactionByHash(Hash256 transactionHash);
 
+    /**
+     * Get the storage at a specific position of an address by current blockchain database status.
+     *
+     * @param address the class {@link Address Address} of the desired address to get the storage from.
+     * @param position the index position of the storage.
+     * @return the class {@link java.lang.String String} represent the hexString of the byte array
+     * wrapped into ApiMsg.
+     */
+    ApiMsg getStorageAt(Address address, int position);
+
+    /**
+     * Get the storage at a specific position of an address by giving blockNumber;
+     * Current kernel version doesn't support the query status by giving blockNumber. please use
+     * getStorageAt(Address address, int position) or giving the blockNumber = -1L.
+     *
+     * @param address the class {@link Address Address} of the desired address to get the storage from.
+     * @param position the index position of the storage.
+     * @param blockNumber the block number by long value of the desired block.
+     * @return the class {@link java.lang.String String} represent the hexString of the byte array
+     * wrapped into ApiMsg.
+     */
+    ApiMsg getStorageAt(Address address, int position, long blockNumber);
+
     ///**
     // * Returns the current miner hashrate.
     // * @version 0.9.10

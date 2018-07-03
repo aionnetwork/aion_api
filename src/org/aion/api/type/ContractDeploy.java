@@ -23,22 +23,24 @@
 
 package org.aion.api.type;
 
+import org.aion.api.ITx;
 import org.aion.base.type.Address;
 import org.aion.base.util.ByteArrayWrapper;
 
 import java.math.BigInteger;
+import org.aion.base.util.Bytesable;
 
 /**
- * The helper class for gather all of the deploy arguments to deploy the contract. Use the builder class to create this
- * helper class.
- *
- * @see org.aion.api.ITx#contractDeploy contractDeploy
- * @see org.aion.api.type.CompileResponse CompileResponse
+ * The helper class for gather all of the deploy arguments to deploy the contract. Use the builder
+ * class to create this helper class.
  *
  * @author Jay Tseng
+ * @see org.aion.api.ITx#contractDeploy contractDeploy
+ * @see org.aion.api.type.CompileResponse CompileResponse
  */
 
 public final class ContractDeploy {
+
     private final CompileResponse cr;
     private final Address from;
     private final boolean constructor;
@@ -85,7 +87,10 @@ public final class ContractDeploy {
         return constructor;
     }
 
+
+
     public static class ContractDeployBuilder {
+
         private CompileResponse cr;
         private Address from;
         private boolean constructor;
@@ -94,19 +99,34 @@ public final class ContractDeploy {
         private long nrgPrice;
         private BigInteger value;
 
-        public ContractDeployBuilder() {}
+        public ContractDeployBuilder() {
+        }
 
         public ContractDeploy createContractDeploy() {
-            if (cr == null || from == null || data == null || value == null) {
+            if (cr == null)  {
                 throw new NullPointerException(
-                        "CompileResponse#" + String.valueOf(cr) +
-                                " from#" + String.valueOf(from) +
-                                " data#" + String.valueOf(data) +
-                                " value#" + String.valueOf(value));
+                    "CompileResponse is null");
             }
 
-            if (nrgLimit < 0 || nrgPrice < 0) {
-                throw new IllegalArgumentException("nrgConsumed#" + nrgLimit + " nrgPrice#" + nrgPrice);
+            if (value == null) {
+                value = BigInteger.ZERO;
+            }
+
+            if (data == null) {
+                data = ByteArrayWrapper.wrap(Bytesable.NULL_BYTE);
+            }
+
+            if (nrgLimit == 0) {
+                nrgLimit = ITx.NRG_LIMIT_CONTRACT_CREATE_MAX;
+            }
+
+            if (nrgPrice == 0) {
+                nrgPrice = ITx.NRG_PRICE_MIN;
+            }
+
+            if (nrgLimit < ITx.NRG_LIMIT_TX_MIN || nrgPrice < ITx.NRG_PRICE_MIN) {
+                throw new IllegalArgumentException(
+                    "nrgConsumed#" + nrgLimit + " nrgPrice#" + nrgPrice);
             }
 
             return new ContractDeploy(this);

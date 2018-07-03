@@ -64,6 +64,8 @@ import org.aion.crypto.ECKey;
 import org.aion.crypto.ECKeyFac;
 import org.slf4j.Logger;
 
+import static org.zeromq.EmbeddedLibraryTools.getCurrentPlatformIdentifier;
+
 /**
  * Created by Jay Tseng on 19/04/17.
  */
@@ -348,12 +350,18 @@ public final class Account implements IAccount {
     }
 
     private static String create(String password, ECKey key) {
-        Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rwxr-----");
-        FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions.asFileAttribute(perms);
 
+        boolean isWindows = ApiUtils.isWindows();
+
+        FileAttribute<Set<PosixFilePermission>> attr = null;
         if (!Files.exists(PATH)) {
             try {
-                Files.createDirectory(PATH, attr);
+                if (isWindows) {
+                    Files.createDirectory(PATH);
+                } else {
+                    Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rwxr-----");
+                    attr = PosixFilePermissions.asFileAttribute(perms);
+                }
             } catch (IOException e) {
                 LOGGER.error("keystore folder create failed!");
                 return "";
@@ -365,14 +373,18 @@ public final class Account implements IAccount {
             return ADDR_PREFIX;
         } else {
             byte[] content = new KeystoreFormat().toKeystore(key, password);
-            DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            DateFormat df = new SimpleDateFormat(isWindows ? "yyyy-MM-dd'T'HH-mm-ss.SSS'Z'" : "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
             df.setTimeZone(TimeZone.getTimeZone("UTC"));
             String iso_date = df.format(new Date(System.currentTimeMillis()));
             String fileName = "UTC--" + iso_date + "--" + address;
             try {
                 Path keyFile = PATH.resolve(fileName);
                 if (!Files.exists(keyFile)) {
-                    keyFile = Files.createFile(keyFile, attr);
+                    if (isWindows) {
+                        keyFile = Files.createFile(keyFile);
+                    } else {
+                        keyFile = Files.createFile(keyFile, attr);
+                    }
                 }
                 String path = keyFile.toString();
                 FileOutputStream fos = new FileOutputStream(path);

@@ -100,6 +100,36 @@ public final class TxReceipt {
         return txLogs;
     }
 
+    @Override
+    public String toString() {
+
+        StringBuilder sb = new StringBuilder()
+            .append("txIndex: ").append(txIndex).append(",\n")
+            .append("blockNumber: ").append(blockNumber).append(",\n")
+            .append("nrg: ").append(nrgConsumed).append(",\n")
+            .append("nrgCumulativeUsed: ").append(cumulativeNrgUsed).append(",\n")
+            .append("blockHash: ").append("0x").append(blockHash.toString()).append(",\n")
+            .append("txHash: ").append("0x").append(txHash.toString()).append(",\n")
+            .append("from: ").append("0x").append(from.toString()).append(",\n")
+            .append("to: ").append("0x").append(to.toString()).append(",\n")
+            .append("contractAddress: ").append(contractAddress.toString()).append(",\n")
+            .append("log: ").append("\n");
+
+        int cnt = txLogs.size();
+        for (TxLog tl : txLogs) {
+            sb.append("[").append("\n");
+            sb.append(tl.toString(1));
+            sb.append("]");
+
+            if (--cnt > 0) {
+                sb.append(",");
+            }
+            sb.append("\n");
+        }
+
+        return sb.toString();
+    }
+
     /**
      * This Builder class is used to build a {@link TxReceipt} instance.
      */

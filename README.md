@@ -1,7 +1,7 @@
 # aion_api
 aion network api repository
 
-Lastest version: 0.1.9
+Lastest version: 0.1.10
 
 Notice:
 

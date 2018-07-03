@@ -46,14 +46,12 @@ import java.util.regex.Pattern;
 import static org.aion.api.sol.impl.SolidityValue.SolidityTypeEnum.*;
 
 /**
- * Returns a Contract class that sits above the NucoAPI layer that provides the
- * user with a convenient method of encoding and decoding contract calls and
- * transactions from the Nuco backend. The Contract class has no public
- * constructors, instead the user utilizes two factory methods
- * {@link ContractController(String, IAionAPI) createFromSource} and
- * {@link ContractController(String, byte[], IAionAPI) createFromAddress}
- * for class instantiation. This class requires the user provide an active and
- * connected {@link AionAPIImpl} object
+ * Returns a Contract class that sits above the NucoAPI layer that provides the user with a
+ * convenient method of encoding and decoding contract calls and transactions from the Nuco backend.
+ * The Contract class has no public constructors, instead the user utilizes two factory methods
+ * {@link ContractController(String, IAionAPI) createFromSource} and {@link
+ * ContractController(String, byte[], IAionAPI) createFromAddress} for class instantiation. This
+ * class requires the user provide an active and connected {@link AionAPIImpl} object
  */
 @SuppressWarnings("Annotator")
 public final class Contract implements IContract {
@@ -120,13 +118,15 @@ public final class Contract implements IContract {
     private int errorCode;
 
     public static class ContractBuilder {
+
         private CompileResponse cr;
         private DeployResponse dr;
         private AionAPIImpl api;
         private Address from;
         private String contractName;
 
-        ContractBuilder() {}
+        ContractBuilder() {
+        }
 
         ContractBuilder compileResponse(final CompileResponse cr) {
             this.cr = cr;
@@ -137,6 +137,7 @@ public final class Contract implements IContract {
             this.dr = dr;
             return this;
         }
+
         public ContractBuilder api(final AionAPIImpl api) {
             this.api = api;
             return this;
@@ -155,10 +156,10 @@ public final class Contract implements IContract {
         Contract createContract() {
             if (cr == null || dr == null || api == null || from == null || contractName == null) {
                 throw new NullPointerException("compileResponse#" + cr +
-                        " deployResponse#" + dr +
-                        " api#" + api +
-                        " from#" + from +
-                        " contractName#" + contractName);
+                    " deployResponse#" + dr +
+                    " api#" + api +
+                    " from#" + from +
+                    " contractName#" + contractName);
             }
 
             return new Contract(this);
@@ -191,10 +192,9 @@ public final class Contract implements IContract {
         reset();
     }
 
-    /** Helper constructor for deploy a contract including the initial parameters in the constructor.
-     *
-     * @param cr
-     * @param contractName
+    /**
+     * Helper constructor for deploy a contract including the initial parameters in the
+     * constructor.
      */
     protected Contract(final CompileResponse cr, final String contractName) {
         this.api = null;
@@ -219,7 +219,6 @@ public final class Contract implements IContract {
 
     }
 
-
     // for deployContractWithParam
 //    public Contract(CompileResponse cmplRsp, DeployResponse dplyRsp, IAionAPI api, Address from, String name) {
 //        this.inputParams = new ArrayList<>();
@@ -233,14 +232,15 @@ public final class Contract implements IContract {
 //        this.eventsIssued = new LRUMap<>(lrumapSize);
 //        this.eventsIssuedRev = new LRUMap<>(lrumapSize);
 //        reset();
-  //  }
+    //  }
 
     public ContractAbiEntry getAbiFunction() {
         return abiFunc;
     }
 
 
-    private Map<String, List<ContractAbiEntry>> setupAbiFunctionDefinitions(List<ContractAbiEntry> abiDef) {
+    private Map<String, List<ContractAbiEntry>> setupAbiFunctionDefinitions(
+        List<ContractAbiEntry> abiDef) {
 
         if (abiDef == null) {
             throw new NullPointerException();
@@ -339,7 +339,8 @@ public final class Contract implements IContract {
             this.isConstructor = true;
         } else if (this.funcParams.containsKey(f)) {
             this.functionName = f;
-            this.isConstant = this.funcParams.get(f).get(0).constant; //overloaded function should have the same constant.
+            this.isConstant = this.funcParams.get(f)
+                .get(0).constant; //overloaded function should have the same constant.
             this.functionDefined = true;
         } else {
             if (LOGGER.isErrorEnabled()) {
@@ -354,7 +355,7 @@ public final class Contract implements IContract {
     public Contract setParam(ISolidityArg val) {
 
         if (val == null) {
-            throw  new NullPointerException();
+            throw new NullPointerException();
         }
 
         if (this.functionDefined || this.isConstructor) {
@@ -372,12 +373,12 @@ public final class Contract implements IContract {
     TxArgs encodeParams(ContractAbiEntry func) {
 
         if (func == null) {
-            throw  new NullPointerException();
+            throw new NullPointerException();
         }
 
-        StringBuilder assembled = new StringBuilder("");
+        StringBuilder assembled = new StringBuilder();
         if (!this.isConstructor) {
-                assembled.append(func.getHashed());
+            assembled.append(func.getHashed());
         }
 
         // offset
@@ -408,19 +409,18 @@ public final class Contract implements IContract {
         }
 
         TxArgs.TxArgsBuilder builder = new TxArgs.TxArgsBuilder()
-                    .value(this.txValue)
-                    .nrgPrice(this.txNrgPrice)
-                    .nrgLimit(this.txNrgLimit)
-                    .from(this.from)
-                    .to(isConstructor ? Address.EMPTY_ADDRESS() : this.contractAddress)
-                    .data(isConstructor ? ByteArrayWrapper.wrap(assembled.toString().getBytes())
-                                        : ByteArrayWrapper.wrap(ApiUtils.hex2Bytes(assembled.toString())))
-                    .nonce(BigInteger.ZERO);
+            .value(this.txValue)
+            .nrgPrice(this.txNrgPrice)
+            .nrgLimit(this.txNrgLimit)
+            .from(this.from)
+            .to(isConstructor ? Address.EMPTY_ADDRESS() : this.contractAddress)
+            .data(isConstructor ? ByteArrayWrapper.wrap(assembled.toString().getBytes())
+                : ByteArrayWrapper.wrap(ApiUtils.hex2Bytes(assembled.toString())))
+            .nonce(BigInteger.ZERO);
 
         this.txArgs = builder.createTxArgs();
         return this.txArgs;
     }
-
 
 
     public Contract setTxNrgLimit(long limit) {
@@ -476,8 +476,7 @@ public final class Contract implements IContract {
     /**
      * Sets the transaction value for certain functions.
      *
-     * @param val
-     *         the transaction value by long value of the desired transaction.
+     * @param val the transaction value by long value of the desired transaction.
      * @return Contract object.
      */
     @Override
@@ -496,13 +495,14 @@ public final class Contract implements IContract {
      */
     @Override
     public Hash256 getDeployTxId() {
-        return null;
+        return this.deployTxId;
     }
 
     /**
      * Get the abiDefinition of the deployed contract.
      *
-     * @return List of {@link ContractAbiEntry ContractAbiEntry}. The AbiDefinition of the deployed contract.
+     * @return List of {@link ContractAbiEntry ContractAbiEntry}. The AbiDefinition of the deployed
+     * contract.
      */
     @Override
     public List<ContractAbiEntry> getAbiDefinition() {
@@ -570,8 +570,7 @@ public final class Contract implements IContract {
     }
 
     /**
-     * Get UserDoc information in the deployed contract.
-     * {@link JsonFmt}.
+     * Get UserDoc information in the deployed contract. {@link JsonFmt}.
      *
      * @return return {@link JsonFmt}. The UserDoc field of the deployed contract.
      */
@@ -660,8 +659,9 @@ public final class Contract implements IContract {
                 if (i > 0) {
                     exp.append("Override function ");
                 }
-                exp.append(" Expected Input Parameters size: ").append(func.get(i).inputs.size()).append(" got size: ")
-                        .append(inputParams.size()).append("\n");
+                exp.append(" Expected Input Parameters size: ").append(func.get(i).inputs.size())
+                    .append(" got size: ")
+                    .append(inputParams.size()).append("\n");
             }
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[build] {}", exp.toString());
@@ -712,11 +712,10 @@ public final class Contract implements IContract {
     }
 
     /**
-     * Executes the built transaction. Refer to {@link #newFunction(String)} for
-     * function use.
+     * Executes the built transaction. Refer to {@link #newFunction(String)} for function use.
      *
-     * @return returns {@link org.aion.api.type.ContractResponse}
-     * containing all relevant information
+     * @return returns {@link org.aion.api.type.ContractResponse} containing all relevant
+     * information
      */
     public ApiMsg execute() {
 
@@ -746,17 +745,18 @@ public final class Contract implements IContract {
             List out = decodeParams(ByteArrayWrapper.wrap(rsp));
 
             ContractResponse.ContractResponseBuilder builder = new ContractResponse.ContractResponseBuilder()
-                    .data(out)
-                    .constant(true)
-                    .msgHash(ByteArrayWrapper.wrap(new byte[ApiUtils.MSG_HASH_LEN]))
-                    .status((byte)0)
-                    .txHash(Hash256.ZERO_HASH());
+                .data(out)
+                .constant(true)
+                .msgHash(ByteArrayWrapper.wrap(new byte[ApiUtils.MSG_HASH_LEN]))
+                .status((byte) 0)
+                .txHash(Hash256.ZERO_HASH());
 
-            return apiMsg.set(builder.createContractResponse(), org.aion.api.type.ApiMsg.cast.OTHERS);
+            return apiMsg
+                .set(builder.createContractResponse(), org.aion.api.type.ApiMsg.cast.OTHERS);
         } else {
             // send transaction
             ApiMsg apiMsg = (nonBlock ? api.getTx().nonBlock().sendTransaction(null)
-                            : api.getTx().sendTransaction(null));
+                : api.getTx().sendTransaction(null));
 
             if (apiMsg.isError()) {
                 return apiMsg;
@@ -770,17 +770,15 @@ public final class Contract implements IContract {
             }
 
             ContractResponse.ContractResponseBuilder builder = new ContractResponse.ContractResponseBuilder()
-                    .data(data)
-                    .constant(false)
-                    .msgHash(msgRsp.getMsgHash())
-                    .status(msgRsp.getStatus())
-                    .txHash(msgRsp.getTxHash())
-                    .error(msgRsp.getError());
-
-
+                .data(data)
+                .constant(false)
+                .msgHash(msgRsp.getMsgHash())
+                .status(msgRsp.getStatus())
+                .txHash(msgRsp.getTxHash())
+                .error(msgRsp.getError());
 
             return apiMsg.set(builder.createContractResponse(),
-                    org.aion.api.type.ApiMsg.cast.OTHERS);
+                org.aion.api.type.ApiMsg.cast.OTHERS);
         }
     }
 
@@ -800,36 +798,37 @@ public final class Contract implements IContract {
 
         for (ContractAbiIOParam io : this.abiFunc.outputs) {
             switch (getSolType(io.getType())) {
-            case ADDRESS:
-                org.aion.api.sol.impl.Address addressVal = org.aion.api.sol.impl.Address.createForDecode();
-                addressVal.setDynamicParameters(io.getParamLengths());
-                addressVal.setType(io.getType());
-                this.outputParams.add(addressVal);
-                break;
-            case BOOL:
-                Bool boolVal = Bool.createForDecode();
-                boolVal.setDynamicParameters(io.getParamLengths());
-                boolVal.setType(io.getType());
-                this.outputParams.add(boolVal);
-                break;
-            case BYTES:
-                Bytes bytesVal = Bytes.createForDecode();
-                bytesVal.setDynamicParameters(io.getParamLengths());
-                bytesVal.setType(io.getType());
-                this.outputParams.add(bytesVal);
-                break;
-            case DYNAMICBYTES:
-                DynamicBytes dynamicBytesVal = DynamicBytes.createForDecode();
-                dynamicBytesVal.setDynamicParameters(io.getParamLengths());
-                dynamicBytesVal.setType(io.getType());
-                this.outputParams.add(dynamicBytesVal);
-                break;
-            case INT:
-                Int intVal = Int.createForDecode();
-                intVal.setDynamicParameters(io.getParamLengths());
-                intVal.setType(io.getType());
-                this.outputParams.add(intVal);
-                break;
+                case ADDRESS:
+                    org.aion.api.sol.impl.Address addressVal = org.aion.api.sol.impl.Address
+                        .createForDecode();
+                    addressVal.setDynamicParameters(io.getParamLengths());
+                    addressVal.setType(io.getType());
+                    this.outputParams.add(addressVal);
+                    break;
+                case BOOL:
+                    Bool boolVal = Bool.createForDecode();
+                    boolVal.setDynamicParameters(io.getParamLengths());
+                    boolVal.setType(io.getType());
+                    this.outputParams.add(boolVal);
+                    break;
+                case BYTES:
+                    Bytes bytesVal = Bytes.createForDecode();
+                    bytesVal.setDynamicParameters(io.getParamLengths());
+                    bytesVal.setType(io.getType());
+                    this.outputParams.add(bytesVal);
+                    break;
+                case DYNAMICBYTES:
+                    DynamicBytes dynamicBytesVal = DynamicBytes.createForDecode();
+                    dynamicBytesVal.setDynamicParameters(io.getParamLengths());
+                    dynamicBytesVal.setType(io.getType());
+                    this.outputParams.add(dynamicBytesVal);
+                    break;
+                case INT:
+                    Int intVal = Int.createForDecode();
+                    intVal.setDynamicParameters(io.getParamLengths());
+                    intVal.setType(io.getType());
+                    this.outputParams.add(intVal);
+                    break;
                 //TODO: currently not support
 //            case REAL:
 //                Real realVal = Real.createForDecode();
@@ -837,30 +836,30 @@ public final class Contract implements IContract {
 //                realVal.setType(io.getType());
 //                this.outputParams.add(realVal);
 //                break;
-            case STRING:
-                SString stringVal = SString.createForDecode();
-                stringVal.setDynamicParameters(io.getParamLengths());
-                stringVal.setType(io.getType());
-                this.outputParams.add(stringVal);
-                break;
-            case UINT:
-                Uint uintVal = Uint.createForDecode();
-                uintVal.setDynamicParameters(io.getParamLengths());
-                uintVal.setType(io.getType());
-                this.outputParams.add(uintVal);
-                break;
-            //TODO: currently not support
+                case STRING:
+                    SString stringVal = SString.createForDecode();
+                    stringVal.setDynamicParameters(io.getParamLengths());
+                    stringVal.setType(io.getType());
+                    this.outputParams.add(stringVal);
+                    break;
+                case UINT:
+                    Uint uintVal = Uint.createForDecode();
+                    uintVal.setDynamicParameters(io.getParamLengths());
+                    uintVal.setType(io.getType());
+                    this.outputParams.add(uintVal);
+                    break;
+                //TODO: currently not support
 //            case UREAL:
 //                Ureal urealVal = Ureal.createForDecode();
 //                urealVal.setDynamicParameters(io.getParamLengths());
 //                urealVal.setType(io.getType());
 //                this.outputParams.add(urealVal);
 //                break;
-            default:
-                if (LOGGER.isErrorEnabled()) {
-                    LOGGER.error("[decodeParams] {}", ErrId.getErrString(-125L));
-                }
-                throw new IllegalArgumentException("Unsupported solidity type");
+                default:
+                    if (LOGGER.isErrorEnabled()) {
+                        LOGGER.error("[decodeParams] {}", ErrId.getErrString(-125L));
+                    }
+                    throw new IllegalArgumentException("Unsupported solidity type");
             }
         }
 
@@ -879,7 +878,8 @@ public final class Contract implements IContract {
     private List decodeParams(String event, ByteArrayWrapper data) {
 
         if (event == null || data == null) {
-            throw new NullPointerException("event#" + String.valueOf(event) + " data#" + String.valueOf(data));
+            throw new NullPointerException(
+                "event#" + String.valueOf(event) + " data#" + String.valueOf(data));
         }
 
         this.outputParams.clear();
@@ -896,65 +896,66 @@ public final class Contract implements IContract {
         for (ContractAbiEntry e : abi) {
             for (ContractAbiIOParam io : e.inputs) {
                 switch (getSolType(io.getType())) {
-                case ADDRESS:
-                    org.aion.api.sol.impl.Address addressVal = org.aion.api.sol.impl.Address.createForDecode();
-                    addressVal.setDynamicParameters(io.getParamLengths());
-                    addressVal.setType(io.getType());
-                    this.outputParams.add(addressVal);
-                    break;
-                case BOOL:
-                    Bool boolVal = Bool.createForDecode();
-                    boolVal.setDynamicParameters(io.getParamLengths());
-                    boolVal.setType(io.getType());
-                    this.outputParams.add(boolVal);
-                    break;
-                case BYTES:
-                    Bytes BytesVal = Bytes.createForDecode();
-                    BytesVal.setDynamicParameters(io.getParamLengths());
-                    BytesVal.setType(io.getType());
-                    this.outputParams.add(BytesVal);
-                    break;
-                case DYNAMICBYTES:
-                    DynamicBytes DynamicBytesVal = DynamicBytes.createForDecode();
-                    DynamicBytesVal.setDynamicParameters(io.getParamLengths());
-                    DynamicBytesVal.setType(io.getType());
-                    this.outputParams.add(DynamicBytesVal);
-                    break;
-                case INT:
-                    Int IntVal = Int.createForDecode();
-                    IntVal.setDynamicParameters(io.getParamLengths());
-                    IntVal.setType(io.getType());
-                    this.outputParams.add(IntVal);
-                    break;
+                    case ADDRESS:
+                        org.aion.api.sol.impl.Address addressVal = org.aion.api.sol.impl.Address
+                            .createForDecode();
+                        addressVal.setDynamicParameters(io.getParamLengths());
+                        addressVal.setType(io.getType());
+                        this.outputParams.add(addressVal);
+                        break;
+                    case BOOL:
+                        Bool boolVal = Bool.createForDecode();
+                        boolVal.setDynamicParameters(io.getParamLengths());
+                        boolVal.setType(io.getType());
+                        this.outputParams.add(boolVal);
+                        break;
+                    case BYTES:
+                        Bytes BytesVal = Bytes.createForDecode();
+                        BytesVal.setDynamicParameters(io.getParamLengths());
+                        BytesVal.setType(io.getType());
+                        this.outputParams.add(BytesVal);
+                        break;
+                    case DYNAMICBYTES:
+                        DynamicBytes DynamicBytesVal = DynamicBytes.createForDecode();
+                        DynamicBytesVal.setDynamicParameters(io.getParamLengths());
+                        DynamicBytesVal.setType(io.getType());
+                        this.outputParams.add(DynamicBytesVal);
+                        break;
+                    case INT:
+                        Int IntVal = Int.createForDecode();
+                        IntVal.setDynamicParameters(io.getParamLengths());
+                        IntVal.setType(io.getType());
+                        this.outputParams.add(IntVal);
+                        break;
 //                case REAL:
 //                    Real RealVal = Real.createForDecode();
 //                    RealVal.setDynamicParameters(io.getParamLengths());
 //                    RealVal.setType(io.getType());
 //                    this.outputParams.add(RealVal);
 //                    break;
-                case STRING:
-                    SString StringVal = SString.createForDecode();
-                    StringVal.setDynamicParameters(io.getParamLengths());
-                    StringVal.setType(io.getType());
-                    this.outputParams.add(StringVal);
-                    break;
-                case UINT:
-                    Uint UintVal = Uint.createForDecode();
-                    UintVal.setDynamicParameters(io.getParamLengths());
-                    UintVal.setType(io.getType());
-                    this.outputParams.add(UintVal);
-                    break;
+                    case STRING:
+                        SString StringVal = SString.createForDecode();
+                        StringVal.setDynamicParameters(io.getParamLengths());
+                        StringVal.setType(io.getType());
+                        this.outputParams.add(StringVal);
+                        break;
+                    case UINT:
+                        Uint UintVal = Uint.createForDecode();
+                        UintVal.setDynamicParameters(io.getParamLengths());
+                        UintVal.setType(io.getType());
+                        this.outputParams.add(UintVal);
+                        break;
 //                case UREAL:
 //                    Ureal UrealVal = Ureal.createForDecode();
 //                    UrealVal.setDynamicParameters(io.getParamLengths());
 //                    UrealVal.setType(io.getType());
 //                    this.outputParams.add(UrealVal);
 //                    break;
-                default:
-                    if (LOGGER.isErrorEnabled()) {
-                        LOGGER.error("[decodeParams] {}", ErrId.getErrString(-125L));
-                    }
-                    return null;
+                    default:
+                        if (LOGGER.isErrorEnabled()) {
+                            LOGGER.error("[decodeParams] {}", ErrId.getErrString(-125L));
+                        }
+                        return null;
                 }
             }
         }
@@ -996,7 +997,8 @@ public final class Contract implements IContract {
     /**
      * Get the contract function input parameters.
      *
-     * @return list of SolidityAbstractType, need to cast to response solidity type by contract function.
+     * @return list of SolidityAbstractType, need to cast to response solidity type by contract
+     * function.
      */
     @Override
     public List<ISolidityArg> getInputParams() {
@@ -1006,7 +1008,8 @@ public final class Contract implements IContract {
     /**
      * Get the contract function output parameters.
      *
-     * @return list of SolidityAbstractType, need to cast to response solidity type by contract function.
+     * @return list of SolidityAbstractType, need to cast to response solidity type by contract
+     * function.
      */
     @Override
     public List<ISolidityArg> getOutputParams() {
@@ -1105,13 +1108,11 @@ public final class Contract implements IContract {
         }
 
         ContractEventFilter.ContractEventFilterBuilder builder = new ContractEventFilter.ContractEventFilterBuilder()
-                .addresses(new ArrayList<>())
-                .expireTime(0)
-                .fromBlock(s)
-                .toBlock(s)
-                .topics(new ArrayList<>(this.eventMapping.values()));
-
-
+            .addresses(new ArrayList<>())
+            .expireTime(0)
+            .fromBlock(s)
+            .toBlock(s)
+            .topics(new ArrayList<>(this.eventMapping.values()));
 
         return register(builder.createContractEventFilter());
     }
@@ -1144,7 +1145,7 @@ public final class Contract implements IContract {
         }
 
         ApiMsg msg = new ApiMsg().set(this.api.getTx()
-                .eventRegister(new ArrayList<>(evtHash.values()), ef, this.getContractAddress()));
+            .eventRegister(new ArrayList<>(evtHash.values()), ef, this.getContractAddress()));
 
         if (!msg.isError()) {
             for (Map.Entry<String, String> ss : evtHash.entrySet()) {
@@ -1153,7 +1154,7 @@ public final class Contract implements IContract {
                     this.eventsIssuedRev.put(ss.getValue(), ss.getKey());
                 }
 
-                ((Tx)this.api.getTx()).apiInst.msgExecutor.setEvent(ss.getValue());
+                ((Tx) this.api.getTx()).apiInst.msgExecutor.setEvent(ss.getValue());
             }
         }
 
@@ -1179,11 +1180,11 @@ public final class Contract implements IContract {
         }
 
         ApiMsg msg = new ApiMsg().set(this.api.getTx()
-                .eventDeregister(new ArrayList<>(evtHash.values()), this.getContractAddress()));
+            .eventDeregister(new ArrayList<>(evtHash.values()), this.getContractAddress()));
 
         if (!msg.isError()) {
             for (String s : e) {
-                ((Tx)this.api.getTx()).apiInst.msgExecutor.removeEvent(this.eventsIssued.get(s));
+                ((Tx) this.api.getTx()).apiInst.msgExecutor.removeEvent(this.eventsIssued.get(s));
                 String val = this.eventsIssued.get(s);
                 this.eventsIssuedRev.remove(val);
                 this.eventsIssued.remove(s);
@@ -1209,30 +1210,73 @@ public final class Contract implements IContract {
             }
         }
 
-        ApiMsg msg = new ApiMsg().set(this.api.getTx().eventDeregister(new ArrayList<>(dr.values()), this.contractAddress));
+        ApiMsg msg = new ApiMsg().set(
+            this.api.getTx().eventDeregister(new ArrayList<>(dr.values()), this.contractAddress));
 
         if (!msg.isError()) {
             this.eventsIssued.clear();
             this.eventsIssuedRev.clear();
-            ((Tx)this.api.getTx()).apiInst.msgExecutor.removeAllEvents();
+            ((Tx) this.api.getTx()).apiInst.msgExecutor.removeAllEvents();
         }
 
         this.eventsName.clear();
         return msg;
     }
 
+    public ApiMsg call() {
+        if (this.error()) {
+            return new ApiMsg(this.errorCode);
+        }
+
+        if (!this.functionBuilt) {
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("[contract.call] {}", ErrId.getErrString(-113L));
+            }
+            return new ApiMsg(-113);
+        }
+
+        // call
+        ApiMsg apiMsg = this.api.getTx().call(this.txArgs);
+
+        if (apiMsg.isError()) {
+            return apiMsg;
+        }
+
+        byte[] rsp = apiMsg.getObject();
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("[contract.call] Contract msg: [{}]", IUtils.bytes2Hex(rsp));
+        }
+        List out = decodeParams(ByteArrayWrapper.wrap(rsp));
+
+        ContractResponse.ContractResponseBuilder builder = new ContractResponse.ContractResponseBuilder()
+            .data(out)
+            .constant(true)
+            .msgHash(ByteArrayWrapper.wrap(new byte[ApiUtils.MSG_HASH_LEN]))
+            .status((byte) 0)
+            .txHash(Hash256.ZERO_HASH());
+
+        return apiMsg.set(builder.createContractResponse(), org.aion.api.type.ApiMsg.cast.OTHERS);
+    }
+
+    @SuppressWarnings("unchecked")
     public List<ContractEvent> getEvents() {
-        List<ContractEvent> evts = (List<ContractEvent>) (List<?>) (((Tx) this.api.getTx()) != null ?
-                ((Tx) this.api.getTx()).apiInst.msgExecutor.getEvents(new ArrayList<>(this.eventsIssued.values())) :
-                null);
+        List<ContractEvent> evts = (List<ContractEvent>) (List<?>) (this.api.getTx() != null ?
+            ((Tx) this.api.getTx()).apiInst.msgExecutor
+                .getEvents(new ArrayList<>(this.eventsIssued.values())) :
+            null);
+
+        if (evts == null) {
+            return new ArrayList<>();
+        }
 
         List<ContractEvent> res = new ArrayList<>();
         for (ContractEvent evt : evts) {
             String evtName = this.eventsIssuedRev.get(evt.getEventName());
             if (evtName != null) {
-                ContractEvent.ContractEventBuilder builder = new ContractEvent.ContractEventBuilder(evt)
-                        .eventName(evtName)
-                        .results(this.decodeParams(evtName, evt.getData()));
+                ContractEvent.ContractEventBuilder builder = new ContractEvent.ContractEventBuilder(
+                    evt)
+                    .eventName(evtName)
+                    .results(this.decodeParams(evtName, evt.getData()));
                 res.add(builder.createContractEvent());
             }
         }
@@ -1291,7 +1335,7 @@ public final class Contract implements IContract {
         }
 
         List<String> rtn = new ArrayList<>();
-        for(Map.Entry<String, String> e : eventMapping.entrySet()) {
+        for (Map.Entry<String, String> e : eventMapping.entrySet()) {
             rtn.add(e.getValue());
         }
 

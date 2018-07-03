@@ -28,9 +28,11 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import org.aion.api.INet;
 import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.impl.internal.Message;
+import org.aion.api.impl.internal.Message.Funcs;
 import org.aion.api.log.AionLoggerFactory;
 import org.aion.api.log.LogEnum;
 import org.aion.api.type.ApiMsg;
+import org.aion.api.type.ApiMsg.cast;
 import org.aion.api.type.Node;
 import org.aion.api.type.Protocol;
 import org.aion.api.type.SyncInfo;
@@ -66,8 +68,8 @@ public class Net implements INet {
         try {
             Message.rsp_syncInfo msgRsp = Message.rsp_syncInfo.parseFrom(ApiUtils.parseBody(rsp).getData());
             SyncInfo syncInfo = new SyncInfo(msgRsp.getSyncing(),
-                    msgRsp.getNetworkBestBlock(), msgRsp.getChainBestBlock(), msgRsp.getMaxImportBlocks());
-            
+                    msgRsp.getNetworkBestBlock(), msgRsp.getChainBestBlock(), msgRsp.getMaxImportBlocks(), msgRsp.getStartingBlock());
+
             return new ApiMsg(syncInfo, ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
@@ -197,6 +199,54 @@ public class Net implements INet {
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getStaticNodes] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
+            }
+            return new ApiMsg(-104);
+        }
+    }
+
+    public ApiMsg isListening() {
+        if (!this.apiInst.isConnected()) {
+            return new ApiMsg(-1003);
+        }
+
+        byte[] reqHdr = ApiUtils
+            .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_net, Funcs.f_listening);
+
+        byte[] rsp = this.apiInst.nbProcess(reqHdr);
+        int code = this.apiInst.validRspHeader(rsp);
+        if (code != 1) {
+            return new ApiMsg(code);
+        }
+
+        try {
+            return new ApiMsg(Message.rsp_listening.parseFrom(ApiUtils.parseBody(rsp).getData()).getIsListening(), cast.BOOLEAN);
+        } catch (InvalidProtocolBufferException e) {
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("[isListening] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
+            }
+            return new ApiMsg(-104);
+        }
+    }
+
+    public ApiMsg getPeerCount() {
+        if (!this.apiInst.isConnected()) {
+            return new ApiMsg(-1003);
+        }
+
+        byte[] reqHdr = ApiUtils
+            .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_net, Funcs.f_peerCount);
+
+        byte[] rsp = this.apiInst.nbProcess(reqHdr);
+        int code = this.apiInst.validRspHeader(rsp);
+        if (code != 1) {
+            return new ApiMsg(code);
+        }
+
+        try {
+            return new ApiMsg(1, Message.rsp_peerCount.parseFrom(ApiUtils.parseBody(rsp).getData()).getPeers(), cast.INT);
+        } catch (InvalidProtocolBufferException e) {
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("[getPeerCount] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
             }
             return new ApiMsg(-104);
         }

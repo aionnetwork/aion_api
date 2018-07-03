@@ -27,6 +27,7 @@ import org.aion.api.type.ApiMsg;
 import org.aion.base.type.Address;
 
 import java.util.List;
+import org.aion.base.type.Hash256;
 
 /**
  * This interface dedicate to contact with Aion kernel for certain purpose.
@@ -55,6 +56,35 @@ public interface IAdmin {
 
     /**
      * Get detailed block information include all transactions and the transaction logs by given the
+     * block number.
+     *
+     * @param blkNum long value represent the block number.
+     * @return the class {@link org.aion.api.type.BlockDetails BlockDetails} wrapped into ApiMsg.
+     * You can retrieve through the method {@link ApiMsg#getObject() getObject}.
+     * <p>
+     * The kernel will only return the first 1000 block details fit the query interval if the user
+     * query the block over the 1000 blocks
+     * </p>
+     */
+    ApiMsg getBlockDetailsByNumber(long blkNum);
+
+    /**
+     * Get detailed block information include all transactions and the transaction logs by given the
+     * block hash.
+     *
+     * @param blockHash 32 bytes hash of the desired block wrapped into the class {@link Hash256
+     * Hash256}.
+     * @return the class {@link org.aion.api.type.BlockDetails BlockDetails} wrapped into ApiMsg.
+     * You can retrieve through the method {@link ApiMsg#getObject() getObject}.
+     * <p>
+     * The kernel will only return the first 1000 block details fit the query interval if the user
+     * query the block over the 1000 blocks
+     * </p>
+     */
+    ApiMsg getBlockDetailsByHash(Hash256 blockHash);
+
+    /**
+     * Get detailed block information include all transactions and the transaction logs by given the
      * List of block numbers.
      *
      * @param blkNum the list of block numbers, it can be discontinuous.
@@ -69,8 +99,8 @@ public interface IAdmin {
     ApiMsg getBlockDetailsByNumber(List<Long> blkNum);
 
     /**
-     * Get detailed block information as SQL like structure include all transactions and the transaction logs by given the
-     * starting/end block number.
+     * Get detailed block information as SQL like structure include all transactions and the
+     * transaction logs by given the starting/end block number.
      *
      * @param blkStart the start block number.
      * @param blkEnd the end of block number.
@@ -99,14 +129,14 @@ public interface IAdmin {
     ApiMsg getBlockDetailsByLatest(Long count);
 
     /**
-     * Get detailed block information as SQL like structure include all transactions and the transaction logs by given the
-     * starting/end block number.
+     * Get detailed block information as SQL like structure include all transactions and the
+     * transaction logs by given the starting/end block number.
      *
      * @param blkStart the start block number.
      * @param blkEnd the end of block number.
      * @return the interface {@link java.util.List List} of the class {@link
-     * org.aion.api.type.BlockSql BlockSql} wrapped into ApiMsg. You can retrieve through
-     * the method {@link ApiMsg#getObject() getObject}.
+     * org.aion.api.type.BlockSql BlockSql} wrapped into ApiMsg. You can retrieve through the method
+     * {@link ApiMsg#getObject() getObject}.
      * <p>
      * The kernel will only return the first 1000 block details fit the query interval if the user
      * query the block over the 1000 blocks
