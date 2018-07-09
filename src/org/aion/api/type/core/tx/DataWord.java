@@ -42,7 +42,6 @@ public class DataWord implements Comparable<DataWord>, IDataWord {
 
     private static final BigInteger MAX_VALUE = BigInteger.valueOf(2).pow(128).subtract(BigInteger.ONE);
 
-    private static final WordType wType = WordType.DATA_WORD;
     private static final DataWord ZERO = new DataWord(0);
     public static final DataWord ONE = new DataWord(1);
     private static final int BYTES = 16;
@@ -411,5 +410,4 @@ public class DataWord implements Comparable<DataWord>, IDataWord {
         return new String(getNoLeadZeroesData());
     }
 
-    public WordType getType() { return wType; }
 }
