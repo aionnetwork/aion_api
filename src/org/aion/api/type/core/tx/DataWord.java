@@ -97,7 +97,7 @@ public class DataWord implements Comparable<DataWord>, IDataWord {
         return data;
     }
 
-    private byte[] getNoLeadZeroesData() {
+    public byte[] getNoLeadZeroesData() {
         return ByteUtil.stripLeadingZeroes(data);
     }
 
@@ -191,7 +191,7 @@ public class DataWord implements Comparable<DataWord>, IDataWord {
         return v;
     }
 
-    private boolean isZero() {
+    public boolean isZero() {
         for (int i = 0; i < BYTES; i++) {
             if (data[BYTES - 1 - i] != 0) {
                 return false;
@@ -348,7 +348,7 @@ public class DataWord implements Comparable<DataWord>, IDataWord {
         return "0x" + hexValue.replaceFirst("^0+(?!$)", "");
     }
 
-    public DataWord clone() {
+    public DataWord copy() {
         byte[] bs = new byte[BYTES];
         System.arraycopy(data, 0, bs, 0, BYTES);
         return new DataWord(bs);
@@ -409,4 +409,5 @@ public class DataWord implements Comparable<DataWord>, IDataWord {
     public String asString() {
         return new String(getNoLeadZeroesData());
     }
+
 }
