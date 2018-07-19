@@ -282,7 +282,7 @@ public class AionTransaction extends AbstractTransaction {
         }
     }
 
-    private boolean isContractCreation() {
+    public boolean isContractCreation() {
         if (!parsed) {
             rlpParse();
         }
