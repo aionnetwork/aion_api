@@ -4,3 +4,5 @@ output/
 out/
 aion.iml
 META-INF
+build/
+pack/
