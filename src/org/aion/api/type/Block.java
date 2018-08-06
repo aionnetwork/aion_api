@@ -38,7 +38,7 @@ import java.util.List;
  * @see org.aion.api.IChain#getBlockByHash(Hash256) getBlockByHash
  */
 
-public class Block {
+public final class Block {
 
     private final long number;
     private final long timestamp;
