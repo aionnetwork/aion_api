@@ -8,6 +8,7 @@
     <property name="test.src.dir" value="test" />
     <property name="test.report.dir" value="report" />
     <property name="dir.pack" value="pack" />
+    <property name="dir.docs" value="docs" />
 
     <!-- Paths -->
     <path id="classpath.dependency">
@@ -25,18 +26,25 @@
             <pathelement location="${dir.mod}/modLogger.jar" />
     </path>
 
+    <path id="classpath.modBuild">
+            <pathelement location="./modAionApi.jar" />
+    </path>
+
+
     <path id="classpath.test">
         <pathelement location="${dir.lib}/junit-4.12.jar"/>
         <pathelement location="${dir.lib}/hamcrest-core-1.3.jar"/>
         <pathelement location="${main.build.dir}"/>
     </path>
 
-    <target name="clean">
+    <target name="clean" depends="clean_doc">
         <delete dir="${main.build.dir}" includeEmptyDirs="true" />
         <delete dir="${test.build.dir}" includeEmptyDirs="true" />
         <delete dir="${test.report.dir}" includeEmptyDirs="true" />
         <delete dir="${dir.pack}" includeEmptyDirs="true" />
 	<delete file="${dir.mod}/modAionApi*.jar" />
+        <delete dir="${dir.docs}" includeEmptyDirs="true" />
+        <delete file="Java-API-doc.zip" />
     </target>
 
     <!-- Build Related -->
@@ -79,9 +87,9 @@
                 <attribute name="Specification-Title" value="Aion Foundation Java API"/>
             </manifest>	    
 	</jar>
-        <move includeemptydirs="false" todir="${dir.pack}">
+        <copy includeemptydirs="false" todir="${dir.pack}">
             <file file="modAionApi.jar"/>
-        </move>
+        </copy>
     </target>
 
 
@@ -129,7 +137,71 @@
         <antcall target="build_fatjar">
             <param name="compile.debug" value="${compile.debug}"/>
         </antcall>
+        <antcall target="javadoc">
+            <param name="compile.debug" value="${compile.debug}"/>
+        </antcall>
 	<antcall target="post_pack" />
+    </target>
+
+    <target name="clean_doc">
+        <delete dir="${dir.docs}" includeEmptyDirs="true" />
+        <delete file="Java-API-doc.zip" />        
+    </target>
+
+    <target name="javadoc" depends="clean_doc">
+        <javadoc destdir="docs"
+                 Splitindex="true"
+                 access="protected"
+                 author="true"
+                 version="true"
+                 use="true"
+                 windowtitle="Aion Java API">
+
+            <fileset dir="src" defaultexcludes="yes">
+                <include name="org/aion/api/I*.java"/>
+                <include name="org/aion/api/sol/I*.java"/>
+                <include name="org/aion/api/type/AccountDetails.java"/>
+                <include name="org/aion/api/type/ApiMsg.java"/>
+                <include name="org/aion/api/type/Block.java"/>
+                <include name="org/aion/api/type/BlockDetails.java"/>
+                <include name="org/aion/api/type/BlockSql.java"/>
+                <include name="org/aion/api/type/CompileResponse.java"/>
+                <include name="org/aion/api/type/ContractAbiEntry.java"/>
+                <include name="org/aion/api/type/ContractAbiIOParam.java"/>
+                <include name="org/aion/api/type/ContractDeploy.java"/>
+                <include name="org/aion/api/type/ContractEvent.java"/>
+                <include name="org/aion/api/type/ContractEventFilter.java"/>
+                <include name="org/aion/api/type/ContractResponse.java"/>
+                <include name="org/aion/api/type/DeployResponse.java"/>
+                <include name="org/aion/api/type/Event.java"/>
+                <include name="org/aion/api/type/JsonFmt.java"/>
+                <include name="org/aion/api/type/Key.java"/>
+                <include name="org/aion/api/type/KeyExport.java"/>
+                <include name="org/aion/api/type/MsgRsp.java"/>
+                <include name="org/aion/api/type/Node.java"/>
+                <include name="org/aion/api/type/Protocol.java"/>
+                <include name="org/aion/api/type/SyncInfo.java"/>
+                <include name="org/aion/api/type/Transaction.java"/>
+                <include name="org/aion/api/type/TxArgs.java"/>
+                <include name="org/aion/api/type/TxDetails.java"/>
+                <include name="org/aion/api/type/TxLog.java"/>
+                <include name="org/aion/api/type/TxReceipt.java"/>               
+            </fileset>
+            
+            <classpath>
+                <path refid="classpath.dependency" />
+                <path refid="classpath.modBuild" />
+            </classpath>
+
+
+            <doctitle><![CDATA[<h1>Test</h1>]]></doctitle>
+            <bottom><![CDATA[<i>Copyright (c) 2017-2018 Aion foundation</i>]]></bottom>
+            <link offline="true" href="https://docs.oracle.com/javase/10/docs/api/" packagelistLoc="C:\tmp"/>
+            <link href="https://docs.oracle.com/javase/10/docs/api/"/>
+        </javadoc>
+
+        <zip destfile="Java-API-doc.zip"
+             basedir="${dir.docs}"/>
     </target>
 
         <target name="pre_build">
