@@ -1,5 +1,8 @@
 New Updates (most recent on top)
 
+Aion Java API v0.1.11
+- update lib dependency
+
 Aion Java API v0.1.10
 - fixed bugs
 - support windows 10
