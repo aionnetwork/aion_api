@@ -1,5 +1,9 @@
 New Updates (most recent on top)
 
+Aion Java API v0.1.10
+- fixed bugs
+- support windows 10
+
 Aion Java API v0.1.9
 - fixed getSyncInfo issue
 
