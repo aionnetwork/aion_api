@@ -29,17 +29,29 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import java.math.BigInteger;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.aion.api.ITx;
-import org.aion.api.IUtils;
 import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.impl.internal.Message;
 import org.aion.api.impl.internal.Message.Funcs;
 import org.aion.api.impl.internal.Message.Servs;
 import org.aion.api.log.AionLoggerFactory;
 import org.aion.api.log.LogEnum;
-import org.aion.api.type.*;
+import org.aion.api.type.ApiMsg;
 import org.aion.api.type.ApiMsg.cast;
+import org.aion.api.type.CompileResponse;
+import org.aion.api.type.ContractAbiEntry;
+import org.aion.api.type.ContractDeploy;
+import org.aion.api.type.ContractEventFilter;
+import org.aion.api.type.DeployResponse;
+import org.aion.api.type.JsonFmt;
+import org.aion.api.type.MsgRsp;
+import org.aion.api.type.TxArgs;
 import org.aion.api.type.TxArgs.TxArgsBuilder;
 import org.aion.api.type.core.tx.AionTransaction;
 import org.aion.base.type.Address;
@@ -51,24 +63,16 @@ import org.aion.crypto.ECKey;
 import org.aion.crypto.ECKeyFac;
 import org.slf4j.Logger;
 
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Created by Jay Tseng on 15/11/16.
  */
 public final class Tx implements ITx {
 
-    private final Logger LOGGER = AionLoggerFactory.getLogger(LogEnum.TRX.name());
+    private static final String ASCII = "ascii";
     final AionAPIImpl apiInst;
-
+    private final Logger LOGGER = AionLoggerFactory.getLogger(LogEnum.TRX.name());
     private ByteArrayWrapper fmsg;
     private boolean fastbuild = false;
-    private static final String ASCII = "ascii";
 
     Tx(AionAPIImpl inst) {
         this.apiInst = inst;
@@ -820,6 +824,45 @@ public final class Tx implements ITx {
             return new ApiMsg(
                 Message.rsp_getNrgPrice.parseFrom(ApiUtils.parseBody(rsp).getData()).getNrgPrice(),
                 cast.LONG);
+        } catch (InvalidProtocolBufferException e) {
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("[getNrgPrice] {}", ErrId.getErrString(-104L) + e.getMessage());
+            }
+            return new ApiMsg(-104, e.getMessage(), cast.OTHERS);
+        }
+    }
+
+    public ApiMsg getPendingTransaction() {
+        if (!this.apiInst.isConnected()) {
+            return new ApiMsg(-1003);
+        }
+
+        byte[] reqHead = ApiUtils
+            .toReqHeader(ApiUtils.PROTOCOL_VER, Servs.s_tx, Funcs.f_getPendingTx);
+
+        byte[] rsp = this.apiInst.nbProcess(reqHead);
+        int code = this.apiInst.validRspHeader(rsp);
+        if (code != 1) {
+            return new ApiMsg(code);
+        }
+
+        try {
+            List<Message.t_AionTxExt> pendingTxs = Message.rsp_getPendingTx
+                .parseFrom(ApiUtils.parseBody(rsp).getData()).getPendingTxsList();
+
+            List<AionTransaction> returnObj = new ArrayList<>();
+            for (Message.t_AionTxExt tx : pendingTxs) {
+                AionTransaction atx = new AionTransaction(
+                    tx.getNonce().toByteArray(),
+                    Address.wrap(tx.getTo().toByteArray()),
+                    tx.getValue().toByteArray(),
+                    tx.getData().toByteArray(),
+                    tx.getNrg(),
+                    tx.getNrgPrice());
+                returnObj.add(atx);
+            }
+
+            return new ApiMsg(returnObj,  cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getNrgPrice] {}", ErrId.getErrString(-104L) + e.getMessage());

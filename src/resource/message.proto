@@ -78,6 +78,7 @@ enum Funcs	 {
     f_getBlockDetailsByHash 		    = 58;
     f_listening                             = 59;
     f_peerCount                             = 60;
+    f_getPendingTx                          = 61;
 }
 
 enum Retcode {
@@ -138,6 +139,19 @@ message t_AionTx {
         uint64 nrgConsumed = 7;
         uint64 nrgPrice    = 8;
 }
+
+message t_AionTxExt {
+        bytes txHash        = 1;
+        bytes from         = 2;
+        bytes to           = 3;
+        bytes value        = 4;
+        bytes data         = 5;
+        bytes nonce        = 6;
+        uint64 nrgConsumed = 7;
+        uint64 nrgPrice    = 8;
+	uint64 nrg         = 9;
+}
+
 
 message t_Node {
     uint64 blockNumber     = 1;
@@ -1023,3 +1037,13 @@ message rsp_listening {
 message rsp_peerCount {
     uint32 peers = 1;
 }
+
+
+//*****************************************************************************
+//      f_getPendingTransaction
+//*****************************************************************************
+
+message rsp_getPendingTx {
+    repeated t_AionTxExt pendingTxs = 1;
+}
+

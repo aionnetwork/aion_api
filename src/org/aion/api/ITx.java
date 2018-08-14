@@ -23,13 +23,20 @@
 
 package org.aion.api;
 
+import java.util.List;
 import org.aion.api.impl.Contract;
-import org.aion.api.type.*;
+import org.aion.api.type.ApiMsg;
+import org.aion.api.type.CompileResponse;
+import org.aion.api.type.ContractDeploy;
+import org.aion.api.type.ContractEventFilter;
+import org.aion.api.type.DeployResponse;
+import org.aion.api.type.MsgRsp;
+import org.aion.api.type.Transaction;
+import org.aion.api.type.TxArgs;
+import org.aion.api.type.TxReceipt;
 import org.aion.base.type.Address;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
-
-import java.util.List;
 
 /**
  * ITx is an interface of the class Transaction. ITx assists in providing methods for transaction
@@ -279,6 +286,14 @@ public interface ITx {
      * through {@link ApiMsg#getObject() getObject}.
      */
     ApiMsg getNrgPrice();
+
+    /**
+     * return the transactions pending in the transaction pool of the connecting node.
+     *
+     * @return the interface {@link List List} of the {@link Transaction Transaction} represent the
+     * pending transactions. You can retrieve through {@link ApiMsg#getObject() getObject}.
+     */
+    ApiMsg getPendingTransaction();
 
 //    void removeAllEvents();
 //
