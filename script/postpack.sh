@@ -7,9 +7,11 @@ LIB_NAME="libAionApi.jar"
 cd ${PACK_PATH}
 cp -r ../native .
 cp -r ../lib .
+
 mv lib/hamcrest-all-1.3.jar ../
 mv lib/junit-4.12.jar ../
-VER=$(java -jar ${MOD_NAME} -v)
+VER=$(${JAVA_HOME}/bin/java -jar ${MOD_NAME} -v)
+
 echo "Aion Api build ver - $VER"
 mv ${MOD_NAME} "modAionApi-v${VER}-$(date +%Y-%m-%d).jar"
 ln -s "modAionApi-v${VER}-$(date +%Y-%m-%d).jar" modAionApi.jar 
