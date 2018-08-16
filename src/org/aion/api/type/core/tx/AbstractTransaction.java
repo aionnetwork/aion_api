@@ -115,6 +115,10 @@ public abstract class AbstractTransaction implements ITransaction {
 //        }
 //    }
 
+    public void setSignature(final ISignature signature) {
+        this.signature = signature;
+    }
+
     public abstract byte[] getEncoded();
 
     public abstract Address getFrom();

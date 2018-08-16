@@ -25,11 +25,6 @@
 
 package org.aion.api.type.core.tx;
 
-import static org.aion.base.util.ByteUtil.ZERO_BYTE_ARRAY;
-
-import java.math.BigInteger;
-import java.util.Arrays;
-
 import org.aion.base.type.Address;
 import org.aion.base.util.ByteUtil;
 import org.aion.base.util.TimeInstant;
@@ -40,6 +35,11 @@ import org.aion.crypto.ISignature;
 import org.aion.crypto.SignatureFac;
 import org.aion.rlp.RLP;
 import org.aion.rlp.RLPList;
+
+import java.math.BigInteger;
+import java.util.Arrays;
+
+import static org.aion.base.util.ByteUtil.ZERO_BYTE_ARRAY;
 
 /**
  * 
@@ -178,7 +178,7 @@ public class AionTransaction extends AbstractTransaction {
         return hash;
     }
 
-    private byte[] getRawHash() {
+    public byte[] getRawHash() {
         if (!parsed) {
             rlpParse();
         }
@@ -350,7 +350,7 @@ public class AionTransaction extends AbstractTransaction {
      * For signatures you have to keep also RLP of the transaction without any
      * signature data
      */
-    private byte[] getEncodedRaw() {
+    public byte[] getEncodedRaw() {
 
         if (!parsed) {
             rlpParse();
