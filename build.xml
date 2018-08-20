@@ -9,6 +9,8 @@
     <property name="test.report.dir" value="report" />
     <property name="dir.pack" value="pack" />
     <property name="dir.docs" value="docs" />
+    <property name="dir.kernel.mod" value="../mod" />
+
 
     <!-- Paths -->
     <path id="classpath.dependency">
@@ -127,6 +129,14 @@
                 <include name="modLogger.jar" />
             </zipgroupfileset>
         </jar>
+    </target>
+
+    <target name="clean_build_from_kernel">
+        <copy file="${dir.kernel.mod}/modAionBase.jar" todir="${dir.modfile}" overwrite="true" />
+        <copy file="${dir.kernel.mod}/modCrypto.jar" todir="${dir.modfile}" overwrite="true" />
+        <copy file="${dir.kernel.mod}/modLogger.jar" todir="${dir.modfile}" overwrite="true" />
+        <copy file="${dir.kernel.mod}/modRlp.jar" todir="${dir.modfile}" overwrite="true" />
+        <antcall target="clean_build" />
     </target>
 
     <target name="clean_build" depends="clean" >
