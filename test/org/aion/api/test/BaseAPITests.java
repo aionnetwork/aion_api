@@ -54,6 +54,7 @@ import org.aion.api.IAionAPI;
 import org.aion.api.IContract;
 import org.aion.api.ITx;
 import org.aion.api.IUtils;
+import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.impl.internal.Message.Retcode;
 import org.aion.api.type.AccountDetails;
 import org.aion.api.type.ApiMsg;
@@ -74,6 +75,8 @@ import org.aion.api.type.SyncInfo;
 import org.aion.api.type.Transaction;
 import org.aion.api.type.TxArgs;
 import org.aion.api.type.TxReceipt;
+import org.aion.api.type.core.Bloom;
+import org.aion.api.type.core.BloomFilter;
 import org.aion.api.type.core.tx.AionTransaction;
 import org.aion.base.type.Address;
 import org.aion.base.type.Hash256;
@@ -84,6 +87,7 @@ import org.aion.crypto.ECKeyFac;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.spongycastle.jcajce.provider.digest.SHA3;
 
 /**
  * Created by yao on 01/10/16. Contributors Jay Tseng.
@@ -2128,18 +2132,39 @@ public class BaseAPITests {
             return;
         }
 
-        String blks = "1-16";
+        String methodSig = "Rabbit(address,address,uint,uint)";
+
+        String shaStr =  IUtils
+            .bytes2Hex(ApiUtils.KC_256.digest(methodSig.getBytes()));
+
+        String blks = "94";
         ApiMsg msg = api.getAdmin().getBlockDetailsByNumber(blks);
         assertFalse(msg.isError());
 
         List<BlockDetails> bds = msg.getObject();
         assertNotNull(bds);
+
+        byte[] data = bds.get(0).getBloom().toBytes();
+        Bloom bloom = new Bloom(data);
+
+        if (BloomFilter.containsString(bloom, methodSig))
+            System.out.println(true);
+
+//        bds.parallelStream().forEach(blockDetails -> {
+//            Bloom bloom = new Bloom(blockDetails.getBloom().toBytes());
+//            if (BloomFilter.containsString(bloom, methodSig))
+//                System.out.println(true);
+//        });
+
+
+
         assertEquals(16, bds.size());
 
         api.destroyApi();
     }
 
     @Test
+    @Deprecated
     public void TestGetBlockDetailsByLatest() {
         System.out.println("run TestGetBlockDetailsByLatest.");
 
