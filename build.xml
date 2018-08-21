@@ -9,7 +9,9 @@
     <property name="test.report.dir" value="report" />
     <property name="dir.pack" value="pack" />
     <property name="dir.docs" value="docs" />
+    <property name="dir.native" value="native/linux" />
     <property name="dir.kernel.mod" value="../mod" />
+    <property name="dir.kernel.native" value="../native/linux" />
 
 
     <!-- Paths -->
@@ -132,6 +134,16 @@
     </target>
 
     <target name="clean_build_from_kernel">
+        <copy todir="${dir.native}/zmq" overwrite="true" >
+		<fileset dir="${dir.kernel.native}/zmq"/>
+	</copy>
+        <copy todir="${dir.native}/sodium" overwrite="true" >
+                <fileset dir="${dir.kernel.native}/sodium"/>
+        </copy>
+        <copy todir="${dir.native}/blake2b" overwrite="true" >
+                <fileset dir="${dir.kernel.native}/blake2b"/>
+        </copy>
+
         <copy file="${dir.kernel.mod}/modAionBase.jar" todir="${dir.modfile}" overwrite="true" />
         <copy file="${dir.kernel.mod}/modCrypto.jar" todir="${dir.modfile}" overwrite="true" />
         <copy file="${dir.kernel.mod}/modLogger.jar" todir="${dir.modfile}" overwrite="true" />
