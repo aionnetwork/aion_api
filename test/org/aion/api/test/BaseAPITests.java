@@ -39,6 +39,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -64,6 +65,7 @@ import org.aion.api.type.BlockSql;
 import org.aion.api.type.CompileResponse;
 import org.aion.api.type.ContractAbiEntry;
 import org.aion.api.type.ContractDeploy;
+import org.aion.api.type.ContractDeploy.ContractDeployBuilder;
 import org.aion.api.type.ContractResponse;
 import org.aion.api.type.DeployResponse;
 import org.aion.api.type.Key;
@@ -78,12 +80,17 @@ import org.aion.api.type.TxReceipt;
 import org.aion.api.type.core.Bloom;
 import org.aion.api.type.core.BloomFilter;
 import org.aion.api.type.core.tx.AionTransaction;
+import org.aion.api.type.core.tx.DataWord;
 import org.aion.base.type.Address;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
+import org.aion.base.util.ByteUtil;
 import org.aion.base.util.Bytesable;
+import org.aion.base.util.Hex;
+import org.aion.contract.ContractUtils;
 import org.aion.crypto.ECKey;
 import org.aion.crypto.ECKeyFac;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -2112,6 +2119,64 @@ public class BaseAPITests {
         BigInteger diff = b0.subtract(b1);
 
         assertEquals(((tx1.getNrgConsumed() * NRG_PRICE_MIN) + transfer), diff.longValue());
+
+        api.destroyApi();
+    }
+
+    @Test
+    @Ignore
+    public void TestQueryContractEventViaBloom() {
+        System.out.println("run TestQueryContractEventViaBloom.");
+        connectAPI();
+
+        // Unlock the deployer account.     **Change to an address & password on your system!
+        Address account = new Address("a01c9d3ec527796fc21388faf793eb5e14555061d69471f5eab325db325d9914");
+        String password = "test";
+        ApiMsg apiMsg = api.getWallet().unlockAccount(account, password);
+        assertFalse(apiMsg.isError());
+
+        // Deploy the contract.
+        String tc = readFile("BloomTest.sol");
+        apiMsg = api.getContractController()
+            .createFromSource(tc, account, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
+        assertFalse(apiMsg.isError());
+        IContract contract = api.getContractController().getContract();
+        Address contractAddress = contract.getContractAddress();
+
+        // Set up input to call the function in the contract that triggers the wanted event.
+        BigInteger accNonce = api.getChain().getNonce(account).getObject();
+        byte[] input = ByteUtil.merge(Hex.decode("cb8fd70a"), new DataWord(BigInteger.TEN).getData());
+        input = ByteUtil.merge(input, RandomUtils.nextBytes(32));
+
+        // Send off tx that will trigger the event.
+        TxArgs.TxArgsBuilder builder = new TxArgs.TxArgsBuilder()
+            .data(ByteArrayWrapper.wrap(input))
+            .from(account)
+            .to(contractAddress)
+            .nrgLimit(NRG_LIMIT_TX_MAX)
+            .nrgPrice(NRG_PRICE_MIN)
+            .value(BigInteger.ZERO)
+            .nonce(accNonce);
+        api.getTx().fastTxbuild(builder.createTxArgs());
+        apiMsg = api.getTx().sendTransaction(null);
+        assertFalse(apiMsg.isError());
+        MsgRsp rsp = apiMsg.getObject();
+
+        TxReceipt receipt = api.getTx().getTxReceipt(rsp.getTxHash()).getObject();
+        long blkNumber = receipt.getBlockNumber();
+
+        // Hash the event signature
+        String eventSignature = "A(uint64,bytes32)";
+        byte[] eventSignatureTopic = ApiUtils.KC_256.digest(eventSignature.getBytes());
+
+        ApiMsg msg = api.getAdmin().getBlockDetailsByNumber(blkNumber);
+        assertFalse(msg.isError());
+        BlockDetails bds = msg.getObject();
+        assertNotNull(bds);
+
+        // Check that the block bloom filter contains the hash of the hashed event signature.
+        Bloom blockBloom = new Bloom(bds.getBloom().getData());
+        assertTrue(BloomFilter.containsEvent(blockBloom, eventSignatureTopic));
 
         api.destroyApi();
     }
