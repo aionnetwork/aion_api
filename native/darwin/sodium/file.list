@@ -1,2 +1,2 @@
-libsodium.so
-libsodiumjni.so
+libsodium.dylib
+libsodiumjni.jnilib
