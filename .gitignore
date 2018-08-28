@@ -2,7 +2,9 @@
 config/
 output/
 out/
-aion.iml
+build/
+pack/
+*.iml
 META-INF
 build/
 pack/
