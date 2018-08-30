@@ -1,5 +1,8 @@
 New Updates (most recent on top)
 
+Aion Java API v0.1.12
+- support macOS High Sierra
+
 Aion Java API v0.1.11
 - update lib dependency
 - add JavaDoc in the build script
