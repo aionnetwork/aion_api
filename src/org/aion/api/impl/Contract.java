@@ -1026,7 +1026,7 @@ public final class Contract implements IContract {
 
     @Override
     public String getContractName() {
-        return null;
+        return contractName;
     }
 
     public Contract newEvent(String e) {
