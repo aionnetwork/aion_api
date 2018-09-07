@@ -1,5 +1,8 @@
 New Updates (most recent on top)
 
+Aion Java API v0.1.13
+- support zmq curve secure connection
+
 Aion Java API v0.1.12
 - support macOS High Sierra
 
