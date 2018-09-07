@@ -10,6 +10,7 @@ public abstract class Cfg {
 
     protected CfgConnect connect;
     protected CfgLog log;
+    protected Boolean secureConnectEnabled;
 
     public abstract boolean fromXML();
 

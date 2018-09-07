@@ -24,6 +24,11 @@
 package org.aion.api.impl;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.aion.api.IUtils;
 import org.aion.api.cfg.CfgApi;
 import org.aion.api.impl.internal.ApiUtils;
@@ -68,6 +73,8 @@ public class MsgExecutor implements Runnable {
     private final static int HB_TOLERANCE = 3;
     private final static int HB_POLL_MS = 500;
     private final static int RECVTIMEOUT = 3000;
+
+    private byte[] serverPubKey;
     // = If api is unresponsive for more than ~2 seconds, kill the api.
     // TODO: implement auto-reconnect on kernel failure
 
@@ -87,8 +94,20 @@ public class MsgExecutor implements Runnable {
     private String addrBindNumber;
     private Map<String, Boolean> privilege;
 
+    private static final String CURVEKEY_PATH;
+    private static final Path PATH;
+
     static {
         NativeLoader.loadLibrary("zmq");
+    }
+
+    static {
+        String storageDir = System.getProperty("local.storage.dir");
+        if (storageDir == null || storageDir.equalsIgnoreCase("")) {
+            storageDir = System.getProperty("user.dir");
+        }
+        CURVEKEY_PATH = storageDir + "/zmq_keystore";
+        PATH = Paths.get(CURVEKEY_PATH);
     }
 
     MsgExecutor(int protocolVer, String url) {
@@ -311,6 +330,27 @@ public class MsgExecutor implements Runnable {
             Context ctx = ZMQ.context(1);
             feSocket = ctx.socket(ZMQ.DEALER);
 
+            if (CfgApi.inst().isSecureConnectEnabled()) {
+                loadServerPubKey();
+
+                if (serverPubKey != null) {
+                    ZMQ.Curve.KeyPair kp = ZMQ.Curve.generateKeyPair();
+
+                    if (kp != null) {
+                        feSocket.setCurvePublicKey(kp.publicKey.getBytes());
+                        feSocket.setCurveSecretKey(kp.secretKey.getBytes());
+                        feSocket.setCurveServerKey(serverPubKey);
+                        LOGGER.info("Secure connection enabled!");
+                    } else {
+                        LOGGER.info("Can't generate client curve keypair. Secure connection disabled!");
+                    }
+                } else {
+                    LOGGER.info("Can't find the connecting server pub key. Secure connection disabled!");
+                }
+            } else {
+                LOGGER.info("Secure connection disabled!");
+            }
+
             feSocket.connect(this.url);
 
             byte[] req = ApiUtils.toReqHeader(this.ver, Message.Servs.s_hb, Message.Funcs.f_NA);
@@ -455,6 +495,25 @@ public class MsgExecutor implements Runnable {
         } finally {
             this.isInitialized.set(false);
             LOGGER.info("socket disconnected!");
+        }
+    }
+
+    private static List<File> getFiles() {
+        File[] files = PATH.toFile().listFiles();
+        return files != null ? Arrays.asList(files) : Collections.emptyList();
+    }
+
+    private void loadServerPubKey() {
+        List<File> files = getFiles();
+        for (File f : files) {
+            if (f.getName().contains("zmqCurvePubkey")) {
+                try {
+                    serverPubKey = Files.readAllBytes(f.toPath());
+                    break;
+                } catch (IOException e) {
+                    LOGGER.error("loadServerPubKey exception! {}", e.toString());
+                }
+            }
         }
     }
 

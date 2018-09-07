@@ -33,6 +33,7 @@ public class CfgApi extends Cfg {
 
     private CfgApi() {
         this.log = new CfgLog();
+        this.secureConnectEnabled = false;
 
         // TODO :: test and open it later.
         //this.connect = new CfgConnect();
@@ -46,9 +47,6 @@ public class CfgApi extends Cfg {
     public static CfgApi inst() {
         return ApiCfgHolder.inst;
     }
-
-
-
 
     public CfgLog getLog() {
         return this.log;
@@ -65,6 +63,8 @@ public class CfgApi extends Cfg {
     public void setConnect(CfgConnect _cnt) {
         this.connect = _cnt;
     }
+
+    public boolean isSecureConnectEnabled() { return this.secureConnectEnabled; }
 
     private static class ApiCfgHolder {
         private static final CfgApi inst = new CfgApi();
@@ -91,6 +91,9 @@ public class CfgApi extends Cfg {
                         break;
                     case "connect":
                         //this.connect.fromXML(sr);
+                        break;
+                    case "secure-connect":
+                        secureConnectEnabled = Boolean.parseBoolean(Cfg.readValue(sr));
                         break;
                     default:
                         //skipElement(sr);
@@ -137,6 +140,13 @@ public class CfgApi extends Cfg {
             sw.writeStartDocument("utf-8", "1.0");
             sw.writeCharacters("\r\n");
             sw.writeStartElement("aion_api");
+
+            sw.writeCharacters("\r\n");
+            sw.writeCharacters("\t");
+            sw.writeStartElement("secure-connect");
+            sw.writeCharacters("true");
+            sw.writeEndElement();
+            sw.writeCharacters("\r\n");
 
             this.log = new CfgLog();
             sw.writeCharacters(this.log.toXML());
