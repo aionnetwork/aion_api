@@ -130,6 +130,7 @@ public class ApiBase {
             }
         }
 
+        int retry = 10;
         while (!isInitialized.get()) {
             if (this.msgExecutor == null) {
                 this.msgExecutor = new MsgExecutor(ApiUtils.PROTOCOL_VER, url, timeout, pubkey);
@@ -155,11 +156,14 @@ public class ApiBase {
                 this.msgExecutor.terminate();
                 this.msgExecutor = null;
 
-                if (!this.recon) {
+                if (!this.recon || retry == 0) {
                     return new ApiMsg(-1009, false, org.aion.api.type.ApiMsg.cast.BOOLEAN);
                 }
+
+                retry--;
             } else {
                 this.isInitialized.set(true);
+                retry = 10;
             }
         }
 

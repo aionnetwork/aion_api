@@ -75,7 +75,7 @@ public interface IAionAPI {
      * @param url the {@link java.lang.String String} including the connection address and port of
      * the desired backend Aion client.
      * @param reconnect the boolean value set the client api will try to reconnect when the
-     * connection broken.
+     * connection broken. If retry reach 10 times fail, will return a false message.
      * @return the boolean value indicating the success of the connection wrapped into ApiMsg. You
      * can retrieve through the method {@link ApiMsg#getObject() getObject}.
      */
@@ -87,7 +87,7 @@ public interface IAionAPI {
      * @param url the {@link java.lang.String String} including the connection address and port of
      * the desired backend Aion client.
      * @param reconnect the boolean value set the client api will try to reconnect when the
-     * connection broken.
+     * connection broken. If retry reach 10 times fail, will return a false message.
      * @param pubkey the string value represent the public key of the connecting server. The zmq socket
      * will setup a secure connect to the server.
      * @return the boolean value indicating the success of the connection wrapped into ApiMsg. You
@@ -115,7 +115,7 @@ public interface IAionAPI {
      * @param url the class {@link java.lang.String String} including the connection address and
      * port of the desired backend Aion client.
      * @param reconnect the boolean value set the client api will try to reconnect when the
-     * connection broken.
+     * connection broken. If retry reach 10 times fail, will return a false message.
      * @param worker set the thread number for handle the transaction API. The default is one
      * worker.
      * @param pubkey the string value represent the public key of the connecting server. The zmq socket
@@ -131,7 +131,7 @@ public interface IAionAPI {
      * @param url the class {@link java.lang.String String} including the connection address and
      * port of the desired backend Aion client.
      * @param reconnect the boolean value set the client api will try to reconnect when the
-     * connection broken.
+     * connection broken. If retry reach 10 times fail, will return a false message. 
      * @param worker set the thread number for handle the transaction API.
      * @param timeout set the timeout for the api message does not have the response from server
      * @param pubkey the string value represent the public key of the connecting server. The zmq socket
