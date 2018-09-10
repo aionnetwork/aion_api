@@ -8,3 +8,6 @@ pack/
 META-INF
 build/
 pack/
+docs/
+modAionApi.iml
+modAionApi.jar
