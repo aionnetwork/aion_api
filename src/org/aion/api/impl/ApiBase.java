@@ -68,22 +68,26 @@ public class ApiBase {
     }
 
     public ApiMsg connect(String url) {
-        return connect(url, false, 1, 300_000);
+        return connect(url, false, 1, 300_000, null);
     }
 
     public ApiMsg connect(String url, boolean reconnect) {
-        return connect(url, reconnect, 1, 300_000);
+        return connect(url, reconnect, 1, 300_000, null);
     }
 
-    public ApiMsg connect(String url, int workers) {
-        return connect(url, false, workers, 300_000);
+    public ApiMsg connect(String url, boolean reconnect, String pubkey) {
+        return connect(url, reconnect, 1, 300_000, pubkey);
     }
 
-    public ApiMsg connect(String url, boolean reconnect, int workers) {
-        return connect(url, reconnect, workers, 300_000);
+    public ApiMsg connect(String url, int workers, String pubkey) {
+        return connect(url, false, workers, 300_000, pubkey);
     }
 
-    public ApiMsg connect(String url, boolean reconnect, int workers, int timeout) {
+    public ApiMsg connect(String url, boolean reconnect, int workers, String pubkey) {
+        return connect(url, reconnect, workers, 300_000, pubkey);
+    }
+
+    public ApiMsg connect(String url, boolean reconnect, int workers, int timeout, String pubkey) {
         if (url == null) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[connect]" + ErrId.getErrString(-1004L));
@@ -128,7 +132,7 @@ public class ApiBase {
 
         while (!isInitialized.get()) {
             if (this.msgExecutor == null) {
-                this.msgExecutor = new MsgExecutor(ApiUtils.PROTOCOL_VER, url, timeout);
+                this.msgExecutor = new MsgExecutor(ApiUtils.PROTOCOL_VER, url, timeout, pubkey);
                 this.msgExecutor.start(workers);
             }
 

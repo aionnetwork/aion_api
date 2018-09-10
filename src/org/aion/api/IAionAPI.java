@@ -82,16 +82,32 @@ public interface IAionAPI {
     ApiMsg connect(String url, boolean reconnect);
 
     /**
+     * Establishes connection between Aion Java API and Aion Kernel.
+     *
+     * @param url the {@link java.lang.String String} including the connection address and port of
+     * the desired backend Aion client.
+     * @param reconnect the boolean value set the client api will try to reconnect when the
+     * connection broken.
+     * @param pubkey the string value represent the public key of the connecting server. The zmq socket
+     * will setup a secure connect to the server.
+     * @return the boolean value indicating the success of the connection wrapped into ApiMsg. You
+     * can retrieve through the method {@link ApiMsg#getObject() getObject}.
+     */
+    ApiMsg connect(String url, boolean reconnect, String pubkey);
+
+    /**
      * Establishes connection between Aion Java API and ion Kernel.
      *
      * @param url the class {@link java.lang.String String} including the connection address and
      * port of the desired backend Aion client.
      * @param worker set the thread number for handle the transaction API. The default is one
      * worker.
+     * @param pubkey the string value represent the public key of the connecting server. The zmq socket
+     * will setup a secure connect to the server.
      * @return the boolean value indicating the success of the connection wrapped into ApiMsg. You
      * can retrieve through the method {@link ApiMsg#getObject() getObject}.
      */
-    ApiMsg connect(String url, int worker);
+    ApiMsg connect(String url, int worker, String pubkey);
 
     /**
      * Establishes connection between Aion Java API and Aion Kernel.
@@ -102,10 +118,12 @@ public interface IAionAPI {
      * connection broken.
      * @param worker set the thread number for handle the transaction API. The default is one
      * worker.
+     * @param pubkey the string value represent the public key of the connecting server. The zmq socket
+     * will setup a secure connect to the server.
      * @return the boolean value indicating the success of the connection wrapped into ApiMsg. You
      * can retrieve through the method {@link ApiMsg#getObject() getObject}.
      */
-    ApiMsg connect(String url, boolean reconnect, int worker);
+    ApiMsg connect(String url, boolean reconnect, int worker, String pubkey);
 
     /**
      * Establishes connection between Aion Java API and Aion Kernel.
@@ -116,10 +134,12 @@ public interface IAionAPI {
      * connection broken.
      * @param worker set the thread number for handle the transaction API.
      * @param timeout set the timeout for the api message does not have the response from server
+     * @param pubkey the string value represent the public key of the connecting server. The zmq socket
+     * will setup a secure connect to the server.
      * @return the boolean value indicating the success of the connection wrapped into ApiMsg. You
      * can retrieve through the method {@link ApiMsg#getObject() getObject}.
      */
-    ApiMsg connect(String url, boolean reconnect, int worker, int timeout);
+    ApiMsg connect(String url, boolean reconnect, int worker, int timeout, String pubkey);
 
     /**
      * Check the connection status between Aion Java API and Aion Kernel.

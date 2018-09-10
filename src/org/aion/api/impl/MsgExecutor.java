@@ -73,6 +73,7 @@ public class MsgExecutor implements Runnable {
     private final static int HB_TOLERANCE = 3;
     private final static int HB_POLL_MS = 500;
     private final static int RECVTIMEOUT = 3000;
+    private static String ServerPubkeyString;
 
     private byte[] serverPubKey;
     // = If api is unresponsive for more than ~2 seconds, kill the api.
@@ -119,12 +120,13 @@ public class MsgExecutor implements Runnable {
         initPriviege();
     }
 
-    MsgExecutor(int protocolVer, String url, int timeout) {
+    MsgExecutor(int protocolVer, String url, int timeout, String pubkey) {
         this.ver = protocolVer;
         this.url = url;
         this.addrBindNumber = Arrays.toString(ApiUtils.genHash(8));
         this.hashMap = Collections.synchronizedMap(new LRUTimeMap<>(maxPenddingTx << 1, timeout));
         this.eventMap = Collections.synchronizedMap(new LRUMap<>(100));
+        ServerPubkeyString = pubkey;
         initPriviege();
     }
 
@@ -331,24 +333,36 @@ public class MsgExecutor implements Runnable {
             feSocket = ctx.socket(ZMQ.DEALER);
 
             if (CfgApi.inst().isSecureConnectEnabled()) {
-                loadServerPubKey();
-
-                if (serverPubKey != null) {
+                if (ServerPubkeyString != null && !ServerPubkeyString.isEmpty()) {
+                    LOGGER.info("Set secure connect with input server public key string! [{}]", ServerPubkeyString);
                     ZMQ.Curve.KeyPair kp = ZMQ.Curve.generateKeyPair();
-
                     if (kp != null) {
                         feSocket.setCurvePublicKey(kp.publicKey.getBytes());
                         feSocket.setCurveSecretKey(kp.secretKey.getBytes());
-                        feSocket.setCurveServerKey(serverPubKey);
+                        feSocket.setCurveServerKey(ServerPubkeyString.getBytes());
                         LOGGER.info("Secure connection enabled!");
                     } else {
-                        LOGGER.info("Can't generate client curve keypair. Secure connection disabled!");
+                        LOGGER.error("Can't generate client curve keypair. Secured connection disabled!");
                     }
                 } else {
-                    LOGGER.info("Can't find the connecting server pub key. Secure connection disabled!");
+                    LOGGER.info("Loading the connecting server's public key from the folder!");
+                    loadServerPubKey();
+                    if (serverPubKey != null) {
+                        LOGGER.info("Found the connecting server's public key in the folder!");
+                        ZMQ.Curve.KeyPair kp = ZMQ.Curve.generateKeyPair();
+                        if (kp != null) {
+                            feSocket.setCurvePublicKey(kp.publicKey.getBytes());
+                            feSocket.setCurveSecretKey(kp.secretKey.getBytes());
+                            feSocket.setCurveServerKey(serverPubKey);
+                            LOGGER.info("Secure connection enabled!");
+                        } else {
+                            LOGGER.error(
+                                "Can't generate client curve keypair. Secure connection disabled!");
+                        }
+                    } else {
+                        LOGGER.info("Can't find the connecting server's public key. Secured connection disabled!");
+                    }
                 }
-            } else {
-                LOGGER.info("Secure connection disabled!");
             }
 
             feSocket.connect(this.url);

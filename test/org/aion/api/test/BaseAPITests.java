@@ -78,9 +78,11 @@ import org.aion.api.type.core.tx.AionTransaction;
 import org.aion.base.type.Address;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
+import org.aion.base.util.ByteUtil;
 import org.aion.base.util.Bytesable;
 import org.aion.crypto.ECKey;
 import org.aion.crypto.ECKeyFac;
+import org.aion.crypto.ed25519.ECKeyEd25519;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -1555,7 +1557,7 @@ public class BaseAPITests {
 
 
     private void connectAPI() {
-        ApiMsg apiMsg = api.connect(url);
+        ApiMsg apiMsg = api.connect(url, true);
         assertFalse(apiMsg.isError());
         assertTrue(apiMsg.getObject());
     }
@@ -2273,7 +2275,7 @@ public class BaseAPITests {
         System.out.println("run TestGetBlocksSqlByRangeLatest.");
 
         IAionAPI api = IAionAPI.init();
-        api.connect(url, false, 1, 1000);
+        api.connect(url, false, 1, 1000, null);
 
         if (!api.isConnected()) {
             System.out.println("Api not connected.");
