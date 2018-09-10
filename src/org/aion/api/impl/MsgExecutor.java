@@ -363,6 +363,8 @@ public class MsgExecutor implements Runnable {
                         LOGGER.info("Can't find the connecting server's public key. Secured connection disabled!");
                     }
                 }
+            } else {
+                LOGGER.info("Secured connection disabled due to config settings!");
             }
 
             feSocket.connect(this.url);
