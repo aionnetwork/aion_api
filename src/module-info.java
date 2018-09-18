@@ -10,4 +10,8 @@ module aion.api.client {
     requires jdk.sctp;
 
     exports org.aion.api;
+    exports org.aion.api.type;
+    exports org.aion.api.impl;
+    // should probably move what we need from this pkg into some pkg not named 'internal'
+    exports org.aion.api.impl.internal; 
 }
