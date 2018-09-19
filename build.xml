@@ -65,9 +65,9 @@
             includes="**/*.java, module-info.java"
             excludes="org/aion/api/server/pb/*.java"
             >
-		<modulepath>
+		<classpath>
                         <path refid="classpath.dependency" />
-               </modulepath>
+               </classpath>
 	</javac>
     </target>
 
