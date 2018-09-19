@@ -30,9 +30,7 @@ dependencies {
     testCompile 'org.hamcrest:hamcrest-all:1.3'
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.9'
-}
+task preBuild(type: Exec) { commandLine 'sh', 'script/prebuild.sh' }
 
-// these are integ tests
-build.dependsOn.remove("check")
+build.dependsOn preBuild
+build.dependsOn.remove("check") // these are integ tests
