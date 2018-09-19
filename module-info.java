@@ -9,9 +9,4 @@ module aion.api.client {
     requires logback.classic;
 
     exports org.aion.api;
-    exports org.aion.api.type;
-
-    // Warning: this export will be removed in the near future;
-    // avoid taking a dependency on this package.
-    exports org.aion.api.impl;
 }
