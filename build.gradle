@@ -41,19 +41,39 @@ task getVersion(type: JavaExec) {
     args '-v'
     standardOutput = new ByteArrayOutputStream()
 }
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': 'org.aion.api.tools.ApiDemo',
+                   'Implementation-Vendor': 'The Aion Foundation',
+                   'Implementation-Vendor-Id': 'aion.network',
+                   'Specification-Title': 'Aion Foundation Java API'
+	
+    }
+    baseName = 'libAionApi'
+    version = ''
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+    destinationDir file('build')
+}
 task postBuildTar(type: Tar) { 
     mustRunAfter getVersion
     doFirst {
         def version = getVersion.standardOutput.toString().replace('\n', '');
-        archiveName = "libAionApi-v${version}.tar.bz2"
+        archiveName = "libAionApi-v${version}.tar.gz"
     }
-    destinationDir = file('pack')
-    compression = Compression.GZIP
-
-    into('/lib') { 
+    into('/jars') {  // was lib in ant world
         from 'jars'
         include '*.jar'
-    }/*
+    }
+    into('/') { 
+        from 'build'
+        include "Java-API-v*-doc.zip"
+        include fatJar.archiveName
+    }
+    destinationDir = file('pack')
+
+
+/*
     into('/aion/') { 
         from dirWorkspace
         include 'aion.sh', 'aion_gui.sh'
@@ -90,20 +110,6 @@ task postBuildTar(type: Tar) {
 task postBuildRevertVersion(type: Exec) { 
     commandLine 'git', 'checkout', './src/org/aion/api/IAionAPI.java'
 }
-task fatJar(type: Jar) {
-    manifest {
-        attributes 'Main-Class': 'org.aion.api.tools.ApiDemo',
-                   'Implementation-Vendor': 'The Aion Foundation',
-                   'Implementation-Vendor-Id': 'aion.network',
-                   'Specification-Title': 'Aion Foundation Java API'
-	
-    }
-    baseName = 'libAionApi'
-    version = ''
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
-    destinationDir file('pack')
-}
 task copyJarToPack(type: Copy) { from "${buildDir}/libs" into file('pack') }
 task collectDependentJars(type: Copy) { 
     into 'jars'
@@ -111,12 +117,56 @@ task collectDependentJars(type: Copy) {
     from { project.jar}
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
+javadoc { 
+    include "org/aion/api/I*.java"
+    include "org/aion/api/sol/I*.java"
+    include "org/aion/api/type/AccountDetails.java"
+    include "org/aion/api/type/ApiMsg.java"
+    include "org/aion/api/type/Block.java"
+    include "org/aion/api/type/BlockDetails.java"
+    include "org/aion/api/type/BlockSql.java"
+    include "org/aion/api/type/CompileResponse.java"
+    include "org/aion/api/type/ContractAbiEntry.java"
+    include "org/aion/api/type/ContractAbiIOParam.java"
+    include "org/aion/api/type/ContractDeploy.java"
+    include "org/aion/api/type/ContractEvent.java"
+    include "org/aion/api/type/ContractEventFilter.java"
+    include "org/aion/api/type/ContractResponse.java"
+    include "org/aion/api/type/DeployResponse.java"
+    include "org/aion/api/type/Event.java"
+    include "org/aion/api/type/JsonFmt.java"
+    include "org/aion/api/type/Key.java"
+    include "org/aion/api/type/KeyExport.java"
+    include "org/aion/api/type/MsgRsp.java"
+    include "org/aion/api/type/Node.java"
+    include "org/aion/api/type/Protocol.java"
+    include "org/aion/api/type/SyncInfo.java"
+    include "org/aion/api/type/Transaction.java"
+    include "org/aion/api/type/TxArgs.java"
+    include "org/aion/api/type/TxDetails.java"
+    include "org/aion/api/type/TxLog.java"
+    include "org/aion/api/type/TxReceipt.java"               
+    options.bottom = '<i>Copyright (c) 2017-2018 Aion foundation</i>'
+    title "Aion API"
+}
+task javadocZip(type: Zip) { 
+    doFirst {
+        def version = getVersion.standardOutput.toString().replace('\n', '');
+        archiveName = "Java-API-v${version}-doc.zip"
+    }
+    from 'build'//javadoc.destinationDir
+    destinationDir = file('build/')
+}
 
 compileJava.dependsOn preBuild
 build.dependsOn.remove("check") // these are integ tests
 build.finalizedBy(postBuildTar)
 build.finalizedBy(postBuildRevertVersion)
+build.finalizedBy(javadocZip)
 postBuildTar.dependsOn copyJarToPack
 postBuildTar.dependsOn fatJar 
 postBuildTar.dependsOn collectDependentJars
 postBuildTar.dependsOn getVersion
+javadocZip.dependsOn getVersion
+javadocZip.dependsOn javadoc 
+
