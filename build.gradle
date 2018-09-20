@@ -7,11 +7,15 @@ repositories {
     jcenter()
 
     flatDir {
-        dirs './lib'
+        dirs './lib', './mod'
     }
 }
 
 dependencies { 
+    /*compile project(":modAionBase");
+    compile project(":modCrypto");
+    compile project(":modLogger");
+    compile project(":modRlp");*/
     compile files("mod/modAionBase.jar");
     compile files("mod/modCrypto.jar");
     compile files("mod/modLogger.jar");
@@ -31,6 +35,88 @@ dependencies {
 }
 
 task preBuild(type: Exec) { commandLine 'sh', 'script/prebuild.sh' }
+task getVersion(type: JavaExec) { 
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'org.aion.api.tools.ApiDemo'
+    args '-v'
+    standardOutput = new ByteArrayOutputStream()
+}
+task postBuildTar(type: Tar) { 
+    mustRunAfter getVersion
+    doFirst {
+        def version = getVersion.standardOutput.toString().replace('\n', '');
+        archiveName = "libAionApi-v${version}.tar.bz2"
+    }
+    destinationDir = file('pack')
+    compression = Compression.GZIP
 
-build.dependsOn preBuild
+    into('/lib') { 
+        from 'jars'
+        include '*.jar'
+    }/*
+    into('/aion/') { 
+        from dirWorkspace
+        include 'aion.sh', 'aion_gui.sh'
+    }
+    into('/aion/native') {
+        from dirNative
+        include '**'
+    }
+    into('/aion/config') {
+        from "${dirPack}/config"
+        include '**'
+    }
+    into('/aion/rt') {
+        from "${dirPack}/rt"
+        include '**'
+    }
+    into('/aion/web3') {
+        from "${dirPack}/web3"
+        include '**'
+    }
+    into('/aion/docs') {
+        from "${dirPack}/docs"
+        include '**'
+    }
+    into('/aion/clientAPI') {
+        from "${dirPack}/clientAPI"
+        include '**'
+    }
+    into('/aion/script') {
+        from "${dirPack}/script"
+        include 'generateSslCert.sh', 'nohup_wrapper.sh'
+    }*/
+}
+task postBuildRevertVersion(type: Exec) { 
+    commandLine 'git', 'checkout', './src/org/aion/api/IAionAPI.java'
+}
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': 'org.aion.api.tools.ApiDemo',
+                   'Implementation-Vendor': 'The Aion Foundation',
+                   'Implementation-Vendor-Id': 'aion.network',
+                   'Specification-Title': 'Aion Foundation Java API'
+	
+    }
+    baseName = 'libAionApi'
+    version = ''
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+    destinationDir file('pack')
+}
+task copyJarToPack(type: Copy) { from "${buildDir}/libs" into file('pack') }
+task collectDependentJars(type: Copy) { 
+    into 'jars'
+    from { project.configurations.runtime } 
+    from { project.jar}
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+compileJava.dependsOn preBuild
 build.dependsOn.remove("check") // these are integ tests
+build.finalizedBy(postBuildTar)
+build.finalizedBy(postBuildRevertVersion)
+postBuildTar.dependsOn copyJarToPack
+postBuildTar.dependsOn fatJar 
+postBuildTar.dependsOn collectDependentJars
+postBuildTar.dependsOn getVersion

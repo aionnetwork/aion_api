@@ -1,6 +1,6 @@
 # setup paths
 PACK_PATH="pack"
-MOD_NAME="modAionApi.jar"
+MOD_NAME="aion_api.jar"
 LIB_NAME="libAionApi.jar"
 
 
