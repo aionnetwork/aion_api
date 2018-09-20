@@ -1,14 +1,10 @@
 ext.moduleName = 'aion.api.client'
-
 apply plugin: 'java'
 apply plugin: 'idea'
 
 repositories {
     jcenter()
-
-    flatDir {
-        dirs './lib', './mod'
-    }
+    flatDir { dirs './lib', './mod' }
 }
 
 dependencies { 
@@ -16,6 +12,7 @@ dependencies {
     compile project(":modCrypto");
     compile project(":modLogger");
     compile project(":modRlp");*/
+
     compile files("mod/modAionBase.jar");
     compile files("mod/modCrypto.jar");
     compile files("mod/modLogger.jar");
@@ -34,14 +31,21 @@ dependencies {
     testCompile 'org.hamcrest:hamcrest-all:1.3'
 }
 
+// TODO just implement the script as Groovy here instead of calling it 
 task preBuild(type: Exec) { commandLine 'sh', 'script/prebuild.sh' }
+
 task getVersion(type: JavaExec) { 
+    description "Execute the apiDemo to get the version of release"
     classpath = sourceSets.main.runtimeClasspath
     main = 'org.aion.api.tools.ApiDemo'
     args '-v'
     standardOutput = new ByteArrayOutputStream()
 }
+
 task fatJar(type: Jar) {
+    description "Produce JAR containing all dependencies and runs demo as main class"
+    dependsOn getVersion
+
     manifest {
         attributes 'Main-Class': 'org.aion.api.tools.ApiDemo',
                    'Implementation-Vendor': 'The Aion Foundation',
@@ -49,74 +53,24 @@ task fatJar(type: Jar) {
                    'Specification-Title': 'Aion Foundation Java API'
 	
     }
-    baseName = 'libAionApi'
-    version = ''
+    doFirst {
+        def version = getVersion.standardOutput.toString().replace('\n', '')
+        def date = new Date().format('YY-MM-dd')
+        archiveName = "libAionApi-v${version}-${date}.jar"
+    }
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
     destinationDir file('build')
 }
-task postBuildTar(type: Tar) { 
-    mustRunAfter getVersion
-    doFirst {
-        def version = getVersion.standardOutput.toString().replace('\n', '');
-        archiveName = "libAionApi-v${version}.tar.gz"
-    }
-    into('/jars') {  // was lib in ant world
-        from 'jars'
-        include '*.jar'
-    }
-    into('/') { 
-        from 'build'
-        include "Java-API-v*-doc.zip"
-        include fatJar.archiveName
-    }
-    destinationDir = file('pack')
 
-
-/*
-    into('/aion/') { 
-        from dirWorkspace
-        include 'aion.sh', 'aion_gui.sh'
-    }
-    into('/aion/native') {
-        from dirNative
-        include '**'
-    }
-    into('/aion/config') {
-        from "${dirPack}/config"
-        include '**'
-    }
-    into('/aion/rt') {
-        from "${dirPack}/rt"
-        include '**'
-    }
-    into('/aion/web3') {
-        from "${dirPack}/web3"
-        include '**'
-    }
-    into('/aion/docs') {
-        from "${dirPack}/docs"
-        include '**'
-    }
-    into('/aion/clientAPI') {
-        from "${dirPack}/clientAPI"
-        include '**'
-    }
-    into('/aion/script') {
-        from "${dirPack}/script"
-        include 'generateSslCert.sh', 'nohup_wrapper.sh'
-    }*/
-}
-task postBuildRevertVersion(type: Exec) { 
-    commandLine 'git', 'checkout', './src/org/aion/api/IAionAPI.java'
-}
-task copyJarToPack(type: Copy) { from "${buildDir}/libs" into file('pack') }
 task collectDependentJars(type: Copy) { 
+    description = "Put all runtime jars (mod* and dependencies) into jars directory"
     into 'jars'
     from { project.configurations.runtime } 
     from { project.jar}
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
+
 javadoc { 
     include "org/aion/api/I*.java"
     include "org/aion/api/sol/I*.java"
@@ -149,24 +103,57 @@ javadoc {
     options.bottom = '<i>Copyright (c) 2017-2018 Aion foundation</i>'
     title "Aion API"
 }
+
 task javadocZip(type: Zip) { 
+    dependsOn javadoc
+    dependsOn getVersion
+
     doFirst {
-        def version = getVersion.standardOutput.toString().replace('\n', '');
-        archiveName = "Java-API-v${version}-doc.zip"
+        def version = getVersion.standardOutput.toString().replace('\n', '')
+        def date = new Date().format('yyyy-MM-dd')
+        archiveName = "Java-API-v${version}-${date}-doc.zip"
     }
-    from 'build'//javadoc.destinationDir
     destinationDir = file('build/')
+    from javadoc.outputs 
 }
 
-compileJava.dependsOn preBuild
+task postBuildTar(type: Tar) { 
+    description "Creates the full libAionApi-VERSION.tar.gz for distribution"
+    dependsOn fatJar 
+    dependsOn collectDependentJars
+    dependsOn getVersion
+    dependsOn javadocZip
+
+    compression = Compression.GZIP
+
+    doFirst {
+        def version = getVersion.standardOutput.toString().replace('\n', '')
+        def date = new Date().format('yyyy-MM-dd')
+        archiveName = "libAionApi-v${version}-${date}.tar.gz"
+    }
+    /*into('/jars') {  // was lib in ant world
+        from 'jars'
+        include '*.jar'
+    }*/
+    into('/') { 
+        from 'build'
+        include "Java-API-v*-doc.zip"
+        include "libAionApi-v*.jar"
+    }
+    into('/native') { 
+        from 'native'
+        include '**'
+    }
+    destinationDir = file('pack')
+}
+
+task postBuildRevertVersion(type: Exec) { 
+    description "Reverts the in-code version change applied by prebuild"
+    commandLine 'git', 'checkout', './src/org/aion/api/IAionAPI.java'
+}
+
 build.dependsOn.remove("check") // these are integ tests
 build.finalizedBy(postBuildTar)
 build.finalizedBy(postBuildRevertVersion)
-build.finalizedBy(javadocZip)
-postBuildTar.dependsOn copyJarToPack
-postBuildTar.dependsOn fatJar 
-postBuildTar.dependsOn collectDependentJars
-postBuildTar.dependsOn getVersion
-javadocZip.dependsOn getVersion
-javadocZip.dependsOn javadoc 
 
+compileJava.dependsOn preBuild
