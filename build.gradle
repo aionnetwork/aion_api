@@ -49,7 +49,16 @@ task getVersion(type: JavaExec) {
     }
 }
 
-task fatJar(type: Jar) {
+task configFatJar {
+    dependsOn getVersion
+    doLast {
+        fatJar.archiveName = "libAionApi-v${project.ext["compiled_version"]}.jar"
+    }
+}
+
+task fatJar(type: Jar) { 
+    dependsOn configFatJar
+
     description "Produce JAR containing all dependencies and runs demo as main class"
     dependsOn getVersion
 
@@ -59,9 +68,6 @@ task fatJar(type: Jar) {
                    'Implementation-Vendor-Id': 'aion.network',
                    'Specification-Title': 'Aion Foundation Java API'
 	
-    }
-    doFirst {
-        archiveName = "libAionApi-v${project.ext["compiled_version"]}.jar"
     }
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
