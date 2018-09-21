@@ -42,6 +42,11 @@ task getVersion(type: JavaExec) {
     main = 'org.aion.api.tools.ApiDemo'
     args '-v'
     standardOutput = new ByteArrayOutputStream()
+    project.ext["compiled_version"] = "Unknown";
+    doLast { 
+       def date = new Date().format('YY-MM-dd')
+       project.ext["compiled_version"] = standardOutput.toString().replace('\n', '') + '-' + date;
+    }
 }
 
 task fatJar(type: Jar) {
@@ -56,9 +61,7 @@ task fatJar(type: Jar) {
 	
     }
     doFirst {
-        def version = getVersion.standardOutput.toString().replace('\n', '')
-        def date = new Date().format('YY-MM-dd')
-        archiveName = "libAionApi-v${version}-${date}.jar"
+        archiveName = "libAionApi-v${project.ext["compiled_version"]}.jar"
     }
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
@@ -111,9 +114,7 @@ task javadocZip(type: Zip) {
     dependsOn getVersion
 
     doFirst {
-        def version = getVersion.standardOutput.toString().replace('\n', '')
-        def date = new Date().format('yyyy-MM-dd')
-        archiveName = "Java-API-v${version}-${date}-doc.zip"
+        archiveName = "Java-API-v${project.ext["compiled_version"]}-doc.zip"
     }
     destinationDir = file('build/')
     from javadoc.outputs 
@@ -122,16 +123,15 @@ task javadocZip(type: Zip) {
 task postBuildTar(type: Tar) { 
     description "Creates the full libAionApi-VERSION.tar.gz for distribution"
     dependsOn fatJar 
-    dependsOn collectDependentJars
     dependsOn getVersion
     dependsOn javadocZip
 
     compression = Compression.GZIP
 
     doFirst {
-        def version = getVersion.standardOutput.toString().replace('\n', '')
-        def date = new Date().format('yyyy-MM-dd')
-        archiveName = "libAionApi-v${version}-${date}.tar.gz"
+        mkdir 'pack'
+        archiveName = "libAionApi-v${project.ext["compiled_version"]}.tar.gz"
+        destinationDir = file('pack')
         ant.echo("Aion Api build ver - ${version}")
     }
     into('/') { 
@@ -143,20 +143,22 @@ task postBuildTar(type: Tar) {
         from 'native'
         include '**'
     }
-    destinationDir = file('pack')
 
     // also extract all the contents into pack, since
     // aion project expects stuff there for its own pack
 }
 
-task extractTarToPack(type: Copy) { 
+task configExtractTarToPack { 
     dependsOn postBuildTar
-    /*doFirst { 
-        from tarTree("${postBuildTar.destinationDir}/${postBuildTar.archiveName}")
-    }*/
     
-    from tarTree(postBuildTar.outputs.getFiles[0])
-    into 'pack'
+    doFirst { 
+        extractTarToPack.from tarTree("${postBuildTar.destinationDir}/${postBuildTar.archiveName}")
+    }
+}
+
+task extractTarToPack(type: Copy) {
+    dependsOn configExtractTarToPack
+    destinationDir = file('pack')
 }
 
 task postBuildRevertVersion(type: Exec) { 
