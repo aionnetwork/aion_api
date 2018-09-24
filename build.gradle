@@ -1,4 +1,4 @@
-// TODO task for updating dependent libs (jar+native) from kernel
+ //TODO task for updating dependent libs (jar+native) from kernel
 
 ext.moduleName = 'aion.api.client'
 apply plugin: 'java'
@@ -138,7 +138,7 @@ task postBuildTar(type: Tar) {
     doFirst {
         mkdir 'pack'
         archiveName = "libAionApi-v${project.ext["compiled_version"]}.tar.gz"
-        ant.echo("Aion Api build ver - ${version}")
+        ant.echo("Aion Api build ver - ${project.ext["compiled_version"]}")
     }
     into('/') { 
         from 'build'
@@ -158,9 +158,7 @@ task configExtractTarToPack {
     dependsOn postBuildTar
     
     doFirst { 
-        //let archiveName = "libAionApi-v${project.ext["compiled_version"]}.tar.gz"
         extractTarToPack.from tarTree("${postBuildTar.destinationDir}/" + "libAionApi-v${project.ext["compiled_version"]}.tar.gz")
-        //extractTarToPack.from tarTree("${postBuildTar.destinationDir}/${postBuildTar.archiveName}")
     }
 }
 
@@ -183,4 +181,42 @@ compileJava.finalizedBy(postBuildRevertVersion)
 
 clean.doFirst { 
     delete "pack"
+}
+
+task updateAionDeps(type: Copy) { 
+    // note: dependencies of the projects aren't copied
+    ['modAionBase', 'modCrypto', 'modLogger', 'modRlp'].each{
+        def maybeProj = rootProject.findProject(":${it}")
+        if(maybeProj == null) { 
+            throw new GradleException('Can only update kernel dependencies when calling this task with aion as the root project');
+        }
+        dependsOn maybeProj.jar
+        from maybeProj.jar.outputs
+    }
+    into file('mod')
+}
+
+task updateNativeDeps { 
+    dependsOn(rootProject.tasks['ant-3rd_build'])
+
+    doLast { 
+        copy { 
+            from rootProject.file('native/linux/zmq') into file('lib/linux/zmq')
+        }
+        copy { 
+            from rootProject.file('native/linux/sodium') into file('lib/linux/sodium')
+        }
+        copy { 
+            from rootProject.file('native/linux/blake2b') into file('lib/linux/blake2b')
+        }
+    }
+}
+
+/** 
+ * Update the jars in aion_api using jars from aion (kernel).  Replaces ant
+ * target 'clean_build_from_kernel'
+ */
+task updateKernelDeps { 
+    dependsOn updateAionDeps
+    dependsOn updateNativeDeps
 }
