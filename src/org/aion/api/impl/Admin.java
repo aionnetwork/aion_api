@@ -26,7 +26,6 @@ package org.aion.api.impl;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import com.sun.nio.sctp.IllegalReceiveException;
 import java.util.Collections;
 import org.aion.api.IAdmin;
 import org.aion.api.impl.internal.ApiUtils;
@@ -95,7 +94,7 @@ public class Admin implements IAdmin {
         List<BlockDetails> bdl = msg.getObject();
 
         if (bdl.size() != 1) {
-            throw new IllegalReceiveException("wrong return block size! Should not happen");
+            throw new IllegalArgumentException("wrong return block size! Should not happen");
         }
 
         return new ApiMsg(1, bdl.get(0), cast.OTHERS);
