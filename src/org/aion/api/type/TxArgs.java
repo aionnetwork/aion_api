@@ -161,7 +161,7 @@ public final class TxArgs {
             }
 
             if (nrgLimit == 0) {
-                nrgLimit = to.equals(Address.EMPTY_ADDRESS()) ? ITx.NRG_LIMIT_CONTRACT_CREATE_MAX
+                nrgLimit = to.isEmptyAddress() ? ITx.NRG_LIMIT_CONTRACT_CREATE_MAX
                     : ITx.NRG_LIMIT_TX_MAX;
             }
 
