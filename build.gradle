@@ -31,59 +31,61 @@ sourceSets {
     }
 }
 
-afterEvaluate { 
-    // Override java plug-in behaviour to make JDK9+ module logic work
-    // From: https://guides.gradle.org/building-java-9-modules/#step_2_produce_java_9_modules_for_all_subprojects
-    compileJava {
-        inputs.property("moduleName", moduleName)
-        doFirst {
-            options.compilerArgs = [
-                '--module-path', classpath.asPath,
-            ]
-            classpath = files()
+if(rootProject.name != AION_PROJECT_NAME) { 
+    afterEvaluate { 
+        // Override java plug-in behaviour to make JDK9+ module logic work
+        // From: https://guides.gradle.org/building-java-9-modules/#step_2_produce_java_9_modules_for_all_subprojects
+        compileJava {
+            inputs.property("moduleName", moduleName)
+            doFirst {
+                options.compilerArgs = [
+                    '--module-path', classpath.asPath,
+                ]
+                classpath = files()
+            }
         }
-    }
-    
-    // Need to comment this out for now, modules-info.java doesn't have 'require' declarations
-    // used by the test code.  The ant build.xml, similarly, uses module-path for build, but 
-    // classpath for building the tests (at least in modRlp).  Need to sort out how to properly set the module-path
-    // for the tests before using the stuff below.
-    /*
-    compileTestJava {
-        inputs.property("moduleName", moduleName)
-        doFirst {
-            options.compilerArgs = [
-                '--module-path', classpath.asPath,
-                '--add-modules', 'junit',
-                '--add-reads', "$moduleName=junit",
-                '--patch-module', "$moduleName=" + files(sourceSets.test.java.srcDirs).asPath,
-            ]
-            classpath = files()
+        
+        // Need to comment this out for now, modules-info.java doesn't have 'require' declarations
+        // used by the test code.  The ant build.xml, similarly, uses module-path for build, but 
+        // classpath for building the tests (at least in modRlp).  Need to sort out how to properly set the module-path
+        // for the tests before using the stuff below.
+        /*
+        compileTestJava {
+            inputs.property("moduleName", moduleName)
+            doFirst {
+                options.compilerArgs = [
+                    '--module-path', classpath.asPath,
+                    '--add-modules', 'junit',
+                    '--add-reads', "$moduleName=junit",
+                    '--patch-module', "$moduleName=" + files(sourceSets.test.java.srcDirs).asPath,
+                ]
+                classpath = files()
+            }
         }
-    }
 
-    test {
-        inputs.property("moduleName", moduleName)
-        doFirst {
-            jvmArgs = [
-                '--module-path', classpath.asPath,
-                '--add-modules', 'ALL-MODULE-PATH',
-                '--add-reads', "$moduleName=junit",
-                '--patch-module', "$moduleName=" + files(sourceSets.test.java.outputDir).asPath,
-            ]
-            classpath = files()
+        test {
+            inputs.property("moduleName", moduleName)
+            doFirst {
+                jvmArgs = [
+                    '--module-path', classpath.asPath,
+                    '--add-modules', 'ALL-MODULE-PATH',
+                    '--add-reads', "$moduleName=junit",
+                    '--patch-module', "$moduleName=" + files(sourceSets.test.java.outputDir).asPath,
+                ]
+                classpath = files()
+            }
         }
+        */
     }
-    */
 }
 
 dependencies { 
-    compile files("mod/modAionBase.jar");
-    compile files("mod/modCrypto.jar");
-    compile files("mod/modLogger.jar");
-    compile files("mod/modRlp.jar");
-    compile files("lib/libnzmq.jar")
-    compile files("lib/libnsc.jar")
+    compile files("./mod/modAionBase.jar");
+    compile files("./mod/modCrypto.jar");
+    compile files("./mod/modLogger.jar");
+    compile files("./mod/modRlp.jar");
+    compile files("./lib/libnzmq.jar")
+    compile files("./lib/libnsc.jar")
     compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.0'
     compile 'org.slf4j:slf4j-api:1.7.25'
     compile group: 'com.google.protobuf', name: 'protobuf-java', version: '3.5.0'
@@ -259,7 +261,6 @@ task updateAionDeps(type: Copy) {
         if(maybeProj != null) { 
             dependsOn maybeProj.jar
             from maybeProj.jar.outputs
-            isLoneProject = false 
         }
     }
     into file('mod')
