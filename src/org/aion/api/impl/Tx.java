@@ -625,7 +625,7 @@ public final class Tx implements ITx {
 
         TxArgs txArgs = new TxArgsBuilder()
             .data(ByteArrayWrapper.wrap(byteCode))
-            .from(apiInst.defaultAccount.equals(Address.EMPTY_ADDRESS()) ? Address
+            .from(apiInst.defaultAccount.isEmptyAddress() ? Address
                 .wrap("0xa000000000000000000000000000000000000000000000000000000000000000")
                 : apiInst.defaultAccount)
             .createTxArgs();
