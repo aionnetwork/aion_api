@@ -9,16 +9,78 @@ repositories {
     flatDir { dirs './lib', './mod' }
 }
 
+sourceSets { 
+    main {
+        java.srcDirs = ['src']
+    }
+    test {
+        java.srcDirs = ['test']
+    }
+    integTest { 
+        java { 
+            srcDirs = ['integration-test']
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+        }
+    }
+}
+
+afterEvaluate { 
+    // Override java plug-in behaviour to make JDK9+ module logic work
+    // From: https://guides.gradle.org/building-java-9-modules/#step_2_produce_java_9_modules_for_all_subprojects
+    compileJava {
+        inputs.property("moduleName", moduleName)
+        doFirst {
+            options.compilerArgs = [
+                '--module-path', classpath.asPath,
+            ]
+            classpath = files()
+        }
+    }
+    
+    // Need to comment this out for now, modules-info.java doesn't have 'require' declarations
+    // used by the test code.  The ant build.xml, similarly, uses module-path for build, but 
+    // classpath for building the tests (at least in modRlp).  Need to sort out how to properly set the module-path
+    // for the tests before using the stuff below.
+    /*
+    compileTestJava {
+        inputs.property("moduleName", moduleName)
+        doFirst {
+            options.compilerArgs = [
+                '--module-path', classpath.asPath,
+                '--add-modules', 'junit',
+                '--add-reads', "$moduleName=junit",
+                '--patch-module', "$moduleName=" + files(sourceSets.test.java.srcDirs).asPath,
+            ]
+            classpath = files()
+        }
+    }
+
+    test {
+        inputs.property("moduleName", moduleName)
+        doFirst {
+            jvmArgs = [
+                '--module-path', classpath.asPath,
+                '--add-modules', 'ALL-MODULE-PATH',
+                '--add-reads', "$moduleName=junit",
+                '--patch-module', "$moduleName=" + files(sourceSets.test.java.outputDir).asPath,
+            ]
+            classpath = files()
+        }
+    }
+    */
+}
+
 dependencies { 
     /*compile project(":modAionBase");
     compile project(":modCrypto");
     compile project(":modLogger");
     compile project(":modRlp");*/
 
-    compile files("mod/modAionBase.jar");
-    compile files("mod/modCrypto.jar");
-    compile files("mod/modLogger.jar");
-    compile files("mod/modRlp.jar");
+    compile files("./mod/modAionBase.jar");
+    compile files("./mod/modCrypto.jar");
+    compile files("./mod/modLogger.jar");
+    compile files("./mod/modRlp.jar");
     compile files("${rootProject.projectDir}/lib/libnzmq.jar")
     compile files("${rootProject.projectDir}/lib/libnsc.jar")
     compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.0'
@@ -134,7 +196,7 @@ task postBuildTar(type: Tar) {
 
     compression = Compression.GZIP
 
-    destinationDir = file('pack')
+    destinationDir = file('pack/')
     doFirst {
         mkdir 'pack'
         archiveName = "libAionApi-v${project.ext["compiled_version"]}.tar.gz"
@@ -157,7 +219,7 @@ task postBuildTar(type: Tar) {
 task configExtractTarToPack { 
     dependsOn postBuildTar
     
-    doFirst { 
+    doLast { 
         extractTarToPack.from tarTree("${postBuildTar.destinationDir}/" + "libAionApi-v${project.ext["compiled_version"]}.tar.gz")
     }
 }
@@ -184,20 +246,32 @@ clean.doFirst {
 }
 
 task updateAionDeps(type: Copy) { 
-    // note: dependencies of the projects aren't copied
-    ['modAionBase', 'modCrypto', 'modLogger', 'modRlp'].each{
-        def maybeProj = rootProject.findProject(":${it}")
+    doFirst {
         if(maybeProj == null) { 
             throw new GradleException('Can only update kernel dependencies when calling this task with aion as the root project');
         }
-        dependsOn maybeProj.jar
-        from maybeProj.jar.outputs
+    }
+    // note: dependencies of the projects aren't copied
+    ['modAionBase', 'modCrypto', 'modLogger', 'modRlp'].each{
+        def maybeProj = rootProject.findProject(":${it}")
+        if(maybeProj != null) { 
+            dependsOn maybeProj.jar
+            from maybeProj.jar.outputs
+        }
     }
     into file('mod')
 }
 
 task updateNativeDeps { 
-    dependsOn(rootProject.tasks['ant-3rd_build'])
+    doFirst {
+        if(maybeProj == null) { 
+            throw new GradleException('Can only update kernel dependencies when calling this task with aion as the root project');
+        }
+    }
+
+    if(rootProject.tasks.findByName('ant-3rd_build')) { 
+        dependsOn(rootProject.tasks['ant-3rd_build'])
+    }
 
     doLast { 
         copy { 
