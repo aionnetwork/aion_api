@@ -11,3 +11,4 @@ pack/
 docs/
 modAionApi.iml
 modAionApi.jar
+.gradle/**
