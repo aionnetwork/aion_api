@@ -21,7 +21,6 @@
  *     Aion foundation.
  */
 
-
 package org.aion.api.type;
 
 import org.aion.base.type.Hash256;

@@ -21,7 +21,6 @@
  *     Aion foundation.
  */
 
-
 package org.aion.api.impl;
 
 import java.util.Optional;

@@ -21,7 +21,6 @@
  *     Aion foundation.
  */
 
-
 package org.aion.api.type;
 
 import static org.aion.api.ITx.NRG_LIMIT_TX_MIN;
