@@ -39,8 +39,8 @@ import org.aion.api.type.ApiMsg;
 
 /**
  * Nucoapi base class, contains the majority of Aion frontend Java APIs. High chance of finding what
- * you're looking for here, unless it is related to contract transactions. AionAPI provides a
- * static method that returns an instance. All API functionality requires the user to connect to the
+ * you're looking for here, unless it is related to contract transactions. AionAPI provides a static
+ * method that returns an instance. All API functionality requires the user to connect to the
  * backend utilizing {@link #connect(String)}.
  *
  * @see Contract
@@ -57,10 +57,6 @@ public final class AionAPIImpl extends ApiBase implements IAionAPI {
     private IAdmin admin;
     private IContractController controller;
 
-    public static IAionAPI inst() {
-        return new AionAPIImpl();
-    }
-
     private AionAPIImpl() {
         super();
         net = new Net(this);
@@ -74,6 +70,9 @@ public final class AionAPIImpl extends ApiBase implements IAionAPI {
         admin = new Admin(this);
     }
 
+    public static IAionAPI inst() {
+        return new AionAPIImpl();
+    }
 
     public boolean isConnected() {
         if (this.isInitialized.get() && this.msgExecutor.isInitialized.get()) {

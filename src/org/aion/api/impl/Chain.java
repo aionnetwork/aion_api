@@ -57,6 +57,40 @@ public final class Chain implements IChain {
         this.apiInst = inst;
     }
 
+    /**
+     * A helper function intended to provide easy copying from response type to {@link
+     * org.aion.api.type.Block}, intended for internal usage
+     */
+    private static Block toBlock(Message.rsp_getBlock rsp) {
+
+        Block.BlockBuilder builder = new Block.BlockBuilder();
+
+        List<Hash256> txs = new ArrayList<>();
+        for (ByteString bs : rsp.getTxHashList()) {
+            txs.add(Hash256.wrap(bs.toByteArray()));
+        }
+
+        return builder.bloom(ByteArrayWrapper.wrap(rsp.getLogsBloom().toByteArray()))
+            .difficulty(new BigInteger(rsp.getDifficulty().toByteArray()))
+            .extraData(ByteArrayWrapper.wrap(rsp.getExtraData().toByteArray()))
+            .nonce(new BigInteger(rsp.getNonce().toByteArray()))
+            .miner(Address.wrap(rsp.getMinerAddress().toByteArray()))
+            .nrgConsumed(rsp.getNrgConsumed())
+            .nrgLimit(rsp.getNrgLimit())
+            .txTrieRoot(Hash256.wrap(rsp.getTxTrieRoot().toByteArray()))
+            .stateRoot(Hash256.wrap(rsp.getStateRoot().toByteArray()))
+            .timestamp(rsp.getTimestamp())
+            .receiptTxRoot(Hash256.wrap(rsp.getReceiptTrieRoot().toByteArray()))
+            .number(rsp.getBlockNumber())
+            .txHash(txs)
+            .hash(Hash256.wrap(rsp.getHash().toByteArray()))
+            .parentHash(Hash256.wrap(rsp.getParentHash().toByteArray()))
+            .solution(ByteArrayWrapper.wrap(rsp.getSolution().toByteArray()))
+            .size(rsp.getSize())
+            .totalDifficulty(new BigInteger(rsp.getTotalDifficulty().toByteArray()))
+            .createBlock();
+    }
+
     public ApiMsg blockNumber() {
 
         if (!apiInst.isInitialized.get()) {
@@ -260,7 +294,6 @@ public final class Chain implements IChain {
         }
     }
 
-
     public ApiMsg getTransactionByHash(Hash256 transactionHash) {
         if (!this.apiInst.isConnected()) {
             return new ApiMsg(-1003);
@@ -399,6 +432,27 @@ public final class Chain implements IChain {
         }
     }
 
+    //public long hashRate() {
+    //    if (!this.apiInst.isConnected()) {
+    //        LOGGER.isError(new Throwable().getStackTrace()[0].getMethodName() + ErrId.getErrString(-1003L));
+    //        return -1L;
+    //    }
+    //
+    //    byte[] reqHdr = ApiUtils.toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_chain, Message.Funcs.f_hashrate);
+    //    byte[] rsp = this.apiInst.nbProcess(reqHdr);
+    //
+    //    if (this.apiInst.validRspHeader(rsp)) {
+    //        return -1L;
+    //    }
+    //
+    //    try {
+    //        return Message.rsp_hashrate.parseFrom(ApiUtils.parseBody(rsp)).getHashrate();
+    //    } catch (InvalidProtocolBufferException e) {
+    //        LOGGER.isError(new Throwable().getStackTrace()[0].getMethodName() + ErrId.getErrString(-104L) + e.getMessage());
+    //        return -1L;
+    //    }
+    //}
+
     public ApiMsg getBlockTransactionCountByNumber(long blockNumber) {
         if (!this.apiInst.isConnected()) {
             return new ApiMsg(-1003);
@@ -437,61 +491,6 @@ public final class Chain implements IChain {
             }
             return new ApiMsg(-104, e.getMessage(), cast.OTHERS);
         }
-    }
-
-    //public long hashRate() {
-    //    if (!this.apiInst.isConnected()) {
-    //        LOGGER.isError(new Throwable().getStackTrace()[0].getMethodName() + ErrId.getErrString(-1003L));
-    //        return -1L;
-    //    }
-    //
-    //    byte[] reqHdr = ApiUtils.toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_chain, Message.Funcs.f_hashrate);
-    //    byte[] rsp = this.apiInst.nbProcess(reqHdr);
-    //
-    //    if (this.apiInst.validRspHeader(rsp)) {
-    //        return -1L;
-    //    }
-    //
-    //    try {
-    //        return Message.rsp_hashrate.parseFrom(ApiUtils.parseBody(rsp)).getHashrate();
-    //    } catch (InvalidProtocolBufferException e) {
-    //        LOGGER.isError(new Throwable().getStackTrace()[0].getMethodName() + ErrId.getErrString(-104L) + e.getMessage());
-    //        return -1L;
-    //    }
-    //}
-
-    /**
-     * A helper function intended to provide easy copying from response type to {@link
-     * org.aion.api.type.Block}, intended for internal usage
-     */
-    private static Block toBlock(Message.rsp_getBlock rsp) {
-
-        Block.BlockBuilder builder = new Block.BlockBuilder();
-
-        List<Hash256> txs = new ArrayList<>();
-        for (ByteString bs : rsp.getTxHashList()) {
-            txs.add(Hash256.wrap(bs.toByteArray()));
-        }
-
-        return builder.bloom(ByteArrayWrapper.wrap(rsp.getLogsBloom().toByteArray()))
-            .difficulty(new BigInteger(rsp.getDifficulty().toByteArray()))
-            .extraData(ByteArrayWrapper.wrap(rsp.getExtraData().toByteArray()))
-            .nonce(new BigInteger(rsp.getNonce().toByteArray()))
-            .miner(Address.wrap(rsp.getMinerAddress().toByteArray()))
-            .nrgConsumed(rsp.getNrgConsumed())
-            .nrgLimit(rsp.getNrgLimit())
-            .txTrieRoot(Hash256.wrap(rsp.getTxTrieRoot().toByteArray()))
-            .stateRoot(Hash256.wrap(rsp.getStateRoot().toByteArray()))
-            .timestamp(rsp.getTimestamp())
-            .receiptTxRoot(Hash256.wrap(rsp.getReceiptTrieRoot().toByteArray()))
-            .number(rsp.getBlockNumber())
-            .txHash(txs)
-            .hash(Hash256.wrap(rsp.getHash().toByteArray()))
-            .parentHash(Hash256.wrap(rsp.getParentHash().toByteArray()))
-            .solution(ByteArrayWrapper.wrap(rsp.getSolution().toByteArray()))
-            .size(rsp.getSize())
-            .totalDifficulty(new BigInteger(rsp.getTotalDifficulty().toByteArray()))
-            .createBlock();
     }
 
     /**

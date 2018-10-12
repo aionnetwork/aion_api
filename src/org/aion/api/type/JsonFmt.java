@@ -82,7 +82,7 @@ public final class JsonFmt {
                 .append(lv).append(e.getKey()).append(",").append(e.getValue()).append("\n")
                 .append(lv).append("]");
 
-            if(--cnt > 0) {
+            if (--cnt > 0) {
                 sb.append(",");
             }
 
@@ -96,7 +96,7 @@ public final class JsonFmt {
                 .append(lv).append(e.getKey()).append(",").append(e.getValue()).append("\n")
                 .append(lv).append("]");
 
-            if(--cnt > 0) {
+            if (--cnt > 0) {
                 sb.append(",");
             }
 
@@ -140,6 +140,10 @@ public final class JsonFmt {
         public JsonFmtBuilder() {
         }
 
+        public static JsonFmt emptyJsonFmt() {
+            return new JsonFmt();
+        }
+
         public JsonFmt.JsonFmtBuilder constant(final boolean constant) {
             this.constant = constant;
             return this;
@@ -174,10 +178,6 @@ public final class JsonFmt {
                         " outputs#" + String.valueOf(outputs));
             }
             return new JsonFmt(this);
-        }
-
-        public static JsonFmt emptyJsonFmt() {
-            return new JsonFmt();
         }
     }
 }

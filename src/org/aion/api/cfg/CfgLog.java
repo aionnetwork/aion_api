@@ -24,18 +24,17 @@
 
 package org.aion.api.cfg;
 
-import org.aion.api.log.LogEnum;
-import org.aion.api.log.LogLevels;
-
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+import org.aion.api.log.LogEnum;
+import org.aion.api.log.LogLevels;
 
 public class CfgLog {
 
@@ -61,16 +60,17 @@ public class CfgLog {
         while (sr.hasNext()) {
             int eventType = sr.next();
             switch (eventType) {
-            case XMLStreamReader.START_ELEMENT:
-                String elementName = sr.getLocalName().toUpperCase();
-                if (LogEnum.contains(elementName))
-                    this.modules.put(elementName, Cfg.readValue(sr).toUpperCase());
-                break;
-            case XMLStreamReader.END_ELEMENT:
-                break loop;
-            default:
-                //Cfg.skipElement(sr);
-                break;
+                case XMLStreamReader.START_ELEMENT:
+                    String elementName = sr.getLocalName().toUpperCase();
+                    if (LogEnum.contains(elementName)) {
+                        this.modules.put(elementName, Cfg.readValue(sr).toUpperCase());
+                    }
+                    break;
+                case XMLStreamReader.END_ELEMENT:
+                    break loop;
+                default:
+                    //Cfg.skipElement(sr);
+                    break;
             }
         }
     }

@@ -27,12 +27,13 @@ package org.aion.api.cfg;
 
 /**
  * Created by Jay Tseng on 18/04/17.
- */ public class CfgConnect {
+ */
+public class CfgConnect {
 
-    private String ip;
-    private int port;
     protected String user;
     protected String password;
+    private String ip;
+    private int port;
 
     public CfgConnect() {
         this.ip = "tcp://127.0.0.1";

@@ -23,13 +23,13 @@
 
 package org.aion.api.test;
 
-import org.aion.api.impl.internal.ApiUtils;
-import org.aion.api.keccak.Keccak256;
-import org.junit.Test;
-
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+
+import org.aion.api.impl.internal.ApiUtils;
+import org.aion.api.keccak.Keccak256;
+import org.junit.Test;
 
 /**
  * Created by yao on 03/10/16.

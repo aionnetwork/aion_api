@@ -24,14 +24,13 @@
 
 package org.aion.api.type;
 
+import static org.aion.api.ITx.NRG_LIMIT_TX_MIN;
+import static org.aion.api.ITx.NRG_PRICE_MIN;
+
+import java.math.BigInteger;
 import org.aion.api.ITx;
 import org.aion.base.type.Address;
 import org.aion.base.util.ByteArrayWrapper;
-
-import java.math.BigInteger;
-
-import static org.aion.api.ITx.NRG_LIMIT_TX_MIN;
-import static org.aion.api.ITx.NRG_PRICE_MIN;
 
 /**
  * The transaction input arguments used in {@link org.aion.api.ITx#sendTransaction(org.aion.api.type.TxArgs)

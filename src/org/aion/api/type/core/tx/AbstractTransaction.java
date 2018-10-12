@@ -31,15 +31,12 @@ import org.aion.crypto.ISignature;
 import org.slf4j.Logger;
 
 /**
- *
  * @author jin
  */
 public abstract class AbstractTransaction implements ITransaction {
-    
-    private static final int nrgDigits = 64;
 
     static final Logger LOG = AionLoggerFactory.getLogger(LogEnum.TRX.toString());
-
+    private static final int nrgDigits = 64;
     /* SHA3 hash of the RLP encoded transaction */
     protected byte[] hash;
 
@@ -57,18 +54,12 @@ public abstract class AbstractTransaction implements ITransaction {
 
     /* a counter used to make sure each transaction can only be processed once */
     protected byte[] nonce;
-    
-    /* timeStamp is a 8-bytes array shown the time of the transaction signed by the kernel, the unit is nanosecond. */
-    byte[] timeStamp;
-
-    long nrg;
-
     protected long nrgPrice;
-    
     /* define transaction type. */
     protected byte type;
-
-
+    /* timeStamp is a 8-bytes array shown the time of the transaction signed by the kernel, the unit is nanosecond. */
+    byte[] timeStamp;
+    long nrg;
     /* the elliptic curve signature
      * (including public key recovery bits) */
     ISignature signature;
@@ -84,14 +75,16 @@ public abstract class AbstractTransaction implements ITransaction {
         //default type 0x01; reserve date for multi-type transaction
         this.type = 0x01;
     }
-    
-    AbstractTransaction(byte[] nonce, Address receiveAddress, byte[] value, byte[] data, long nrg, long nrgPrice) {
-        this(nonce, receiveAddress, value, data);                
+
+    AbstractTransaction(byte[] nonce, Address receiveAddress, byte[] value, byte[] data, long nrg,
+        long nrgPrice) {
+        this(nonce, receiveAddress, value, data);
         this.nrg = nrg;
         this.nrgPrice = nrgPrice;
     }
-    
-    public AbstractTransaction(byte[] nonce, Address receiveAddress, byte[] value, byte[] data, long nrg, long nrgPrice, byte type) throws Exception {
+
+    public AbstractTransaction(byte[] nonce, Address receiveAddress, byte[] value, byte[] data,
+        long nrg, long nrgPrice, byte type) throws Exception {
         this(nonce, receiveAddress, value, data, nrg, nrgPrice);
 
         if (type == 0x00) {
@@ -99,8 +92,8 @@ public abstract class AbstractTransaction implements ITransaction {
         }
 
         this.type = type;
-    }    
-    
+    }
+
 //
 //    private byte[] checkBI(byte[] _nrg, int _digits) {
 //        if (_nrg == null || _nrg.length == 0) {
@@ -132,9 +125,9 @@ public abstract class AbstractTransaction implements ITransaction {
     public abstract Address getContractAddress();
 
     public abstract AbstractTransaction clone();
-    
+
     public abstract long getNrgConsume();
-    
+
     public abstract void setNrgConsume(long consume);
 
     public abstract byte getType();

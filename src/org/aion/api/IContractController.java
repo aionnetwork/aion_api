@@ -23,13 +23,12 @@
 
 package org.aion.api;
 
-import org.aion.api.sol.ISolidityArg;
-import org.aion.api.type.ApiMsg;
-import org.aion.base.type.Address;
-
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
+import org.aion.api.sol.ISolidityArg;
+import org.aion.api.type.ApiMsg;
+import org.aion.base.type.Address;
 
 /**
  * This interface provides methods for deploy the contract to the Aion blockchain network, store the

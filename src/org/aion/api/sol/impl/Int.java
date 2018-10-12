@@ -24,23 +24,22 @@
 
 package org.aion.api.sol.impl;
 
-import org.aion.api.impl.ErrId;
-import org.aion.api.impl.internal.ApiUtils;
-import org.aion.api.sol.IInt;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+import org.aion.api.impl.ErrId;
+import org.aion.api.impl.internal.ApiUtils;
+import org.aion.api.sol.IInt;
 
 /**
  * Created by yao on 20/09/16.
  */
 
 /**
- * Class Int inherit from class SolidityAbstractType. Contains functions for
- * encoding string, decoding string, datatype checking, Most functions used are
- * not intended to be user facing, and should be left unused by the user.
+ * Class Int inherit from class SolidityAbstractType. Contains functions for encoding string,
+ * decoding string, datatype checking, Most functions used are not intended to be user facing, and
+ * should be left unused by the user.
  */
 public final class Int extends SolidityAbstractType implements IInt {
     // use copyFrom instead
@@ -59,7 +58,6 @@ public final class Int extends SolidityAbstractType implements IInt {
     /**
      * Generates an Integer object from a String.
      *
-     * @param in
      * @return {@link Int}
      */
     public static Int copyFrom(String in) {
@@ -91,7 +89,6 @@ public final class Int extends SolidityAbstractType implements IInt {
     /**
      * Generates an Integer object from a Long.
      *
-     * @param in
      * @return {@link Int}
      */
     public static Int copyFrom(Integer in) {
@@ -125,7 +122,6 @@ public final class Int extends SolidityAbstractType implements IInt {
     /**
      * Generates an Int object from a Long.
      *
-     * @param in
      * @return {@link Int}
      */
     public static Int copyFrom(Long in) {
@@ -156,11 +152,9 @@ public final class Int extends SolidityAbstractType implements IInt {
     }
 
     /**
-     * Generates an Uint object from an ArrayList, String or byte array, this
-     * structure should match the list structure defined in the ABI and consist
-     * only of Bytes.
+     * Generates an Uint object from an ArrayList, String or byte array, this structure should match
+     * the list structure defined in the ABI and consist only of Bytes.
      *
-     * @param l
      * @return {@link Int}
      */
     public static Int copyFrom(List l) {
@@ -246,8 +240,7 @@ public final class Int extends SolidityAbstractType implements IInt {
     /**
      * Checks that inputted string is Int type. To be used with ABI.
      *
-     * @param in
-     *         Solidity Type.
+     * @param in Solidity Type.
      * @return returns a boolean indicating the type is Int.
      */
     public boolean isType(String in) {
@@ -262,12 +255,10 @@ public final class Int extends SolidityAbstractType implements IInt {
     }
 
     /**
-     * Returns a correctly formatted hex string, given an input byte array
-     * (usually 32 bytes). Encoding varies depending on the solidity type being
-     * encoded.
+     * Returns a correctly formatted hex string, given an input byte array (usually 32 bytes).
+     * Encoding varies depending on the solidity type being encoded.
      *
-     * @param entry
-     *         data need to be formatted.
+     * @param entry data need to be formatted.
      * @return formatted string for encode.
      */
     public String formatToString(byte[] entry) {
@@ -286,12 +277,9 @@ public final class Int extends SolidityAbstractType implements IInt {
     }
 
     /**
-     * Returns a correctly formatted hex string, given an input byte array
-     * (usually 32 bytes). Encoding varies depending on the solidity type being
-     * encoded.
+     * Returns a correctly formatted hex string, given an input byte array (usually 32 bytes).
+     * Encoding varies depending on the solidity type being encoded.
      *
-     * @param data
-     * @param offset
      * @return decoded Solidity data.
      */
     public Long decodeToSolidityType(byte[] data, int offset) {

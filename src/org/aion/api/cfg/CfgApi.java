@@ -24,10 +24,15 @@
 
 package org.aion.api.cfg;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.*;
-import java.io.*;
+import javax.xml.stream.XMLStreamWriter;
 
 public class CfgApi extends Cfg {
 
@@ -64,47 +69,48 @@ public class CfgApi extends Cfg {
         this.connect = _cnt;
     }
 
-    public boolean isSecureConnectEnabled() { return this.secureConnectEnabled; }
-
-    private static class ApiCfgHolder {
-        private static final CfgApi inst = new CfgApi();
+    public boolean isSecureConnectEnabled() {
+        return this.secureConnectEnabled;
     }
 
     @Override
     public boolean fromXML() {
         File cfgFile = new File(CONF_FILE_PATH);
-        if(!cfgFile.exists())
+        if (!cfgFile.exists()) {
             return false;
+        }
         XMLInputFactory input = XMLInputFactory.newInstance();
         FileInputStream fis;
         try {
             fis = new FileInputStream(cfgFile);
             XMLStreamReader sr = input.createXMLStreamReader(fis);
-            loop: while (sr.hasNext()) {
+            loop:
+            while (sr.hasNext()) {
                 int eventType = sr.next();
                 switch (eventType) {
-                case XMLStreamReader.START_ELEMENT:
-                    String elementName = sr.getLocalName().toLowerCase();
-                    switch (elementName) {
-                    case "log":
-                        this.log.fromXML(sr);
+                    case XMLStreamReader.START_ELEMENT:
+                        String elementName = sr.getLocalName().toLowerCase();
+                        switch (elementName) {
+                            case "log":
+                                this.log.fromXML(sr);
+                                break;
+                            case "connect":
+                                //this.connect.fromXML(sr);
+                                break;
+                            case "secure-connect":
+                                secureConnectEnabled = Boolean.parseBoolean(Cfg.readValue(sr));
+                                break;
+                            default:
+                                //skipElement(sr);
+                                break;
+                        }
                         break;
-                    case "connect":
-                        //this.connect.fromXML(sr);
-                        break;
-                    case "secure-connect":
-                        secureConnectEnabled = Boolean.parseBoolean(Cfg.readValue(sr));
-                        break;
-                    default:
-                        //skipElement(sr);
-                        break;
-                    }
-                    break;
-                case XMLStreamReader.END_ELEMENT:
-                    if (sr.getLocalName().toLowerCase().equals("aion_api"))
-                        break loop;
-                    else
-                        break;
+                    case XMLStreamReader.END_ELEMENT:
+                        if (sr.getLocalName().toLowerCase().equals("aion_api")) {
+                            break loop;
+                        } else {
+                            break;
+                        }
                 }
             }
             closeFileInputStream(fis);
@@ -172,7 +178,7 @@ public class CfgApi extends Cfg {
         }
     }
 
-    private void closeFileInputStream(final FileInputStream fis){
+    private void closeFileInputStream(final FileInputStream fis) {
         if (fis != null) {
             try {
                 fis.close();
@@ -181,5 +187,10 @@ public class CfgApi extends Cfg {
                 System.exit(1);
             }
         }
+    }
+
+    private static class ApiCfgHolder {
+
+        private static final CfgApi inst = new CfgApi();
     }
 }

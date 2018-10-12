@@ -23,6 +23,10 @@
 
 package org.aion.api.impl;
 
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.aion.api.IUtils;
 import org.aion.api.cfg.CfgApi;
 import org.aion.api.impl.internal.ApiUtils;
@@ -36,11 +40,6 @@ import org.aion.base.type.Address;
 import org.aion.base.util.ByteArrayWrapper;
 import org.slf4j.Logger;
 import org.zeromq.ZMQ;
-
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by Jay Tseng on 14/11/16.

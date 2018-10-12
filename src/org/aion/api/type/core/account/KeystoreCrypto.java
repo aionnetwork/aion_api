@@ -36,17 +36,6 @@ public class KeystoreCrypto {
     private CipherParams cipherParams;
     private KdfParams kdfParams;
 
-    byte[] toRlp() {
-        byte[] bytesCipher = RLP.encodeString(this.cipher);
-        byte[] bytesCipherText = RLP.encodeString(this.cipherText);
-        byte[] bytesKdf = RLP.encodeString(this.kdf);
-        byte[] bytesMac = RLP.encodeString(this.mac);
-        byte[] bytesCipherParams = RLP.encodeElement(this.cipherParams.toRlp());
-        byte[] bytesKdfParams = RLP.encodeElement(this.kdfParams.toRlp());
-        return RLP.encodeList(bytesCipher, bytesCipherText, bytesKdf, bytesMac, bytesCipherParams,
-            bytesKdfParams);
-    }
-
     public static KeystoreCrypto parse(byte[] bytes) throws UnsupportedEncodingException {
         RLPList list = (RLPList) RLP.decode2(bytes).get(0);
         KeystoreCrypto kc = new KeystoreCrypto();
@@ -59,55 +48,66 @@ public class KeystoreCrypto {
         return kc;
     }
 
+    byte[] toRlp() {
+        byte[] bytesCipher = RLP.encodeString(this.cipher);
+        byte[] bytesCipherText = RLP.encodeString(this.cipherText);
+        byte[] bytesKdf = RLP.encodeString(this.kdf);
+        byte[] bytesMac = RLP.encodeString(this.mac);
+        byte[] bytesCipherParams = RLP.encodeElement(this.cipherParams.toRlp());
+        byte[] bytesKdfParams = RLP.encodeElement(this.kdfParams.toRlp());
+        return RLP.encodeList(bytesCipher, bytesCipherText, bytesKdf, bytesMac, bytesCipherParams,
+            bytesKdfParams);
+    }
+
     // setters
-
-    public void setCipher(String cipher) {
-        this.cipher = cipher;
-    }
-
-    void setCipherText(String ciphertext) {
-        this.cipherText = ciphertext;
-    }
-
-    void setKdf(String kdf) {
-        this.kdf = kdf;
-    }
-
-    public void setMac(String mac) {
-        this.mac = mac;
-    }
-
-    void setCipherParams(CipherParams cipherparams) {
-        this.cipherParams = cipherparams;
-    }
-
-    void setKdfParams(KdfParams kdfparams) {
-        this.kdfParams = kdfparams;
-    }
-
-    // getters
 
     public String getCipher() {
         return cipher;
+    }
+
+    public void setCipher(String cipher) {
+        this.cipher = cipher;
     }
 
     String getCipherText() {
         return cipherText;
     }
 
+    void setCipherText(String ciphertext) {
+        this.cipherText = ciphertext;
+    }
+
     String getKdf() {
         return kdf;
     }
 
+    void setKdf(String kdf) {
+        this.kdf = kdf;
+    }
+
+    // getters
+
     public String getMac() {
         return mac;
+    }
+
+    public void setMac(String mac) {
+        this.mac = mac;
     }
 
     CipherParams getCipherParams() {
         return cipherParams;
     }
 
+    void setCipherParams(CipherParams cipherparams) {
+        this.cipherParams = cipherparams;
+    }
+
     KdfParams getKdfParams() {
         return kdfParams;
+    }
+
+    void setKdfParams(KdfParams kdfparams) {
+        this.kdfParams = kdfparams;
     }
 }

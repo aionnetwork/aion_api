@@ -37,6 +37,7 @@ import org.slf4j.Logger;
  * Created by Jay Tseng on 15/11/16.
  */
 public class Mine implements IMine {
+
     private static final Logger LOGGER = AionLoggerFactory.getLogger(LogEnum.MNE.name());
     private AionAPIImpl apiInst;
 
@@ -46,14 +47,15 @@ public class Mine implements IMine {
 
     public ApiMsg isMining() {
         if (!this.apiInst.isConnected()) {
-            LOGGER.error(new Throwable().getStackTrace()[0].getMethodName() + ErrId.getErrString(-1003L));
+            LOGGER.error(
+                new Throwable().getStackTrace()[0].getMethodName() + ErrId.getErrString(-1003L));
             return new ApiMsg(-1003);
         }
 
-        byte[] reqHdr = ApiUtils.toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_mine, Message.Funcs.f_mining);
+        byte[] reqHdr = ApiUtils
+            .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_mine, Message.Funcs.f_mining);
 
         byte[] rsp = this.apiInst.nbProcess(reqHdr);
-
 
         int code = this.apiInst.validRspHeader(rsp);
         if (code != 1) {
@@ -61,12 +63,14 @@ public class Mine implements IMine {
         }
 
         try {
-            Message.rsp_mining msgRsp = Message.rsp_mining.parseFrom(ApiUtils.parseBody(rsp).getData());
+            Message.rsp_mining msgRsp = Message.rsp_mining
+                .parseFrom(ApiUtils.parseBody(rsp).getData());
             return new ApiMsg(msgRsp.getMining(), ApiMsg.cast.BOOLEAN);
 
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[isMining] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
+                LOGGER.error("[isMining] {} exception: [{}]", ErrId.getErrString(-104L),
+                    e.getMessage());
             }
             return new ApiMsg(-104, e.getMessage(), ApiMsg.cast.OTHERS);
         }

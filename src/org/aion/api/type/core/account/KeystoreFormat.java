@@ -23,11 +23,13 @@
 
 package org.aion.api.type.core.account;
 
-import java.security.*;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.UUID;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -36,7 +38,6 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
-
 import org.aion.crypto.ECKey;
 import org.aion.crypto.ECKeyFac;
 import org.aion.crypto.HashUtil;
@@ -47,61 +48,6 @@ import org.spongycastle.util.encoders.Hex;
  * keystore format class
  */
 public class KeystoreFormat {
-
-    public byte[] toKeystore(final ECKey key, String password) {
-        try {
-            // n,r,p = 2^18, 8, 1 uses 256MB memory and approx 1s CPU time on a
-            // modern CPU.
-            // final int ScryptN = ((Double) Math.pow(10.0, 18.0)).intValue();
-            final int ScryptN = 262144;
-            final int ScryptR = 8;
-            final int ScryptP = 1;
-            final int ScryptDklen = 32;
-            // salt
-            final byte[] salt = generateRandomBytes(32);
-
-            final byte[] derivedKey = scrypt(password.getBytes(), salt, ScryptN, ScryptR, ScryptP,
-                ScryptDklen);
-
-            // 128-bit initialisation vector for the cipher (16 bytes)
-            final byte[] iv = generateRandomBytes(16);
-            final byte[] privateKey = key.getPrivKeyBytes();
-            final byte[] encryptKey = Arrays.copyOfRange(derivedKey, 0, 16);
-            final byte[] cipherText = encryptAes(iv, encryptKey, privateKey);
-            final byte[] mac = HashUtil
-                .h256(concat(Arrays.copyOfRange(derivedKey, 16, 32), cipherText));
-
-            final KeystoreItem keystore = new KeystoreItem();
-            keystore.address = Hex.toHexString(key.getAddress());
-            keystore.id = UUID.randomUUID().toString();
-            keystore.version = 3;
-            keystore.crypto = new KeystoreCrypto();
-            keystore.crypto.setKdf("scrypt");
-            keystore.crypto.setMac(Hex.toHexString(mac));
-            keystore.crypto.setCipher("aes-128-ctr");
-            keystore.crypto.setCipherText(Hex.toHexString(cipherText));
-            keystore.crypto.setCipherParams(new CipherParams());
-            keystore.crypto.getCipherParams().setIv(Hex.toHexString(iv));
-            keystore.crypto.setKdfParams(new KdfParams());
-            keystore.crypto.getKdfParams().setN(ScryptN);
-            keystore.crypto.getKdfParams().setR(ScryptR);
-            keystore.crypto.getKdfParams().setP(ScryptP);
-            keystore.crypto.getKdfParams().setDklen(ScryptDklen);
-            keystore.crypto.getKdfParams().setSalt(Hex.toHexString(salt));
-            return keystore.toRlp();
-
-        } catch (Exception e) {
-
-            throw new RuntimeException("Problem storing key. Message: " + e.getMessage(), e);
-        }
-    }
-
-    private byte[] generateRandomBytes(int size) {
-        final byte[] bytes = new byte[size];
-        Random random = new SecureRandom();
-        random.nextBytes(bytes);
-        return bytes;
-    }
 
     public static ECKey fromKeystore(final byte[] content, final String password) {
 
@@ -138,12 +84,6 @@ public class KeystoreFormat {
         throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
         InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
         return processAes(iv, keyBytes, cipherText, Cipher.DECRYPT_MODE);
-    }
-
-    private byte[] encryptAes(byte[] iv, byte[] keyBytes, byte[] cipherText)
-        throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
-        InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
-        return processAes(iv, keyBytes, cipherText, Cipher.ENCRYPT_MODE);
     }
 
     private static byte[] processAes(byte[] iv, byte[] keyBytes, byte[] cipherText, int encryptMode)
@@ -214,6 +154,67 @@ public class KeystoreFormat {
         PBEKeySpec spec = new PBEKeySpec(chars, salt, iterations, 256);
         SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
         return skf.generateSecret(spec).getEncoded();
+    }
+
+    public byte[] toKeystore(final ECKey key, String password) {
+        try {
+            // n,r,p = 2^18, 8, 1 uses 256MB memory and approx 1s CPU time on a
+            // modern CPU.
+            // final int ScryptN = ((Double) Math.pow(10.0, 18.0)).intValue();
+            final int ScryptN = 262144;
+            final int ScryptR = 8;
+            final int ScryptP = 1;
+            final int ScryptDklen = 32;
+            // salt
+            final byte[] salt = generateRandomBytes(32);
+
+            final byte[] derivedKey = scrypt(password.getBytes(), salt, ScryptN, ScryptR, ScryptP,
+                ScryptDklen);
+
+            // 128-bit initialisation vector for the cipher (16 bytes)
+            final byte[] iv = generateRandomBytes(16);
+            final byte[] privateKey = key.getPrivKeyBytes();
+            final byte[] encryptKey = Arrays.copyOfRange(derivedKey, 0, 16);
+            final byte[] cipherText = encryptAes(iv, encryptKey, privateKey);
+            final byte[] mac = HashUtil
+                .h256(concat(Arrays.copyOfRange(derivedKey, 16, 32), cipherText));
+
+            final KeystoreItem keystore = new KeystoreItem();
+            keystore.address = Hex.toHexString(key.getAddress());
+            keystore.id = UUID.randomUUID().toString();
+            keystore.version = 3;
+            keystore.crypto = new KeystoreCrypto();
+            keystore.crypto.setKdf("scrypt");
+            keystore.crypto.setMac(Hex.toHexString(mac));
+            keystore.crypto.setCipher("aes-128-ctr");
+            keystore.crypto.setCipherText(Hex.toHexString(cipherText));
+            keystore.crypto.setCipherParams(new CipherParams());
+            keystore.crypto.getCipherParams().setIv(Hex.toHexString(iv));
+            keystore.crypto.setKdfParams(new KdfParams());
+            keystore.crypto.getKdfParams().setN(ScryptN);
+            keystore.crypto.getKdfParams().setR(ScryptR);
+            keystore.crypto.getKdfParams().setP(ScryptP);
+            keystore.crypto.getKdfParams().setDklen(ScryptDklen);
+            keystore.crypto.getKdfParams().setSalt(Hex.toHexString(salt));
+            return keystore.toRlp();
+
+        } catch (Exception e) {
+
+            throw new RuntimeException("Problem storing key. Message: " + e.getMessage(), e);
+        }
+    }
+
+    private byte[] generateRandomBytes(int size) {
+        final byte[] bytes = new byte[size];
+        Random random = new SecureRandom();
+        random.nextBytes(bytes);
+        return bytes;
+    }
+
+    private byte[] encryptAes(byte[] iv, byte[] keyBytes, byte[] cipherText)
+        throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
+        InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+        return processAes(iv, keyBytes, cipherText, Cipher.ENCRYPT_MODE);
     }
 
 }

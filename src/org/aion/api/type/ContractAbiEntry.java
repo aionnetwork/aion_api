@@ -77,7 +77,7 @@ public final class ContractAbiEntry {
                 .append(lv).append(io.toString(++_lv)).append("\n")
                 .append(lv).append("]");
 
-            if(--cnt > 0) {
+            if (--cnt > 0) {
                 sb.append(",");
             }
 
@@ -91,7 +91,7 @@ public final class ContractAbiEntry {
                 .append(lv).append(io.toString(_lv)).append("\n")
                 .append(lv).append("]");
 
-            if(--cnt > 0) {
+            if (--cnt > 0) {
                 sb.append(",");
             }
 
@@ -99,7 +99,8 @@ public final class ContractAbiEntry {
         }
 
         sb.append(lv).append("isEvent: ").append(String.valueOf(isEvent)).append(",\n")
-            .append(lv).append("isConstructor: ").append(String.valueOf(isConstructor)).append(",\n")
+            .append(lv).append("isConstructor: ").append(String.valueOf(isConstructor))
+            .append(",\n")
             .append(lv).append("isFallback: ").append(String.valueOf(isFallback)).append(",\n")
             .append(lv).append("hashed: ").append(hashed).append("\n");
 

@@ -24,24 +24,22 @@
 
 package org.aion.api.sol.impl;
 
-import org.aion.api.impl.ErrId;
-import org.aion.api.impl.internal.ApiUtils;
-import org.aion.api.sol.IBool;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
+import org.aion.api.impl.ErrId;
+import org.aion.api.impl.internal.ApiUtils;
+import org.aion.api.sol.IBool;
 
 /**
  * Created by yao on 16/09/16.
  */
 
 /**
- * Class Bool extends from SolidityAbstractType. use for function arguments
- * input/output.
+ * Class Bool extends from SolidityAbstractType. use for function arguments input/output.
  */
-public final class Bool extends SolidityAbstractType implements IBool{
+public final class Bool extends SolidityAbstractType implements IBool {
 
     private Bool(List in) {
         super();
@@ -57,22 +55,19 @@ public final class Bool extends SolidityAbstractType implements IBool{
     /**
      * Generates an Bool object from a Boolean value.
      *
-     * @param in
      * @return {@link Bool}
      */
     public static Bool copyFrom(boolean in) {
         List<byte[]> l = new ArrayList<>();
-        byte[] out = { (byte) (in ? 1 : 0) };
+        byte[] out = {(byte) (in ? 1 : 0)};
         l.add(out);
         return new Bool(l);
     }
 
     /**
-     * Generates an Bool object from an ArrayList of Boolean, this structure
-     * should match the list structure defined in the ABI and consist only of
-     * Boolean.
+     * Generates an Bool object from an ArrayList of Boolean, this structure should match the list
+     * structure defined in the ABI and consist only of Boolean.
      *
-     * @param l
      * @return {@link Bool}.
      */
     public static Bool copyFrom(List l) {
@@ -102,7 +97,7 @@ public final class Bool extends SolidityAbstractType implements IBool{
 
         for (Object entry : l) {
             if (entry instanceof Boolean) {
-                byte[] out = { (byte) ((Boolean) entry ? 1 : 0) };
+                byte[] out = {(byte) ((Boolean) entry ? 1 : 0)};
                 localArrayList.add(out);
             } else if (entry instanceof ArrayList) {
                 localArrayList.add(copyFromHelper((ArrayList) entry));
@@ -128,8 +123,7 @@ public final class Bool extends SolidityAbstractType implements IBool{
     /**
      * Checks that inputted string is the correct type. To be used with ABI.
      *
-     * @param in
-     *         Solidity Type.
+     * @param in Solidity Type.
      * @return returns a boolean indicating the type is Bool.
      */
     public boolean isType(String in) {
@@ -143,12 +137,10 @@ public final class Bool extends SolidityAbstractType implements IBool{
     }
 
     /**
-     * Returns a correctly formatted hex string, given an input byte array
-     * (usually 32 bytes). Encoding varies depending on the solidity type being
-     * encoded.
+     * Returns a correctly formatted hex string, given an input byte array (usually 32 bytes).
+     * Encoding varies depending on the solidity type being encoded.
      *
-     * @param entry
-     *         data need to be formatted.
+     * @param entry data need to be formatted.
      * @return formatted string for encode.
      */
     public String formatToString(byte[] entry) {
@@ -162,12 +154,9 @@ public final class Bool extends SolidityAbstractType implements IBool{
     }
 
     /**
-     * Returns a correctly formatted hex string, given an input byte array
-     * (usually 32 bytes). Encoding varies depending on the solidity type being
-     * encoded.
+     * Returns a correctly formatted hex string, given an input byte array (usually 32 bytes).
+     * Encoding varies depending on the solidity type being encoded.
      *
-     * @param data
-     * @param offset
      * @return decoded Solidity data.
      */
     public Boolean decodeToSolidityType(byte[] data, int offset) {

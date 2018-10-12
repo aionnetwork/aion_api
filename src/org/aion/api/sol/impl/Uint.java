@@ -24,22 +24,20 @@
 
 package org.aion.api.sol.impl;
 
-import org.aion.api.impl.ErrId;
-import org.aion.api.impl.internal.ApiUtils;
-import org.aion.api.sol.IUint;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+import org.aion.api.impl.ErrId;
+import org.aion.api.impl.internal.ApiUtils;
+import org.aion.api.sol.IUint;
 
 /**
  * Created by yao on 16/09/16.
  */
 
 /**
- * Class Uint extends from SolidityAbstractType. use for function arguments
- * input/output.
+ * Class Uint extends from SolidityAbstractType. use for function arguments input/output.
  */
 public class Uint extends SolidityAbstractType implements IUint {
     // use copyFrom instead
@@ -58,7 +56,6 @@ public class Uint extends SolidityAbstractType implements IUint {
     /**
      * Generates an Uint object from a String.
      *
-     * @param in
      * @return Uint object.
      */
     public static Uint copyFrom(String in) {
@@ -90,7 +87,6 @@ public class Uint extends SolidityAbstractType implements IUint {
     /**
      * Generates an Uint object from a Integer.
      *
-     * @param in
      * @return Uint object.
      */
     public static Uint copyFrom(Integer in) {
@@ -122,7 +118,6 @@ public class Uint extends SolidityAbstractType implements IUint {
     /**
      * Generates an Uint object from a Long.
      *
-     * @param in
      * @return Uint object.
      */
     public static Uint copyFrom(long in) {
@@ -140,11 +135,9 @@ public class Uint extends SolidityAbstractType implements IUint {
     }
 
     /**
-     * Generates an Uint object from an ArrayList, String or byte array, this
-     * structure should match the list structure defined in the ABI and consist
-     * only of Bytes.
+     * Generates an Uint object from an ArrayList, String or byte array, this structure should match
+     * the list structure defined in the ABI and consist only of Bytes.
      *
-     * @param l
      * @return Uint object.
      */
     public static Uint copyFrom(List l) {
@@ -226,8 +219,7 @@ public class Uint extends SolidityAbstractType implements IUint {
     /**
      * Checks that inputted string is the correct type. To be used with ABI.
      *
-     * @param in
-     *         Solidity Type.
+     * @param in Solidity Type.
      * @return returns a boolean indicating the type is Uint.
      */
     public boolean isType(String in) {
@@ -241,12 +233,10 @@ public class Uint extends SolidityAbstractType implements IUint {
     }
 
     /**
-     * Returns a correctly formatted hex string, given an input byte array
-     * (usually 32 bytes). Encoding varies depending on the solidity type being
-     * encoded.
+     * Returns a correctly formatted hex string, given an input byte array (usually 32 bytes).
+     * Encoding varies depending on the solidity type being encoded.
      *
-     * @param entry
-     *         data need to be formatted.
+     * @param entry data need to be formatted.
      * @return formatted string for encode.
      */
     public String formatToString(byte[] entry) {
@@ -266,12 +256,9 @@ public class Uint extends SolidityAbstractType implements IUint {
     }
 
     /**
-     * Returns a correctly formatted hex string, given an input byte array
-     * (usually 32 bytes). Encoding varies depending on the solidity type being
-     * encoded.
+     * Returns a correctly formatted hex string, given an input byte array (usually 32 bytes).
+     * Encoding varies depending on the solidity type being encoded.
      *
-     * @param data
-     * @param offset
      * @return decoded Solidity data.
      */
     public Long decodeToSolidityType(byte[] data, int offset) {

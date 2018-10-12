@@ -24,19 +24,18 @@
 
 package org.aion.api.sol.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
 import org.aion.api.IUtils;
 import org.aion.api.impl.ErrId;
 import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.sol.IAddress;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Pattern;
-
 /**
- * Class Address extends from SolidityAbstractType. use for precessing account
- * address, contract address and transaction address input/output.
+ * Class Address extends from SolidityAbstractType. use for precessing account address, contract
+ * address and transaction address input/output.
  */
 public final class Address extends SolidityAbstractType implements IAddress {
 
@@ -53,12 +52,11 @@ public final class Address extends SolidityAbstractType implements IAddress {
     }
 
     /**
-     * Generates an Address object from an ArrayList of hexidecimal strings,
-     * this structure should match the list structure defined in the ABI and
-     * consist only of hexidecimal strings, or byte arrays.
+     * Generates an Address object from an ArrayList of hexidecimal strings, this structure should
+     * match the list structure defined in the ABI and consist only of hexidecimal strings, or byte
+     * arrays.
      *
-     * @param l
-     *         {@link java.util.List List} of {@link java.lang.String String} or bytes array.
+     * @param l {@link java.util.List List} of {@link java.lang.String String} or bytes array.
      * @return {@link Address Address}
      */
     public static Address copyFrom(List l) {
@@ -78,12 +76,10 @@ public final class Address extends SolidityAbstractType implements IAddress {
     /**
      * Generates an Address object from a hexidecimal string.
      *
-     * @param in
-     *         {@link java.lang.String String}.
+     * @param in {@link java.lang.String String}.
      * @return {@link Address Address}
-     * @throws Exception
-     *         if hex string contains invalid characters, or is not 32
-     *         bytes (64 characters) in length.
+     * @throws Exception if hex string contains invalid characters, or is not 32 bytes (64
+     * characters) in length.
      */
     public static Address copyFrom(String in) {
 
@@ -101,11 +97,10 @@ public final class Address extends SolidityAbstractType implements IAddress {
     }
 
     /**
-     * Generates a 20 bytes array from a string input, this function will
-     * convert a hexidecimal string to a bytes array.
+     * Generates a 20 bytes array from a string input, this function will convert a hexidecimal
+     * string to a bytes array.
      *
-     * @param input
-     *         {@link java.lang.String String}.
+     * @param input {@link java.lang.String String}.
      * @return 20 bytes array.
      */
     private static byte[] formatInputAddress(String input) {
@@ -129,8 +124,7 @@ public final class Address extends SolidityAbstractType implements IAddress {
     /**
      * Generates an Address object from a byte array.
      *
-     * @param in
-     *         32 bytes array.
+     * @param in 32 bytes array.
      * @return {@link Address}
      */
     public static Address copyFrom(byte[] in) {
@@ -171,8 +165,7 @@ public final class Address extends SolidityAbstractType implements IAddress {
     }
 
     /**
-     * Instantiates an empty Address object for decoding purposes, not user
-     * facing.
+     * Instantiates an empty Address object for decoding purposes, not user facing.
      *
      * @return {@link Address Address}
      */
@@ -183,8 +176,7 @@ public final class Address extends SolidityAbstractType implements IAddress {
     /**
      * Checks that inputted string is the correct type. To be used with ABI.
      *
-     * @param in
-     *         Solidity Type.
+     * @param in Solidity Type.
      * @return returns a boolean indicating the type is Address.
      */
     public boolean isType(String in) {
@@ -200,8 +192,7 @@ public final class Address extends SolidityAbstractType implements IAddress {
     }
 
     /**
-     * @param entry
-     *         the data represent to a variable bytes array need to be formatted.
+     * @param entry the data represent to a variable bytes array need to be formatted.
      * @return {@link java.lang.String String } formatted string for encode.
      */
     public String formatToString(byte[] entry) {
@@ -218,8 +209,6 @@ public final class Address extends SolidityAbstractType implements IAddress {
     /**
      * For Contract decodes the response data from server, not user facing.
      *
-     * @param data
-     * @param offset
      * @return decoded Solidity data.
      */
     public byte[] decodeToSolidityType(byte[] data, int offset) {

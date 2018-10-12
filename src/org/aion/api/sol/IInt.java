@@ -23,9 +23,8 @@
 
 package org.aion.api.sol;
 
-import org.aion.api.sol.impl.Int;
-
 import java.util.List;
+import org.aion.api.sol.impl.Int;
 
 /**
  * IInt is an interface of the class Int inherited from the class SolidityAbstractType. Contains

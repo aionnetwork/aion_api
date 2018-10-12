@@ -32,6 +32,7 @@ import java.util.List;
  */
 
 public final class BlockSql {
+
     private final long number;
     private final String hash;
     private final String parentHash;
@@ -58,11 +59,16 @@ public final class BlockSql {
         return parentHash;
     }
 
-    public String getBlock() { return block; }
+    public String getBlock() {
+        return block;
+    }
 
-    public List<String> getTransactions() { return transactions; }
+    public List<String> getTransactions() {
+        return transactions;
+    }
 
     public static class BlockSqlBuilder {
+
         private long number;
         private String hash;
         private String parentHash;

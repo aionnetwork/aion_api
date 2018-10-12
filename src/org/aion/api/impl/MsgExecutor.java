@@ -23,12 +23,30 @@
 
 package org.aion.api.impl;
 
+import static java.lang.Thread.sleep;
+
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.aion.api.IUtils;
 import org.aion.api.cfg.CfgApi;
 import org.aion.api.impl.internal.ApiUtils;
@@ -51,52 +69,17 @@ import org.zeromq.ZMQ.Context;
 import org.zeromq.ZMQ.PollItem;
 import org.zeromq.ZMQ.Socket;
 
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static java.lang.Thread.sleep;
-
 /**
  * Created by Jay Tseng on 15/03/17.
  */
 public class MsgExecutor implements Runnable {
 
-    private final int qSize = 50_000;
-    private final int maxPenddingTx = 10_000;
-    private final Logger LOGGER = AionLoggerFactory.getLogger(LogEnum.EXE.name());
-    private final String WK_BIND_ADDR = "inproc://apiWkTh";
-    private final String CB_BIND_ADDR = "inproc://apicbTh";
-    private final String HB_BIND_ADDR = "inproc://apihbTh";
-
     private final static int HB_TOLERANCE = 3;
     private final static int HB_POLL_MS = 500;
     private final static int RECVTIMEOUT = 3000;
-    private static String ServerPubkeyString;
-
-    private byte[] serverPubKey;
-    // = If api is unresponsive for more than ~2 seconds, kill the api.
-    // TODO: implement auto-reconnect on kernel failure
-
-    //TODO: update kernel api privilege then remove this flag
-    private final boolean PRIVILEGE = true; // temp flag
-    private Socket nbSocket;
-    AtomicBoolean isInitialized = new AtomicBoolean(false);
-    private Map<ByteArrayWrapper, MsgRsp> hashMap;
-    private Map<String, BlockingQueue<Event>> eventMap;
-    private AtomicInteger penddingTx = new AtomicInteger(0);
-    private BlockingQueue<MsgReq> queue = new LinkedBlockingQueue<>(qSize);
-    private int ver;
-    private String url;
-    private volatile boolean running = true;
-    private Thread msgThread;
-    private int workers = 1;
-    private String addrBindNumber;
-    private Map<String, Boolean> privilege;
-
     private static final String CURVEKEY_PATH;
     private static final Path PATH;
+    private static String ServerPubkeyString;
 
     static {
         NativeLoader.loadLibrary("zmq");
@@ -110,6 +93,31 @@ public class MsgExecutor implements Runnable {
         CURVEKEY_PATH = storageDir + "/zmq_keystore";
         PATH = Paths.get(CURVEKEY_PATH);
     }
+
+    private final int qSize = 50_000;
+    private final int maxPenddingTx = 10_000;
+    private final Logger LOGGER = AionLoggerFactory.getLogger(LogEnum.EXE.name());
+    // = If api is unresponsive for more than ~2 seconds, kill the api.
+    // TODO: implement auto-reconnect on kernel failure
+    private final String WK_BIND_ADDR = "inproc://apiWkTh";
+    private final String CB_BIND_ADDR = "inproc://apicbTh";
+    private final String HB_BIND_ADDR = "inproc://apihbTh";
+    //TODO: update kernel api privilege then remove this flag
+    private final boolean PRIVILEGE = true; // temp flag
+    AtomicBoolean isInitialized = new AtomicBoolean(false);
+    private byte[] serverPubKey;
+    private Socket nbSocket;
+    private Map<ByteArrayWrapper, MsgRsp> hashMap;
+    private Map<String, BlockingQueue<Event>> eventMap;
+    private AtomicInteger penddingTx = new AtomicInteger(0);
+    private BlockingQueue<MsgReq> queue = new LinkedBlockingQueue<>(qSize);
+    private int ver;
+    private String url;
+    private volatile boolean running = true;
+    private Thread msgThread;
+    private int workers = 1;
+    private String addrBindNumber;
+    private Map<String, Boolean> privilege;
 
     MsgExecutor(int protocolVer, String url) {
         this.ver = protocolVer;
@@ -128,6 +136,11 @@ public class MsgExecutor implements Runnable {
         this.eventMap = Collections.synchronizedMap(new LRUMap<>(100));
         ServerPubkeyString = pubkey;
         initPriviege();
+    }
+
+    private static List<File> getFiles() {
+        File[] files = PATH.toFile().listFiles();
+        return files != null ? Arrays.asList(files) : Collections.emptyList();
     }
 
     private void initPriviege() {
@@ -173,7 +186,8 @@ public class MsgExecutor implements Runnable {
 
                     if (status == 105) {
                         msgRsp.setTxResult(ByteArrayWrapper.wrap(
-                            Arrays.copyOfRange(rsp.getData(), rsp.getData()[0] + 1, rsp.getData().length)));
+                            Arrays.copyOfRange(rsp.getData(), rsp.getData()[0] + 1,
+                                rsp.getData().length)));
                     }
                 } else {
                     // if response message = 68, that is a contract deploy
@@ -334,7 +348,8 @@ public class MsgExecutor implements Runnable {
 
             if (CfgApi.inst().isSecureConnectEnabled()) {
                 if (ServerPubkeyString != null && !ServerPubkeyString.isEmpty()) {
-                    LOGGER.info("Set secure connect with input server public key string! [{}]", ServerPubkeyString);
+                    LOGGER.info("Set secure connect with input server public key string! [{}]",
+                        ServerPubkeyString);
                     ZMQ.Curve.KeyPair kp = ZMQ.Curve.generateKeyPair();
                     if (kp != null) {
                         feSocket.setCurvePublicKey(kp.publicKey.getBytes());
@@ -342,7 +357,8 @@ public class MsgExecutor implements Runnable {
                         feSocket.setCurveServerKey(ServerPubkeyString.getBytes());
                         LOGGER.info("Secure connection enabled!");
                     } else {
-                        LOGGER.error("Can't generate client curve keypair. Secured connection disabled!");
+                        LOGGER.error(
+                            "Can't generate client curve keypair. Secured connection disabled!");
                     }
                 } else {
                     LOGGER.info("Loading the connecting server's public key from the folder!");
@@ -360,7 +376,8 @@ public class MsgExecutor implements Runnable {
                                 "Can't generate client curve keypair. Secure connection disabled!");
                         }
                     } else {
-                        LOGGER.info("Can't find the connecting server's public key. Secured connection disabled!");
+                        LOGGER.info(
+                            "Can't find the connecting server's public key. Secured connection disabled!");
                     }
                 }
             } else {
@@ -512,11 +529,6 @@ public class MsgExecutor implements Runnable {
             this.isInitialized.set(false);
             LOGGER.info("socket disconnected!");
         }
-    }
-
-    private static List<File> getFiles() {
-        File[] files = PATH.toFile().listFiles();
-        return files != null ? Arrays.asList(files) : Collections.emptyList();
     }
 
     private void loadServerPubKey() {

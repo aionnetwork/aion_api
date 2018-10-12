@@ -51,6 +51,15 @@ public interface IAionAPI {
     }
 
     /**
+     * Get Aion Api Version.
+     *
+     * @return {@link java.lang.String String}.
+     */
+    static String API_VERSION() {
+        return VERSION;
+    }
+
+    /**
      * Destroys the socket connection with backend, utilize when operations between frontend and
      * backend client are done.
      *
@@ -88,8 +97,8 @@ public interface IAionAPI {
      * the desired backend Aion client.
      * @param reconnect the boolean value set the client api will try to reconnect when the
      * connection broken. If retry reach 10 times fail, will return a false message.
-     * @param pubkey the string value represent the public key of the connecting server. The zmq socket
-     * will setup a secure connect to the server.
+     * @param pubkey the string value represent the public key of the connecting server. The zmq
+     * socket will setup a secure connect to the server.
      * @return the boolean value indicating the success of the connection wrapped into ApiMsg. You
      * can retrieve through the method {@link ApiMsg#getObject() getObject}.
      */
@@ -102,8 +111,8 @@ public interface IAionAPI {
      * port of the desired backend Aion client.
      * @param worker set the thread number for handle the transaction API. The default is one
      * worker.
-     * @param pubkey the string value represent the public key of the connecting server. The zmq socket
-     * will setup a secure connect to the server.
+     * @param pubkey the string value represent the public key of the connecting server. The zmq
+     * socket will setup a secure connect to the server.
      * @return the boolean value indicating the success of the connection wrapped into ApiMsg. You
      * can retrieve through the method {@link ApiMsg#getObject() getObject}.
      */
@@ -118,8 +127,8 @@ public interface IAionAPI {
      * connection broken. If retry reach 10 times fail, will return a false message.
      * @param worker set the thread number for handle the transaction API. The default is one
      * worker.
-     * @param pubkey the string value represent the public key of the connecting server. The zmq socket
-     * will setup a secure connect to the server.
+     * @param pubkey the string value represent the public key of the connecting server. The zmq
+     * socket will setup a secure connect to the server.
      * @return the boolean value indicating the success of the connection wrapped into ApiMsg. You
      * can retrieve through the method {@link ApiMsg#getObject() getObject}.
      */
@@ -131,11 +140,11 @@ public interface IAionAPI {
      * @param url the class {@link java.lang.String String} including the connection address and
      * port of the desired backend Aion client.
      * @param reconnect the boolean value set the client api will try to reconnect when the
-     * connection broken. If retry reach 10 times fail, will return a false message. 
+     * connection broken. If retry reach 10 times fail, will return a false message.
      * @param worker set the thread number for handle the transaction API.
      * @param timeout set the timeout for the api message does not have the response from server
-     * @param pubkey the string value represent the public key of the connecting server. The zmq socket
-     * will setup a secure connect to the server.
+     * @param pubkey the string value represent the public key of the connecting server. The zmq
+     * socket will setup a secure connect to the server.
      * @return the boolean value indicating the success of the connection wrapped into ApiMsg. You
      * can retrieve through the method {@link ApiMsg#getObject() getObject}.
      */
@@ -213,14 +222,5 @@ public interface IAionAPI {
      * @see IAccount
      */
     IAdmin getAdmin();
-
-    /**
-     * Get Aion Api Version.
-     *
-     * @return {@link java.lang.String String}.
-     */
-    static String API_VERSION() {
-        return VERSION;
-    }
 
 }

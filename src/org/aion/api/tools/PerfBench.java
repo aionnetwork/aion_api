@@ -22,6 +22,21 @@
  */
 package org.aion.api.tools;
 
+import static java.lang.Math.round;
+import static java.lang.System.exit;
+import static org.aion.api.IAionAPI.API_VERSION;
+import static org.aion.api.ITx.NRG_LIMIT_CONTRACT_CREATE_MAX;
+import static org.aion.api.ITx.NRG_LIMIT_TX_MAX;
+import static org.aion.api.ITx.NRG_PRICE_MIN;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.IntStream;
 import org.aion.api.IAionAPI;
 import org.aion.api.IContract;
 import org.aion.api.IUtils;
@@ -36,18 +51,6 @@ import org.aion.api.type.ContractResponse;
 import org.aion.api.type.MsgRsp;
 import org.aion.base.type.Address;
 import org.aion.base.util.ByteArrayWrapper;
-
-import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.stream.IntStream;
-
-import static java.lang.Math.round;
-import static java.lang.System.exit;
-import static org.aion.api.IAionAPI.API_VERSION;
-import static org.aion.api.ITx.NRG_LIMIT_CONTRACT_CREATE_MAX;
-import static org.aion.api.ITx.NRG_LIMIT_TX_MAX;
-import static org.aion.api.ITx.NRG_PRICE_MIN;
 
 /*
   Created by jay on 24/11/16.
@@ -465,7 +468,8 @@ public class PerfBench {
             scan.nextLine();
         }
 
-        apiMsg.set(api.getContractController().createFromSource(tokenSC, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN, param));
+        apiMsg.set(api.getContractController()
+            .createFromSource(tokenSC, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN, param));
 
         if (apiMsg.isError()) {
             System.out.println("Deploy contract failed!" + apiMsg.getErrorCode());
@@ -722,7 +726,8 @@ public class PerfBench {
             scan.nextLine();
         }
 
-        apiMsg.set(api.getContractController().createFromSource(tokenSC, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN, param));
+        apiMsg.set(api.getContractController()
+            .createFromSource(tokenSC, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN, param));
 
         if (apiMsg.isError()) {
             System.out.println("Deploy contract failed!" + apiMsg.getErrorCode());
@@ -922,7 +927,8 @@ public class PerfBench {
 
         System.out.println("Prepare to deploy the token contract.");
 
-        apiMsg.set(api.getContractController().createFromSource(tokenSC, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN, param));
+        apiMsg.set(api.getContractController()
+            .createFromSource(tokenSC, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN, param));
 
         if (apiMsg.isError()) {
             System.out.println("Deploy contract failed!" + apiMsg.getErrorCode());
@@ -1130,7 +1136,8 @@ public class PerfBench {
 
         System.out.println("Prepare to deploy the token contract.");
 
-        apiMsg.set(api.getContractController().createFromSource(tokenSC, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN, param));
+        apiMsg.set(api.getContractController()
+            .createFromSource(tokenSC, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN, param));
 
         if (apiMsg.isError()) {
             System.out.println("Deploy contract failed!" + apiMsg.getErrString());

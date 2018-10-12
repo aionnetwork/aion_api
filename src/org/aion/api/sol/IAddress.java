@@ -23,9 +23,8 @@
 
 package org.aion.api.sol;
 
-import org.aion.api.sol.impl.Address;
-
 import java.util.List;
+import org.aion.api.sol.impl.Address;
 
 /**
  * IAddress is an interface of the class Address that inherits from SolidityAbstractType. This is

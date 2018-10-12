@@ -23,12 +23,11 @@
 
 package org.aion.api;
 
+import java.util.List;
+import java.util.Map;
 import org.aion.api.impl.Account;
 import org.aion.api.type.ApiMsg;
 import org.aion.api.type.Key;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * This interface dedicate to account manipulations.
@@ -37,6 +36,11 @@ import java.util.Map;
  */
 
 public interface IAccount {
+
+    static ApiMsg keystoreCreateLocal(List<String> passphrase) {
+        return Account
+            .keystoreCreateLocal(passphrase);
+    }
 
     /**
      * Create new accounts by given password.
@@ -96,8 +100,5 @@ public interface IAccount {
      * </p>
      */
     ApiMsg accountImport(Map<String, String> keys);
-
-    static ApiMsg keystoreCreateLocal(List<String> passphrase) { return Account
-        .keystoreCreateLocal(passphrase);}
 
 }

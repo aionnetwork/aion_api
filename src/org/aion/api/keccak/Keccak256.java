@@ -26,8 +26,7 @@ package org.aion.api.keccak;
 
 /**
  * <p>
- * This class implements the KeccakHash-256 digest algorithm under the
- * {@link Digest} API.</p>
+ * This class implements the KeccakHash-256 digest algorithm under the {@link Digest} API.</p>
  * <p>
  * <pre>
  * ==========================(LICENSE BEGIN)============================

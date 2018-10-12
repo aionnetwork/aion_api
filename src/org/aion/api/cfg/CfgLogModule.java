@@ -28,7 +28,6 @@ import org.aion.api.log.LogEnum;
 import org.aion.api.log.LogLevels;
 
 
-
 public class CfgLogModule {
 
     protected String label;

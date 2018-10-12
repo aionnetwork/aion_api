@@ -24,23 +24,22 @@
 
 package org.aion.api.type;
 
+import java.util.List;
 import org.aion.base.type.Address;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
 
-import java.util.List;
-
 /**
- * The helper class for gather all of the contract event information. Use the builder class to create this
- * helper class.
- *
- * @see org.aion.api.IContract#getEvents()  getEvents
- * @see org.aion.api.type.CompileResponse CompileResponse
+ * The helper class for gather all of the contract event information. Use the builder class to
+ * create this helper class.
  *
  * @author Jay Tseng
+ * @see org.aion.api.IContract#getEvents()  getEvents
+ * @see org.aion.api.type.CompileResponse CompileResponse
  */
 
 public final class ContractEvent extends Event {
+
     private final Address address;
     private final Hash256 blockHash;
     private final Hash256 txHash;
@@ -55,7 +54,7 @@ public final class ContractEvent extends Event {
     // Solidity type like IString, IBool, IAddress, etc.
     private final List<Object> results;
 
-    private ContractEvent(ContractEventBuilder builder)  {
+    private ContractEvent(ContractEventBuilder builder) {
         super(type.CONTRACT);
         this.address = builder.address;
         this.blockHash = builder.blockHash;
@@ -113,6 +112,7 @@ public final class ContractEvent extends Event {
      * This Builder class is used to build a {@link ContractEvent} instance.
      */
     public static class ContractEventBuilder {
+
         private Address address;
         private Hash256 blockHash;
         private Hash256 txHash;
@@ -126,7 +126,7 @@ public final class ContractEvent extends Event {
 
         public ContractEventBuilder(ContractEvent eventCopy) {
             if (eventCopy == null) {
-                throw  new NullPointerException();
+                throw new NullPointerException();
             }
 
             this.address = eventCopy.getAddress();
@@ -194,22 +194,23 @@ public final class ContractEvent extends Event {
             return this;
         }
 
-        public ContractEvent createContractEvent()  {
+        public ContractEvent createContractEvent() {
 
-            if (address == null || blockHash == null || txHash == null || data == null || eventName == null) {
+            if (address == null || blockHash == null || txHash == null || data == null
+                || eventName == null) {
                 throw new NullPointerException(
-                        "address#" + String.valueOf(address) +
-                                " blockHash#" + String.valueOf(blockHash) +
-                                " txHash#" + String.valueOf(txHash) +
-                                " data#" + String.valueOf(data) +
-                                " eventName#" + String.valueOf(eventName));
+                    "address#" + String.valueOf(address) +
+                        " blockHash#" + String.valueOf(blockHash) +
+                        " txHash#" + String.valueOf(txHash) +
+                        " data#" + String.valueOf(data) +
+                        " eventName#" + String.valueOf(eventName));
             }
 
             if (blockNumber < 0 || logIndex < 0 || txIndex < 0) {
                 throw new IllegalArgumentException(
-                        "blockNumber#" + blockNumber +
-                                " logIndex#" + logIndex +
-                                " txIndex#" + txIndex);
+                    "blockNumber#" + blockNumber +
+                        " logIndex#" + logIndex +
+                        " txIndex#" + txIndex);
             }
 
             return new ContractEvent(this);

@@ -23,12 +23,11 @@
 
 package org.aion.api.type;
 
+import java.math.BigInteger;
+import java.util.List;
 import org.aion.base.type.Address;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
-
-import java.math.BigInteger;
-import java.util.List;
 
 /**
  * The Block return data structure, typically used in Block getter API.

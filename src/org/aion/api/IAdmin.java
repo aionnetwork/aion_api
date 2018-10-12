@@ -23,10 +23,9 @@
 
 package org.aion.api;
 
+import java.util.List;
 import org.aion.api.type.ApiMsg;
 import org.aion.base.type.Address;
-
-import java.util.List;
 import org.aion.base.type.Hash256;
 
 /**

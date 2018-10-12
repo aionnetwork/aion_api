@@ -31,10 +31,11 @@ public enum LogEnum {
     GEN, BSE, CHN, CNT, MNE, NET, TRX, UTL, WLT, EXE, ADM, SOL, ACC;  // discover
 
     public static boolean contains(String _module) {
-        for (LogEnum module : values())
+        for (LogEnum module : values()) {
             if (module.name().equals(_module)) {
                 return true;
             }
+        }
         return false;
     }
 }

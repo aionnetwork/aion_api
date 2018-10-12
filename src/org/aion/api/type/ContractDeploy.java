@@ -23,11 +23,10 @@
 
 package org.aion.api.type;
 
+import java.math.BigInteger;
 import org.aion.api.ITx;
 import org.aion.base.type.Address;
 import org.aion.base.util.ByteArrayWrapper;
-
-import java.math.BigInteger;
 import org.aion.base.util.Bytesable;
 
 /**
@@ -88,7 +87,6 @@ public final class ContractDeploy {
     }
 
 
-
     public static class ContractDeployBuilder {
 
         private CompileResponse cr;
@@ -103,7 +101,7 @@ public final class ContractDeploy {
         }
 
         public ContractDeploy createContractDeploy() {
-            if (cr == null)  {
+            if (cr == null) {
                 throw new NullPointerException(
                     "CompileResponse is null");
             }

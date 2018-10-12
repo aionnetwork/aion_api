@@ -129,12 +129,12 @@ public class MsgRsp {
         this.txResult = txResult;
     }
 
-    public void setError(String error) {
-        this.error = error;
-    }
-
     public String getError() {
         return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
     }
 
     public ByteArrayWrapper getTxDeploy() {

@@ -23,6 +23,17 @@
 
 package org.aion.api.tools;
 
+import static java.lang.System.exit;
+import static org.aion.api.ITx.NRG_LIMIT_CONTRACT_CREATE_MAX;
+import static org.aion.api.ITx.NRG_LIMIT_TX_MAX;
+import static org.aion.api.ITx.NRG_PRICE_MIN;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Scanner;
 import org.aion.api.IAionAPI;
 import org.aion.api.IContract;
 import org.aion.api.IUtils;
@@ -34,13 +45,6 @@ import org.aion.api.type.ApiMsg;
 import org.aion.api.type.ContractEvent;
 import org.aion.api.type.ContractResponse;
 import org.aion.base.type.Address;
-
-import java.util.*;
-
-import static java.lang.System.exit;
-import static org.aion.api.ITx.NRG_LIMIT_CONTRACT_CREATE_MAX;
-import static org.aion.api.ITx.NRG_LIMIT_TX_MAX;
-import static org.aion.api.ITx.NRG_PRICE_MIN;
 
 /**
  * Created by Jay Tseng on 26/06/17.
@@ -555,7 +559,8 @@ public class Erc20Demo {
         scan.nextLine();
 
         ApiMsg apiMsg = API.getContractController()
-            .createFromSource(tokenSC_ERC20, COINBASE, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN, param);
+            .createFromSource(tokenSC_ERC20, COINBASE, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN,
+                param);
 
         if (apiMsg.isError()) {
             System.out.println("Deploy contract failed!" + apiMsg.getErrString());

@@ -22,13 +22,18 @@
  */
 package org.aion.api;
 
+import java.util.List;
 import org.aion.api.sol.ISolidityArg;
-import org.aion.api.type.*;
+import org.aion.api.type.ApiMsg;
+import org.aion.api.type.ContractAbiEntry;
+import org.aion.api.type.ContractEvent;
+import org.aion.api.type.ContractEventFilter;
+import org.aion.api.type.ContractResponse;
+import org.aion.api.type.JsonFmt;
+import org.aion.api.type.TxArgs;
 import org.aion.base.type.Address;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
-
-import java.util.List;
 
 /**
  * A Contract class that sits above the Aion Java API layer that provides the user with convenient
@@ -140,14 +145,6 @@ public interface IContract {
     IContract setTxNrgPrice(long val);
 
     /**
-     * Sets the message sender address for function be executed.
-     *
-     * @param address the class {@link Address Address} represent the desired sender account.
-     * @return the contract interface {@link IContract IContract}.
-     */
-    IContract setFrom(Address address);
-
-    /**
      * Sets the transaction value for certain functions.
      *
      * @param val the transaction value by long value of the desired transaction.
@@ -164,8 +161,8 @@ public interface IContract {
     IContract build();
 
     /**
-     * Executes the built transaction in the VM of the connection kernel for evaluating the execution
-     * result. Refer to {@link #newFunction(String)} for function use.
+     * Executes the built transaction in the VM of the connection kernel for evaluating the
+     * execution result. Refer to {@link #newFunction(String)} for function use.
      *
      * @return the class {@link ContractResponse} containing all relevant information wrapped by the
      * class {@link ApiMsg ApiMsg}.
@@ -194,6 +191,14 @@ public interface IContract {
      * @return the class {@link Address Address} represent the sender's account address.
      */
     Address getFrom();
+
+    /**
+     * Sets the message sender address for function be executed.
+     *
+     * @param address the class {@link Address Address} represent the desired sender account.
+     * @return the contract interface {@link IContract IContract}.
+     */
+    IContract setFrom(Address address);
 
     /**
      * Retrieve the address of the deployed contract.

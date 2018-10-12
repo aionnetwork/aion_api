@@ -23,8 +23,8 @@
 
 package org.aion.api.type;
 
-import org.aion.base.type.Address;
 import java.math.BigInteger;
+import org.aion.base.type.Address;
 
 /**
  * AccountDetails class containing all relevant information identifying an account

@@ -23,12 +23,11 @@
 
 package org.aion.api.type;
 
+import java.math.BigInteger;
+import java.util.List;
 import org.aion.base.type.Address;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
-
-import java.math.BigInteger;
-import java.util.List;
 
 /**
  * TxLog class containing all relevant information to transaction log utilized by {@link

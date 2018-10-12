@@ -23,6 +23,19 @@
 
 package org.aion.api.impl;
 
+import static org.aion.api.sol.impl.SolidityValue.SolidityTypeEnum.ADDRESS;
+import static org.aion.api.sol.impl.SolidityValue.SolidityTypeEnum.BOOL;
+import static org.aion.api.sol.impl.SolidityValue.SolidityTypeEnum.BYTES;
+
+import java.lang.reflect.Type;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.regex.Pattern;
 import org.aion.api.IAionAPI;
 import org.aion.api.IContract;
 import org.aion.api.IUtils;
@@ -30,20 +43,29 @@ import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.log.AionLoggerFactory;
 import org.aion.api.log.LogEnum;
 import org.aion.api.sol.ISolidityArg;
-import org.aion.api.sol.impl.*;
-import org.aion.api.type.*;
+import org.aion.api.sol.impl.Bool;
+import org.aion.api.sol.impl.Bytes;
+import org.aion.api.sol.impl.DynamicBytes;
+import org.aion.api.sol.impl.Int;
+import org.aion.api.sol.impl.SString;
+import org.aion.api.sol.impl.SolidityValue;
+import org.aion.api.sol.impl.Uint;
+import org.aion.api.type.ApiMsg;
+import org.aion.api.type.CompileResponse;
+import org.aion.api.type.ContractAbiEntry;
+import org.aion.api.type.ContractAbiIOParam;
+import org.aion.api.type.ContractEvent;
+import org.aion.api.type.ContractEventFilter;
+import org.aion.api.type.ContractResponse;
+import org.aion.api.type.DeployResponse;
+import org.aion.api.type.JsonFmt;
+import org.aion.api.type.MsgRsp;
+import org.aion.api.type.TxArgs;
 import org.aion.base.type.Address;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
 import org.apache.commons.collections4.map.LRUMap;
 import org.slf4j.Logger;
-
-import java.lang.reflect.Type;
-import java.math.BigInteger;
-import java.util.*;
-import java.util.regex.Pattern;
-
-import static org.aion.api.sol.impl.SolidityValue.SolidityTypeEnum.*;
 
 /**
  * Returns a Contract class that sits above the NucoAPI layer that provides the user with a
@@ -56,20 +78,16 @@ import static org.aion.api.sol.impl.SolidityValue.SolidityTypeEnum.*;
 @SuppressWarnings("Annotator")
 public final class Contract implements IContract {
 
-    private static final Logger LOGGER = AionLoggerFactory.getLogger(LogEnum.CNT.name());
-    private static final String REGEX_SC_PATT = "\\[([0-9]*)\\]";
-    private static final String ALLEVENTS = "ALLEVENTS";
-    private static final String REGEX_NUMERIC = "-?\\d+(\\.\\d+)?";
-
-    private static boolean nonBlock = false;
-
-    public static final Pattern ELEMENT_PATTERN = Pattern.compile(REGEX_SC_PATT);
     public static final String SC_FN_CONSTRUCTOR = "constructor";
     public static final String SC_FN_FUNC = "function";
     public static final String SC_FN_EVENT = "event";
     public static final String SC_FN_FALLBACK = "fallback";
-
-
+    private static final Logger LOGGER = AionLoggerFactory.getLogger(LogEnum.CNT.name());
+    private static final String REGEX_SC_PATT = "\\[([0-9]*)\\]";
+    public static final Pattern ELEMENT_PATTERN = Pattern.compile(REGEX_SC_PATT);
+    private static final String ALLEVENTS = "ALLEVENTS";
+    private static final String REGEX_NUMERIC = "-?\\d+(\\.\\d+)?";
+    private static boolean nonBlock = false;
     private final AionAPIImpl api;
     private final String contractName;
     private final org.aion.base.type.Address contractAddress;
@@ -84,23 +102,20 @@ public final class Contract implements IContract {
     private final JsonFmt userDoc;
     private final JsonFmt developerDoc;
     private final Hash256 deployTxId;
-
+    // event relative settings
+    private final List<String> eventsName;
+    // function relative settings
+    private final List<ISolidityArg> inputParams;
+    private final List<ISolidityArg> outputParams;
     // Transaction relative settings
     private Address from;
     private long txNrgLimit;
     private long txNrgPrice;
     private BigInteger txValue;
     private TxArgs txArgs;
-
-    // event relative settings
-    private final List<String> eventsName;
     private Map<String, String> eventMapping;
     private LRUMap<String, String> eventsIssued;
     private LRUMap<String, String> eventsIssuedRev;
-
-    // function relative settings
-    private final List<ISolidityArg> inputParams;
-    private final List<ISolidityArg> outputParams;
     private String functionName;
 
 
@@ -116,55 +131,6 @@ public final class Contract implements IContract {
     private boolean isConstant;
     private boolean isConstructor;
     private int errorCode;
-
-    public static class ContractBuilder {
-
-        private CompileResponse cr;
-        private DeployResponse dr;
-        private AionAPIImpl api;
-        private Address from;
-        private String contractName;
-
-        ContractBuilder() {
-        }
-
-        ContractBuilder compileResponse(final CompileResponse cr) {
-            this.cr = cr;
-            return this;
-        }
-
-        ContractBuilder deployResponse(final DeployResponse dr) {
-            this.dr = dr;
-            return this;
-        }
-
-        public ContractBuilder api(final AionAPIImpl api) {
-            this.api = api;
-            return this;
-        }
-
-        public ContractBuilder from(final Address from) {
-            this.from = from;
-            return this;
-        }
-
-        ContractBuilder contractName(final String contractName) {
-            this.contractName = contractName;
-            return this;
-        }
-
-        Contract createContract() {
-            if (cr == null || dr == null || api == null || from == null || contractName == null) {
-                throw new NullPointerException("compileResponse#" + cr +
-                    " deployResponse#" + dr +
-                    " api#" + api +
-                    " from#" + from +
-                    " contractName#" + contractName);
-            }
-
-            return new Contract(this);
-        }
-    }
 
     private Contract(final ContractBuilder contractBuilder) {
         this.api = contractBuilder.api;
@@ -217,6 +183,35 @@ public final class Contract implements IContract {
         this.outputParams = new ArrayList<>();
         this.eventsName = new ArrayList<>();
 
+    }
+
+    private static SolidityValue.SolidityTypeEnum getSolType(String type) {
+
+        if (type == null) {
+            throw new NullPointerException();
+        }
+
+        if (ApiUtils.isTypeAddress(type)) {
+            return ADDRESS;
+        } else if (ApiUtils.isTypeBoolean(type)) {
+            return BOOL;
+        } else if (ApiUtils.isTypeBytes(type)) {
+            return BYTES;
+        } else if (ApiUtils.isTypeDynamicBytes(type)) {
+            return SolidityValue.SolidityTypeEnum.DYNAMICBYTES;
+        } else if (ApiUtils.isTypeInt(type)) {
+            return SolidityValue.SolidityTypeEnum.INT;
+        } else if (ApiUtils.isTypeReal(type)) {
+            return SolidityValue.SolidityTypeEnum.REAL;
+        } else if (ApiUtils.isTypeString(type)) {
+            return SolidityValue.SolidityTypeEnum.STRING;
+        } else if (ApiUtils.isTypeUint(type)) {
+            return SolidityValue.SolidityTypeEnum.UINT;
+        } else if (ApiUtils.isTypeUreal(type)) {
+            return SolidityValue.SolidityTypeEnum.UREAL;
+        } else {
+            throw new IllegalArgumentException("unknown solidity type#" + type);
+        }
     }
 
     // for deployContractWithParam
@@ -273,35 +268,6 @@ public final class Contract implements IContract {
         }
 
         return functionMap;
-    }
-
-    private static SolidityValue.SolidityTypeEnum getSolType(String type) {
-
-        if (type == null) {
-            throw new NullPointerException();
-        }
-
-        if (ApiUtils.isTypeAddress(type)) {
-            return ADDRESS;
-        } else if (ApiUtils.isTypeBoolean(type)) {
-            return BOOL;
-        } else if (ApiUtils.isTypeBytes(type)) {
-            return BYTES;
-        } else if (ApiUtils.isTypeDynamicBytes(type)) {
-            return SolidityValue.SolidityTypeEnum.DYNAMICBYTES;
-        } else if (ApiUtils.isTypeInt(type)) {
-            return SolidityValue.SolidityTypeEnum.INT;
-        } else if (ApiUtils.isTypeReal(type)) {
-            return SolidityValue.SolidityTypeEnum.REAL;
-        } else if (ApiUtils.isTypeString(type)) {
-            return SolidityValue.SolidityTypeEnum.STRING;
-        } else if (ApiUtils.isTypeUint(type)) {
-            return SolidityValue.SolidityTypeEnum.UINT;
-        } else if (ApiUtils.isTypeUreal(type)) {
-            return SolidityValue.SolidityTypeEnum.UREAL;
-        } else {
-            throw new IllegalArgumentException("unknown solidity type#" + type);
-        }
     }
 
     // END SETTERS & GETTERS
@@ -422,7 +388,6 @@ public final class Contract implements IContract {
         return this.txArgs;
     }
 
-
     public Contract setTxNrgLimit(long limit) {
 
         if (limit < 0) {
@@ -458,7 +423,6 @@ public final class Contract implements IContract {
 
         return this;
     }
-
 
     public Address getFrom() {
         return this.from;
@@ -986,13 +950,13 @@ public final class Contract implements IContract {
         return 0;
     }
 
-    //    public void setErrorCode(int errorCode) {
-//        this.errorCode = errorCode;
-//    }
-
     public boolean error() {
         return (this.errorCode != 1);
     }
+
+    //    public void setErrorCode(int errorCode) {
+//        this.errorCode = errorCode;
+//    }
 
     /**
      * Get the contract function input parameters.
@@ -1284,6 +1248,19 @@ public final class Contract implements IContract {
         return res;
     }
 
+    public List<String> getContractEventList() {
+        if (this.eventMapping == null) {
+            return new ArrayList<>();
+        }
+
+        List<String> rtn = new ArrayList<>();
+        for (Map.Entry<String, String> e : eventMapping.entrySet()) {
+            rtn.add(e.getValue());
+        }
+
+        return rtn;
+    }
+
     //public ApiMsg queryEvents(ContractEventFilter ef) {
     //
     //    ContractEventFilter.ContractEventFilterBuilder efBuilder = new ContractEventFilter.ContractEventFilterBuilder(ef);
@@ -1329,16 +1306,52 @@ public final class Contract implements IContract {
     //    return msg.set(1, res, ApiMsg.cast.OTHERS);
     //}
 
-    public List<String> getContractEventList() {
-        if (this.eventMapping == null) {
-            return new ArrayList<>();
+    public static class ContractBuilder {
+
+        private CompileResponse cr;
+        private DeployResponse dr;
+        private AionAPIImpl api;
+        private Address from;
+        private String contractName;
+
+        ContractBuilder() {
         }
 
-        List<String> rtn = new ArrayList<>();
-        for (Map.Entry<String, String> e : eventMapping.entrySet()) {
-            rtn.add(e.getValue());
+        ContractBuilder compileResponse(final CompileResponse cr) {
+            this.cr = cr;
+            return this;
         }
 
-        return rtn;
+        ContractBuilder deployResponse(final DeployResponse dr) {
+            this.dr = dr;
+            return this;
+        }
+
+        public ContractBuilder api(final AionAPIImpl api) {
+            this.api = api;
+            return this;
+        }
+
+        public ContractBuilder from(final Address from) {
+            this.from = from;
+            return this;
+        }
+
+        ContractBuilder contractName(final String contractName) {
+            this.contractName = contractName;
+            return this;
+        }
+
+        Contract createContract() {
+            if (cr == null || dr == null || api == null || from == null || contractName == null) {
+                throw new NullPointerException("compileResponse#" + cr +
+                    " deployResponse#" + dr +
+                    " api#" + api +
+                    " from#" + from +
+                    " contractName#" + contractName);
+            }
+
+            return new Contract(this);
+        }
     }
 }

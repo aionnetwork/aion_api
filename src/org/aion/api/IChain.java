@@ -23,13 +23,12 @@
 
 package org.aion.api;
 
+import java.math.BigInteger;
 import org.aion.api.type.ApiMsg;
 import org.aion.api.type.Block;
 import org.aion.api.type.Transaction;
 import org.aion.base.type.Address;
 import org.aion.base.type.Hash256;
-
-import java.math.BigInteger;
 
 /**
  * This interface provides methods for fetching blockchain specific details such as blocks and
@@ -168,7 +167,8 @@ public interface IChain {
     /**
      * Get the storage at a specific position of an address by current blockchain database status.
      *
-     * @param address the class {@link Address Address} of the desired address to get the storage from.
+     * @param address the class {@link Address Address} of the desired address to get the storage
+     * from.
      * @param position the index position of the storage.
      * @return the class {@link java.lang.String String} represent the hexString of the byte array
      * wrapped into ApiMsg.
@@ -176,11 +176,12 @@ public interface IChain {
     ApiMsg getStorageAt(Address address, int position);
 
     /**
-     * Get the storage at a specific position of an address by giving blockNumber;
-     * Current kernel version doesn't support the query status by giving blockNumber. please use
+     * Get the storage at a specific position of an address by giving blockNumber; Current kernel
+     * version doesn't support the query status by giving blockNumber. please use
      * getStorageAt(Address address, int position) or giving the blockNumber = -1L.
      *
-     * @param address the class {@link Address Address} of the desired address to get the storage from.
+     * @param address the class {@link Address Address} of the desired address to get the storage
+     * from.
      * @param position the index position of the storage.
      * @param blockNumber the block number by long value of the desired block.
      * @return the class {@link java.lang.String String} represent the hexString of the byte array

@@ -29,21 +29,19 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.ConsoleAppender;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Used to override SimpleLogger current log level
  * <p>
- * final public int TRACE_INT = 00; final public int DEBUG_INT = 10;
- * finalConcurrentHashMap public int INFO_INT = 20; final public int WARN_INT =
- * 30; final public int ERROR_INT = 40;
+ * final public int TRACE_INT = 00; final public int DEBUG_INT = 10; finalConcurrentHashMap public
+ * int INFO_INT = 20; final public int WARN_INT = 30; final public int ERROR_INT = 40;
  * <p>
  * Default set to 50 which ignore output
  */
@@ -52,8 +50,8 @@ public class AionLoggerFactory {
 
     private final static PatternLayoutEncoder encoder = new PatternLayoutEncoder();
     /**
-     * Due to Cfg is abstract, use this static atribute to hold muti-chains
-     * config attribute List<CfgLogModule>, which is chain neural.
+     * Due to Cfg is abstract, use this static atribute to hold muti-chains config attribute
+     * List<CfgLogModule>, which is chain neural.
      */
     private static Map<String, String> logModules;
     private static LoggerContext loggerContext;
@@ -78,7 +76,7 @@ public class AionLoggerFactory {
 
         if (loggerContext == null) {
             System.out.println(
-                    "If you see this line, meaning you are under the unit test!!! If you are not. should report an issue.");
+                "If you see this line, meaning you are under the unit test!!! If you are not. should report an issue.");
             init(new HashMap<>());
         }
 
@@ -90,27 +88,28 @@ public class AionLoggerFactory {
             if (logModule.getKey().equals(label)) {
                 LogLevels logLevel = LogLevels.valueOf(logModule.getValue());
                 switch (logLevel) {
-                case TRACE:
-                    newlogger.setLevel(Level.TRACE);
-                    flag = true;
-                    break;
-                case ERROR:
-                    newlogger.setLevel(Level.ERROR);
-                    flag = true;
-                    break;
-                case INFO:
-                    newlogger.setLevel(Level.INFO);
-                    flag = true;
-                    break;
-                case DEBUG:
-                    newlogger.setLevel(Level.DEBUG);
-                    flag = true;
-                    break;
+                    case TRACE:
+                        newlogger.setLevel(Level.TRACE);
+                        flag = true;
+                        break;
+                    case ERROR:
+                        newlogger.setLevel(Level.ERROR);
+                        flag = true;
+                        break;
+                    case INFO:
+                        newlogger.setLevel(Level.INFO);
+                        flag = true;
+                        break;
+                    case DEBUG:
+                        newlogger.setLevel(Level.DEBUG);
+                        flag = true;
+                        break;
                 }
             }
 
-            if (flag)
+            if (flag) {
                 break;
+            }
         }
 
         if (!flag) {
@@ -123,8 +122,7 @@ public class AionLoggerFactory {
 
     public static void init(final Map<String, String> _logModules) {
 
-
-        _logModules.entrySet().stream().forEach( e -> {
+        _logModules.entrySet().stream().forEach(e -> {
             logModules.put(e.getKey(), e.getValue());
         });
 

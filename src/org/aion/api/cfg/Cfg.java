@@ -12,25 +12,17 @@ public abstract class Cfg {
     protected CfgLog log;
     protected Boolean secureConnectEnabled;
 
-    public abstract boolean fromXML();
-
-    public abstract void toXML(final String[] args);
-
-    public String getBasePath() {
-        return BASE_PATH;
-    }
-
     public static String readValue(final XMLStreamReader sr) throws XMLStreamException {
         StringBuilder str = new StringBuilder();
         readLoop:
         while (sr.hasNext()) {
             int eventType = sr.next();
             switch (eventType) {
-            case XMLStreamReader.CHARACTERS:
-                str.append(sr.getText());
-                break;
-            case XMLStreamReader.END_ELEMENT:
-                break readLoop;
+                case XMLStreamReader.CHARACTERS:
+                    str.append(sr.getText());
+                    break;
+                case XMLStreamReader.END_ELEMENT:
+                    break readLoop;
             }
         }
         return str.toString();
@@ -41,9 +33,17 @@ public abstract class Cfg {
         while (sr.hasNext()) {
             int eventType = sr.next();
             switch (eventType) {
-            case XMLStreamReader.END_ELEMENT:
-                break skipLoop;
+                case XMLStreamReader.END_ELEMENT:
+                    break skipLoop;
             }
         }
+    }
+
+    public abstract boolean fromXML();
+
+    public abstract void toXML(final String[] args);
+
+    public String getBasePath() {
+        return BASE_PATH;
     }
 }

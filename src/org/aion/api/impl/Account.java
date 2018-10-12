@@ -64,17 +64,13 @@ import org.aion.crypto.ECKey;
 import org.aion.crypto.ECKeyFac;
 import org.slf4j.Logger;
 
-import static org.zeromq.EmbeddedLibraryTools.getCurrentPlatformIdentifier;
-
 /**
  * Created by Jay Tseng on 19/04/17.
  */
 public final class Account implements IAccount {
 
     private static final Logger LOGGER = AionLoggerFactory.getLogger(LogEnum.ACC.name());
-    private AionAPIImpl apiInst;
     private final static int ACCOUNT_LIMIT = 1000;
-
     private static final Pattern HEX_64 = Pattern.compile("^[\\p{XDigit}]{64}$");
     private static final String ADDR_PREFIX = "0x";
     private static final String AION_PREFIX = "a0";
@@ -90,8 +86,112 @@ public final class Account implements IAccount {
         PATH = Paths.get(KEYSTORE_PATH);
     }
 
+    private AionAPIImpl apiInst;
+
     protected Account(AionAPIImpl inst) {
         this.apiInst = inst;
+    }
+
+    public static ApiMsg keystoreCreateLocal(List<String> passphrase) {
+
+        if (passphrase == null) {
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("[keystoreCreateLocal]" + ErrId.getErrString(-17L));
+            }
+            return new ApiMsg(-17);
+        }
+
+        List<String> addr = new ArrayList<>();
+        for (String p : passphrase) {
+            if (p == null) {
+                p = "";
+            }
+            addr.add(create(p));
+        }
+
+        return new ApiMsg(1, addr, org.aion.api.type.ApiMsg.cast.OTHERS);
+    }
+
+    private static String create(String password) {
+        return create(password, ECKeyFac.inst().create());
+    }
+
+    private static String create(String password, ECKey key) {
+
+        boolean isWindows = ApiUtils.isWindows();
+
+        FileAttribute<Set<PosixFilePermission>> attr = null;
+        if (!Files.exists(PATH)) {
+            try {
+                if (isWindows) {
+                    Files.createDirectory(PATH);
+                } else {
+                    Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rwxr-----");
+                    attr = PosixFilePermissions.asFileAttribute(perms);
+                }
+            } catch (IOException e) {
+                LOGGER.error("keystore folder create failed!");
+                return "";
+            }
+        }
+
+        String address = ByteUtil.toHexString(key.getAddress());
+        if (exist(address)) {
+            return ADDR_PREFIX;
+        } else {
+            byte[] content = new KeystoreFormat().toKeystore(key, password);
+            DateFormat df = new SimpleDateFormat(
+                isWindows ? "yyyy-MM-dd'T'HH-mm-ss.SSS'Z'" : "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            df.setTimeZone(TimeZone.getTimeZone("UTC"));
+            String iso_date = df.format(new Date(System.currentTimeMillis()));
+            String fileName = "UTC--" + iso_date + "--" + address;
+            try {
+                Path keyFile = PATH.resolve(fileName);
+                if (!Files.exists(keyFile)) {
+                    if (isWindows) {
+                        keyFile = Files.createFile(keyFile);
+                    } else {
+                        keyFile = Files.createFile(keyFile, attr);
+                    }
+                }
+                String path = keyFile.toString();
+                FileOutputStream fos = new FileOutputStream(path);
+                fos.write(content);
+                fos.close();
+
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Keystore created! {}", TypeConverter.toJsonHex(address));
+                }
+
+                return TypeConverter.toJsonHex(address);
+            } catch (IOException e) {
+                LOGGER.error("fail to create keystore");
+                return ADDR_PREFIX;
+            }
+        }
+    }
+
+    private static boolean exist(String _address) {
+        if (_address.startsWith(ADDR_PREFIX)) {
+            _address = _address.substring(2);
+        }
+
+        boolean flag = false;
+        if (_address.startsWith(AION_PREFIX)) {
+            List<File> files = getFiles();
+            for (File file : files) {
+                if (HEX_64.matcher(_address).find() && file.getName().contains(_address)) {
+                    flag = true;
+                    break;
+                }
+            }
+        }
+        return flag;
+    }
+
+    private static List<File> getFiles() {
+        File[] files = PATH.toFile().listFiles();
+        return files != null ? Arrays.asList(files) : Collections.emptyList();
     }
 
     public ApiMsg accountCreate(List<String> pw, boolean pk) {
@@ -323,106 +423,5 @@ public final class Account implements IAccount {
             }
             return new ApiMsg(-104, e.getMessage(), org.aion.api.type.ApiMsg.cast.OTHERS);
         }
-    }
-
-    public static ApiMsg keystoreCreateLocal(List<String> passphrase) {
-
-        if (passphrase == null) {
-            if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[keystoreCreateLocal]" + ErrId.getErrString(-17L));
-            }
-            return new ApiMsg(-17);
-        }
-
-        List<String> addr = new ArrayList<>();
-        for (String p : passphrase) {
-            if (p == null) {
-                p = "";
-            }
-            addr.add(create(p));
-        }
-
-        return new ApiMsg(1, addr, org.aion.api.type.ApiMsg.cast.OTHERS);
-    }
-
-    private static String create(String password) {
-        return create(password, ECKeyFac.inst().create());
-    }
-
-    private static String create(String password, ECKey key) {
-
-        boolean isWindows = ApiUtils.isWindows();
-
-        FileAttribute<Set<PosixFilePermission>> attr = null;
-        if (!Files.exists(PATH)) {
-            try {
-                if (isWindows) {
-                    Files.createDirectory(PATH);
-                } else {
-                    Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rwxr-----");
-                    attr = PosixFilePermissions.asFileAttribute(perms);
-                }
-            } catch (IOException e) {
-                LOGGER.error("keystore folder create failed!");
-                return "";
-            }
-        }
-
-        String address = ByteUtil.toHexString(key.getAddress());
-        if (exist(address)) {
-            return ADDR_PREFIX;
-        } else {
-            byte[] content = new KeystoreFormat().toKeystore(key, password);
-            DateFormat df = new SimpleDateFormat(isWindows ? "yyyy-MM-dd'T'HH-mm-ss.SSS'Z'" : "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-            df.setTimeZone(TimeZone.getTimeZone("UTC"));
-            String iso_date = df.format(new Date(System.currentTimeMillis()));
-            String fileName = "UTC--" + iso_date + "--" + address;
-            try {
-                Path keyFile = PATH.resolve(fileName);
-                if (!Files.exists(keyFile)) {
-                    if (isWindows) {
-                        keyFile = Files.createFile(keyFile);
-                    } else {
-                        keyFile = Files.createFile(keyFile, attr);
-                    }
-                }
-                String path = keyFile.toString();
-                FileOutputStream fos = new FileOutputStream(path);
-                fos.write(content);
-                fos.close();
-
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Keystore created! {}", TypeConverter.toJsonHex(address));
-                }
-
-                return TypeConverter.toJsonHex(address);
-            } catch (IOException e) {
-                LOGGER.error("fail to create keystore");
-                return ADDR_PREFIX;
-            }
-        }
-    }
-
-    private static boolean exist(String _address) {
-        if (_address.startsWith(ADDR_PREFIX)) {
-            _address = _address.substring(2);
-        }
-
-        boolean flag = false;
-        if (_address.startsWith(AION_PREFIX)) {
-            List<File> files = getFiles();
-            for (File file : files) {
-                if (HEX_64.matcher(_address).find() && file.getName().contains(_address)) {
-                    flag = true;
-                    break;
-                }
-            }
-        }
-        return flag;
-    }
-
-    private static List<File> getFiles() {
-        File[] files = PATH.toFile().listFiles();
-        return files != null ? Arrays.asList(files) : Collections.emptyList();
     }
 }

@@ -23,9 +23,8 @@
 
 package org.aion.api.sol;
 
-import org.aion.api.sol.impl.Uint;
-
 import java.util.List;
+import org.aion.api.sol.impl.Uint;
 
 /**
  * IUint is an interface of the class Uint inherited from the class SolidityAbstractType. Contains

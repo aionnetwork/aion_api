@@ -24,14 +24,13 @@
 
 package org.aion.api.sol.impl;
 
-import org.aion.api.impl.ErrId;
-import org.aion.api.impl.internal.ApiUtils;
-
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
+import org.aion.api.impl.ErrId;
+import org.aion.api.impl.internal.ApiUtils;
 
 /**
  * Created by yao on 20/09/16.

@@ -23,18 +23,21 @@
 
 package org.aion.api.type;
 
+import static org.aion.api.impl.Contract.ELEMENT_PATTERN;
+import static org.aion.api.impl.Contract.SC_FN_CONSTRUCTOR;
+import static org.aion.api.impl.Contract.SC_FN_EVENT;
+import static org.aion.api.impl.Contract.SC_FN_FALLBACK;
+import static org.aion.api.impl.Contract.SC_FN_FUNC;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
 import org.aion.api.IUtils;
 import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.log.AionLoggerFactory;
 import org.aion.api.log.LogEnum;
 import org.slf4j.Logger;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-
-import static org.aion.api.impl.Contract.*;
 
 /**
  * Contains all relevant information to compile responses, note that some parameters are not yet
@@ -163,6 +166,23 @@ public final class CompileResponse {
         public CompileResponseBuilder() {
         }
 
+        static String assembleFunctionFn(ContractAbiEntry abiEntry) {
+
+            StringBuilder sb = new StringBuilder(abiEntry.name);
+            sb.append('(');
+
+            int abiSize = abiEntry.inputs.size();
+            for (int i = 0; i < abiSize; i++) {
+                sb.append(abiEntry.inputs.get(i).getType());
+                if (i != (abiSize - 1)) {
+                    sb.append(",");
+                }
+            }
+
+            sb.append(')');
+            return sb.toString();
+        }
+
         public CompileResponse.CompileResponseBuilder code(final String code) {
             this.code = code;
             return this;
@@ -287,23 +307,6 @@ public final class CompileResponse {
             }
 
             return new CompileResponse(this);
-        }
-
-        static String assembleFunctionFn(ContractAbiEntry abiEntry) {
-
-            StringBuilder sb = new StringBuilder(abiEntry.name);
-            sb.append('(');
-
-            int abiSize = abiEntry.inputs.size();
-            for (int i = 0; i < abiSize; i++) {
-                sb.append(abiEntry.inputs.get(i).getType());
-                if (i != (abiSize - 1)) {
-                    sb.append(",");
-                }
-            }
-
-            sb.append(')');
-            return sb.toString();
         }
 
         private List<Integer> setParametersList(String in) {

@@ -41,7 +41,8 @@ public final class SyncInfo {
 
     public SyncInfo(boolean syncing, long networkBestBlock, long chainBestBlock,
         long maxImportBlocks, long startingBlock) {
-        if (networkBestBlock < 0 || chainBestBlock < 0 || startingBlock < 0 || maxImportBlocks < 1) {
+        if (networkBestBlock < 0 || chainBestBlock < 0 || startingBlock < 0
+            || maxImportBlocks < 1) {
             throw new IllegalArgumentException("networkBestBlock#" + networkBestBlock +
                 " chainBestBlock#" + chainBestBlock +
                 " maxImportBlocks#" + maxImportBlocks +

@@ -30,6 +30,7 @@ import java.util.ArrayList;
  * Created by jay on 10/12/16.
  */
 public class NetworkLatency {
+
     private ArrayList<Long> start;
     private ArrayList<Long> end;
 

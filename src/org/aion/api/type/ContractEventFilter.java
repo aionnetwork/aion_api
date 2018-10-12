@@ -24,9 +24,8 @@
 
 package org.aion.api.type;
 
-import org.aion.base.type.Address;
-
 import java.util.List;
+import org.aion.base.type.Address;
 
 /**
  * The helper class for gather all of the contract event filter conditions. Use the builder class to
@@ -105,7 +104,8 @@ public final class ContractEventFilter {
             return this;
         }
 
-        public ContractEventFilter.ContractEventFilterBuilder addresses(final List<Address> addresses) {
+        public ContractEventFilter.ContractEventFilterBuilder addresses(
+            final List<Address> addresses) {
             this.addresses = addresses;
             return this;
         }

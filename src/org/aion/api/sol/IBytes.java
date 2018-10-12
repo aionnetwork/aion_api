@@ -23,9 +23,8 @@
 
 package org.aion.api.sol;
 
-import org.aion.api.sol.impl.Bytes;
-
 import java.util.List;
+import org.aion.api.sol.impl.Bytes;
 
 /**
  * IBytes is an interface of the class Bytes inherited from the class SolidityAbstractType. Use for

@@ -23,9 +23,8 @@
 
 package org.aion.api.sol;
 
-import org.aion.base.util.ByteArrayWrapper;
-
 import java.util.List;
+import org.aion.base.util.ByteArrayWrapper;
 
 /**
  * This interface dedicate to the solidity class method operation and the type casting

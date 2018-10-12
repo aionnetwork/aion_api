@@ -35,7 +35,6 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
@@ -78,11 +77,9 @@ import org.aion.api.type.core.tx.AionTransaction;
 import org.aion.base.type.Address;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
-import org.aion.base.util.ByteUtil;
 import org.aion.base.util.Bytesable;
 import org.aion.crypto.ECKey;
 import org.aion.crypto.ECKeyFac;
-import org.aion.crypto.ed25519.ECKeyEd25519;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -92,14 +89,14 @@ import org.junit.Test;
  */
 public class BaseAPITests {
 
-    // Make sure the password of the testing account been set properly
-    private final String pw = "PLAT4life";
-    private final String url = IAionAPI.LOCALHOST_URL;
     private static final String TICKER = "contract ticker { uint public val; function tick () { val+= 1; } }";
     private static final String ERROR_TICKER = "pragma solidity ^0.4.6;\n contract ticker { uint public val; function tick () { val+= 1; } ";
     private static final String VAL = "val";
     private static final String FUNCTION = "function";
     private static final IAionAPI api = IAionAPI.init();
+    // Make sure the password of the testing account been set properly
+    private final String pw = "PLAT4life";
+    private final String url = IAionAPI.LOCALHOST_URL;
 
     private static String readFile(String fileName) {
         StringBuilder contract = new StringBuilder();

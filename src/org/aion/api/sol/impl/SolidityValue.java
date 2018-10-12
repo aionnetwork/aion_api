@@ -30,8 +30,7 @@ package org.aion.api.sol.impl;
 public final class SolidityValue {
 
     /**
-     * Internal enumeration used in {@link SolidityAbstractType} to determine
-     * the solidity type.
+     * Internal enumeration used in {@link SolidityAbstractType} to determine the solidity type.
      */
     public enum SolidityTypeEnum {
         ADDRESS, BOOL, BYTES, DYNAMICBYTES, INT, REAL, STRING, UINT, UREAL
