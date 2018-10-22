@@ -21,7 +21,6 @@
  *     Aion foundation.
  */
 
-
 package org.aion.api.type;
 
 import org.aion.base.type.Address;
@@ -35,7 +34,6 @@ import org.aion.base.util.ByteArrayWrapper;
  * @see org.aion.api.IAccount#accountExport(java.util.List) accountExport
  * @see org.aion.api.IAccount#accountCreate(java.util.List, boolean) accountCreate
  */
-
 public final class Key {
 
     // 32 bytes array

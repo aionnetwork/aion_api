@@ -21,19 +21,16 @@
  *     Aion foundation.
  */
 
-
 package org.aion.api.type;
 
+import java.util.List;
 import org.aion.base.type.Address;
 import org.aion.base.type.Hash256;
-
-import java.util.List;
 
 /**
  * TxReceipt class containing all relevant information to transaction receipts utilized by {@link
  * org.aion.api.ITx#getTxReceipt(Hash256) getTxReceipt}.
  */
-
 public final class TxReceipt {
 
     private final int txIndex;
@@ -103,17 +100,41 @@ public final class TxReceipt {
     @Override
     public String toString() {
 
-        StringBuilder sb = new StringBuilder()
-            .append("txIndex: ").append(txIndex).append(",\n")
-            .append("blockNumber: ").append(blockNumber).append(",\n")
-            .append("nrg: ").append(nrgConsumed).append(",\n")
-            .append("nrgCumulativeUsed: ").append(cumulativeNrgUsed).append(",\n")
-            .append("blockHash: ").append("0x").append(blockHash.toString()).append(",\n")
-            .append("txHash: ").append("0x").append(txHash.toString()).append(",\n")
-            .append("from: ").append("0x").append(from.toString()).append(",\n")
-            .append("to: ").append("0x").append(to.toString()).append(",\n")
-            .append("contractAddress: ").append(contractAddress.toString()).append(",\n")
-            .append("log: ").append("\n");
+        StringBuilder sb =
+                new StringBuilder()
+                        .append("txIndex: ")
+                        .append(txIndex)
+                        .append(",\n")
+                        .append("blockNumber: ")
+                        .append(blockNumber)
+                        .append(",\n")
+                        .append("nrg: ")
+                        .append(nrgConsumed)
+                        .append(",\n")
+                        .append("nrgCumulativeUsed: ")
+                        .append(cumulativeNrgUsed)
+                        .append(",\n")
+                        .append("blockHash: ")
+                        .append("0x")
+                        .append(blockHash.toString())
+                        .append(",\n")
+                        .append("txHash: ")
+                        .append("0x")
+                        .append(txHash.toString())
+                        .append(",\n")
+                        .append("from: ")
+                        .append("0x")
+                        .append(from.toString())
+                        .append(",\n")
+                        .append("to: ")
+                        .append("0x")
+                        .append(to.toString())
+                        .append(",\n")
+                        .append("contractAddress: ")
+                        .append(contractAddress.toString())
+                        .append(",\n")
+                        .append("log: ")
+                        .append("\n");
 
         int cnt = txLogs.size();
         for (TxLog tl : txLogs) {
@@ -130,9 +151,7 @@ public final class TxReceipt {
         return sb.toString();
     }
 
-    /**
-     * This Builder class is used to build a {@link TxReceipt} instance.
-     */
+    /** This Builder class is used to build a {@link TxReceipt} instance. */
     public static class TxReceiptBuilder {
 
         private int txIndex;
@@ -146,8 +165,7 @@ public final class TxReceipt {
         private Address contractAddress;
         private List<TxLog> txLogs;
 
-        public TxReceiptBuilder() {
-        }
+        public TxReceiptBuilder() {}
 
         public TxReceipt.TxReceiptBuilder txIndex(final int txIndex) {
             this.txIndex = txIndex;
@@ -200,24 +218,38 @@ public final class TxReceipt {
         }
 
         public TxReceipt createTxReceipt() {
-            if (blockHash == null || txHash == null ||
-                from == null || to == null || contractAddress == null || txLogs == null) {
+            if (blockHash == null
+                    || txHash == null
+                    || from == null
+                    || to == null
+                    || contractAddress == null
+                    || txLogs == null) {
 
                 throw new NullPointerException(
-                    "TxHash#" + String.valueOf(txHash) +
-                        " BlockHash#" + String.valueOf(blockHash) +
-                        " From#" + String.valueOf(from) +
-                        " To#" + String.valueOf(to) +
-                        " ContractAddress#" + String.valueOf(contractAddress) +
-                        " TxLogs#" + String.valueOf(txLogs)
-                );
+                        "TxHash#"
+                                + String.valueOf(txHash)
+                                + " BlockHash#"
+                                + String.valueOf(blockHash)
+                                + " From#"
+                                + String.valueOf(from)
+                                + " To#"
+                                + String.valueOf(to)
+                                + " ContractAddress#"
+                                + String.valueOf(contractAddress)
+                                + " TxLogs#"
+                                + String.valueOf(txLogs));
             }
 
             if (txIndex < 0 || blockNumber < 0 || nrgConsumed < 0 || cumulativeNrgUsed < 0) {
-                throw new IllegalArgumentException("TxIdx#" + txIndex +
-                    " Block#" + blockNumber +
-                    " NrgConsumed#" + nrgConsumed +
-                    " CumulativeNrg#" + cumulativeNrgUsed);
+                throw new IllegalArgumentException(
+                        "TxIdx#"
+                                + txIndex
+                                + " Block#"
+                                + blockNumber
+                                + " NrgConsumed#"
+                                + nrgConsumed
+                                + " CumulativeNrg#"
+                                + cumulativeNrgUsed);
             }
 
             return new TxReceipt(this);

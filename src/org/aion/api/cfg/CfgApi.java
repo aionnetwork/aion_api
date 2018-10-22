@@ -1,33 +1,35 @@
-/*******************************************************************************
- * Copyright (c) 2017-2018 Aion foundation.
+/**
+ * ***************************************************************************** Copyright (c)
+ * 2017-2018 Aion foundation.
  *
- *     This file is part of the aion network project.
+ * <p>This file is part of the aion network project.
  *
- *     The aion network project is free software: you can redistribute it
- *     and/or modify it under the terms of the GNU General Public License
- *     as published by the Free Software Foundation, either version 3 of
- *     the License, or any later version.
+ * <p>The aion network project is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software Foundation, either
+ * version 3 of the License, or any later version.
  *
- *     The aion network project is distributed in the hope that it will
- *     be useful, but WITHOUT ANY WARRANTY; without even the implied
- *     warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *     See the GNU General Public License for more details.
+ * <p>The aion network project is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the GNU General Public License for more details.
  *
- *     You should have received a copy of the GNU General Public License
- *     along with the aion network project source files.
- *     If not, see <https://www.gnu.org/licenses/>.
+ * <p>You should have received a copy of the GNU General Public License along with the aion network
+ * project source files. If not, see <https://www.gnu.org/licenses/>.
  *
- * Contributors:
- *     Aion foundation.
+ * <p>Contributors: Aion foundation.
  *
- ******************************************************************************/
-
+ * <p>****************************************************************************
+ */
 package org.aion.api.cfg;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.*;
-import java.io.*;
+import javax.xml.stream.XMLStreamWriter;
 
 public class CfgApi extends Cfg {
 
@@ -36,12 +38,11 @@ public class CfgApi extends Cfg {
         this.secureConnectEnabled = false;
 
         // TODO :: test and open it later.
-        //this.connect = new CfgConnect();
+        // this.connect = new CfgConnect();
 
         if (!fromXML()) {
             toXML(null);
         }
-
     }
 
     public static CfgApi inst() {
@@ -64,7 +65,9 @@ public class CfgApi extends Cfg {
         this.connect = _cnt;
     }
 
-    public boolean isSecureConnectEnabled() { return this.secureConnectEnabled; }
+    public boolean isSecureConnectEnabled() {
+        return this.secureConnectEnabled;
+    }
 
     private static class ApiCfgHolder {
         private static final CfgApi inst = new CfgApi();
@@ -73,38 +76,36 @@ public class CfgApi extends Cfg {
     @Override
     public boolean fromXML() {
         File cfgFile = new File(CONF_FILE_PATH);
-        if(!cfgFile.exists())
-            return false;
+        if (!cfgFile.exists()) return false;
         XMLInputFactory input = XMLInputFactory.newInstance();
         FileInputStream fis;
         try {
             fis = new FileInputStream(cfgFile);
             XMLStreamReader sr = input.createXMLStreamReader(fis);
-            loop: while (sr.hasNext()) {
+            loop:
+            while (sr.hasNext()) {
                 int eventType = sr.next();
                 switch (eventType) {
-                case XMLStreamReader.START_ELEMENT:
-                    String elementName = sr.getLocalName().toLowerCase();
-                    switch (elementName) {
-                    case "log":
-                        this.log.fromXML(sr);
+                    case XMLStreamReader.START_ELEMENT:
+                        String elementName = sr.getLocalName().toLowerCase();
+                        switch (elementName) {
+                            case "log":
+                                this.log.fromXML(sr);
+                                break;
+                            case "connect":
+                                // this.connect.fromXML(sr);
+                                break;
+                            case "secure-connect":
+                                secureConnectEnabled = Boolean.parseBoolean(Cfg.readValue(sr));
+                                break;
+                            default:
+                                // skipElement(sr);
+                                break;
+                        }
                         break;
-                    case "connect":
-                        //this.connect.fromXML(sr);
-                        break;
-                    case "secure-connect":
-                        secureConnectEnabled = Boolean.parseBoolean(Cfg.readValue(sr));
-                        break;
-                    default:
-                        //skipElement(sr);
-                        break;
-                    }
-                    break;
-                case XMLStreamReader.END_ELEMENT:
-                    if (sr.getLocalName().toLowerCase().equals("aion_api"))
-                        break loop;
-                    else
-                        break;
+                    case XMLStreamReader.END_ELEMENT:
+                        if (sr.getLocalName().toLowerCase().equals("aion_api")) break loop;
+                        else break;
                 }
             }
             closeFileInputStream(fis);
@@ -118,14 +119,14 @@ public class CfgApi extends Cfg {
     @Override
     public void toXML(final String[] args) {
 
-//        if (args != null) {
-//            boolean override = false;
-//            for (String arg : args) {
-//                arg = arg.toLowerCase();
-//                if (override)
-//                    System.out.println("Config Override");
-//            }
-//        }
+        //        if (args != null) {
+        //            boolean override = false;
+        //            for (String arg : args) {
+        //                arg = arg.toLowerCase();
+        //                if (override)
+        //                    System.out.println("Config Override");
+        //            }
+        //        }
 
         XMLOutputFactory output = XMLOutputFactory.newInstance();
         output.setProperty("escapeCharacters", false);
@@ -150,7 +151,7 @@ public class CfgApi extends Cfg {
 
             this.log = new CfgLog();
             sw.writeCharacters(this.log.toXML());
-            //sw.writeCharacters(this.getConnect().toXML());
+            // sw.writeCharacters(this.getConnect().toXML());
 
             sw.writeCharacters("\r\n");
             sw.writeEndElement();
@@ -172,7 +173,7 @@ public class CfgApi extends Cfg {
         }
     }
 
-    private void closeFileInputStream(final FileInputStream fis){
+    private void closeFileInputStream(final FileInputStream fis) {
         if (fis != null) {
             try {
                 fis.close();

@@ -23,6 +23,10 @@
 
 package org.aion.api.impl;
 
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.aion.api.IUtils;
 import org.aion.api.cfg.CfgApi;
 import org.aion.api.impl.internal.ApiUtils;
@@ -37,14 +41,7 @@ import org.aion.base.util.ByteArrayWrapper;
 import org.slf4j.Logger;
 import org.zeromq.ZMQ;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-/**
- * Created by Jay Tseng on 14/11/16.
- */
+/** Created by Jay Tseng on 14/11/16. */
 public class ApiBase {
 
     protected final Logger LOGGER;
@@ -197,8 +194,10 @@ public class ApiBase {
     MsgRsp blockTx(byte[] hash, byte[] req) {
 
         if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("[blockTx] MsgHash: [{}], reqmsg: [{}]", IUtils.bytes2Hex(hash),
-                IUtils.bytes2Hex(req));
+            LOGGER.trace(
+                    "[blockTx] MsgHash: [{}], reqmsg: [{}]",
+                    IUtils.bytes2Hex(hash),
+                    IUtils.bytes2Hex(req));
         }
 
         Future<MsgRsp> future = this.msgExecutor.aSyncSend(hash, req);
@@ -206,8 +205,10 @@ public class ApiBase {
             MsgRsp msgRsp = future.get();
 
             if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace("[blockTx] TxRsp: [{}], status: [{}]", msgRsp.getTxHash().toString(),
-                    msgRsp.getStatus());
+                LOGGER.trace(
+                        "[blockTx] TxRsp: [{}], status: [{}]",
+                        msgRsp.getTxHash().toString(),
+                        msgRsp.getStatus());
             }
 
             return msgRsp;
@@ -238,8 +239,10 @@ public class ApiBase {
     MsgRsp Process(byte[] hash, byte[] req) {
 
         if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("[Process] MsgHash: [{}], reqmsg: [{}]", IUtils.bytes2Hex(hash),
-                IUtils.bytes2Hex(req));
+            LOGGER.trace(
+                    "[Process] MsgHash: [{}], reqmsg: [{}]",
+                    IUtils.bytes2Hex(hash),
+                    IUtils.bytes2Hex(req));
         }
 
         MsgRsp rsp = this.msgExecutor.send(hash, req);
@@ -253,8 +256,8 @@ public class ApiBase {
         }
 
         long time = System.currentTimeMillis();
-        while ((rsp == null || rsp.getStatus() == 100) && (System.currentTimeMillis() - time
-            < 10000)) {
+        while ((rsp == null || rsp.getStatus() == 100)
+                && (System.currentTimeMillis() - time < 10000)) {
             rsp = this.msgExecutor.getStatus(ByteArrayWrapper.wrap(hash));
 
             try {

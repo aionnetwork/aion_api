@@ -89,5 +89,4 @@ public class KdfParams {
     public String getSalt() {
         return salt;
     }
-
 }

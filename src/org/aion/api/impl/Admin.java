@@ -1,32 +1,37 @@
-/*******************************************************************************
- * Copyright (c) 2017-2018 Aion foundation.
+/**
+ * ***************************************************************************** Copyright (c)
+ * 2017-2018 Aion foundation.
  *
- *     This file is part of the aion network project.
+ * <p>This file is part of the aion network project.
  *
- *     The aion network project is free software: you can redistribute it
- *     and/or modify it under the terms of the GNU General Public License
- *     as published by the Free Software Foundation, either version 3 of
- *     the License, or any later version.
+ * <p>The aion network project is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software Foundation, either
+ * version 3 of the License, or any later version.
  *
- *     The aion network project is distributed in the hope that it will
- *     be useful, but WITHOUT ANY WARRANTY; without even the implied
- *     warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *     See the GNU General Public License for more details.
+ * <p>The aion network project is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the GNU General Public License for more details.
  *
- *     You should have received a copy of the GNU General Public License
- *     along with the aion network project source files.
- *     If not, see <https://www.gnu.org/licenses/>.
+ * <p>You should have received a copy of the GNU General Public License along with the aion network
+ * project source files. If not, see <https://www.gnu.org/licenses/>.
  *
- * Contributors:
- *     Aion foundation.
+ * <p>Contributors: Aion foundation.
  *
- ******************************************************************************/
-
+ * <p>****************************************************************************
+ */
 package org.aion.api.impl;
+
+import static java.lang.Long.max;
+import static java.lang.Math.min;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.aion.api.IAdmin;
 import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.impl.internal.Message;
@@ -34,21 +39,16 @@ import org.aion.api.impl.internal.Message.Funcs;
 import org.aion.api.impl.internal.Message.rsp_getBlockDetailsByHash;
 import org.aion.api.log.AionLoggerFactory;
 import org.aion.api.log.LogEnum;
-import org.aion.api.type.*;
+import org.aion.api.type.AccountDetails;
+import org.aion.api.type.ApiMsg;
 import org.aion.api.type.ApiMsg.cast;
+import org.aion.api.type.Block;
+import org.aion.api.type.BlockDetails;
+import org.aion.api.type.BlockSql;
 import org.aion.base.type.Address;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteUtil;
 import org.slf4j.Logger;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static java.lang.Long.max;
-import static java.lang.Math.min;
 
 public class Admin implements IAdmin {
 
@@ -78,9 +78,8 @@ public class Admin implements IAdmin {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getBlockDetailsByNumber] " + e.getMessage());
             }
-            return  new ApiMsg(-17);
+            return new ApiMsg(-17);
         }
-
     }
 
     @Override
@@ -113,12 +112,17 @@ public class Admin implements IAdmin {
             return new ApiMsg(-17);
         }
 
-        Message.req_getBlockDetailsByHash reqBody = Message.req_getBlockDetailsByHash.newBuilder()
-            .setBlockHash(ByteString.copyFrom(blockHash.toBytes()))
-            .build();
+        Message.req_getBlockDetailsByHash reqBody =
+                Message.req_getBlockDetailsByHash
+                        .newBuilder()
+                        .setBlockHash(ByteString.copyFrom(blockHash.toBytes()))
+                        .build();
 
-        byte[] reqHead = ApiUtils
-            .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_admin, Funcs.f_getBlockDetailsByHash);
+        byte[] reqHead =
+                ApiUtils.toReqHeader(
+                        ApiUtils.PROTOCOL_VER,
+                        Message.Servs.s_admin,
+                        Funcs.f_getBlockDetailsByHash);
         byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
 
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
@@ -128,18 +132,21 @@ public class Admin implements IAdmin {
         }
 
         try {
-            List<BlockDetails> k = ApiUtils.toBlockDetails(Collections.singletonList(
-                rsp_getBlockDetailsByHash.parseFrom(ApiUtils.parseBody(rsp).getData())
-                    .getBlkDetails()));
+            List<BlockDetails> k =
+                    ApiUtils.toBlockDetails(
+                            Collections.singletonList(
+                                    rsp_getBlockDetailsByHash
+                                            .parseFrom(ApiUtils.parseBody(rsp).getData())
+                                            .getBlkDetails()));
             return new ApiMsg(k.get(0), org.aion.api.type.ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[getBlockDetailsByHash]" + ErrId.getErrString(-104L) + e.getMessage());
+                LOGGER.error(
+                        "[getBlockDetailsByHash]" + ErrId.getErrString(-104L) + e.getMessage());
             }
             return new ApiMsg(-104, e.getMessage(), org.aion.api.type.ApiMsg.cast.OTHERS);
         }
     }
-
 
     private List<Long> parseBlockList(String blks) {
         if (blks == null) {
@@ -153,8 +160,9 @@ public class Admin implements IAdmin {
             if (interval.length == 1) {
                 numbers.add(Long.valueOf(interval[0]));
             } else if (interval.length == 2) {
-                for (long i = min(Long.valueOf(interval[0]), Long.valueOf(interval[1]))
-                        ; i <= max(Long.valueOf(interval[0]), Long.valueOf(interval[1])) ; i++) {
+                for (long i = min(Long.valueOf(interval[0]), Long.valueOf(interval[1]));
+                        i <= max(Long.valueOf(interval[0]), Long.valueOf(interval[1]));
+                        i++) {
                     numbers.add(i);
                 }
             } else {
@@ -194,13 +202,17 @@ public class Admin implements IAdmin {
         }
 
         Message.req_getBlockSqlByRange reqBody =
-                Message.req_getBlockSqlByRange.newBuilder()
+                Message.req_getBlockSqlByRange
+                        .newBuilder()
                         .setBlkNumberStart(blkStart)
                         .setBlkNumberEnd(blkEnd)
                         .build();
 
-        byte[] reqHead = ApiUtils
-                .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_admin, Message.Funcs.f_getBlockSqlByRange);
+        byte[] reqHead =
+                ApiUtils.toReqHeader(
+                        ApiUtils.PROTOCOL_VER,
+                        Message.Servs.s_admin,
+                        Message.Funcs.f_getBlockSqlByRange);
         byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
 
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
@@ -210,7 +222,11 @@ public class Admin implements IAdmin {
         }
 
         try {
-            List<BlockSql> k = ApiUtils.toBlockSql(Message.rsp_getBlockSqlByRange.parseFrom(ApiUtils.parseBody(rsp).getData()).getBlkSqlList());
+            List<BlockSql> k =
+                    ApiUtils.toBlockSql(
+                            Message.rsp_getBlockSqlByRange
+                                    .parseFrom(ApiUtils.parseBody(rsp).getData())
+                                    .getBlkSqlList());
             return new ApiMsg(k, org.aion.api.type.ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
@@ -235,13 +251,17 @@ public class Admin implements IAdmin {
         }
 
         Message.req_getBlockDetailsByRange reqBody =
-                Message.req_getBlockDetailsByRange.newBuilder()
+                Message.req_getBlockDetailsByRange
+                        .newBuilder()
                         .setBlkNumberStart(blkStart)
                         .setBlkNumberEnd(blkEnd)
                         .build();
 
-        byte[] reqHead = ApiUtils
-                .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_admin, Message.Funcs.f_getBlockDetailsByRange);
+        byte[] reqHead =
+                ApiUtils.toReqHeader(
+                        ApiUtils.PROTOCOL_VER,
+                        Message.Servs.s_admin,
+                        Message.Funcs.f_getBlockDetailsByRange);
         byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
 
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
@@ -251,11 +271,16 @@ public class Admin implements IAdmin {
         }
 
         try {
-            List<BlockDetails> k = ApiUtils.toBlockDetails(Message.rsp_getBlockDetailsByRange.parseFrom(ApiUtils.parseBody(rsp).getData()).getBlkDetailsList());
+            List<BlockDetails> k =
+                    ApiUtils.toBlockDetails(
+                            Message.rsp_getBlockDetailsByRange
+                                    .parseFrom(ApiUtils.parseBody(rsp).getData())
+                                    .getBlkDetailsList());
             return new ApiMsg(k, org.aion.api.type.ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[getBlockDetailsByRange]" + ErrId.getErrString(-104L) + e.getMessage());
+                LOGGER.error(
+                        "[getBlockDetailsByRange]" + ErrId.getErrString(-104L) + e.getMessage());
             }
             return new ApiMsg(-104, e.getMessage(), org.aion.api.type.ApiMsg.cast.OTHERS);
         }
@@ -274,12 +299,14 @@ public class Admin implements IAdmin {
             return new ApiMsg(-17);
         }
 
-        Message.req_getBlockDetailsByNumber reqBody = Message.req_getBlockDetailsByNumber.newBuilder()
-                .addAllBlkNumbers(blks)
-                .build();
+        Message.req_getBlockDetailsByNumber reqBody =
+                Message.req_getBlockDetailsByNumber.newBuilder().addAllBlkNumbers(blks).build();
 
-        byte[] reqHead = ApiUtils
-                .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_admin, Message.Funcs.f_getBlockDetailsByNumber);
+        byte[] reqHead =
+                ApiUtils.toReqHeader(
+                        ApiUtils.PROTOCOL_VER,
+                        Message.Servs.s_admin,
+                        Message.Funcs.f_getBlockDetailsByNumber);
         byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
 
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
@@ -289,11 +316,16 @@ public class Admin implements IAdmin {
         }
 
         try {
-            List<BlockDetails> k = ApiUtils.toBlockDetails(Message.rsp_getBlockDetailsByNumber.parseFrom(ApiUtils.parseBody(rsp).getData()).getBlkDetailsList());
+            List<BlockDetails> k =
+                    ApiUtils.toBlockDetails(
+                            Message.rsp_getBlockDetailsByNumber
+                                    .parseFrom(ApiUtils.parseBody(rsp).getData())
+                                    .getBlkDetailsList());
             return new ApiMsg(k, org.aion.api.type.ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[getBlockDetailsByNumber]" + ErrId.getErrString(-104L) + e.getMessage());
+                LOGGER.error(
+                        "[getBlockDetailsByNumber]" + ErrId.getErrString(-104L) + e.getMessage());
             }
             return new ApiMsg(-104, e.getMessage(), org.aion.api.type.ApiMsg.cast.OTHERS);
         }
@@ -312,12 +344,14 @@ public class Admin implements IAdmin {
             return new ApiMsg(-17);
         }
 
-        Message.req_getBlockDetailsByLatest reqBody = Message.req_getBlockDetailsByLatest.newBuilder()
-                .setCount(count)
-                .build();
+        Message.req_getBlockDetailsByLatest reqBody =
+                Message.req_getBlockDetailsByLatest.newBuilder().setCount(count).build();
 
-        byte[] reqHead = ApiUtils
-                .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_admin, Message.Funcs.f_getBlockDetailsByLatest);
+        byte[] reqHead =
+                ApiUtils.toReqHeader(
+                        ApiUtils.PROTOCOL_VER,
+                        Message.Servs.s_admin,
+                        Message.Funcs.f_getBlockDetailsByLatest);
         byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
 
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
@@ -327,11 +361,16 @@ public class Admin implements IAdmin {
         }
 
         try {
-            List<BlockDetails> k = ApiUtils.toBlockDetails(Message.rsp_getBlockDetailsByLatest.parseFrom(ApiUtils.parseBody(rsp).getData()).getBlkDetailsList());
+            List<BlockDetails> k =
+                    ApiUtils.toBlockDetails(
+                            Message.rsp_getBlockDetailsByLatest
+                                    .parseFrom(ApiUtils.parseBody(rsp).getData())
+                                    .getBlkDetailsList());
             return new ApiMsg(k, org.aion.api.type.ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[getBlockDetailsByLatest]" + ErrId.getErrString(-104L) + e.getMessage());
+                LOGGER.error(
+                        "[getBlockDetailsByLatest]" + ErrId.getErrString(-104L) + e.getMessage());
             }
             return new ApiMsg(-104, e.getMessage(), org.aion.api.type.ApiMsg.cast.OTHERS);
         }
@@ -350,12 +389,14 @@ public class Admin implements IAdmin {
             return new ApiMsg(-17);
         }
 
-        Message.req_getBlocksByLatest reqBody = Message.req_getBlocksByLatest.newBuilder()
-                .setCount(count)
-                .build();
+        Message.req_getBlocksByLatest reqBody =
+                Message.req_getBlocksByLatest.newBuilder().setCount(count).build();
 
-        byte[] reqHead = ApiUtils
-                .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_admin, Message.Funcs.f_getBlocksByLatest);
+        byte[] reqHead =
+                ApiUtils.toReqHeader(
+                        ApiUtils.PROTOCOL_VER,
+                        Message.Servs.s_admin,
+                        Message.Funcs.f_getBlocksByLatest);
         byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
 
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
@@ -365,7 +406,11 @@ public class Admin implements IAdmin {
         }
 
         try {
-            List<Block> k = ApiUtils.toBlocks(Message.rsp_getBlocksByLatest.parseFrom(ApiUtils.parseBody(rsp).getData()).getBlksList());
+            List<Block> k =
+                    ApiUtils.toBlocks(
+                            Message.rsp_getBlocksByLatest
+                                    .parseFrom(ApiUtils.parseBody(rsp).getData())
+                                    .getBlksList());
             return new ApiMsg(k, org.aion.api.type.ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
@@ -394,7 +439,7 @@ public class Admin implements IAdmin {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getAccountDetailsByAddressList] " + e.getMessage());
             }
-            return  new ApiMsg(-17);
+            return new ApiMsg(-17);
         }
     }
 
@@ -412,16 +457,23 @@ public class Admin implements IAdmin {
         }
 
         // convert addresses to protobuf ByteString
-        List<ByteString> addressListString = addressList.parallelStream()
-                .map(address -> ByteString.copyFrom(address.toBytes())).collect(Collectors.toList());
+        List<ByteString> addressListString =
+                addressList
+                        .parallelStream()
+                        .map(address -> ByteString.copyFrom(address.toBytes()))
+                        .collect(Collectors.toList());
 
+        Message.req_getAccountDetailsByAddressList reqBody =
+                Message.req_getAccountDetailsByAddressList
+                        .newBuilder()
+                        .addAllAddresses(addressListString)
+                        .build();
 
-        Message.req_getAccountDetailsByAddressList reqBody = Message.req_getAccountDetailsByAddressList.newBuilder()
-                .addAllAddresses(addressListString)
-                .build();
-
-        byte[] reqHead = ApiUtils
-                .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_admin, Message.Funcs.f_getAccountDetailsByAddressList);
+        byte[] reqHead =
+                ApiUtils.toReqHeader(
+                        ApiUtils.PROTOCOL_VER,
+                        Message.Servs.s_admin,
+                        Message.Funcs.f_getAccountDetailsByAddressList);
         byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
 
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
@@ -431,11 +483,18 @@ public class Admin implements IAdmin {
         }
 
         try {
-            List<AccountDetails> k = ApiUtils.toAccountDetails(Message.rsp_getAccountDetailsByAddressList.parseFrom(ApiUtils.parseBody(rsp).getData()).getAccountsList());
+            List<AccountDetails> k =
+                    ApiUtils.toAccountDetails(
+                            Message.rsp_getAccountDetailsByAddressList
+                                    .parseFrom(ApiUtils.parseBody(rsp).getData())
+                                    .getAccountsList());
             return new ApiMsg(k, org.aion.api.type.ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[getAccountDetailsByAddressList]" + ErrId.getErrString(-104L) + e.getMessage());
+                LOGGER.error(
+                        "[getAccountDetailsByAddressList]"
+                                + ErrId.getErrString(-104L)
+                                + e.getMessage());
             }
             return new ApiMsg(-104, e.getMessage(), org.aion.api.type.ApiMsg.cast.OTHERS);
         }

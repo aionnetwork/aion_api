@@ -1,47 +1,38 @@
-/*******************************************************************************
- * Copyright (c) 2017-2018 Aion foundation.
+/**
+ * ***************************************************************************** Copyright (c)
+ * 2017-2018 Aion foundation.
  *
- *     This file is part of the aion network project.
+ * <p>This file is part of the aion network project.
  *
- *     The aion network project is free software: you can redistribute it
- *     and/or modify it under the terms of the GNU General Public License
- *     as published by the Free Software Foundation, either version 3 of
- *     the License, or any later version.
+ * <p>The aion network project is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software Foundation, either
+ * version 3 of the License, or any later version.
  *
- *     The aion network project is distributed in the hope that it will
- *     be useful, but WITHOUT ANY WARRANTY; without even the implied
- *     warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *     See the GNU General Public License for more details.
+ * <p>The aion network project is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the GNU General Public License for more details.
  *
- *     You should have received a copy of the GNU General Public License
- *     along with the aion network project source files.
- *     If not, see <https://www.gnu.org/licenses/>.
+ * <p>You should have received a copy of the GNU General Public License along with the aion network
+ * project source files. If not, see <https://www.gnu.org/licenses/>.
  *
- * Contributors:
- *     Aion foundation.
+ * <p>Contributors: Aion foundation.
  *
- ******************************************************************************/
-
+ * <p>****************************************************************************
+ */
 package org.aion.api.sol.impl;
-
-import org.aion.api.impl.ErrId;
-import org.aion.api.impl.internal.ApiUtils;
-import org.aion.api.sol.IBool;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
+import org.aion.api.impl.ErrId;
+import org.aion.api.impl.internal.ApiUtils;
+import org.aion.api.sol.IBool;
 
-/**
- * Created by yao on 16/09/16.
- */
+/** Created by yao on 16/09/16. */
 
-/**
- * Class Bool extends from SolidityAbstractType. use for function arguments
- * input/output.
- */
-public final class Bool extends SolidityAbstractType implements IBool{
+/** Class Bool extends from SolidityAbstractType. use for function arguments input/output. */
+public final class Bool extends SolidityAbstractType implements IBool {
 
     private Bool(List in) {
         super();
@@ -62,15 +53,14 @@ public final class Bool extends SolidityAbstractType implements IBool{
      */
     public static Bool copyFrom(boolean in) {
         List<byte[]> l = new ArrayList<>();
-        byte[] out = { (byte) (in ? 1 : 0) };
+        byte[] out = {(byte) (in ? 1 : 0)};
         l.add(out);
         return new Bool(l);
     }
 
     /**
-     * Generates an Bool object from an ArrayList of Boolean, this structure
-     * should match the list structure defined in the ABI and consist only of
-     * Boolean.
+     * Generates an Bool object from an ArrayList of Boolean, this structure should match the list
+     * structure defined in the ABI and consist only of Boolean.
      *
      * @param l
      * @return {@link Bool}.
@@ -102,7 +92,7 @@ public final class Bool extends SolidityAbstractType implements IBool{
 
         for (Object entry : l) {
             if (entry instanceof Boolean) {
-                byte[] out = { (byte) ((Boolean) entry ? 1 : 0) };
+                byte[] out = {(byte) ((Boolean) entry ? 1 : 0)};
                 localArrayList.add(out);
             } else if (entry instanceof ArrayList) {
                 localArrayList.add(copyFromHelper((ArrayList) entry));
@@ -128,8 +118,7 @@ public final class Bool extends SolidityAbstractType implements IBool{
     /**
      * Checks that inputted string is the correct type. To be used with ABI.
      *
-     * @param in
-     *         Solidity Type.
+     * @param in Solidity Type.
      * @return returns a boolean indicating the type is Bool.
      */
     public boolean isType(String in) {
@@ -143,12 +132,10 @@ public final class Bool extends SolidityAbstractType implements IBool{
     }
 
     /**
-     * Returns a correctly formatted hex string, given an input byte array
-     * (usually 32 bytes). Encoding varies depending on the solidity type being
-     * encoded.
+     * Returns a correctly formatted hex string, given an input byte array (usually 32 bytes).
+     * Encoding varies depending on the solidity type being encoded.
      *
-     * @param entry
-     *         data need to be formatted.
+     * @param entry data need to be formatted.
      * @return formatted string for encode.
      */
     public String formatToString(byte[] entry) {
@@ -162,9 +149,8 @@ public final class Bool extends SolidityAbstractType implements IBool{
     }
 
     /**
-     * Returns a correctly formatted hex string, given an input byte array
-     * (usually 32 bytes). Encoding varies depending on the solidity type being
-     * encoded.
+     * Returns a correctly formatted hex string, given an input byte array (usually 32 bytes).
+     * Encoding varies depending on the solidity type being encoded.
      *
      * @param data
      * @param offset

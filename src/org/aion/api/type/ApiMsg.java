@@ -35,7 +35,6 @@ import org.aion.api.impl.ErrId;
  *
  * @author Jay Tseng
  */
-
 public class ApiMsg {
 
     // the Message return code. When everything correct. This code will be set to 1.
@@ -132,6 +131,10 @@ public class ApiMsg {
     }
 
     public enum cast {
-        BOOLEAN, INT, LONG, OTHERS, NULL
+        BOOLEAN,
+        INT,
+        LONG,
+        OTHERS,
+        NULL
     }
 }

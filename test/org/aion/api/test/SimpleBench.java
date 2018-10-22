@@ -47,33 +47,31 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-
-/**
- * Created by Jay Tseng on 18/05/17.
- */
+/** Created by Jay Tseng on 18/05/17. */
 public class SimpleBench {
 
     // Make sure the password of the testing account been set properly
     private static final String DEFAULT_PASSWORD = "";
-    private static final String sc = "pragma solidity ^0.4.0;\n" +
-        "\n" +
-        "contract Simple {\n" +
-        "    uint counter;\n" +
-        "\n" +
-        "    function f(uint n) returns(uint) {\n" +
-        "\n" +
-        "        uint sum = 0;\n" +
-        "        for (uint i = 0; i < n; i++) {\n" +
-        "            sum = sum + i;\n" +
-        "        }\n" +
-        "\n" +
-        "        return sum;\n" +
-        "    }\n" +
-        "    \n" +
-        "    function g(uint n) {\n" +
-        "        counter++;\n" +
-        "    }\n" +
-        "}";
+    private static final String sc =
+            "pragma solidity ^0.4.0;\n"
+                    + "\n"
+                    + "contract Simple {\n"
+                    + "    uint counter;\n"
+                    + "\n"
+                    + "    function f(uint n) returns(uint) {\n"
+                    + "\n"
+                    + "        uint sum = 0;\n"
+                    + "        for (uint i = 0; i < n; i++) {\n"
+                    + "            sum = sum + i;\n"
+                    + "        }\n"
+                    + "\n"
+                    + "        return sum;\n"
+                    + "    }\n"
+                    + "    \n"
+                    + "    function g(uint n) {\n"
+                    + "        counter++;\n"
+                    + "    }\n"
+                    + "}";
 
     private static IAionAPI api = null;
     private static IContract ct = null;
@@ -91,8 +89,9 @@ public class SimpleBench {
         assertTrue(api.getWallet().unlockAccount(cb, DEFAULT_PASSWORD, 3600).getObject());
 
         /* deploy contract */
-        ApiMsg msg = api.getContractController()
-            .createFromSource(sc, cb, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
+        ApiMsg msg =
+                api.getContractController()
+                        .createFromSource(sc, cb, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
         if (msg.isError()) {
             System.out.println("Deploy contract failed! " + msg.getErrString());
         }
@@ -108,43 +107,53 @@ public class SimpleBench {
         AtomicInteger count = new AtomicInteger(0);
 
         BlockingDeque<byte[]> queue = new LinkedBlockingDeque<>();
-        Thread t = new Thread(() -> {
-            while (true) {
-                try {
-                    Thread.sleep(1000);
+        Thread t =
+                new Thread(
+                        () -> {
+                            while (true) {
+                                try {
+                                    Thread.sleep(1000);
 
-                    int qSize = queue.size();
-                    long duration = (System.currentTimeMillis() - startTime) / 1000;
-                    System.out.println("proccessed tx: " + count + ", queue size: " + qSize
-                        + ", throughput (tx/sec): " + count.get() / duration);
+                                    int qSize = queue.size();
+                                    long duration = (System.currentTimeMillis() - startTime) / 1000;
+                                    System.out.println(
+                                            "proccessed tx: "
+                                                    + count
+                                                    + ", queue size: "
+                                                    + qSize
+                                                    + ", throughput (tx/sec): "
+                                                    + count.get() / duration);
 
-                    for (int i = 0; i < qSize; i++) {
-                        byte[] msgHash = queue.take();
-                        ApiMsg apiMsg = api.getTx().getMsgStatus(ByteArrayWrapper.wrap(msgHash));
-                        if (IUtils.endTxStatus(((MsgRsp) apiMsg.getObject()).getStatus())) {
-                            count.incrementAndGet();
-                        } else {
-                            queue.put(msgHash);
-                        }
-                    }
-                } catch (InterruptedException e) {
-                    break;
-                }
-            }
-        });
+                                    for (int i = 0; i < qSize; i++) {
+                                        byte[] msgHash = queue.take();
+                                        ApiMsg apiMsg =
+                                                api.getTx()
+                                                        .getMsgStatus(
+                                                                ByteArrayWrapper.wrap(msgHash));
+                                        if (IUtils.endTxStatus(
+                                                ((MsgRsp) apiMsg.getObject()).getStatus())) {
+                                            count.incrementAndGet();
+                                        } else {
+                                            queue.put(msgHash);
+                                        }
+                                    }
+                                } catch (InterruptedException e) {
+                                    break;
+                                }
+                            }
+                        });
         t.start();
 
-        IContract tmp = ct.newFunction("g")
-            .setParam(IUint.copyFrom(1))
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .build();
+        IContract tmp =
+                ct.newFunction("g")
+                        .setParam(IUint.copyFrom(1))
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .build();
 
         while (true) {
             try {
-                ContractResponse rsp = tmp.nonBlock()
-                    .execute()
-                    .getObject();
+                ContractResponse rsp = tmp.nonBlock().execute().getObject();
                 assertNotNull(rsp.getMsgHash());
                 assertTrue(!rsp.isTxError());
                 queue.add(rsp.getMsgHash().getData());

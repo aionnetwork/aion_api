@@ -1,29 +1,29 @@
-/*******************************************************************************
- * Copyright (c) 2017-2018 Aion foundation.
+/**
+ * ***************************************************************************** Copyright (c)
+ * 2017-2018 Aion foundation.
  *
- *     This file is part of the aion network project.
+ * <p>This file is part of the aion network project.
  *
- *     The aion network project is free software: you can redistribute it
- *     and/or modify it under the terms of the GNU General Public License
- *     as published by the Free Software Foundation, either version 3 of
- *     the License, or any later version.
+ * <p>The aion network project is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software Foundation, either
+ * version 3 of the License, or any later version.
  *
- *     The aion network project is distributed in the hope that it will
- *     be useful, but WITHOUT ANY WARRANTY; without even the implied
- *     warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *     See the GNU General Public License for more details.
+ * <p>The aion network project is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the GNU General Public License for more details.
  *
- *     You should have received a copy of the GNU General Public License
- *     along with the aion network project source files.
- *     If not, see <https://www.gnu.org/licenses/>.
+ * <p>You should have received a copy of the GNU General Public License along with the aion network
+ * project source files. If not, see <https://www.gnu.org/licenses/>.
  *
- * Contributors:
- *     Aion foundation.
+ * <p>Contributors: Aion foundation.
  *
- ******************************************************************************/
-
+ * <p>****************************************************************************
+ */
 package org.aion.api.sol.impl;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import org.aion.api.ITx;
 import org.aion.api.impl.ErrId;
 import org.aion.api.impl.internal.ApiUtils;
@@ -33,15 +33,10 @@ import org.aion.api.type.TxArgs;
 import org.aion.base.util.ByteArrayWrapper;
 import org.slf4j.Logger;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * Abstract class that all Solidity type derive from. Contains a core set of
- * operations related to RLP encoding and decoding. Currently supports all
- * available solidity type. Most functions used are not intended to be user
- * facing, and should be left unused by the user.
+ * Abstract class that all Solidity type derive from. Contains a core set of operations related to
+ * RLP encoding and decoding. Currently supports all available solidity type. Most functions used
+ * are not intended to be user facing, and should be left unused by the user.
  */
 public abstract class SolidityAbstractType {
 
@@ -67,16 +62,14 @@ public abstract class SolidityAbstractType {
     /**
      * Checks that inputted string is the correct type. To be used with ABI.
      *
-     * @param in
-     *         Solidity Type
+     * @param in Solidity Type
      * @return solidity Type belong to this type or not
      */
     public abstract boolean isType(String in);
 
     /**
-     * Returns a correctly formatted hex string, given an input byte array
-     * (usually 32 bytes). Encoding varies depending on the solidity type being
-     * encoded.
+     * Returns a correctly formatted hex string, given an input byte array (usually 32 bytes).
+     * Encoding varies depending on the solidity type being encoded.
      *
      * @param entry
      * @return formatted string for encode
@@ -93,14 +86,9 @@ public abstract class SolidityAbstractType {
     protected abstract Object decodeToSolidityType(byte[] entry, int offset);
 
     /**
-     * @param offset
-     *         decodes response of
-     *         {@link ITx#call(TxArgs) call} into
-     *         proper format
-     * @param data
-     *         byte string response from call
-     * @return Object of decoded parameter, can be type String, Long, Int,
-     * byte[] or an ArrayList.
+     * @param offset decodes response of {@link ITx#call(TxArgs) call} into proper format
+     * @param data byte string response from call
+     * @return Object of decoded parameter, can be type String, Long, Int, byte[] or an ArrayList.
      */
     public Object decode(int offset, ByteArrayWrapper data) {
         if (data == null) {
@@ -124,11 +112,17 @@ public abstract class SolidityAbstractType {
             int innerLayer = layer + 1;
 
             int nestedStaticPartLength = getStaticPartLayerLength(innerLayer);
-            int roundedNestedStaticPartLength = ((int) (((double) nestedStaticPartLength + encodeUnitLength-1) / encodeUnitLength)) * encodeUnitLength;
+            int roundedNestedStaticPartLength =
+                    ((int)
+                                    (((double) nestedStaticPartLength + encodeUnitLength - 1)
+                                            / encodeUnitLength))
+                            * encodeUnitLength;
 
             List ret = new ArrayList();
 
-            for (int i = 0; i < length * roundedNestedStaticPartLength; i += roundedNestedStaticPartLength) {
+            for (int i = 0;
+                    i < length * roundedNestedStaticPartLength;
+                    i += roundedNestedStaticPartLength) {
                 ret.add(decodeHelper(arrayStart + i, data, innerLayer));
             }
 
@@ -140,10 +134,14 @@ public abstract class SolidityAbstractType {
 
             int nestedStaticPartLength = this.getStaticPartLayerLength(innerLayer);
             int encodeLen = isDoubleUnit() ? encodeUnitLengthDouble : encodeUnitLength;
-            int roundedNestedStaticPartLength = ((int) (((double) nestedStaticPartLength + encodeLen-1) / encodeLen)) * encodeLen;
+            int roundedNestedStaticPartLength =
+                    ((int) (((double) nestedStaticPartLength + encodeLen - 1) / encodeLen))
+                            * encodeLen;
 
             List ret = new ArrayList();
-            for (int i = 0; i < length * roundedNestedStaticPartLength; i += roundedNestedStaticPartLength) {
+            for (int i = 0;
+                    i < length * roundedNestedStaticPartLength;
+                    i += roundedNestedStaticPartLength) {
                 ret.add(decodeHelper(offset + i, data, innerLayer));
             }
 
@@ -163,13 +161,10 @@ public abstract class SolidityAbstractType {
     }
 
     /**
-     * Set the solidity type, also verifies the input type correctness and sets
-     * the type of the variable from
-     * {@link SolidityValue.SolidityArgsType}, not intended for
-     * user usage
+     * Set the solidity type, also verifies the input type correctness and sets the type of the
+     * variable from {@link SolidityValue.SolidityArgsType}, not intended for user usage
      *
-     * @param type
-     *         input type
+     * @param type input type
      */
     public void setType(String type) {
         if (type == null) {
@@ -194,12 +189,10 @@ public abstract class SolidityAbstractType {
         } else {
             this.typeProperty = SolidityValue.SolidityArgsType.STATIC;
         }
-
     }
 
     /**
-     * Debug function used for setting and getting dynamic parameters, not
-     * intended for user usage
+     * Debug function used for setting and getting dynamic parameters, not intended for user usage
      *
      * @param dynamicParams
      */
@@ -214,8 +207,8 @@ public abstract class SolidityAbstractType {
     }
 
     /**
-     * Utilized to generate the RLP encoded input format to be sent to backend.
-     * Not intended for user usage.
+     * Utilized to generate the RLP encoded input format to be sent to backend. Not intended for
+     * user usage.
      *
      * @return RLP encoded string
      */
@@ -228,25 +221,25 @@ public abstract class SolidityAbstractType {
     }
 
     /**
-     * Get if the solidity type is of type dynamic, used to check which
-     * encoding/decoding method to use.
+     * Get if the solidity type is of type dynamic, used to check which encoding/decoding method to
+     * use.
      *
      * @return true if type is dynamic.
      */
     public boolean getIsDynamic() {
-        return (this.typeProperty == SolidityValue.SolidityArgsType.DYNAMICARRAY) || (this.typeProperty
-                == SolidityValue.SolidityArgsType.DYNAMIC);
+        return (this.typeProperty == SolidityValue.SolidityArgsType.DYNAMICARRAY)
+                || (this.typeProperty == SolidityValue.SolidityArgsType.DYNAMIC);
     }
 
     // note this function returns the reversed array
     private boolean getLayerIsDynamicArray(int layer) {
-        return layer < this.dynamicParameters.size() && (
-                this.dynamicParameters.get((this.dynamicParameters.size() - 1) - layer) == -1);
+        return layer < this.dynamicParameters.size()
+                && (this.dynamicParameters.get((this.dynamicParameters.size() - 1) - layer) == -1);
     }
 
     private boolean getLayerIsStaticArray(int layer) {
-        return layer < this.dynamicParameters.size() && (
-                this.dynamicParameters.get((this.dynamicParameters.size() - 1) - layer) != -1);
+        return layer < this.dynamicParameters.size()
+                && (this.dynamicParameters.get((this.dynamicParameters.size() - 1) - layer) != -1);
     }
 
     private String generateDynamicFormat() {
@@ -278,8 +271,7 @@ public abstract class SolidityAbstractType {
 
             for (Object entry : l) {
                 outStr = getOutString(innerLayer, outStr, entry);
-                if (outStr == null)
-                    return null;
+                if (outStr == null) return null;
             }
         } else {
             innerLayer++;
@@ -289,10 +281,9 @@ public abstract class SolidityAbstractType {
                 if (i < l.size()) {
                     Object entry = l.get(i);
                     outStr = getOutString(innerLayer, outStr, entry);
-                    if (outStr == null)
-                        return null;
+                    if (outStr == null) return null;
                 } else {
-                    outStr += ApiUtils.toHexPadded16(new byte[] { 0 });
+                    outStr += ApiUtils.toHexPadded16(new byte[] {0});
                 }
             }
         }
@@ -316,8 +307,7 @@ public abstract class SolidityAbstractType {
     /**
      * Returns the length of the dynamic portion of the type.
      *
-     * @return integer indicating the length of the dynamic portion of the hex
-     * string
+     * @return integer indicating the length of the dynamic portion of the hex string
      */
     public int getDynamicPartLength() {
         return getInputFormat().length();
@@ -330,8 +320,7 @@ public abstract class SolidityAbstractType {
     /**
      * Returns the length of the static portion of the type.
      *
-     * @return integer indicating the length of the static portion of the hex
-     * string
+     * @return integer indicating the length of the static portion of the hex string
      */
     public int getStaticPartLength() {
 
@@ -354,8 +343,7 @@ public abstract class SolidityAbstractType {
     protected abstract boolean isDoubleUnit();
 
     /**
-     * Get if solidity type is of type static, used to check which
-     * encoding/decoding method to use.
+     * Get if solidity type is of type static, used to check which encoding/decoding method to use.
      *
      * @return true if type is static.
      */
@@ -364,11 +352,10 @@ public abstract class SolidityAbstractType {
     }
 
     /**
-     * Returns the static layer length, dependant on the layer of the current
-     * encoding. Not user facing.
+     * Returns the static layer length, dependant on the layer of the current encoding. Not user
+     * facing.
      *
-     * @param layer
-     *         current {@link #dynamicParameters dynamicParameters} index
+     * @param layer current {@link #dynamicParameters dynamicParameters} index
      * @return
      */
     private int getStaticPartLayerLength(int layer) {

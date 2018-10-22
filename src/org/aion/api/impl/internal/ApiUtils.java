@@ -1,27 +1,24 @@
-/*******************************************************************************
- * Copyright (c) 2017-2018 Aion foundation.
+/**
+ * ***************************************************************************** Copyright (c)
+ * 2017-2018 Aion foundation.
  *
- *     This file is part of the aion network project.
+ * <p>This file is part of the aion network project.
  *
- *     The aion network project is free software: you can redistribute it
- *     and/or modify it under the terms of the GNU General Public License
- *     as published by the Free Software Foundation, either version 3 of
- *     the License, or any later version.
+ * <p>The aion network project is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software Foundation, either
+ * version 3 of the License, or any later version.
  *
- *     The aion network project is distributed in the hope that it will
- *     be useful, but WITHOUT ANY WARRANTY; without even the implied
- *     warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *     See the GNU General Public License for more details.
+ * <p>The aion network project is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the GNU General Public License for more details.
  *
- *     You should have received a copy of the GNU General Public License
- *     along with the aion network project source files.
- *     If not, see <https://www.gnu.org/licenses/>.
+ * <p>You should have received a copy of the GNU General Public License along with the aion network
+ * project source files. If not, see <https://www.gnu.org/licenses/>.
  *
- * Contributors:
- *     Aion foundation.
+ * <p>Contributors: Aion foundation.
  *
- ******************************************************************************/
-
+ * <p>****************************************************************************
+ */
 package org.aion.api.impl.internal;
 
 import static org.aion.api.IUtils.bytes2Hex;
@@ -37,9 +34,9 @@ import java.util.Random;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.aion.api.impl.Utils;
+import org.aion.api.impl.internal.Message;
 import org.aion.api.keccak.Keccak;
 import org.aion.api.keccak.Keccak256;
-import org.aion.api.impl.internal.Message;
 import org.aion.api.type.AccountDetails;
 import org.aion.api.type.Block;
 import org.aion.api.type.BlockDetails;
@@ -77,7 +74,8 @@ public class ApiUtils {
      * @param hash
      * @return
      */
-    public static byte[] toReqHeader(int vers, Message.Servs serv, Message.Funcs func, ByteArrayWrapper hash) {
+    public static byte[] toReqHeader(
+            int vers, Message.Servs serv, Message.Funcs func, ByteArrayWrapper hash) {
         if (hash.getData().length != MSG_HASH_LEN) {
             return ByteArrayWrapper.NULL_BYTE;
         }
@@ -97,7 +95,8 @@ public class ApiUtils {
         return toReqHeader(vers, serv, func, false);
     }
 
-    public static byte[] toReqHeader(int vers, Message.Servs serv, Message.Funcs func, boolean hasHash) {
+    public static byte[] toReqHeader(
+            int vers, Message.Servs serv, Message.Funcs func, boolean hasHash) {
         byte[] result = new byte[4];
         result[0] = (byte) vers;
         result[1] = (byte) serv.ordinal();
@@ -106,10 +105,9 @@ public class ApiUtils {
         return result;
     }
 
-
     /**
-     * A helper function intended to provide easy copying from response type to
-     * {@link org.aion.api.type.Transaction}, intended for internal usage
+     * A helper function intended to provide easy copying from response type to {@link
+     * org.aion.api.type.Transaction}, intended for internal usage
      *
      * @param rsp
      * @return
@@ -132,8 +130,8 @@ public class ApiUtils {
     }
 
     /**
-     * A helper function intended to provide easy copying from response type to
-     * {@link TxReceipt}, intended for internal usage
+     * A helper function intended to provide easy copying from response type to {@link TxReceipt},
+     * intended for internal usage
      *
      * @param rsp
      * @return
@@ -150,12 +148,14 @@ public class ApiUtils {
                 topics.add(bs);
             }
 
-            txLogList.add(new TxLog(Address.wrap(tl.getAddress().toByteArray()),
-                    ByteArrayWrapper.wrap(tl.getData().toByteArray()),
-                    topics));
+            txLogList.add(
+                    new TxLog(
+                            Address.wrap(tl.getAddress().toByteArray()),
+                            ByteArrayWrapper.wrap(tl.getData().toByteArray()),
+                            topics));
         }
 
-        return  builder.blockHash(Hash256.wrap(rsp.getBlockHash().toByteArray()))
+        return builder.blockHash(Hash256.wrap(rsp.getBlockHash().toByteArray()))
                 .blockNumber(rsp.getBlockNumber())
                 .contractAddress(Address.wrap(rsp.getContractAddress().toByteArray()))
                 .cumulativeNrgUsed(rsp.getCumulativeNrgUsed())
@@ -168,7 +168,6 @@ public class ApiUtils {
                 .createTxReceipt();
     }
 
-
     /**
      * Returns a 32 byte left padded hex string with character '0'
      *
@@ -176,7 +175,8 @@ public class ApiUtils {
      * @return 64 character (32 byte) left padded hex string
      */
     public static String toHexPadded(byte[] bytes) {
-        String zeroes = "0000000000000000" + "0000000000000000" + "0000000000000000" + "0000000000000000";
+        String zeroes =
+                "0000000000000000" + "0000000000000000" + "0000000000000000" + "0000000000000000";
 
         String data = bytes2Hex(bytes);
 
@@ -207,7 +207,8 @@ public class ApiUtils {
      */
     public static String toHexPaddedNegative(byte[] bytes) {
 
-        String zeroes = "ffffffffffffffff" + "ffffffffffffffff" + "ffffffffffffffff" + "ffffffffffffffff";
+        String zeroes =
+                "ffffffffffffffff" + "ffffffffffffffff" + "ffffffffffffffff" + "ffffffffffffffff";
 
         String data = bytes2Hex(bytes);
 
@@ -230,8 +231,7 @@ public class ApiUtils {
     }
 
     /**
-     * Returns a right padded '0' string, given an input string and padding
-     * length
+     * Returns a right padded '0' string, given an input string and padding length
      *
      * @param in
      * @param padding
@@ -241,7 +241,7 @@ public class ApiUtils {
         int padLength = padding - in.length();
         StringBuilder rtn = new StringBuilder(in);
 
-        //TODO: Find a more elegant way
+        // TODO: Find a more elegant way
         for (int i = 0; i < padLength; i++) {
             rtn.append("0");
         }
@@ -252,8 +252,7 @@ public class ApiUtils {
     /**
      * Returns a 4 byte array given an integer input
      *
-     * @param i
-     *         integer input
+     * @param i integer input
      * @return 4 byte array
      */
     public static byte[] toBytes(int i) {
@@ -268,8 +267,8 @@ public class ApiUtils {
     }
 
     /**
-     * Returns the byte representation of a hex string, note that this function
-     * translates the hex into byte, not a direct getBytes() conversion.
+     * Returns the byte representation of a hex string, note that this function translates the hex
+     * into byte, not a direct getBytes() conversion.
      *
      * @param hexstr
      * @return byte array reprsentation of hex string
@@ -279,8 +278,10 @@ public class ApiUtils {
         byte[] out_arr = new byte[len / 2];
 
         for (int i = 0; i < len; i += 2) {
-            out_arr[i / 2] = (byte) ((Character.digit(hexstr.charAt(i), 16) << 4) + Character
-                    .digit(hexstr.charAt(i + 1), 16));
+            out_arr[i / 2] =
+                    (byte)
+                            ((Character.digit(hexstr.charAt(i), 16) << 4)
+                                    + Character.digit(hexstr.charAt(i + 1), 16));
         }
         return out_arr;
     }
@@ -295,11 +296,10 @@ public class ApiUtils {
     }
 
     /**
-     * Returns an integer given a byte array, will always assume big endian and
-     * that integer is located in the last 4 bytes of the array.
+     * Returns an integer given a byte array, will always assume big endian and that integer is
+     * located in the last 4 bytes of the array.
      *
-     * @param in
-     *         byte array input
+     * @param in byte array input
      * @return integer
      */
     public static int toInt(byte[] in) {
@@ -310,12 +310,14 @@ public class ApiUtils {
     // assumes atleast a 4 length byte array
 
     /**
-     * Returns an integer given a byte array, with controls for offset and
-     * length, assumes integer data begins in index
-     * <pre>(offset + length - 4)</pre>, and is 4 bytes long.
+     * Returns an integer given a byte array, with controls for offset and length, assumes integer
+     * data begins in index
      *
-     * @param in
-     *         byte array input
+     * <pre>(offset + length - 4)</pre>
+     *
+     * , and is 4 bytes long.
+     *
+     * @param in byte array input
      * @return integer
      */
     public static int toInt(byte[] in, int offset, int length) {
@@ -324,11 +326,10 @@ public class ApiUtils {
     }
 
     /**
-     * Returns an Long given a byte array, will always assume big endian and
-     * that integer is located in the last 8 bytes of the array.
+     * Returns an Long given a byte array, will always assume big endian and that integer is located
+     * in the last 8 bytes of the array.
      *
-     * @param in
-     *         byte array input
+     * @param in byte array input
      * @return integer
      */
     public static long toLong(byte[] in) {
@@ -337,12 +338,14 @@ public class ApiUtils {
     }
 
     /**
-     * Returns an Long given a byte array, with controls for offset and length,
-     * assumes integer data begins in index
-     * <pre>(offset + length - 8)</pre>, and is 8 bytes long.
+     * Returns an Long given a byte array, with controls for offset and length, assumes integer data
+     * begins in index
      *
-     * @param in
-     *         byte array input
+     * <pre>(offset + length - 8)</pre>
+     *
+     * , and is 8 bytes long.
+     *
+     * @param in byte array input
      * @return integer
      */
     public static long toLong(byte[] in, int offset, int length) {
@@ -351,11 +354,10 @@ public class ApiUtils {
     }
 
     /**
-     * Returns an unsigned Long given a byte array, will always assume big
-     * endian and that integer is located in the last 8 bytes of the array.
+     * Returns an unsigned Long given a byte array, will always assume big endian and that integer
+     * is located in the last 8 bytes of the array.
      *
-     * @param in
-     *         byte array input
+     * @param in byte array input
      * @return integer
      */
     public static long toUnsignedLong(byte[] in) {
@@ -368,12 +370,14 @@ public class ApiUtils {
     }
 
     /**
-     * Returns an unsigned Long given a byte array, with controls for offset and
-     * length, assumes integer data begins in index
-     * <pre>(offset + length - 8)</pre>, and is 8 bytes long.
+     * Returns an unsigned Long given a byte array, with controls for offset and length, assumes
+     * integer data begins in index
      *
-     * @param in
-     *         byte array input
+     * <pre>(offset + length - 8)</pre>
+     *
+     * , and is 8 bytes long.
+     *
+     * @param in byte array input
      * @return integer
      */
     public static long toUnsignedLong(byte[] in, int offset, int length) {
@@ -439,8 +443,7 @@ public class ApiUtils {
     /**
      * Keccak 256 hashing
      *
-     * @param in
-     *         msgHash input
+     * @param in msgHash input
      * @return hashed representation
      */
     public static byte[] keccak(byte[] in) {
@@ -449,7 +452,9 @@ public class ApiUtils {
     }
 
     public static ByteArrayWrapper parseHash(byte[] rsp) {
-        return ByteArrayWrapper.wrap(Arrays.copyOfRange(rsp, RSP_HEADER_NOHASH_LEN, RSP_HEADER_NOHASH_LEN + MSG_HASH_LEN));
+        return ByteArrayWrapper.wrap(
+                Arrays.copyOfRange(
+                        rsp, RSP_HEADER_NOHASH_LEN, RSP_HEADER_NOHASH_LEN + MSG_HASH_LEN));
     }
 
     public static ByteArrayWrapper parseBody(byte[] rsp) {
@@ -457,9 +462,12 @@ public class ApiUtils {
         int bodyLen = rsp.length - (hasHash ? RSP_HEADER_LEN : RSP_HEADER_NOHASH_LEN);
 
         if (hasHash) {
-            return ByteArrayWrapper.wrap(Arrays.copyOfRange(rsp, RSP_HEADER_LEN, RSP_HEADER_LEN + bodyLen));
+            return ByteArrayWrapper.wrap(
+                    Arrays.copyOfRange(rsp, RSP_HEADER_LEN, RSP_HEADER_LEN + bodyLen));
         } else {
-            return ByteArrayWrapper.wrap(Arrays.copyOfRange(rsp, RSP_HEADER_NOHASH_LEN, RSP_HEADER_NOHASH_LEN + bodyLen));
+            return ByteArrayWrapper.wrap(
+                    Arrays.copyOfRange(
+                            rsp, RSP_HEADER_NOHASH_LEN, RSP_HEADER_NOHASH_LEN + bodyLen));
         }
     }
 
@@ -468,7 +476,8 @@ public class ApiUtils {
     }
 
     public static boolean endTxStatus(int status) {
-        return status == Message.Retcode.r_tx_Included_VALUE || status == Message.Retcode.r_tx_Dropped_VALUE
+        return status == Message.Retcode.r_tx_Included_VALUE
+                || status == Message.Retcode.r_tx_Dropped_VALUE
                 || status <= Message.Retcode.r_wallet_nullcb_VALUE;
     }
 
@@ -482,9 +491,13 @@ public class ApiUtils {
         }
 
         List<Key> keys = new ArrayList<>();
-        for (int i=0 ; i < account.getAddressList().size() ; i++) {
-            Key key = new Key(Address.wrap(account.getAddress(i).toByteArray()),
-                            pk ? ByteArrayWrapper.wrap(account.getPrivateKey(i).toByteArray()) : ByteArrayWrapper.wrap(ByteArrayWrapper.NULL_BYTE));
+        for (int i = 0; i < account.getAddressList().size(); i++) {
+            Key key =
+                    new Key(
+                            Address.wrap(account.getAddress(i).toByteArray()),
+                            pk
+                                    ? ByteArrayWrapper.wrap(account.getPrivateKey(i).toByteArray())
+                                    : ByteArrayWrapper.wrap(ByteArrayWrapper.NULL_BYTE));
 
             keys.add(key);
         }
@@ -497,16 +510,19 @@ public class ApiUtils {
             throw new NullPointerException();
         }
 
-        List<ByteArrayWrapper> keyFiles = rsp_exportAccounts.getKeyFileList()
-                .parallelStream()
-                .map(bs -> ByteArrayWrapper.wrap(bs.toByteArray()))
-                .collect(Collectors.toList());
+        List<ByteArrayWrapper> keyFiles =
+                rsp_exportAccounts
+                        .getKeyFileList()
+                        .parallelStream()
+                        .map(bs -> ByteArrayWrapper.wrap(bs.toByteArray()))
+                        .collect(Collectors.toList());
 
-        List<Address> invalidAddr = rsp_exportAccounts.getFailedKeyList()
-                .parallelStream()
-                .map(bs -> Address.wrap(bs.toByteArray()))
-                .collect(Collectors.toList());
-
+        List<Address> invalidAddr =
+                rsp_exportAccounts
+                        .getFailedKeyList()
+                        .parallelStream()
+                        .map(bs -> Address.wrap(bs.toByteArray()))
+                        .collect(Collectors.toList());
 
         return new KeyExport(keyFiles, invalidAddr);
     }
@@ -518,47 +534,52 @@ public class ApiUtils {
 
         List<BlockDetails> rtn = new ArrayList<>();
         for (Message.t_BlockDetail bd : blkDetails) {
-            BlockDetails.BlockDetailsBuilder bdBuilder = new BlockDetails.BlockDetailsBuilder()
-                    .bloom(ByteArrayWrapper.wrap(bd.getLogsBloom().toByteArray()))
-                    .difficulty(new BigInteger(1, bd.getDifficulty().toByteArray()))
-                    .extraData(ByteArrayWrapper.wrap(bd.getExtraData().toByteArray()))
-                    .miner(Address.wrap(bd.getMinerAddress().toByteArray()))
-                    .nonce(new BigInteger(1, bd.getNonce().toByteArray()))
-                    .nrgConsumed(bd.getNrgConsumed())
-                    .nrgLimit(bd.getNrgLimit())
-                    .number(bd.getBlockNumber())
-                    .parentHash(Hash256.wrap(bd.getParentHash().toByteArray()))
-                    .hash(Hash256.wrap(bd.getHash().toByteArray()))
-                    .receiptTxRoot(Hash256.wrap(bd.getReceiptTrieRoot().toByteArray()))
-                    .size(bd.getSize())
-                    .solution(ByteArrayWrapper.wrap(bd.getSolution().toByteArray()))
-                    .stateRoot(Hash256.wrap(bd.getStateRoot().toByteArray()))
-                    .timestamp(bd.getTimestamp())
-                    .txTrieRoot(Hash256.wrap(bd.getTxTrieRoot().toByteArray()))
-                    .totalDifficulty(new BigInteger(1, bd.getTotalDifficulty().toByteArray()))
-                    .blockTime(bd.getBlockTime());
+            BlockDetails.BlockDetailsBuilder bdBuilder =
+                    new BlockDetails.BlockDetailsBuilder()
+                            .bloom(ByteArrayWrapper.wrap(bd.getLogsBloom().toByteArray()))
+                            .difficulty(new BigInteger(1, bd.getDifficulty().toByteArray()))
+                            .extraData(ByteArrayWrapper.wrap(bd.getExtraData().toByteArray()))
+                            .miner(Address.wrap(bd.getMinerAddress().toByteArray()))
+                            .nonce(new BigInteger(1, bd.getNonce().toByteArray()))
+                            .nrgConsumed(bd.getNrgConsumed())
+                            .nrgLimit(bd.getNrgLimit())
+                            .number(bd.getBlockNumber())
+                            .parentHash(Hash256.wrap(bd.getParentHash().toByteArray()))
+                            .hash(Hash256.wrap(bd.getHash().toByteArray()))
+                            .receiptTxRoot(Hash256.wrap(bd.getReceiptTrieRoot().toByteArray()))
+                            .size(bd.getSize())
+                            .solution(ByteArrayWrapper.wrap(bd.getSolution().toByteArray()))
+                            .stateRoot(Hash256.wrap(bd.getStateRoot().toByteArray()))
+                            .timestamp(bd.getTimestamp())
+                            .txTrieRoot(Hash256.wrap(bd.getTxTrieRoot().toByteArray()))
+                            .totalDifficulty(
+                                    new BigInteger(1, bd.getTotalDifficulty().toByteArray()))
+                            .blockTime(bd.getBlockTime());
 
             List<TxDetails> txDetails = new ArrayList<>();
             for (Message.t_TxDetail td : bd.getTxList()) {
-                TxDetails.TxDetailsBuilder txBuilder = new TxDetails.TxDetailsBuilder()
-                        .data(ByteArrayWrapper.wrap(td.getData().toByteArray()))
-                        .from(Address.wrap(td.getFrom().toByteArray()))
-                        .to(Address.wrap(td.getTo().toByteArray()))
-                        .contract(Address.wrap(td.getContract().toByteArray()))
-                        .txHash(Hash256.wrap(td.getTxHash().toByteArray()))
-                        .txIndex(td.getTxIndex())
-                        .nonce(new BigInteger(1, td.getNonce().toByteArray()))
-                        .value(new BigInteger(1, td.getValue().toByteArray()))
-                        .nrgConsumed(td.getNrgConsumed())
-                        .nrgPrice(td.getNrgPrice())
-                        .timestamp(td.getTimestamp())
-                        .error(td.getError());
+                TxDetails.TxDetailsBuilder txBuilder =
+                        new TxDetails.TxDetailsBuilder()
+                                .data(ByteArrayWrapper.wrap(td.getData().toByteArray()))
+                                .from(Address.wrap(td.getFrom().toByteArray()))
+                                .to(Address.wrap(td.getTo().toByteArray()))
+                                .contract(Address.wrap(td.getContract().toByteArray()))
+                                .txHash(Hash256.wrap(td.getTxHash().toByteArray()))
+                                .txIndex(td.getTxIndex())
+                                .nonce(new BigInteger(1, td.getNonce().toByteArray()))
+                                .value(new BigInteger(1, td.getValue().toByteArray()))
+                                .nrgConsumed(td.getNrgConsumed())
+                                .nrgPrice(td.getNrgPrice())
+                                .timestamp(td.getTimestamp())
+                                .error(td.getError());
 
                 List<TxLog> txLogs = new ArrayList<>();
                 for (Message.t_LgEle log : td.getLogsList()) {
-                    TxLog txlog = new TxLog(Address.wrap(log.getAddress().toByteArray())
-                                            , ByteArrayWrapper.wrap(log.getData().toByteArray())
-                                            , log.getTopicsList());
+                    TxLog txlog =
+                            new TxLog(
+                                    Address.wrap(log.getAddress().toByteArray()),
+                                    ByteArrayWrapper.wrap(log.getData().toByteArray()),
+                                    log.getTopicsList());
                     txLogs.add(txlog);
                 }
                 txDetails.add(txBuilder.logs(txLogs).createTxDetails());
@@ -577,18 +598,20 @@ public class ApiUtils {
         }
 
         for (Message.t_BlockSql b : blks) {
-            BlockSql built = new BlockSql.BlockSqlBuilder()
-                    .block(b.getBlock())
-                    .hash(b.getBlockHash())
-                    .parentHash(b.getParentHash())
-                    .number(b.getBlockNumber())
-                    .transactions(b.getTxList())
-                    .createBlockSql();
+            BlockSql built =
+                    new BlockSql.BlockSqlBuilder()
+                            .block(b.getBlock())
+                            .hash(b.getBlockHash())
+                            .parentHash(b.getParentHash())
+                            .number(b.getBlockNumber())
+                            .transactions(b.getTxList())
+                            .createBlockSql();
             rtn.add(built);
         }
 
         return rtn;
     }
+
     public static List<Block> toBlocks(List<Message.t_Block> blks) {
         if (blks == null) {
             throw new NullPointerException();
@@ -600,25 +623,26 @@ public class ApiUtils {
             for (ByteString bs : b.getTxHashList()) {
                 txs.add(Hash256.wrap(bs.toByteArray()));
             }
-            Block built = new Block.BlockBuilder()
-                .bloom(ByteArrayWrapper.wrap(b.getLogsBloom().toByteArray()))
-                .difficulty(new BigInteger(b.getDifficulty().toByteArray()))
-                .extraData(ByteArrayWrapper.wrap(b.getExtraData().toByteArray()))
-                .nonce(new BigInteger(b.getNonce().toByteArray()))
-                .miner(Address.wrap(b.getMinerAddress().toByteArray()))
-                .nrgConsumed(b.getNrgConsumed())
-                .nrgLimit(b.getNrgLimit())
-                .txTrieRoot(Hash256.wrap(b.getTxTrieRoot().toByteArray()))
-                .stateRoot(Hash256.wrap(b.getStateRoot().toByteArray()))
-                .timestamp(b.getTimestamp())
-                .receiptTxRoot(Hash256.wrap(b.getReceiptTrieRoot().toByteArray()))
-                .number(b.getBlockNumber())
-                .txHash(txs)
-                .parentHash(Hash256.wrap(b.getParentHash().toByteArray()))
-                .solution(ByteArrayWrapper.wrap(b.getSolution().toByteArray()))
-                .size(b.getSize())
-                .totalDifficulty(new BigInteger(b.getTotalDifficulty().toByteArray()))
-                .createBlock();
+            Block built =
+                    new Block.BlockBuilder()
+                            .bloom(ByteArrayWrapper.wrap(b.getLogsBloom().toByteArray()))
+                            .difficulty(new BigInteger(b.getDifficulty().toByteArray()))
+                            .extraData(ByteArrayWrapper.wrap(b.getExtraData().toByteArray()))
+                            .nonce(new BigInteger(b.getNonce().toByteArray()))
+                            .miner(Address.wrap(b.getMinerAddress().toByteArray()))
+                            .nrgConsumed(b.getNrgConsumed())
+                            .nrgLimit(b.getNrgLimit())
+                            .txTrieRoot(Hash256.wrap(b.getTxTrieRoot().toByteArray()))
+                            .stateRoot(Hash256.wrap(b.getStateRoot().toByteArray()))
+                            .timestamp(b.getTimestamp())
+                            .receiptTxRoot(Hash256.wrap(b.getReceiptTrieRoot().toByteArray()))
+                            .number(b.getBlockNumber())
+                            .txHash(txs)
+                            .parentHash(Hash256.wrap(b.getParentHash().toByteArray()))
+                            .solution(ByteArrayWrapper.wrap(b.getSolution().toByteArray()))
+                            .size(b.getSize())
+                            .totalDifficulty(new BigInteger(b.getTotalDifficulty().toByteArray()))
+                            .createBlock();
 
             rtn.add(built);
         }
@@ -626,17 +650,18 @@ public class ApiUtils {
         return rtn;
     }
 
-    public static List<AccountDetails> toAccountDetails (List<Message.t_AccountDetail> accs) {
+    public static List<AccountDetails> toAccountDetails(List<Message.t_AccountDetail> accs) {
         if (accs == null) {
             throw new NullPointerException();
         }
 
         List<AccountDetails> rtn = new ArrayList<>();
         for (Message.t_AccountDetail a : accs) {
-            AccountDetails built = new AccountDetails.AccountDetailsBuilder()
-                    .address(Address.wrap(a.getAddress().toByteArray()))
-                    .balance(new BigInteger(a.getBalance().toByteArray()))
-                    .createAccountDetails();
+            AccountDetails built =
+                    new AccountDetails.AccountDetailsBuilder()
+                            .address(Address.wrap(a.getAddress().toByteArray()))
+                            .balance(new BigInteger(a.getBalance().toByteArray()))
+                            .createAccountDetails();
 
             rtn.add(built);
         }

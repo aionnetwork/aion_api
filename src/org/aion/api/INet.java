@@ -31,15 +31,14 @@ import org.aion.api.type.ApiMsg;
  *
  * @author Jay Tseng
  */
-
 public interface INet {
 
     /**
      * Check connecting node syncing detailed information.
      *
      * @return the class {@link org.aion.api.type.SyncInfo } containing all relevant information
-     * wrapped into ApiMsg. You can retrieve through this method {@link ApiMsg#getObject()
-     * getObject}.
+     *     wrapped into ApiMsg. You can retrieve through this method {@link ApiMsg#getObject()
+     *     getObject}.
      */
     ApiMsg syncInfo();
 
@@ -47,7 +46,7 @@ public interface INet {
      * Check connected node's sync status.
      *
      * @return the boolean value wrapped into ApiMsg. You can retrieve through this method {@link
-     * ApiMsg#getObject() getObject}.
+     *     ApiMsg#getObject() getObject}.
      */
     ApiMsg isSyncing();
 
@@ -55,7 +54,7 @@ public interface INet {
      * Returns the current version of the Aion modules.
      *
      * @return the class {@link org.aion.api.type.Protocol Protocol} wrapped into ApiMsg. You can
-     * retrieve through this method {@link ApiMsg#getObject() getObject}.
+     *     retrieve through this method {@link ApiMsg#getObject() getObject}.
      */
     ApiMsg getProtocolVersion();
 
@@ -63,8 +62,8 @@ public interface INet {
      * Returns the current active connected nodes.
      *
      * @return the interface {@link java.util.List } of the class {@link org.aion.api.type.Node}
-     * wrapped into ApiMsg. You can retrieve through this method {@link ApiMsg#getObject()
-     * getObject}.
+     *     wrapped into ApiMsg. You can retrieve through this method {@link ApiMsg#getObject()
+     *     getObject}.
      */
     ApiMsg getActiveNodes();
 
@@ -72,7 +71,7 @@ public interface INet {
      * Returns the whole consensus network nodes list.
      *
      * @return the interface {@link java.util.List } of the class {@link java.lang.String } wrapped
-     * into ApiMsg. You can retrieve through this method {@link ApiMsg#getObject() getObject}.
+     *     into ApiMsg. You can retrieve through this method {@link ApiMsg#getObject() getObject}.
      */
     ApiMsg getStaticNodes();
 
@@ -80,7 +79,7 @@ public interface INet {
      * Returns a boolean value if the client is actively listening for network connections.
      *
      * @return the boolean value wrapped into ApiMsg. You can retrieve through this method {@link
-     * ApiMsg#getObject() getObject}.
+     *     ApiMsg#getObject() getObject}.
      */
     ApiMsg isListening();
 
@@ -88,7 +87,7 @@ public interface INet {
      * Returns a int value the connecting peers number of the connecting kernel.
      *
      * @return the int value wrapped into ApiMsg. You can retrieve through this method {@link
-     * ApiMsg#getObject() getObject}.
+     *     ApiMsg#getObject() getObject}.
      */
     ApiMsg getPeerCount();
 }

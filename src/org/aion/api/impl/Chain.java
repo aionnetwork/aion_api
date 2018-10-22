@@ -45,9 +45,7 @@ import org.aion.base.util.ByteArrayWrapper;
 import org.aion.base.util.ByteUtil;
 import org.slf4j.Logger;
 
-/**
- * Created by Jay Tseng on 14/11/16.
- */
+/** Created by Jay Tseng on 14/11/16. */
 public final class Chain implements IChain {
 
     private static final Logger LOGGER = AionLoggerFactory.getLogger(LogEnum.CHN.name());
@@ -63,8 +61,9 @@ public final class Chain implements IChain {
             return new ApiMsg(-1003);
         }
 
-        byte[] reqHdr = ApiUtils
-            .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_chain, Message.Funcs.f_blockNumber);
+        byte[] reqHdr =
+                ApiUtils.toReqHeader(
+                        ApiUtils.PROTOCOL_VER, Message.Servs.s_chain, Message.Funcs.f_blockNumber);
         byte[] rsp = this.apiInst.nbProcess(reqHdr);
 
         int code = this.apiInst.validRspHeader(rsp);
@@ -73,17 +72,20 @@ public final class Chain implements IChain {
         }
 
         try {
-            return new ApiMsg(Message.rsp_blockNumber.parseFrom(ApiUtils.parseBody(rsp).getData())
-                .getBlocknumber(),
-                cast.OTHERS);
+            return new ApiMsg(
+                    Message.rsp_blockNumber
+                            .parseFrom(ApiUtils.parseBody(rsp).getData())
+                            .getBlocknumber(),
+                    cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[blockNumber] {} exception: [{}]", ErrId.getErrString(-104L),
-                    e.getMessage());
+                LOGGER.error(
+                        "[blockNumber] {} exception: [{}]",
+                        ErrId.getErrString(-104L),
+                        e.getMessage());
             }
             return new ApiMsg(-104, e.getMessage(), cast.OTHERS);
         }
-
     }
 
     public ApiMsg getBalance(Address address) {
@@ -103,12 +105,16 @@ public final class Chain implements IChain {
             return new ApiMsg(-129);
         }
 
-        Message.req_getBalance reqBody = Message.req_getBalance.newBuilder()
-            .setAddress(ByteString.copyFrom(address.toBytes()))
-            .setBlockNumber(blockNumber).build();
+        Message.req_getBalance reqBody =
+                Message.req_getBalance
+                        .newBuilder()
+                        .setAddress(ByteString.copyFrom(address.toBytes()))
+                        .setBlockNumber(blockNumber)
+                        .build();
 
-        byte[] reqHead = ApiUtils
-            .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_chain, Message.Funcs.f_getBalance);
+        byte[] reqHead =
+                ApiUtils.toReqHeader(
+                        ApiUtils.PROTOCOL_VER, Message.Servs.s_chain, Message.Funcs.f_getBalance);
         byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
 
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
@@ -118,13 +124,15 @@ public final class Chain implements IChain {
         }
 
         try {
-            Message.rsp_getBalance resp = Message.rsp_getBalance
-                .parseFrom(ApiUtils.parseBody(rsp).getData());
+            Message.rsp_getBalance resp =
+                    Message.rsp_getBalance.parseFrom(ApiUtils.parseBody(rsp).getData());
 
             byte[] balance = resp.getBalance().toByteArray();
             if (balance == null) {
-                return new ApiMsg(Retcode.r_fail_null_rsp_VALUE, "null balance for address " +
-                    address + " and blockNumber " + blockNumber, cast.OTHERS);
+                return new ApiMsg(
+                        Retcode.r_fail_null_rsp_VALUE,
+                        "null balance for address " + address + " and blockNumber " + blockNumber,
+                        cast.OTHERS);
             } else {
                 return new ApiMsg(new BigInteger(balance), cast.OTHERS);
             }
@@ -149,12 +157,14 @@ public final class Chain implements IChain {
             return new ApiMsg(-129);
         }
 
-        Message.req_getBlockByNumber body = Message.req_getBlockByNumber.newBuilder().
-            setBlockNumber(blockNumber).build();
+        Message.req_getBlockByNumber body =
+                Message.req_getBlockByNumber.newBuilder().setBlockNumber(blockNumber).build();
 
-        byte[] header = ApiUtils
-            .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_chain,
-                Message.Funcs.f_getBlockByNumber);
+        byte[] header =
+                ApiUtils.toReqHeader(
+                        ApiUtils.PROTOCOL_VER,
+                        Message.Servs.s_chain,
+                        Message.Funcs.f_getBlockByNumber);
         byte[] reqMsg = ByteUtil.merge(header, body.toByteArray());
 
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
@@ -166,8 +176,8 @@ public final class Chain implements IChain {
 
         try {
             return new ApiMsg(
-                toBlock(Message.rsp_getBlock.parseFrom(ApiUtils.parseBody(rsp).getData())),
-                cast.OTHERS);
+                    toBlock(Message.rsp_getBlock.parseFrom(ApiUtils.parseBody(rsp).getData())),
+                    cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[getBlockByNumber] {}", ErrId.getErrString(-104L) + e.getMessage());
@@ -188,12 +198,18 @@ public final class Chain implements IChain {
             return new ApiMsg(-311);
         }
 
-        Message.req_getTransactionByBlockHashAndIndex reqBody = Message.req_getTransactionByBlockHashAndIndex
-            .newBuilder().setBlockHash(ByteString.copyFrom(blockHash.toBytes())).setTxIndex(index)
-            .build();
+        Message.req_getTransactionByBlockHashAndIndex reqBody =
+                Message.req_getTransactionByBlockHashAndIndex
+                        .newBuilder()
+                        .setBlockHash(ByteString.copyFrom(blockHash.toBytes()))
+                        .setTxIndex(index)
+                        .build();
 
-        byte[] reqHead = ApiUtils.toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_chain,
-            Message.Funcs.f_getTransactionByBlockHashAndIndex);
+        byte[] reqHead =
+                ApiUtils.toReqHeader(
+                        ApiUtils.PROTOCOL_VER,
+                        Message.Servs.s_chain,
+                        Message.Funcs.f_getTransactionByBlockHashAndIndex);
         byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
 
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
@@ -204,13 +220,17 @@ public final class Chain implements IChain {
         }
 
         try {
-            return new ApiMsg(ApiUtils.toTransaction(
-                Message.rsp_getTransaction.parseFrom(ApiUtils.parseBody(rsp).getData())),
-                cast.OTHERS);
+            return new ApiMsg(
+                    ApiUtils.toTransaction(
+                            Message.rsp_getTransaction.parseFrom(
+                                    ApiUtils.parseBody(rsp).getData())),
+                    cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[getTxByBlkHash&TxIdx] {} exception: [{}]", ErrId.getErrString(-104L),
-                    e.getMessage());
+                LOGGER.error(
+                        "[getTxByBlkHash&TxIdx] {} exception: [{}]",
+                        ErrId.getErrString(-104L),
+                        e.getMessage());
             }
             return new ApiMsg(-104, e.getMessage(), cast.OTHERS);
         }
@@ -235,11 +255,18 @@ public final class Chain implements IChain {
             return new ApiMsg(-311, null);
         }
 
-        Message.req_getTransactionByBlockNumberAndIndex reqBody = Message.req_getTransactionByBlockNumberAndIndex
-            .newBuilder().setBlockNumber(blockNumber).setTxIndex(index).build();
+        Message.req_getTransactionByBlockNumberAndIndex reqBody =
+                Message.req_getTransactionByBlockNumberAndIndex
+                        .newBuilder()
+                        .setBlockNumber(blockNumber)
+                        .setTxIndex(index)
+                        .build();
 
-        byte[] reqHead = ApiUtils.toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_chain,
-            Message.Funcs.f_getTransactionByBlockNumberAndIndex);
+        byte[] reqHead =
+                ApiUtils.toReqHeader(
+                        ApiUtils.PROTOCOL_VER,
+                        Message.Servs.s_chain,
+                        Message.Funcs.f_getTransactionByBlockNumberAndIndex);
         byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
 
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
@@ -249,29 +276,38 @@ public final class Chain implements IChain {
         }
 
         try {
-            return new ApiMsg(ApiUtils.toTransaction(Message.rsp_getTransaction.parseFrom(
-                ApiUtils.parseBody(rsp).getData())), cast.OTHERS);
+            return new ApiMsg(
+                    ApiUtils.toTransaction(
+                            Message.rsp_getTransaction.parseFrom(
+                                    ApiUtils.parseBody(rsp).getData())),
+                    cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[getTxByBlkNbr&TxIdx] {} exception: [{}]", ErrId.getErrString(-104L),
-                    e.getMessage());
+                LOGGER.error(
+                        "[getTxByBlkNbr&TxIdx] {} exception: [{}]",
+                        ErrId.getErrString(-104L),
+                        e.getMessage());
             }
             return new ApiMsg(-104, e.getMessage(), cast.OTHERS);
         }
     }
-
 
     public ApiMsg getTransactionByHash(Hash256 transactionHash) {
         if (!this.apiInst.isConnected()) {
             return new ApiMsg(-1003);
         }
 
-        Message.req_getTransactionByHash reqBody = Message.req_getTransactionByHash.newBuilder()
-            .setTxHash(ByteString.copyFrom(transactionHash.toBytes())).build();
+        Message.req_getTransactionByHash reqBody =
+                Message.req_getTransactionByHash
+                        .newBuilder()
+                        .setTxHash(ByteString.copyFrom(transactionHash.toBytes()))
+                        .build();
 
-        byte[] reqHead = ApiUtils
-            .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_chain,
-                Message.Funcs.f_getTransactionByHash);
+        byte[] reqHead =
+                ApiUtils.toReqHeader(
+                        ApiUtils.PROTOCOL_VER,
+                        Message.Servs.s_chain,
+                        Message.Funcs.f_getTransactionByHash);
         byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
 
@@ -281,12 +317,17 @@ public final class Chain implements IChain {
         }
 
         try {
-            return new ApiMsg(ApiUtils.toTransaction(Message.rsp_getTransaction.parseFrom(
-                ApiUtils.parseBody(rsp).getData())), cast.OTHERS);
+            return new ApiMsg(
+                    ApiUtils.toTransaction(
+                            Message.rsp_getTransaction.parseFrom(
+                                    ApiUtils.parseBody(rsp).getData())),
+                    cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[getTxByHash] {} exception: [{}]", ErrId.getErrString(-104L),
-                    e.getMessage());
+                LOGGER.error(
+                        "[getTxByHash] {} exception: [{}]",
+                        ErrId.getErrString(-104L),
+                        e.getMessage());
             }
             return new ApiMsg(-104);
         }
@@ -297,12 +338,17 @@ public final class Chain implements IChain {
             return new ApiMsg(-1003);
         }
 
-        Message.req_getBlockByHash reqBody = Message.req_getBlockByHash.newBuilder()
-            .setBlockHash(ByteString.copyFrom(blockHash.toBytes())).build();
+        Message.req_getBlockByHash reqBody =
+                Message.req_getBlockByHash
+                        .newBuilder()
+                        .setBlockHash(ByteString.copyFrom(blockHash.toBytes()))
+                        .build();
 
-        byte[] reqHead = ApiUtils
-            .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_chain,
-                Message.Funcs.f_getBlockByHash);
+        byte[] reqHead =
+                ApiUtils.toReqHeader(
+                        ApiUtils.PROTOCOL_VER,
+                        Message.Servs.s_chain,
+                        Message.Funcs.f_getBlockByHash);
         byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
 
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
@@ -314,12 +360,14 @@ public final class Chain implements IChain {
 
         try {
             return new ApiMsg(
-                toBlock(Message.rsp_getBlock.parseFrom(ApiUtils.parseBody(rsp).getData())),
-                cast.OTHERS);
+                    toBlock(Message.rsp_getBlock.parseFrom(ApiUtils.parseBody(rsp).getData())),
+                    cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[getBlkByHash] {} exception: [{}]", ErrId.getErrString(-104L),
-                    e.getMessage());
+                LOGGER.error(
+                        "[getBlkByHash] {} exception: [{}]",
+                        ErrId.getErrString(-104L),
+                        e.getMessage());
             }
             return new ApiMsg(-104, e.getMessage(), cast.OTHERS);
         }
@@ -337,12 +385,18 @@ public final class Chain implements IChain {
             return new ApiMsg(-310);
         }
 
-        Message.req_getTransactionCount reqBody = Message.req_getTransactionCount.newBuilder()
-            .setAddress(ByteString.copyFrom(address.toBytes())).setBlocknumber(blockNumber).build();
+        Message.req_getTransactionCount reqBody =
+                Message.req_getTransactionCount
+                        .newBuilder()
+                        .setAddress(ByteString.copyFrom(address.toBytes()))
+                        .setBlocknumber(blockNumber)
+                        .build();
 
-        byte[] reqHead = ApiUtils
-            .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_chain,
-                Message.Funcs.f_getTransactionCount);
+        byte[] reqHead =
+                ApiUtils.toReqHeader(
+                        ApiUtils.PROTOCOL_VER,
+                        Message.Servs.s_chain,
+                        Message.Funcs.f_getTransactionCount);
         byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
 
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
@@ -354,13 +408,16 @@ public final class Chain implements IChain {
 
         try {
             return new ApiMsg(
-                Message.rsp_getTransactionCount.parseFrom(ApiUtils.parseBody(rsp).getData())
-                    .getTxCount(),
-                cast.OTHERS);
+                    Message.rsp_getTransactionCount
+                            .parseFrom(ApiUtils.parseBody(rsp).getData())
+                            .getTxCount(),
+                    cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[getTxCount] {} exception: [{}]", ErrId.getErrString(-104L),
-                    e.getMessage());
+                LOGGER.error(
+                        "[getTxCount] {} exception: [{}]",
+                        ErrId.getErrString(-104L),
+                        e.getMessage());
             }
             return new ApiMsg(-104, e.getMessage(), cast.OTHERS);
         }
@@ -371,12 +428,17 @@ public final class Chain implements IChain {
             return new ApiMsg(-1003);
         }
 
-        Message.req_getBlockTransactionCountByHash reqBody = Message.req_getBlockTransactionCountByHash
-            .newBuilder()
-            .setBlockHash(ByteString.copyFrom(blockHash.toBytes())).build();
+        Message.req_getBlockTransactionCountByHash reqBody =
+                Message.req_getBlockTransactionCountByHash
+                        .newBuilder()
+                        .setBlockHash(ByteString.copyFrom(blockHash.toBytes()))
+                        .build();
 
-        byte[] reqHead = ApiUtils.toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_chain,
-            Message.Funcs.f_getBlockTransactionCountByHash);
+        byte[] reqHead =
+                ApiUtils.toReqHeader(
+                        ApiUtils.PROTOCOL_VER,
+                        Message.Servs.s_chain,
+                        Message.Funcs.f_getBlockTransactionCountByHash);
         byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
 
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
@@ -386,14 +448,18 @@ public final class Chain implements IChain {
         }
 
         try {
-            return new ApiMsg(Retcode.r_success_VALUE,
-                Message.rsp_getBlockTransactionCount.parseFrom(ApiUtils.parseBody(rsp).getData())
-                    .getTxCount(),
-                cast.OTHERS);
+            return new ApiMsg(
+                    Retcode.r_success_VALUE,
+                    Message.rsp_getBlockTransactionCount
+                            .parseFrom(ApiUtils.parseBody(rsp).getData())
+                            .getTxCount(),
+                    cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[getBlkTxCntByHash] {} exception: [{}]", ErrId.getErrString(-104L),
-                    e.getMessage());
+                LOGGER.error(
+                        "[getBlkTxCntByHash] {} exception: [{}]",
+                        ErrId.getErrString(-104L),
+                        e.getMessage());
             }
             return new ApiMsg(-104, e.getMessage(), cast.OTHERS);
         }
@@ -411,12 +477,17 @@ public final class Chain implements IChain {
             return new ApiMsg(-310);
         }
 
-        Message.req_getBlockTransactionCountByNumber reqBody = Message.req_getBlockTransactionCountByNumber
-            .newBuilder()
-            .setBlockNumber(blockNumber).build();
+        Message.req_getBlockTransactionCountByNumber reqBody =
+                Message.req_getBlockTransactionCountByNumber
+                        .newBuilder()
+                        .setBlockNumber(blockNumber)
+                        .build();
 
-        byte[] reqHead = ApiUtils.toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_chain,
-            Message.Funcs.f_getBlockTransactionCountByNumber);
+        byte[] reqHead =
+                ApiUtils.toReqHeader(
+                        ApiUtils.PROTOCOL_VER,
+                        Message.Servs.s_chain,
+                        Message.Funcs.f_getBlockTransactionCountByNumber);
         byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
 
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
@@ -426,26 +497,32 @@ public final class Chain implements IChain {
         }
 
         try {
-            return new ApiMsg(Retcode.r_success_VALUE,
-                Message.rsp_getBlockTransactionCount.parseFrom(ApiUtils.parseBody(rsp).getData())
-                    .getTxCount(),
-                cast.OTHERS);
+            return new ApiMsg(
+                    Retcode.r_success_VALUE,
+                    Message.rsp_getBlockTransactionCount
+                            .parseFrom(ApiUtils.parseBody(rsp).getData())
+                            .getTxCount(),
+                    cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[getBlkTxCntByNumber] {} exception: [{}]", ErrId.getErrString(-104L),
-                    e.getMessage());
+                LOGGER.error(
+                        "[getBlkTxCntByNumber] {} exception: [{}]",
+                        ErrId.getErrString(-104L),
+                        e.getMessage());
             }
             return new ApiMsg(-104, e.getMessage(), cast.OTHERS);
         }
     }
 
-    //public long hashRate() {
+    // public long hashRate() {
     //    if (!this.apiInst.isConnected()) {
-    //        LOGGER.isError(new Throwable().getStackTrace()[0].getMethodName() + ErrId.getErrString(-1003L));
+    //        LOGGER.isError(new Throwable().getStackTrace()[0].getMethodName() +
+    // ErrId.getErrString(-1003L));
     //        return -1L;
     //    }
     //
-    //    byte[] reqHdr = ApiUtils.toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_chain, Message.Funcs.f_hashrate);
+    //    byte[] reqHdr = ApiUtils.toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_chain,
+    // Message.Funcs.f_hashrate);
     //    byte[] rsp = this.apiInst.nbProcess(reqHdr);
     //
     //    if (this.apiInst.validRspHeader(rsp)) {
@@ -455,10 +532,11 @@ public final class Chain implements IChain {
     //    try {
     //        return Message.rsp_hashrate.parseFrom(ApiUtils.parseBody(rsp)).getHashrate();
     //    } catch (InvalidProtocolBufferException e) {
-    //        LOGGER.isError(new Throwable().getStackTrace()[0].getMethodName() + ErrId.getErrString(-104L) + e.getMessage());
+    //        LOGGER.isError(new Throwable().getStackTrace()[0].getMethodName() +
+    // ErrId.getErrString(-104L) + e.getMessage());
     //        return -1L;
     //    }
-    //}
+    // }
 
     /**
      * A helper function intended to provide easy copying from response type to {@link
@@ -474,24 +552,24 @@ public final class Chain implements IChain {
         }
 
         return builder.bloom(ByteArrayWrapper.wrap(rsp.getLogsBloom().toByteArray()))
-            .difficulty(new BigInteger(rsp.getDifficulty().toByteArray()))
-            .extraData(ByteArrayWrapper.wrap(rsp.getExtraData().toByteArray()))
-            .nonce(new BigInteger(rsp.getNonce().toByteArray()))
-            .miner(Address.wrap(rsp.getMinerAddress().toByteArray()))
-            .nrgConsumed(rsp.getNrgConsumed())
-            .nrgLimit(rsp.getNrgLimit())
-            .txTrieRoot(Hash256.wrap(rsp.getTxTrieRoot().toByteArray()))
-            .stateRoot(Hash256.wrap(rsp.getStateRoot().toByteArray()))
-            .timestamp(rsp.getTimestamp())
-            .receiptTxRoot(Hash256.wrap(rsp.getReceiptTrieRoot().toByteArray()))
-            .number(rsp.getBlockNumber())
-            .txHash(txs)
-            .hash(Hash256.wrap(rsp.getHash().toByteArray()))
-            .parentHash(Hash256.wrap(rsp.getParentHash().toByteArray()))
-            .solution(ByteArrayWrapper.wrap(rsp.getSolution().toByteArray()))
-            .size(rsp.getSize())
-            .totalDifficulty(new BigInteger(rsp.getTotalDifficulty().toByteArray()))
-            .createBlock();
+                .difficulty(new BigInteger(rsp.getDifficulty().toByteArray()))
+                .extraData(ByteArrayWrapper.wrap(rsp.getExtraData().toByteArray()))
+                .nonce(new BigInteger(rsp.getNonce().toByteArray()))
+                .miner(Address.wrap(rsp.getMinerAddress().toByteArray()))
+                .nrgConsumed(rsp.getNrgConsumed())
+                .nrgLimit(rsp.getNrgLimit())
+                .txTrieRoot(Hash256.wrap(rsp.getTxTrieRoot().toByteArray()))
+                .stateRoot(Hash256.wrap(rsp.getStateRoot().toByteArray()))
+                .timestamp(rsp.getTimestamp())
+                .receiptTxRoot(Hash256.wrap(rsp.getReceiptTrieRoot().toByteArray()))
+                .number(rsp.getBlockNumber())
+                .txHash(txs)
+                .hash(Hash256.wrap(rsp.getHash().toByteArray()))
+                .parentHash(Hash256.wrap(rsp.getParentHash().toByteArray()))
+                .solution(ByteArrayWrapper.wrap(rsp.getSolution().toByteArray()))
+                .size(rsp.getSize())
+                .totalDifficulty(new BigInteger(rsp.getTotalDifficulty().toByteArray()))
+                .createBlock();
     }
 
     /**
@@ -506,11 +584,15 @@ public final class Chain implements IChain {
             return new ApiMsg(-1003);
         }
 
-        Message.req_getNonce reqBody = Message.req_getNonce.newBuilder()
-            .setAddress(ByteString.copyFrom(address.toBytes())).build();
+        Message.req_getNonce reqBody =
+                Message.req_getNonce
+                        .newBuilder()
+                        .setAddress(ByteString.copyFrom(address.toBytes()))
+                        .build();
 
-        byte[] reqHead = ApiUtils.toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_chain,
-            Message.Funcs.f_getNonce);
+        byte[] reqHead =
+                ApiUtils.toReqHeader(
+                        ApiUtils.PROTOCOL_VER, Message.Servs.s_chain, Message.Funcs.f_getNonce);
         byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
 
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
@@ -520,13 +602,15 @@ public final class Chain implements IChain {
         }
 
         try {
-            Message.rsp_getNonce resp = Message.rsp_getNonce.
-                parseFrom(ApiUtils.parseBody(rsp).getData());
+            Message.rsp_getNonce resp =
+                    Message.rsp_getNonce.parseFrom(ApiUtils.parseBody(rsp).getData());
 
             byte[] nonce = resp.getNonce().toByteArray();
             if (nonce == null) {
-                return new ApiMsg(Retcode.r_fail_null_rsp_VALUE,
-                    "null nonce for address " + address, cast.OTHERS);
+                return new ApiMsg(
+                        Retcode.r_fail_null_rsp_VALUE,
+                        "null nonce for address " + address,
+                        cast.OTHERS);
             } else {
                 return new ApiMsg(new BigInteger(nonce), cast.OTHERS);
             }
@@ -548,12 +632,17 @@ public final class Chain implements IChain {
             return new ApiMsg(-1003);
         }
 
-        Message.req_getStorageAt reqBody = Message.req_getStorageAt.newBuilder()
-            .setAddress(ByteString.copyFrom(address.toBytes())).setBlocknumber(blockNumber)
-            .setPosition(position).build();
+        Message.req_getStorageAt reqBody =
+                Message.req_getStorageAt
+                        .newBuilder()
+                        .setAddress(ByteString.copyFrom(address.toBytes()))
+                        .setBlocknumber(blockNumber)
+                        .setPosition(position)
+                        .build();
 
-        byte[] reqHead = ApiUtils.toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_chain,
-            Funcs.f_getStorageAt);
+        byte[] reqHead =
+                ApiUtils.toReqHeader(
+                        ApiUtils.PROTOCOL_VER, Message.Servs.s_chain, Funcs.f_getStorageAt);
         byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
 
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
@@ -563,13 +652,15 @@ public final class Chain implements IChain {
         }
 
         try {
-            Message.rsp_getStorageAt resp = Message.rsp_getStorageAt.
-                parseFrom(ApiUtils.parseBody(rsp).getData());
+            Message.rsp_getStorageAt resp =
+                    Message.rsp_getStorageAt.parseFrom(ApiUtils.parseBody(rsp).getData());
 
             String data = resp.getStorage();
             if (data == null) {
-                return new ApiMsg(Retcode.r_fail_null_rsp_VALUE,
-                    "no storage on this addres " + address, cast.OTHERS);
+                return new ApiMsg(
+                        Retcode.r_fail_null_rsp_VALUE,
+                        "no storage on this addres " + address,
+                        cast.OTHERS);
             } else {
                 return new ApiMsg(data, cast.OTHERS);
             }

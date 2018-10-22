@@ -21,7 +21,6 @@
  *     Aion foundation.
  */
 
-
 package org.aion.api.type;
 
 /**
@@ -30,7 +29,6 @@ package org.aion.api.type;
  *
  * @author Jay Tseng
  */
-
 public abstract class Event {
 
     private final type evType;
@@ -44,6 +42,8 @@ public abstract class Event {
     }
 
     enum type {
-        CONTRACT, BLOCK, TX
+        CONTRACT,
+        BLOCK,
+        TX
     }
 }

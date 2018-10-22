@@ -25,9 +25,7 @@ package org.aion.api.test;
 
 import java.util.Arrays;
 
-/**
- * Created by Jay Tseng on 13/02/17.
- */
+/** Created by Jay Tseng on 13/02/17. */
 public class Statistics {
 
     double[] data;

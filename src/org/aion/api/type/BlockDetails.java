@@ -23,24 +23,22 @@
 
 package org.aion.api.type;
 
+import java.math.BigInteger;
+import java.util.List;
 import org.aion.base.type.Address;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
-
-import java.math.BigInteger;
-import java.util.List;
 
 /**
  * The BlockDetails return the detailed block information including the transactions and the
  * transaction logs
  *
  * @author Jay Tseng
- * @see org.aion.api.IAdmin#getBlockDetailsByNumber(java.lang.String)  getBlockDetailsByNumber
- * @see org.aion.api.IAdmin#getBlockDetailsByNumber(java.util.List)  getBlockDetailsByNumber
+ * @see org.aion.api.IAdmin#getBlockDetailsByNumber(java.lang.String) getBlockDetailsByNumber
+ * @see org.aion.api.IAdmin#getBlockDetailsByNumber(java.util.List) getBlockDetailsByNumber
  * @see org.aion.api.type.TxDetails TxDetails
  * @see org.aion.api.type.TxLog TxLog
  */
-
 public final class BlockDetails {
 
     private final long number;
@@ -163,13 +161,28 @@ public final class BlockDetails {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder()
-            .append("logsBloom: ").append("0x").append(bloom.toString()).append(",\n")
-            .append("totalDifficulty: ").append(totalDifficulty.toString()).append(",\n")
-            .append("receiptsRoot: ").append("0x").append(receiptTxRoot.toString()).append(",\n")
-            .append("extraData: ").append("0x").append(extraData.toString()).append(",\n")
-            .append("nrgUsed: ").append(nrgConsumed).append(",\n")
-            .append("transactions: ").append("\n");
+        StringBuilder sb =
+                new StringBuilder()
+                        .append("logsBloom: ")
+                        .append("0x")
+                        .append(bloom.toString())
+                        .append(",\n")
+                        .append("totalDifficulty: ")
+                        .append(totalDifficulty.toString())
+                        .append(",\n")
+                        .append("receiptsRoot: ")
+                        .append("0x")
+                        .append(receiptTxRoot.toString())
+                        .append(",\n")
+                        .append("extraData: ")
+                        .append("0x")
+                        .append(extraData.toString())
+                        .append(",\n")
+                        .append("nrgUsed: ")
+                        .append(nrgConsumed)
+                        .append(",\n")
+                        .append("transactions: ")
+                        .append("\n");
 
         int cnt = txDetails.size();
         for (TxDetails td : txDetails) {
@@ -186,18 +199,49 @@ public final class BlockDetails {
 
         sb.append(",").append("\n");
 
-        sb.append("nonce: ").append("0x").append(nonce.toString()).append(",\n")
-            .append("miner: ").append("0x").append(minerAddress.toString()).append(",\n")
-            .append("difficulty: ").append(difficulty.toString()).append(",\n")
-            .append("number: ").append(number).append(",\n")
-            .append("nrgLimit: ").append(nrgLimit).append(",\n")
-            .append("solution: ").append("0x").append(solution.toString()).append(",\n")
-            .append("size: ").append(size).append(",\n")
-            .append("transactionsRoot: ").append("0x").append(txTrieRoot.toString()).append(",\n")
-            .append("stateRoot: ").append("0x").append(stateRoot.toString()).append(",\n")
-            .append("parentHash: ").append("0x").append(parentHash.toString()).append(",\n")
-            .append("hash: ").append("0x").append(hash.toString()).append(",\n")
-            .append("timeStamp: ").append(timestamp).append("\n");
+        sb.append("nonce: ")
+                .append("0x")
+                .append(nonce.toString())
+                .append(",\n")
+                .append("miner: ")
+                .append("0x")
+                .append(minerAddress.toString())
+                .append(",\n")
+                .append("difficulty: ")
+                .append(difficulty.toString())
+                .append(",\n")
+                .append("number: ")
+                .append(number)
+                .append(",\n")
+                .append("nrgLimit: ")
+                .append(nrgLimit)
+                .append(",\n")
+                .append("solution: ")
+                .append("0x")
+                .append(solution.toString())
+                .append(",\n")
+                .append("size: ")
+                .append(size)
+                .append(",\n")
+                .append("transactionsRoot: ")
+                .append("0x")
+                .append(txTrieRoot.toString())
+                .append(",\n")
+                .append("stateRoot: ")
+                .append("0x")
+                .append(stateRoot.toString())
+                .append(",\n")
+                .append("parentHash: ")
+                .append("0x")
+                .append(parentHash.toString())
+                .append(",\n")
+                .append("hash: ")
+                .append("0x")
+                .append(hash.toString())
+                .append(",\n")
+                .append("timeStamp: ")
+                .append(timestamp)
+                .append("\n");
 
         return sb.toString();
     }
@@ -224,8 +268,7 @@ public final class BlockDetails {
         private List<TxDetails> txDetails;
         private long blockTime;
 
-        public BlockDetailsBuilder() {
-        }
+        public BlockDetailsBuilder() {}
 
         public BlockDetailsBuilder number(final long number) {
             this.number = number;
@@ -322,34 +365,62 @@ public final class BlockDetails {
             return this;
         }
 
-
         public BlockDetails createBlockDetails() {
 
-            if (bloom == null || extraData == null || solution == null || txDetails == null
-                || parentHash == null || hash == null
-                || nonce == null || difficulty == null || minerAddress == null || stateRoot == null
-                || txTrieRoot == null
-                || receiptTxRoot == null || totalDifficulty == null) {
+            if (bloom == null
+                    || extraData == null
+                    || solution == null
+                    || txDetails == null
+                    || parentHash == null
+                    || hash == null
+                    || nonce == null
+                    || difficulty == null
+                    || minerAddress == null
+                    || stateRoot == null
+                    || txTrieRoot == null
+                    || receiptTxRoot == null
+                    || totalDifficulty == null) {
                 throw new NullPointerException(
-                    "bloom#" + String.valueOf(bloom) +
-                        " extraData#" + String.valueOf(extraData) +
-                        " solution#" + String.valueOf(solution) +
-                        " txDetails#" + String.valueOf(txDetails) +
-                        " parentHash#" + String.valueOf(parentHash) +
-                        " hash#" + String.valueOf(hash) +
-                        " nonce#" + String.valueOf(nonce) +
-                        " difficulty#" + String.valueOf(difficulty) +
-                        " total difficulty#" + String.valueOf(totalDifficulty) +
-                        " minerAddress#" + String.valueOf(minerAddress) +
-                        " stateRoot#" + String.valueOf(stateRoot) +
-                        " txTrieRoot#" + String.valueOf(txTrieRoot) +
-                        " receiptTxRoot#" + String.valueOf(receiptTxRoot));
+                        "bloom#"
+                                + String.valueOf(bloom)
+                                + " extraData#"
+                                + String.valueOf(extraData)
+                                + " solution#"
+                                + String.valueOf(solution)
+                                + " txDetails#"
+                                + String.valueOf(txDetails)
+                                + " parentHash#"
+                                + String.valueOf(parentHash)
+                                + " hash#"
+                                + String.valueOf(hash)
+                                + " nonce#"
+                                + String.valueOf(nonce)
+                                + " difficulty#"
+                                + String.valueOf(difficulty)
+                                + " total difficulty#"
+                                + String.valueOf(totalDifficulty)
+                                + " minerAddress#"
+                                + String.valueOf(minerAddress)
+                                + " stateRoot#"
+                                + String.valueOf(stateRoot)
+                                + " txTrieRoot#"
+                                + String.valueOf(txTrieRoot)
+                                + " receiptTxRoot#"
+                                + String.valueOf(receiptTxRoot));
             }
 
             if (number < 0 || timestamp < 0 || nrgConsumed < 0 || nrgLimit < 0 || size < 0) {
-                throw new IllegalArgumentException("Block#" + number + " Time#" + timestamp
-                    + " NrgConsumed#" + nrgConsumed + " NrgLimit#" + nrgLimit
-                    + " size#" + size);
+                throw new IllegalArgumentException(
+                        "Block#"
+                                + number
+                                + " Time#"
+                                + timestamp
+                                + " NrgConsumed#"
+                                + nrgConsumed
+                                + " NrgLimit#"
+                                + nrgLimit
+                                + " size#"
+                                + size);
             }
 
             return new BlockDetails(this);

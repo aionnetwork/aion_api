@@ -21,7 +21,6 @@
  *     Aion foundation.
  */
 
-
 package org.aion.api.type;
 
 import java.util.HashMap;
@@ -33,7 +32,6 @@ import java.util.Map.Entry;
  *
  * @author Jay Tseng
  */
-
 public final class JsonFmt {
 
     private final boolean constant;
@@ -70,19 +68,38 @@ public final class JsonFmt {
             lv.append("  ");
         }
 
-        StringBuilder sb = new StringBuilder()
-            .append(lv).append("constant: ").append(String.valueOf(constant)).append(",\n")
-            .append(lv).append("name: ").append(name).append(",\n")
-            .append(lv).append("type: ").append(type).append(",\n")
-            .append(lv).append("inputs: ").append("\n");
+        StringBuilder sb =
+                new StringBuilder()
+                        .append(lv)
+                        .append("constant: ")
+                        .append(String.valueOf(constant))
+                        .append(",\n")
+                        .append(lv)
+                        .append("name: ")
+                        .append(name)
+                        .append(",\n")
+                        .append(lv)
+                        .append("type: ")
+                        .append(type)
+                        .append(",\n")
+                        .append(lv)
+                        .append("inputs: ")
+                        .append("\n");
 
         int cnt = inputs.size();
         for (Entry e : inputs.entrySet()) {
-            sb.append(lv).append("[").append("\n")
-                .append(lv).append(e.getKey()).append(",").append(e.getValue()).append("\n")
-                .append(lv).append("]");
+            sb.append(lv)
+                    .append("[")
+                    .append("\n")
+                    .append(lv)
+                    .append(e.getKey())
+                    .append(",")
+                    .append(e.getValue())
+                    .append("\n")
+                    .append(lv)
+                    .append("]");
 
-            if(--cnt > 0) {
+            if (--cnt > 0) {
                 sb.append(",");
             }
 
@@ -92,11 +109,18 @@ public final class JsonFmt {
         sb.append(lv).append("outputs: ").append("\n");
         cnt = outputs.size();
         for (Entry e : outputs.entrySet()) {
-            sb.append(lv).append("[").append("\n")
-                .append(lv).append(e.getKey()).append(",").append(e.getValue()).append("\n")
-                .append(lv).append("]");
+            sb.append(lv)
+                    .append("[")
+                    .append("\n")
+                    .append(lv)
+                    .append(e.getKey())
+                    .append(",")
+                    .append(e.getValue())
+                    .append("\n")
+                    .append(lv)
+                    .append("]");
 
-            if(--cnt > 0) {
+            if (--cnt > 0) {
                 sb.append(",");
             }
 
@@ -126,9 +150,7 @@ public final class JsonFmt {
         return outputs;
     }
 
-    /**
-     * This Builder class is used to build a {@link JsonFmt} instance.
-     */
+    /** This Builder class is used to build a {@link JsonFmt} instance. */
     public static class JsonFmtBuilder {
 
         private boolean constant;
@@ -137,8 +159,7 @@ public final class JsonFmt {
         private Map<String, String> inputs;
         private Map<String, String> outputs;
 
-        public JsonFmtBuilder() {
-        }
+        public JsonFmtBuilder() {}
 
         public JsonFmt.JsonFmtBuilder constant(final boolean constant) {
             this.constant = constant;
@@ -168,10 +189,14 @@ public final class JsonFmt {
         public JsonFmt createJsonFmt() {
             if (name == null || type == null || inputs == null || outputs == null) {
                 throw new NullPointerException(
-                    "name#" + String.valueOf(name) +
-                        " type#" + String.valueOf(type) +
-                        " inputs#" + String.valueOf(inputs) +
-                        " outputs#" + String.valueOf(outputs));
+                        "name#"
+                                + String.valueOf(name)
+                                + " type#"
+                                + String.valueOf(type)
+                                + " inputs#"
+                                + String.valueOf(inputs)
+                                + " outputs#"
+                                + String.valueOf(outputs));
             }
             return new JsonFmt(this);
         }

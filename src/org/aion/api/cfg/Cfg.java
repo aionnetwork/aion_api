@@ -26,11 +26,11 @@ public abstract class Cfg {
         while (sr.hasNext()) {
             int eventType = sr.next();
             switch (eventType) {
-            case XMLStreamReader.CHARACTERS:
-                str.append(sr.getText());
-                break;
-            case XMLStreamReader.END_ELEMENT:
-                break readLoop;
+                case XMLStreamReader.CHARACTERS:
+                    str.append(sr.getText());
+                    break;
+                case XMLStreamReader.END_ELEMENT:
+                    break readLoop;
             }
         }
         return str.toString();
@@ -41,8 +41,8 @@ public abstract class Cfg {
         while (sr.hasNext()) {
             int eventType = sr.next();
             switch (eventType) {
-            case XMLStreamReader.END_ELEMENT:
-                break skipLoop;
+                case XMLStreamReader.END_ELEMENT:
+                    break skipLoop;
             }
         }
     }

@@ -23,6 +23,19 @@
 
 package org.aion.api.impl;
 
+import static org.aion.api.sol.impl.SolidityValue.SolidityTypeEnum.ADDRESS;
+import static org.aion.api.sol.impl.SolidityValue.SolidityTypeEnum.BOOL;
+import static org.aion.api.sol.impl.SolidityValue.SolidityTypeEnum.BYTES;
+
+import java.lang.reflect.Type;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.regex.Pattern;
 import org.aion.api.IAionAPI;
 import org.aion.api.IContract;
 import org.aion.api.IUtils;
@@ -30,20 +43,29 @@ import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.log.AionLoggerFactory;
 import org.aion.api.log.LogEnum;
 import org.aion.api.sol.ISolidityArg;
-import org.aion.api.sol.impl.*;
-import org.aion.api.type.*;
+import org.aion.api.sol.impl.Bool;
+import org.aion.api.sol.impl.Bytes;
+import org.aion.api.sol.impl.DynamicBytes;
+import org.aion.api.sol.impl.Int;
+import org.aion.api.sol.impl.SString;
+import org.aion.api.sol.impl.SolidityValue;
+import org.aion.api.sol.impl.Uint;
+import org.aion.api.type.ApiMsg;
+import org.aion.api.type.CompileResponse;
+import org.aion.api.type.ContractAbiEntry;
+import org.aion.api.type.ContractAbiIOParam;
+import org.aion.api.type.ContractEvent;
+import org.aion.api.type.ContractEventFilter;
+import org.aion.api.type.ContractResponse;
+import org.aion.api.type.DeployResponse;
+import org.aion.api.type.JsonFmt;
+import org.aion.api.type.MsgRsp;
+import org.aion.api.type.TxArgs;
 import org.aion.base.type.Address;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
 import org.apache.commons.collections4.map.LRUMap;
 import org.slf4j.Logger;
-
-import java.lang.reflect.Type;
-import java.math.BigInteger;
-import java.util.*;
-import java.util.regex.Pattern;
-
-import static org.aion.api.sol.impl.SolidityValue.SolidityTypeEnum.*;
 
 /**
  * Returns a Contract class that sits above the NucoAPI layer that provides the user with a
@@ -68,7 +90,6 @@ public final class Contract implements IContract {
     public static final String SC_FN_FUNC = "function";
     public static final String SC_FN_EVENT = "event";
     public static final String SC_FN_FALLBACK = "fallback";
-
 
     private final AionAPIImpl api;
     private final String contractName;
@@ -103,10 +124,8 @@ public final class Contract implements IContract {
     private final List<ISolidityArg> outputParams;
     private String functionName;
 
-
     private ContractAbiEntry abiFunc;
     private Type abiType;
-
 
     // private internal state variables
     private Boolean functionDefined;
@@ -125,8 +144,7 @@ public final class Contract implements IContract {
         private Address from;
         private String contractName;
 
-        ContractBuilder() {
-        }
+        ContractBuilder() {}
 
         ContractBuilder compileResponse(final CompileResponse cr) {
             this.cr = cr;
@@ -155,11 +173,17 @@ public final class Contract implements IContract {
 
         Contract createContract() {
             if (cr == null || dr == null || api == null || from == null || contractName == null) {
-                throw new NullPointerException("compileResponse#" + cr +
-                    " deployResponse#" + dr +
-                    " api#" + api +
-                    " from#" + from +
-                    " contractName#" + contractName);
+                throw new NullPointerException(
+                        "compileResponse#"
+                                + cr
+                                + " deployResponse#"
+                                + dr
+                                + " api#"
+                                + api
+                                + " from#"
+                                + from
+                                + " contractName#"
+                                + contractName);
             }
 
             return new Contract(this);
@@ -193,8 +217,7 @@ public final class Contract implements IContract {
     }
 
     /**
-     * Helper constructor for deploy a contract including the initial parameters in the
-     * constructor.
+     * Helper constructor for deploy a contract including the initial parameters in the constructor.
      */
     protected Contract(final CompileResponse cr, final String contractName) {
         this.api = null;
@@ -216,31 +239,30 @@ public final class Contract implements IContract {
         this.inputParams = new ArrayList<>();
         this.outputParams = new ArrayList<>();
         this.eventsName = new ArrayList<>();
-
     }
 
     // for deployContractWithParam
-//    public Contract(CompileResponse cmplRsp, DeployResponse dplyRsp, IAionAPI api, Address from, String name) {
-//        this.inputParams = new ArrayList<>();
-//        this.outputParams = new ArrayList<>();
-//
-//        this.funcParams = setupAbiFunctionDefinitions(cmplRsp.getAbiDefinition());
-//        if (this.funcParams == null) {
-//            return;
-//        }
-//        this.eventsName = new ArrayList<>();
-//        this.eventsIssued = new LRUMap<>(lrumapSize);
-//        this.eventsIssuedRev = new LRUMap<>(lrumapSize);
-//        reset();
+    //    public Contract(CompileResponse cmplRsp, DeployResponse dplyRsp, IAionAPI api, Address
+    // from, String name) {
+    //        this.inputParams = new ArrayList<>();
+    //        this.outputParams = new ArrayList<>();
+    //
+    //        this.funcParams = setupAbiFunctionDefinitions(cmplRsp.getAbiDefinition());
+    //        if (this.funcParams == null) {
+    //            return;
+    //        }
+    //        this.eventsName = new ArrayList<>();
+    //        this.eventsIssued = new LRUMap<>(lrumapSize);
+    //        this.eventsIssuedRev = new LRUMap<>(lrumapSize);
+    //        reset();
     //  }
 
     public ContractAbiEntry getAbiFunction() {
         return abiFunc;
     }
 
-
     private Map<String, List<ContractAbiEntry>> setupAbiFunctionDefinitions(
-        List<ContractAbiEntry> abiDef) {
+            List<ContractAbiEntry> abiDef) {
 
         if (abiDef == null) {
             throw new NullPointerException();
@@ -339,8 +361,11 @@ public final class Contract implements IContract {
             this.isConstructor = true;
         } else if (this.funcParams.containsKey(f)) {
             this.functionName = f;
-            this.isConstant = this.funcParams.get(f)
-                .get(0).constant; //overloaded function should have the same constant.
+            this.isConstant =
+                    this.funcParams
+                            .get(f)
+                            .get(0)
+                            .constant; // overloaded function should have the same constant.
             this.functionDefined = true;
         } else {
             if (LOGGER.isErrorEnabled()) {
@@ -408,20 +433,23 @@ public final class Contract implements IContract {
             }
         }
 
-        TxArgs.TxArgsBuilder builder = new TxArgs.TxArgsBuilder()
-            .value(this.txValue)
-            .nrgPrice(this.txNrgPrice)
-            .nrgLimit(this.txNrgLimit)
-            .from(this.from)
-            .to(isConstructor ? Address.EMPTY_ADDRESS() : this.contractAddress)
-            .data(isConstructor ? ByteArrayWrapper.wrap(assembled.toString().getBytes())
-                : ByteArrayWrapper.wrap(ApiUtils.hex2Bytes(assembled.toString())))
-            .nonce(BigInteger.ZERO);
+        TxArgs.TxArgsBuilder builder =
+                new TxArgs.TxArgsBuilder()
+                        .value(this.txValue)
+                        .nrgPrice(this.txNrgPrice)
+                        .nrgLimit(this.txNrgLimit)
+                        .from(this.from)
+                        .to(isConstructor ? Address.EMPTY_ADDRESS() : this.contractAddress)
+                        .data(
+                                isConstructor
+                                        ? ByteArrayWrapper.wrap(assembled.toString().getBytes())
+                                        : ByteArrayWrapper.wrap(
+                                                ApiUtils.hex2Bytes(assembled.toString())))
+                        .nonce(BigInteger.ZERO);
 
         this.txArgs = builder.createTxArgs();
         return this.txArgs;
     }
-
 
     public Contract setTxNrgLimit(long limit) {
 
@@ -458,7 +486,6 @@ public final class Contract implements IContract {
 
         return this;
     }
-
 
     public Address getFrom() {
         return this.from;
@@ -502,7 +529,7 @@ public final class Contract implements IContract {
      * Get the abiDefinition of the deployed contract.
      *
      * @return List of {@link ContractAbiEntry ContractAbiEntry}. The AbiDefinition of the deployed
-     * contract.
+     *     contract.
      */
     @Override
     public List<ContractAbiEntry> getAbiDefinition() {
@@ -659,9 +686,11 @@ public final class Contract implements IContract {
                 if (i > 0) {
                     exp.append("Override function ");
                 }
-                exp.append(" Expected Input Parameters size: ").append(func.get(i).inputs.size())
-                    .append(" got size: ")
-                    .append(inputParams.size()).append("\n");
+                exp.append(" Expected Input Parameters size: ")
+                        .append(func.get(i).inputs.size())
+                        .append(" got size: ")
+                        .append(inputParams.size())
+                        .append("\n");
             }
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[build] {}", exp.toString());
@@ -669,7 +698,8 @@ public final class Contract implements IContract {
             this.errorCode = -131;
             return this;
         } else {
-            // check parameter type have performance issue. Cause function isType using Regular Expression method.
+            // check parameter type have performance issue. Cause function isType using Regular
+            // Expression method.
             // replace to type enum compare in later version.
             Boolean sameParams = true;
             for (Integer anAl : al) {
@@ -687,7 +717,7 @@ public final class Contract implements IContract {
                 }
             }
 
-            if (!sameParams) {  // all overloaded function unmatched
+            if (!sameParams) { // all overloaded function unmatched
                 if (LOGGER.isErrorEnabled()) {
                     LOGGER.error("[build] {}", ErrId.getErrString(-112L));
                 }
@@ -715,7 +745,7 @@ public final class Contract implements IContract {
      * Executes the built transaction. Refer to {@link #newFunction(String)} for function use.
      *
      * @return returns {@link org.aion.api.type.ContractResponse} containing all relevant
-     * information
+     *     information
      */
     public ApiMsg execute() {
 
@@ -744,19 +774,22 @@ public final class Contract implements IContract {
             }
             List out = decodeParams(ByteArrayWrapper.wrap(rsp));
 
-            ContractResponse.ContractResponseBuilder builder = new ContractResponse.ContractResponseBuilder()
-                .data(out)
-                .constant(true)
-                .msgHash(ByteArrayWrapper.wrap(new byte[ApiUtils.MSG_HASH_LEN]))
-                .status((byte) 0)
-                .txHash(Hash256.ZERO_HASH());
+            ContractResponse.ContractResponseBuilder builder =
+                    new ContractResponse.ContractResponseBuilder()
+                            .data(out)
+                            .constant(true)
+                            .msgHash(ByteArrayWrapper.wrap(new byte[ApiUtils.MSG_HASH_LEN]))
+                            .status((byte) 0)
+                            .txHash(Hash256.ZERO_HASH());
 
-            return apiMsg
-                .set(builder.createContractResponse(), org.aion.api.type.ApiMsg.cast.OTHERS);
+            return apiMsg.set(
+                    builder.createContractResponse(), org.aion.api.type.ApiMsg.cast.OTHERS);
         } else {
             // send transaction
-            ApiMsg apiMsg = (nonBlock ? api.getTx().nonBlock().sendTransaction(null)
-                : api.getTx().sendTransaction(null));
+            ApiMsg apiMsg =
+                    (nonBlock
+                            ? api.getTx().nonBlock().sendTransaction(null)
+                            : api.getTx().sendTransaction(null));
 
             if (apiMsg.isError()) {
                 return apiMsg;
@@ -769,20 +802,21 @@ public final class Contract implements IContract {
                 data = decodeParams(msgRsp.getTxResult());
             }
 
-            ContractResponse.ContractResponseBuilder builder = new ContractResponse.ContractResponseBuilder()
-                .data(data)
-                .constant(false)
-                .msgHash(msgRsp.getMsgHash())
-                .status(msgRsp.getStatus())
-                .txHash(msgRsp.getTxHash())
-                .error(msgRsp.getError());
+            ContractResponse.ContractResponseBuilder builder =
+                    new ContractResponse.ContractResponseBuilder()
+                            .data(data)
+                            .constant(false)
+                            .msgHash(msgRsp.getMsgHash())
+                            .status(msgRsp.getStatus())
+                            .txHash(msgRsp.getTxHash())
+                            .error(msgRsp.getError());
 
-            return apiMsg.set(builder.createContractResponse(),
-                org.aion.api.type.ApiMsg.cast.OTHERS);
+            return apiMsg.set(
+                    builder.createContractResponse(), org.aion.api.type.ApiMsg.cast.OTHERS);
         }
     }
 
-    //TODO: ArrayList<Integer> vs int[]?
+    // TODO: ArrayList<Integer> vs int[]?
     private int[] getOffsets() {
         int[] ret = new int[this.outputParams.size()];
 
@@ -799,8 +833,8 @@ public final class Contract implements IContract {
         for (ContractAbiIOParam io : this.abiFunc.outputs) {
             switch (getSolType(io.getType())) {
                 case ADDRESS:
-                    org.aion.api.sol.impl.Address addressVal = org.aion.api.sol.impl.Address
-                        .createForDecode();
+                    org.aion.api.sol.impl.Address addressVal =
+                            org.aion.api.sol.impl.Address.createForDecode();
                     addressVal.setDynamicParameters(io.getParamLengths());
                     addressVal.setType(io.getType());
                     this.outputParams.add(addressVal);
@@ -829,13 +863,13 @@ public final class Contract implements IContract {
                     intVal.setType(io.getType());
                     this.outputParams.add(intVal);
                     break;
-                //TODO: currently not support
-//            case REAL:
-//                Real realVal = Real.createForDecode();
-//                realVal.setDynamicParameters(io.getParamLengths());
-//                realVal.setType(io.getType());
-//                this.outputParams.add(realVal);
-//                break;
+                    // TODO: currently not support
+                    //            case REAL:
+                    //                Real realVal = Real.createForDecode();
+                    //                realVal.setDynamicParameters(io.getParamLengths());
+                    //                realVal.setType(io.getType());
+                    //                this.outputParams.add(realVal);
+                    //                break;
                 case STRING:
                     SString stringVal = SString.createForDecode();
                     stringVal.setDynamicParameters(io.getParamLengths());
@@ -848,13 +882,13 @@ public final class Contract implements IContract {
                     uintVal.setType(io.getType());
                     this.outputParams.add(uintVal);
                     break;
-                //TODO: currently not support
-//            case UREAL:
-//                Ureal urealVal = Ureal.createForDecode();
-//                urealVal.setDynamicParameters(io.getParamLengths());
-//                urealVal.setType(io.getType());
-//                this.outputParams.add(urealVal);
-//                break;
+                    // TODO: currently not support
+                    //            case UREAL:
+                    //                Ureal urealVal = Ureal.createForDecode();
+                    //                urealVal.setDynamicParameters(io.getParamLengths());
+                    //                urealVal.setType(io.getType());
+                    //                this.outputParams.add(urealVal);
+                    //                break;
                 default:
                     if (LOGGER.isErrorEnabled()) {
                         LOGGER.error("[decodeParams] {}", ErrId.getErrString(-125L));
@@ -879,7 +913,7 @@ public final class Contract implements IContract {
 
         if (event == null || data == null) {
             throw new NullPointerException(
-                "event#" + String.valueOf(event) + " data#" + String.valueOf(data));
+                    "event#" + String.valueOf(event) + " data#" + String.valueOf(data));
         }
 
         this.outputParams.clear();
@@ -897,8 +931,8 @@ public final class Contract implements IContract {
             for (ContractAbiIOParam io : e.inputs) {
                 switch (getSolType(io.getType())) {
                     case ADDRESS:
-                        org.aion.api.sol.impl.Address addressVal = org.aion.api.sol.impl.Address
-                            .createForDecode();
+                        org.aion.api.sol.impl.Address addressVal =
+                                org.aion.api.sol.impl.Address.createForDecode();
                         addressVal.setDynamicParameters(io.getParamLengths());
                         addressVal.setType(io.getType());
                         this.outputParams.add(addressVal);
@@ -927,12 +961,12 @@ public final class Contract implements IContract {
                         IntVal.setType(io.getType());
                         this.outputParams.add(IntVal);
                         break;
-//                case REAL:
-//                    Real RealVal = Real.createForDecode();
-//                    RealVal.setDynamicParameters(io.getParamLengths());
-//                    RealVal.setType(io.getType());
-//                    this.outputParams.add(RealVal);
-//                    break;
+                        //                case REAL:
+                        //                    Real RealVal = Real.createForDecode();
+                        //                    RealVal.setDynamicParameters(io.getParamLengths());
+                        //                    RealVal.setType(io.getType());
+                        //                    this.outputParams.add(RealVal);
+                        //                    break;
                     case STRING:
                         SString StringVal = SString.createForDecode();
                         StringVal.setDynamicParameters(io.getParamLengths());
@@ -945,12 +979,12 @@ public final class Contract implements IContract {
                         UintVal.setType(io.getType());
                         this.outputParams.add(UintVal);
                         break;
-//                case UREAL:
-//                    Ureal UrealVal = Ureal.createForDecode();
-//                    UrealVal.setDynamicParameters(io.getParamLengths());
-//                    UrealVal.setType(io.getType());
-//                    this.outputParams.add(UrealVal);
-//                    break;
+                        //                case UREAL:
+                        //                    Ureal UrealVal = Ureal.createForDecode();
+                        //                    UrealVal.setDynamicParameters(io.getParamLengths());
+                        //                    UrealVal.setType(io.getType());
+                        //                    this.outputParams.add(UrealVal);
+                        //                    break;
                     default:
                         if (LOGGER.isErrorEnabled()) {
                             LOGGER.error("[decodeParams] {}", ErrId.getErrString(-125L));
@@ -987,8 +1021,8 @@ public final class Contract implements IContract {
     }
 
     //    public void setErrorCode(int errorCode) {
-//        this.errorCode = errorCode;
-//    }
+    //        this.errorCode = errorCode;
+    //    }
 
     public boolean error() {
         return (this.errorCode != 1);
@@ -998,7 +1032,7 @@ public final class Contract implements IContract {
      * Get the contract function input parameters.
      *
      * @return list of SolidityAbstractType, need to cast to response solidity type by contract
-     * function.
+     *     function.
      */
     @Override
     public List<ISolidityArg> getInputParams() {
@@ -1009,7 +1043,7 @@ public final class Contract implements IContract {
      * Get the contract function output parameters.
      *
      * @return list of SolidityAbstractType, need to cast to response solidity type by contract
-     * function.
+     *     function.
      */
     @Override
     public List<ISolidityArg> getOutputParams() {
@@ -1107,12 +1141,13 @@ public final class Contract implements IContract {
             return new ApiMsg(this.errorCode);
         }
 
-        ContractEventFilter.ContractEventFilterBuilder builder = new ContractEventFilter.ContractEventFilterBuilder()
-            .addresses(new ArrayList<>())
-            .expireTime(0)
-            .fromBlock(s)
-            .toBlock(s)
-            .topics(new ArrayList<>(this.eventMapping.values()));
+        ContractEventFilter.ContractEventFilterBuilder builder =
+                new ContractEventFilter.ContractEventFilterBuilder()
+                        .addresses(new ArrayList<>())
+                        .expireTime(0)
+                        .fromBlock(s)
+                        .toBlock(s)
+                        .topics(new ArrayList<>(this.eventMapping.values()));
 
         return register(builder.createContractEventFilter());
     }
@@ -1120,7 +1155,6 @@ public final class Contract implements IContract {
     private boolean validString(String s) {
 
         return s != null && (s.equals("latest") || s.equals("pending") || s.matches(REGEX_NUMERIC));
-
     }
 
     public ApiMsg register(ContractEventFilter ef) {
@@ -1144,8 +1178,15 @@ public final class Contract implements IContract {
             }
         }
 
-        ApiMsg msg = new ApiMsg().set(this.api.getTx()
-            .eventRegister(new ArrayList<>(evtHash.values()), ef, this.getContractAddress()));
+        ApiMsg msg =
+                new ApiMsg()
+                        .set(
+                                this.api
+                                        .getTx()
+                                        .eventRegister(
+                                                new ArrayList<>(evtHash.values()),
+                                                ef,
+                                                this.getContractAddress()));
 
         if (!msg.isError()) {
             for (Map.Entry<String, String> ss : evtHash.entrySet()) {
@@ -1179,8 +1220,14 @@ public final class Contract implements IContract {
             }
         }
 
-        ApiMsg msg = new ApiMsg().set(this.api.getTx()
-            .eventDeregister(new ArrayList<>(evtHash.values()), this.getContractAddress()));
+        ApiMsg msg =
+                new ApiMsg()
+                        .set(
+                                this.api
+                                        .getTx()
+                                        .eventDeregister(
+                                                new ArrayList<>(evtHash.values()),
+                                                this.getContractAddress()));
 
         if (!msg.isError()) {
             for (String s : e) {
@@ -1210,8 +1257,14 @@ public final class Contract implements IContract {
             }
         }
 
-        ApiMsg msg = new ApiMsg().set(
-            this.api.getTx().eventDeregister(new ArrayList<>(dr.values()), this.contractAddress));
+        ApiMsg msg =
+                new ApiMsg()
+                        .set(
+                                this.api
+                                        .getTx()
+                                        .eventDeregister(
+                                                new ArrayList<>(dr.values()),
+                                                this.contractAddress));
 
         if (!msg.isError()) {
             this.eventsIssued.clear();
@@ -1248,22 +1301,27 @@ public final class Contract implements IContract {
         }
         List out = decodeParams(ByteArrayWrapper.wrap(rsp));
 
-        ContractResponse.ContractResponseBuilder builder = new ContractResponse.ContractResponseBuilder()
-            .data(out)
-            .constant(true)
-            .msgHash(ByteArrayWrapper.wrap(new byte[ApiUtils.MSG_HASH_LEN]))
-            .status((byte) 0)
-            .txHash(Hash256.ZERO_HASH());
+        ContractResponse.ContractResponseBuilder builder =
+                new ContractResponse.ContractResponseBuilder()
+                        .data(out)
+                        .constant(true)
+                        .msgHash(ByteArrayWrapper.wrap(new byte[ApiUtils.MSG_HASH_LEN]))
+                        .status((byte) 0)
+                        .txHash(Hash256.ZERO_HASH());
 
         return apiMsg.set(builder.createContractResponse(), org.aion.api.type.ApiMsg.cast.OTHERS);
     }
 
     @SuppressWarnings("unchecked")
     public List<ContractEvent> getEvents() {
-        List<ContractEvent> evts = (List<ContractEvent>) (List<?>) (this.api.getTx() != null ?
-            ((Tx) this.api.getTx()).apiInst.msgExecutor
-                .getEvents(new ArrayList<>(this.eventsIssued.values())) :
-            null);
+        List<ContractEvent> evts =
+                (List<ContractEvent>)
+                        (List<?>)
+                                (this.api.getTx() != null
+                                        ? ((Tx) this.api.getTx())
+                                                .apiInst.msgExecutor.getEvents(
+                                                        new ArrayList<>(this.eventsIssued.values()))
+                                        : null);
 
         if (evts == null) {
             return new ArrayList<>();
@@ -1273,10 +1331,10 @@ public final class Contract implements IContract {
         for (ContractEvent evt : evts) {
             String evtName = this.eventsIssuedRev.get(evt.getEventName());
             if (evtName != null) {
-                ContractEvent.ContractEventBuilder builder = new ContractEvent.ContractEventBuilder(
-                    evt)
-                    .eventName(evtName)
-                    .results(this.decodeParams(evtName, evt.getData()));
+                ContractEvent.ContractEventBuilder builder =
+                        new ContractEvent.ContractEventBuilder(evt)
+                                .eventName(evtName)
+                                .results(this.decodeParams(evtName, evt.getData()));
                 res.add(builder.createContractEvent());
             }
         }
@@ -1284,9 +1342,10 @@ public final class Contract implements IContract {
         return res;
     }
 
-    //public ApiMsg queryEvents(ContractEventFilter ef) {
+    // public ApiMsg queryEvents(ContractEventFilter ef) {
     //
-    //    ContractEventFilter.ContractEventFilterBuilder efBuilder = new ContractEventFilter.ContractEventFilterBuilder(ef);
+    //    ContractEventFilter.ContractEventFilterBuilder efBuilder = new
+    // ContractEventFilter.ContractEventFilterBuilder(ef);
     //    if (ef.getFromBlock().contains("latest")) {
     //        if (Integer.parseInt(ef.getToBlock()) > 50) {
     //            if (LOGGER.isInfoEnabled()) {
@@ -1307,7 +1366,8 @@ public final class Contract implements IContract {
     //
     //    efBuilder.topics(hashedTopics);
     //
-    //    ApiMsg msg = this.api.getTx().queryEvents(efBuilder.createContractEventFilter(), this.contractAddress);
+    //    ApiMsg msg = this.api.getTx().queryEvents(efBuilder.createContractEventFilter(),
+    // this.contractAddress);
     //    if (msg.isError()) {
     //        return msg;
     //    }
@@ -1317,7 +1377,8 @@ public final class Contract implements IContract {
     //    List<ContractEvent> res = new ArrayList<>();
     //    for (ContractEvent evt : evts) {
     //        if (this.eventMapping.get(evt.getEventName()) != null) {
-    //            ContractEvent.ContractEventBuilder eBuilder = new ContractEvent.ContractEventBuilder(evt)
+    //            ContractEvent.ContractEventBuilder eBuilder = new
+    // ContractEvent.ContractEventBuilder(evt)
     //                    .eventName(this.eventMapping.get(evt.getEventName()))
     //                    .results(this.decodeParams(evt.getEventName(), evt.getData()));
     //
@@ -1327,7 +1388,7 @@ public final class Contract implements IContract {
     //    }
     //
     //    return msg.set(1, res, ApiMsg.cast.OTHERS);
-    //}
+    // }
 
     public List<String> getContractEventList() {
         if (this.eventMapping == null) {

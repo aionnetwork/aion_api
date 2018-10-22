@@ -1,31 +1,30 @@
-/*******************************************************************************
- * Copyright (c) 2017-2018 Aion foundation.
+/**
+ * ***************************************************************************** Copyright (c)
+ * 2017-2018 Aion foundation.
  *
- *     This file is part of the aion network project.
+ * <p>This file is part of the aion network project.
  *
- *     The aion network project is free software: you can redistribute it
- *     and/or modify it under the terms of the GNU General Public License
- *     as published by the Free Software Foundation, either version 3 of
- *     the License, or any later version.
+ * <p>The aion network project is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software Foundation, either
+ * version 3 of the License, or any later version.
  *
- *     The aion network project is distributed in the hope that it will
- *     be useful, but WITHOUT ANY WARRANTY; without even the implied
- *     warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *     See the GNU General Public License for more details.
+ * <p>The aion network project is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the GNU General Public License for more details.
  *
- *     You should have received a copy of the GNU General Public License
- *     along with the aion network project source files.
- *     If not, see <https://www.gnu.org/licenses/>.
+ * <p>You should have received a copy of the GNU General Public License along with the aion network
+ * project source files. If not, see <https://www.gnu.org/licenses/>.
  *
- * Contributors:
- *     Aion foundation.
+ * <p>Contributors: Aion foundation.
  *
- ******************************************************************************/
-
+ * <p>****************************************************************************
+ */
 package org.aion.api.impl;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+import java.util.ArrayList;
+import java.util.List;
 import org.aion.api.IWallet;
 import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.impl.internal.Message;
@@ -36,12 +35,7 @@ import org.aion.base.type.Address;
 import org.aion.base.util.ByteUtil;
 import org.slf4j.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
-
-/**
- * Created by Jay Tseng on 14/11/16.
- */
+/** Created by Jay Tseng on 14/11/16. */
 public class Wallet implements IWallet {
     private static final Logger LOGGER = AionLoggerFactory.getLogger(LogEnum.WLT.name());
     private AionAPIImpl apiInst;
@@ -55,7 +49,9 @@ public class Wallet implements IWallet {
             return new ApiMsg(-1003);
         }
 
-        byte[] reqHdr = ApiUtils.toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_wallet, Message.Funcs.f_accounts);
+        byte[] reqHdr =
+                ApiUtils.toReqHeader(
+                        ApiUtils.PROTOCOL_VER, Message.Servs.s_wallet, Message.Funcs.f_accounts);
 
         byte[] rsp = this.apiInst.nbProcess(reqHdr);
         int code = this.apiInst.validRspHeader(rsp);
@@ -64,7 +60,8 @@ public class Wallet implements IWallet {
         }
 
         try {
-            Message.rsp_accounts msgRsp = Message.rsp_accounts.parseFrom(ApiUtils.parseBody(rsp).getData());
+            Message.rsp_accounts msgRsp =
+                    Message.rsp_accounts.parseFrom(ApiUtils.parseBody(rsp).getData());
             List<ByteString> accBs = msgRsp.getAccoutList();
 
             List<Address> account = new ArrayList<>();
@@ -78,7 +75,10 @@ public class Wallet implements IWallet {
             return new ApiMsg(account, ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[getAccounts] {} exception: [{}]", ErrId.getErrString(-104L), e.toString());
+                LOGGER.error(
+                        "[getAccounts] {} exception: [{}]",
+                        ErrId.getErrString(-104L),
+                        e.toString());
             }
             return new ApiMsg(-104);
         }
@@ -107,11 +107,19 @@ public class Wallet implements IWallet {
             return new ApiMsg(-302);
         }
 
-        Message.req_unlockAccount reqBody = Message.req_unlockAccount.newBuilder().setAccount(ByteString.copyFrom(acc.toBytes()))
-                .setDuration(duration).setPassword(passphrase).build();
+        Message.req_unlockAccount reqBody =
+                Message.req_unlockAccount
+                        .newBuilder()
+                        .setAccount(ByteString.copyFrom(acc.toBytes()))
+                        .setDuration(duration)
+                        .setPassword(passphrase)
+                        .build();
 
-        byte[] reqHdr = ApiUtils
-                .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_wallet, Message.Funcs.f_unlockAccount);
+        byte[] reqHdr =
+                ApiUtils.toReqHeader(
+                        ApiUtils.PROTOCOL_VER,
+                        Message.Servs.s_wallet,
+                        Message.Funcs.f_unlockAccount);
         byte[] reqMsg = ByteUtil.merge(reqHdr, reqBody.toByteArray());
 
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
@@ -132,7 +140,11 @@ public class Wallet implements IWallet {
             return new ApiMsg(-1003);
         }
 
-        byte[] reqHdr = ApiUtils.toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_wallet, Message.Funcs.f_minerAddress);
+        byte[] reqHdr =
+                ApiUtils.toReqHeader(
+                        ApiUtils.PROTOCOL_VER,
+                        Message.Servs.s_wallet,
+                        Message.Funcs.f_minerAddress);
         byte[] rsp = this.apiInst.nbProcess(reqHdr);
 
         int code = this.apiInst.validRspHeader(rsp);
@@ -141,7 +153,8 @@ public class Wallet implements IWallet {
         }
 
         try {
-            Message.rsp_minerAddress msgRsp = Message.rsp_minerAddress.parseFrom(ApiUtils.parseBody(rsp).getData());
+            Message.rsp_minerAddress msgRsp =
+                    Message.rsp_minerAddress.parseFrom(ApiUtils.parseBody(rsp).getData());
             this.apiInst.minerAddress = Address.wrap(msgRsp.getMinerAddr().toByteArray());
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("[getMinerAccount] minerAddress: [{}]", this.apiInst.minerAddress);
@@ -151,7 +164,10 @@ public class Wallet implements IWallet {
         } catch (Exception e) {
             e.printStackTrace();
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[getMinerAccount] {} exception: [{}]", ErrId.getErrString(-104L), e.getMessage());
+                LOGGER.error(
+                        "[getMinerAccount] {} exception: [{}]",
+                        ErrId.getErrString(-104L),
+                        e.getMessage());
             }
             return new ApiMsg(-104, e.getMessage(), ApiMsg.cast.OTHERS);
         }
@@ -178,11 +194,16 @@ public class Wallet implements IWallet {
             return new ApiMsg(-301);
         }
 
-        Message.req_accountlock reqBody = Message.req_accountlock.newBuilder().setAccount(ByteString.copyFrom(acc.toBytes()))
-                .setPassword(passphrase).build();
+        Message.req_accountlock reqBody =
+                Message.req_accountlock
+                        .newBuilder()
+                        .setAccount(ByteString.copyFrom(acc.toBytes()))
+                        .setPassword(passphrase)
+                        .build();
 
-        byte[] reqHdr = ApiUtils
-                .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_wallet, Message.Funcs.f_accountLock);
+        byte[] reqHdr =
+                ApiUtils.toReqHeader(
+                        ApiUtils.PROTOCOL_VER, Message.Servs.s_wallet, Message.Funcs.f_accountLock);
         byte[] reqMsg = ByteUtil.merge(reqHdr, reqBody.toByteArray());
 
         byte[] rsp = this.apiInst.nbProcess(reqMsg);

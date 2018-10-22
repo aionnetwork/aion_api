@@ -31,7 +31,6 @@ import java.util.List;
  *
  * @author Jay Tseng
  */
-
 public final class ContractAbiIOParam {
 
     private boolean indexed;
@@ -52,12 +51,26 @@ public final class ContractAbiIOParam {
             lv.append("  ");
         }
 
-        StringBuilder sb = new StringBuilder()
-            .append(lv).append("indexed: ").append(String.valueOf(indexed)).append(",\n")
-            .append(lv).append("type: ").append(type).append(",\n")
-            .append(lv).append("name: ").append(name).append(",\n")
-            .append(lv).append("paramLengths: ").append("\n")
-            .append(lv).append("[").append("\n");
+        StringBuilder sb =
+                new StringBuilder()
+                        .append(lv)
+                        .append("indexed: ")
+                        .append(String.valueOf(indexed))
+                        .append(",\n")
+                        .append(lv)
+                        .append("type: ")
+                        .append(type)
+                        .append(",\n")
+                        .append(lv)
+                        .append("name: ")
+                        .append(name)
+                        .append(",\n")
+                        .append(lv)
+                        .append("paramLengths: ")
+                        .append("\n")
+                        .append(lv)
+                        .append("[")
+                        .append("\n");
 
         for (Integer i : paramLengths) {
             sb.append(lv).append(String.valueOf(i)).append(",");

@@ -64,16 +64,12 @@ import org.aion.crypto.ECKey;
 import org.aion.crypto.ECKeyFac;
 import org.slf4j.Logger;
 
-import static org.zeromq.EmbeddedLibraryTools.getCurrentPlatformIdentifier;
-
-/**
- * Created by Jay Tseng on 19/04/17.
- */
+/** Created by Jay Tseng on 19/04/17. */
 public final class Account implements IAccount {
 
     private static final Logger LOGGER = AionLoggerFactory.getLogger(LogEnum.ACC.name());
     private AionAPIImpl apiInst;
-    private final static int ACCOUNT_LIMIT = 1000;
+    private static final int ACCOUNT_LIMIT = 1000;
 
     private static final Pattern HEX_64 = Pattern.compile("^[\\p{XDigit}]{64}$");
     private static final String ADDR_PREFIX = "0x";
@@ -113,14 +109,14 @@ public final class Account implements IAccount {
             return new ApiMsg(-19);
         }
 
-        Message.req_accountCreate reqBody = Message.req_accountCreate.newBuilder()
-            .addAllPassword(pw)
-            .setPrivateKey(pk)
-            .build();
+        Message.req_accountCreate reqBody =
+                Message.req_accountCreate.newBuilder().addAllPassword(pw).setPrivateKey(pk).build();
 
-        byte[] reqHead = ApiUtils
-            .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_account,
-                Message.Funcs.f_accountCreate);
+        byte[] reqHead =
+                ApiUtils.toReqHeader(
+                        ApiUtils.PROTOCOL_VER,
+                        Message.Servs.s_account,
+                        Message.Funcs.f_accountCreate);
         byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
 
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
@@ -131,8 +127,10 @@ public final class Account implements IAccount {
         }
 
         try {
-            List<Key> k = ApiUtils
-                .toKey(Message.rsp_accountCreate.parseFrom(ApiUtils.parseBody(rsp).getData()), pk);
+            List<Key> k =
+                    ApiUtils.toKey(
+                            Message.rsp_accountCreate.parseFrom(ApiUtils.parseBody(rsp).getData()),
+                            pk);
 
             return new ApiMsg(k, org.aion.api.type.ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
@@ -166,9 +164,11 @@ public final class Account implements IAccount {
         Set<Address> invalidAddress = new HashSet<>();
         for (Key key1 : keys) {
             try {
-                t_Key key = t_Key.newBuilder()
-                    .setAddress(ByteString.copyFrom(key1.getPubKey().toBytes()))
-                    .setPassword(key1.getPassPhrase()).build();
+                t_Key key =
+                        t_Key.newBuilder()
+                                .setAddress(ByteString.copyFrom(key1.getPubKey().toBytes()))
+                                .setPassword(key1.getPassPhrase())
+                                .build();
                 mkeys.add(key);
             } catch (Exception e) {
                 if (LOGGER.isErrorEnabled()) {
@@ -178,13 +178,14 @@ public final class Account implements IAccount {
             }
         }
 
-        Message.req_exportAccounts reqBody = Message.req_exportAccounts.newBuilder()
-            .addAllKeyFile(mkeys)
-            .build();
+        Message.req_exportAccounts reqBody =
+                Message.req_exportAccounts.newBuilder().addAllKeyFile(mkeys).build();
 
-        byte[] reqHead = ApiUtils
-            .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_account,
-                Message.Funcs.f_backupAccounts);
+        byte[] reqHead =
+                ApiUtils.toReqHeader(
+                        ApiUtils.PROTOCOL_VER,
+                        Message.Servs.s_account,
+                        Message.Funcs.f_backupAccounts);
         byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
 
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
@@ -195,8 +196,10 @@ public final class Account implements IAccount {
         }
 
         try {
-            KeyExport ke = ApiUtils.toKeyExport(
-                Message.rsp_exportAccounts.parseFrom(ApiUtils.parseBody(rsp).getData()));
+            KeyExport ke =
+                    ApiUtils.toKeyExport(
+                            Message.rsp_exportAccounts.parseFrom(
+                                    ApiUtils.parseBody(rsp).getData()));
             return new ApiMsg(ke, org.aion.api.type.ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
@@ -229,9 +232,11 @@ public final class Account implements IAccount {
         Set<Address> invalidAddress = new HashSet<>();
         for (Key key1 : keys) {
             try {
-                t_Key key = t_Key.newBuilder()
-                    .setAddress(ByteString.copyFrom(key1.getPubKey().toBytes()))
-                    .setPassword(key1.getPassPhrase()).build();
+                t_Key key =
+                        t_Key.newBuilder()
+                                .setAddress(ByteString.copyFrom(key1.getPubKey().toBytes()))
+                                .setPassword(key1.getPassPhrase())
+                                .build();
                 mkeys.add(key);
             } catch (Exception e) {
                 if (LOGGER.isErrorEnabled()) {
@@ -241,13 +246,14 @@ public final class Account implements IAccount {
             }
         }
 
-        Message.req_exportAccounts reqBody = Message.req_exportAccounts.newBuilder()
-            .addAllKeyFile(mkeys)
-            .build();
+        Message.req_exportAccounts reqBody =
+                Message.req_exportAccounts.newBuilder().addAllKeyFile(mkeys).build();
 
-        byte[] reqHead = ApiUtils
-            .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_account,
-                Message.Funcs.f_exportAccounts);
+        byte[] reqHead =
+                ApiUtils.toReqHeader(
+                        ApiUtils.PROTOCOL_VER,
+                        Message.Servs.s_account,
+                        Message.Funcs.f_exportAccounts);
         byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
 
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
@@ -258,8 +264,10 @@ public final class Account implements IAccount {
         }
 
         try {
-            KeyExport ke = ApiUtils.toKeyExport(
-                Message.rsp_exportAccounts.parseFrom(ApiUtils.parseBody(rsp).getData()));
+            KeyExport ke =
+                    ApiUtils.toKeyExport(
+                            Message.rsp_exportAccounts.parseFrom(
+                                    ApiUtils.parseBody(rsp).getData()));
             return new ApiMsg(ke, org.aion.api.type.ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
@@ -288,20 +296,26 @@ public final class Account implements IAccount {
             return new ApiMsg(-19);
         }
 
-        Set<Message.t_PrivateKey> pKey = keys.entrySet().parallelStream().map(
-            k -> Message.t_PrivateKey.newBuilder()
-                .setPrivateKey(k.getKey())
-                .setPassword(k.getValue())
-                .build()
-        ).collect(Collectors.toSet());
+        Set<Message.t_PrivateKey> pKey =
+                keys.entrySet()
+                        .parallelStream()
+                        .map(
+                                k ->
+                                        Message.t_PrivateKey
+                                                .newBuilder()
+                                                .setPrivateKey(k.getKey())
+                                                .setPassword(k.getValue())
+                                                .build())
+                        .collect(Collectors.toSet());
 
-        Message.req_importAccounts reqBody = Message.req_importAccounts.newBuilder()
-            .addAllPrivateKey(pKey)
-            .build();
+        Message.req_importAccounts reqBody =
+                Message.req_importAccounts.newBuilder().addAllPrivateKey(pKey).build();
 
-        byte[] reqHead = ApiUtils
-            .toReqHeader(ApiUtils.PROTOCOL_VER, Message.Servs.s_account,
-                Message.Funcs.f_importAccounts);
+        byte[] reqHead =
+                ApiUtils.toReqHeader(
+                        ApiUtils.PROTOCOL_VER,
+                        Message.Servs.s_account,
+                        Message.Funcs.f_importAccounts);
         byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
 
         byte[] rsp = this.apiInst.nbProcess(reqMsg);
@@ -312,9 +326,10 @@ public final class Account implements IAccount {
         }
 
         try {
-            List<String> invalidKey = Message.rsp_importAccounts
-                .parseFrom(ApiUtils.parseBody(rsp).getData())
-                .getInvalidKeyList();
+            List<String> invalidKey =
+                    Message.rsp_importAccounts
+                            .parseFrom(ApiUtils.parseBody(rsp).getData())
+                            .getInvalidKeyList();
 
             return new ApiMsg(invalidKey, org.aion.api.type.ApiMsg.cast.OTHERS);
         } catch (InvalidProtocolBufferException e) {
@@ -373,7 +388,11 @@ public final class Account implements IAccount {
             return ADDR_PREFIX;
         } else {
             byte[] content = new KeystoreFormat().toKeystore(key, password);
-            DateFormat df = new SimpleDateFormat(isWindows ? "yyyy-MM-dd'T'HH-mm-ss.SSS'Z'" : "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            DateFormat df =
+                    new SimpleDateFormat(
+                            isWindows
+                                    ? "yyyy-MM-dd'T'HH-mm-ss.SSS'Z'"
+                                    : "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
             df.setTimeZone(TimeZone.getTimeZone("UTC"));
             String iso_date = df.format(new Date(System.currentTimeMillis()));
             String fileName = "UTC--" + iso_date + "--" + address;
