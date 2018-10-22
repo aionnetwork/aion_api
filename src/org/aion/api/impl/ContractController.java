@@ -22,27 +22,35 @@
  */
 package org.aion.api.impl;
 
+import static org.aion.api.impl.Contract.SC_FN_CONSTRUCTOR;
+import static org.aion.api.impl.ErrId.getErrString;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import org.aion.api.IContract;
 import org.aion.api.IContractController;
 import org.aion.api.log.AionLoggerFactory;
 import org.aion.api.log.LogEnum;
 import org.aion.api.sol.ISolidityArg;
-import org.aion.api.type.*;
+import org.aion.api.type.ApiMsg;
+import org.aion.api.type.CompileResponse;
+import org.aion.api.type.ContractAbiEntry;
+import org.aion.api.type.ContractDeploy;
+import org.aion.api.type.DeployResponse;
+import org.aion.api.type.JsonFmt;
 import org.aion.base.type.Address;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
 import org.slf4j.Logger;
-
-import java.lang.reflect.Type;
-import java.math.BigInteger;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static org.aion.api.impl.Contract.SC_FN_CONSTRUCTOR;
-import static org.aion.api.impl.ErrId.getErrString;
 
 public final class ContractController implements IContractController {
 
@@ -55,19 +63,26 @@ public final class ContractController implements IContractController {
         API = api;
     }
 
-    public ApiMsg createFromSource(final String source, final Address from, final long nrgLimit,
-        final long nrgPrice) {
+    public ApiMsg createFromSource(
+            final String source, final Address from, final long nrgLimit, final long nrgPrice) {
         return createFromSource(source, from, nrgLimit, nrgPrice, BigInteger.ZERO, new HashMap<>());
     }
 
-    public ApiMsg createFromSource(final String source, final Address from, final long nrgLimit,
-        final long nrgPrice, final BigInteger value) {
+    public ApiMsg createFromSource(
+            final String source,
+            final Address from,
+            final long nrgLimit,
+            final long nrgPrice,
+            final BigInteger value) {
         return createFromSource(source, from, nrgLimit, nrgPrice, value, new HashMap<>());
     }
 
-    public ApiMsg createFromSource(final String source, final Address from, final long nrgLimit,
-        final long nrgPrice,
-        List<ISolidityArg> params) {
+    public ApiMsg createFromSource(
+            final String source,
+            final Address from,
+            final long nrgLimit,
+            final long nrgPrice,
+            List<ISolidityArg> params) {
 
         Map<String, List<ISolidityArg>> paramsMap = new HashMap<>();
         paramsMap.put("", params);
@@ -75,15 +90,22 @@ public final class ContractController implements IContractController {
         return createFromSource(source, from, nrgLimit, nrgPrice, BigInteger.ZERO, paramsMap);
     }
 
-    public ApiMsg createFromSource(final String source, final Address from, final long nrgLimit,
-        final long nrgPrice,
-        final Map<String, List<ISolidityArg>> params) {
+    public ApiMsg createFromSource(
+            final String source,
+            final Address from,
+            final long nrgLimit,
+            final long nrgPrice,
+            final Map<String, List<ISolidityArg>> params) {
         return createFromSource(source, from, nrgLimit, nrgPrice, BigInteger.ZERO, params);
     }
 
-    public ApiMsg createFromSource(final String source, final Address from, final long nrgLimit,
-        final long nrgPrice, final BigInteger value,
-        List<ISolidityArg> params) {
+    public ApiMsg createFromSource(
+            final String source,
+            final Address from,
+            final long nrgLimit,
+            final long nrgPrice,
+            final BigInteger value,
+            List<ISolidityArg> params) {
 
         Map<String, List<ISolidityArg>> paramsMap = new HashMap<>();
         paramsMap.put("", params);
@@ -91,14 +113,23 @@ public final class ContractController implements IContractController {
         return createFromSource(source, from, nrgLimit, nrgPrice, value, paramsMap);
     }
 
-    public ApiMsg createFromSource(final String source, final Address from, final long nrgLimit,
-        final long nrgPrice, final BigInteger value,
-        Map<String, List<ISolidityArg>> params) {
+    public ApiMsg createFromSource(
+            final String source,
+            final Address from,
+            final long nrgLimit,
+            final long nrgPrice,
+            final BigInteger value,
+            Map<String, List<ISolidityArg>> params) {
         if (from == null || source == null || params == null || value == null) {
             throw new NullPointerException(
-                "Source#" + String.valueOf(source) + " from#" + String.valueOf(from) + " value#"
-                    + String
-                    .valueOf(value) + " inputParams#" + String.valueOf(params));
+                    "Source#"
+                            + String.valueOf(source)
+                            + " from#"
+                            + String.valueOf(from)
+                            + " value#"
+                            + String.valueOf(value)
+                            + " inputParams#"
+                            + String.valueOf(params));
         }
 
         if (nrgLimit < 0 || nrgPrice < 0) {
@@ -129,11 +160,12 @@ public final class ContractController implements IContractController {
 
                         hasConstructor = true;
 
-                        Contract ct = new Contract(entry.getValue(), trimCtName)
-                            .newFunction(SC_FN_CONSTRUCTOR)
-                            .setFrom(from)
-                            .setTxNrgLimit(nrgLimit)
-                            .setTxNrgPrice(nrgPrice);
+                        Contract ct =
+                                new Contract(entry.getValue(), trimCtName)
+                                        .newFunction(SC_FN_CONSTRUCTOR)
+                                        .setFrom(from)
+                                        .setTxNrgLimit(nrgLimit)
+                                        .setTxNrgPrice(nrgPrice);
 
                         List<ISolidityArg> ctParams;
                         // assume only one contract want to deploy
@@ -153,7 +185,7 @@ public final class ContractController implements IContractController {
 
                             if (LOGGER.isDebugEnabled()) {
                                 LOGGER.debug(
-                                    "[createCtListFromSource] This contract has contractor!");
+                                        "[createCtListFromSource] This contract has contractor!");
                             }
                         }
 
@@ -161,10 +193,15 @@ public final class ContractController implements IContractController {
                     }
                 }
 
-                ContractDeploy.ContractDeployBuilder cd = new ContractDeploy.ContractDeployBuilder()
-                    .compileResponse(entry.getValue()).constructor(hasConstructor).data(data)
-                    .from(from)
-                    .nrgLimit(nrgLimit).nrgPrice(nrgPrice).value(value);
+                ContractDeploy.ContractDeployBuilder cd =
+                        new ContractDeploy.ContractDeployBuilder()
+                                .compileResponse(entry.getValue())
+                                .constructor(hasConstructor)
+                                .data(data)
+                                .from(from)
+                                .nrgLimit(nrgLimit)
+                                .nrgPrice(nrgPrice)
+                                .value(value);
 
                 apiMsg = API.getTx().contractDeploy(cd.createContractDeploy());
 
@@ -179,13 +216,19 @@ public final class ContractController implements IContractController {
 
                 if (LOGGER.isInfoEnabled()) {
                     LOGGER.info(
-                        "[createFromSource] Contract deployed - name:[{}] address:[{}], txhash: [{}]",
-                        entry.getKey(), dr.getAddress().toString(), dr.getTxid().toString());
+                            "[createFromSource] Contract deployed - name:[{}] address:[{}], txhash: [{}]",
+                            entry.getKey(),
+                            dr.getAddress().toString(),
+                            dr.getTxid().toString());
                 }
 
-                Contract.ContractBuilder builder = new Contract.ContractBuilder().api(API)
-                    .deployResponse(dr).compileResponse(entry.getValue()).from(from)
-                    .contractName(trimCtName);
+                Contract.ContractBuilder builder =
+                        new Contract.ContractBuilder()
+                                .api(API)
+                                .deployResponse(dr)
+                                .compileResponse(entry.getValue())
+                                .from(from)
+                                .contractName(trimCtName);
 
                 CONTAINER.put(dr.getAddress(), builder.createContract());
             }
@@ -197,21 +240,31 @@ public final class ContractController implements IContractController {
     public IContract getContractAt(final Address from, final Address contract, final String abi) {
 
         // generate type for Gson parsing
-        Type abiType = new TypeToken<ArrayList<ContractAbiEntry>>() {
-        }.getType();
+        Type abiType = new TypeToken<ArrayList<ContractAbiEntry>>() {}.getType();
         List<ContractAbiEntry> abiDef = new Gson().fromJson(abi, abiType);
 
-        CompileResponse.CompileResponseBuilder builder = new CompileResponse.CompileResponseBuilder()
-            .abiDefinition(abiDef).abiDefString("").code("").compilerOptions("").compilerVersion("")
-            .language("")
-            .languageVersion("").userDoc(JsonFmt.JsonFmtBuilder.emptyJsonFmt())
-            .developerDoc(JsonFmt.JsonFmtBuilder.emptyJsonFmt()).source("");
+        CompileResponse.CompileResponseBuilder builder =
+                new CompileResponse.CompileResponseBuilder()
+                        .abiDefinition(abiDef)
+                        .abiDefString("")
+                        .code("")
+                        .compilerOptions("")
+                        .compilerVersion("")
+                        .language("")
+                        .languageVersion("")
+                        .userDoc(JsonFmt.JsonFmtBuilder.emptyJsonFmt())
+                        .developerDoc(JsonFmt.JsonFmtBuilder.emptyJsonFmt())
+                        .source("");
 
         DeployResponse dr = new DeployResponse(contract, Hash256.ZERO_HASH());
 
-        Contract.ContractBuilder contractBuilder = new Contract.ContractBuilder().api(API)
-            .deployResponse(dr)
-            .compileResponse(builder.createCompileResponse()).from(from).contractName("");
+        Contract.ContractBuilder contractBuilder =
+                new Contract.ContractBuilder()
+                        .api(API)
+                        .deployResponse(dr)
+                        .compileResponse(builder.createCompileResponse())
+                        .from(from)
+                        .contractName("");
 
         CONTAINER.put(contract, contractBuilder.createContract());
 
@@ -229,10 +282,12 @@ public final class ContractController implements IContractController {
     public List<IContract> getContract(String contractName) {
         Objects.requireNonNull(contractName);
 
-        return CONTAINER.entrySet().stream()
-            .filter(p ->
-                p.getValue().getContractName().contentEquals(contractName))
-            .map(Map.Entry::getValue).collect(Collectors.toList());
+        return CONTAINER
+                .entrySet()
+                .stream()
+                .filter(p -> p.getValue().getContractName().contentEquals(contractName))
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toList());
     }
 
     public Map<Address, String> getContractMap() {

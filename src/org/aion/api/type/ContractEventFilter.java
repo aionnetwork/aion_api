@@ -21,12 +21,10 @@
  *     Aion foundation.
  */
 
-
 package org.aion.api.type;
 
-import org.aion.base.type.Address;
-
 import java.util.List;
+import org.aion.base.type.Address;
 
 /**
  * The helper class for gather all of the contract event filter conditions. Use the builder class to
@@ -35,14 +33,13 @@ import java.util.List;
  * @author Jay Tseng
  * @see org.aion.api.IContract#register(org.aion.api.type.ContractEventFilter) register
  */
-
 public final class ContractEventFilter {
 
     private final String fromBlock;
     private final String toBlock;
     private final List<Address> addresses;
     private final List<String> topics;
-    private final long expireTime;  // 0 means no expire. time unit is sec.
+    private final long expireTime; // 0 means no expire. time unit is sec.
 
     private ContractEventFilter(ContractEventFilterBuilder builder) {
         this.fromBlock = builder.fromBlock;
@@ -72,10 +69,7 @@ public final class ContractEventFilter {
         return expireTime;
     }
 
-
-    /**
-     * This Builder class is used to build a {@link ContractEventFilter} instance.
-     */
+    /** This Builder class is used to build a {@link ContractEventFilter} instance. */
     public static class ContractEventFilterBuilder {
 
         private String fromBlock;
@@ -84,8 +78,7 @@ public final class ContractEventFilter {
         private List<String> topics;
         private long expireTime;
 
-        public ContractEventFilterBuilder() {
-        }
+        public ContractEventFilterBuilder() {}
 
         public ContractEventFilterBuilder(ContractEventFilter ef) {
             this.fromBlock = ef.fromBlock;
@@ -105,7 +98,8 @@ public final class ContractEventFilter {
             return this;
         }
 
-        public ContractEventFilter.ContractEventFilterBuilder addresses(final List<Address> addresses) {
+        public ContractEventFilter.ContractEventFilterBuilder addresses(
+                final List<Address> addresses) {
             this.addresses = addresses;
             return this;
         }
@@ -123,15 +117,18 @@ public final class ContractEventFilter {
         public ContractEventFilter createContractEventFilter() {
             if (fromBlock == null || toBlock == null || addresses == null || topics == null) {
                 throw new NullPointerException(
-                    "fromBlock#" + String.valueOf(fromBlock) +
-                        " toBlock#" + String.valueOf(toBlock) +
-                        " addresses#" + String.valueOf(addresses) +
-                        " topics#" + String.valueOf(topics));
+                        "fromBlock#"
+                                + String.valueOf(fromBlock)
+                                + " toBlock#"
+                                + String.valueOf(toBlock)
+                                + " addresses#"
+                                + String.valueOf(addresses)
+                                + " topics#"
+                                + String.valueOf(topics));
             }
 
             if (expireTime < 0) {
-                throw new IllegalArgumentException(
-                    "expireTime#" + expireTime);
+                throw new IllegalArgumentException("expireTime#" + expireTime);
             }
 
             return new ContractEventFilter(this);

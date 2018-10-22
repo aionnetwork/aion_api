@@ -23,7 +23,6 @@
 
 package org.aion.api;
 
-
 import org.aion.api.impl.ErrId;
 import org.aion.api.impl.internal.ApiUtils;
 
@@ -32,7 +31,6 @@ import org.aion.api.impl.internal.ApiUtils;
  *
  * @author Jay Tseng
  */
-
 public interface IUtils {
 
     /**
@@ -45,7 +43,7 @@ public interface IUtils {
     static String bytes2Hex(byte[] bytes) {
         if (bytes == null) {
             System.err.println(
-                new Throwable().getStackTrace()[0].getMethodName() + ErrId.getErrString(-313L));
+                    new Throwable().getStackTrace()[0].getMethodName() + ErrId.getErrString(-313L));
             return null;
         }
 
@@ -86,8 +84,9 @@ public interface IUtils {
             }
         }
 
-        char[] hexArray = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd',
-            'e', 'f'};
+        char[] hexArray = {
+            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
+        };
         char[] hexChars = new char[bytes.length << 1];
 
         int v;
@@ -109,7 +108,7 @@ public interface IUtils {
     static byte[] hex2Bytes(String hexstr) {
         if (hexstr == null) {
             System.err.println(
-                new Throwable().getStackTrace()[0].getMethodName() + ErrId.getErrString(-314L));
+                    new Throwable().getStackTrace()[0].getMethodName() + ErrId.getErrString(-314L));
             return null;
         }
 
@@ -117,8 +116,10 @@ public interface IUtils {
         byte[] out_arr = new byte[len / 2];
 
         for (int i = 0; i < len; i += 2) {
-            out_arr[i / 2] = (byte) ((Character.digit(hexstr.charAt(i), 16) << 4) + Character
-                .digit(hexstr.charAt(i + 1), 16));
+            out_arr[i / 2] =
+                    (byte)
+                            ((Character.digit(hexstr.charAt(i), 16) << 4)
+                                    + Character.digit(hexstr.charAt(i + 1), 16));
         }
         return out_arr;
     }
@@ -142,5 +143,4 @@ public interface IUtils {
     static byte[] sha3(byte[] in) {
         return ApiUtils.keccak(in);
     }
-
 }

@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,16 +19,12 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
-
+ */
 package org.aion.api.impl;
 
 import org.aion.api.IUtils;
 
-/**
- * Created by Jay Tseng on 14/11/16.
- */
+/** Created by Jay Tseng on 14/11/16. */
 public class Utils implements IUtils {
 
     // please call IUtils 's static method directly.

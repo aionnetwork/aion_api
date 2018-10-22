@@ -23,9 +23,8 @@
 
 package org.aion.api.sol;
 
-import org.aion.api.sol.impl.Uint;
-
 import java.util.List;
+import org.aion.api.sol.impl.Uint;
 
 /**
  * IUint is an interface of the class Uint inherited from the class SolidityAbstractType. Contains
@@ -34,8 +33,6 @@ import java.util.List;
  *
  * @author Jay Tseng
  */
-
-
 public interface IUint extends ISolidityArg {
 
     /**
@@ -73,7 +70,7 @@ public interface IUint extends ISolidityArg {
      * the list structure defined in the ABI and consist only of Bytes.
      *
      * @param l {@link java.util.List} of {@link java.lang.String}, {@link java.lang.Integer} or
-     * {@link java.lang.Long}.
+     *     {@link java.lang.Long}.
      * @return interface itself.
      */
     static IUint copyFrom(List l) {

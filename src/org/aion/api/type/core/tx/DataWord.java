@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,28 +19,25 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
-
+ */
 package org.aion.api.type.core.tx;
 
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 import org.aion.base.util.ByteArrayWrapper;
 import org.aion.base.util.ByteUtil;
 import org.aion.base.util.FastByteComparisons;
 import org.aion.base.util.Hex;
 import org.aion.base.vm.IDataWord;
 
-import java.math.BigInteger;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-
 /**
- * Data word is the basic unit data used by Fvm. The size of a data word is
- * specified to 128 bits.
+ * Data word is the basic unit data used by Fvm. The size of a data word is specified to 128 bits.
  */
 public class DataWord implements Comparable<DataWord>, IDataWord {
 
-    private static final BigInteger MAX_VALUE = BigInteger.valueOf(2).pow(128).subtract(BigInteger.ONE);
+    private static final BigInteger MAX_VALUE =
+            BigInteger.valueOf(2).pow(128).subtract(BigInteger.ONE);
 
     private static final DataWord ZERO = new DataWord(0);
     public static final DataWord ONE = new DataWord(1);
@@ -114,13 +111,11 @@ public class DataWord implements Comparable<DataWord>, IDataWord {
     }
 
     /**
-     * Converts this DataWord to an int, checking for lost information. If this
-     * DataWord is out of the possible range for an int result then an
-     * ArithmeticException is thrown.
+     * Converts this DataWord to an int, checking for lost information. If this DataWord is out of
+     * the possible range for an int result then an ArithmeticException is thrown.
      *
      * @return this DataWord converted to an int.
-     * @throws ArithmeticException
-     *             if this does not fit in an int.
+     * @throws ArithmeticException if this does not fit in an int.
      */
     private int intValue() {
         if (value().compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0) {
@@ -135,10 +130,7 @@ public class DataWord implements Comparable<DataWord>, IDataWord {
         return v;
     }
 
-    /**
-     * In case of int overflow returns Integer.MAX_VALUE otherwise works as
-     * #intValue()
-     */
+    /** In case of int overflow returns Integer.MAX_VALUE otherwise works as #intValue() */
     public int intValueSafe() {
         if (value().compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0) {
             return Integer.MAX_VALUE;
@@ -153,13 +145,11 @@ public class DataWord implements Comparable<DataWord>, IDataWord {
     }
 
     /**
-     * Converts this DataWord to a long, checking for lost information. If this
-     * DataWord is out of the possible range for a long result then an
-     * ArithmeticException is thrown.
+     * Converts this DataWord to a long, checking for lost information. If this DataWord is out of
+     * the possible range for a long result then an ArithmeticException is thrown.
      *
      * @return this DataWord converted to a long.
-     * @throws ArithmeticException
-     *             if this does not fit in a long.
+     * @throws ArithmeticException if this does not fit in a long.
      */
     long longValue() {
         if (value().compareTo(BigInteger.valueOf(Long.MAX_VALUE)) > 0) {
@@ -174,10 +164,7 @@ public class DataWord implements Comparable<DataWord>, IDataWord {
         return v;
     }
 
-    /**
-     * In case of long overflow returns Long.MAX_VALUE otherwise works as
-     * #longValue()
-     */
+    /** In case of long overflow returns Long.MAX_VALUE otherwise works as #longValue() */
     public long longValueSafe() {
         if (value().compareTo(BigInteger.valueOf(Long.MAX_VALUE)) > 0) {
             return Long.MAX_VALUE;
@@ -317,7 +304,7 @@ public class DataWord implements Comparable<DataWord>, IDataWord {
 
     public void addmod(DataWord word1, DataWord word2) {
         if (word2.isZero()) {
-            this.data = new byte[BYTES<<1];
+            this.data = new byte[BYTES << 1];
             return;
         }
 
@@ -327,7 +314,7 @@ public class DataWord implements Comparable<DataWord>, IDataWord {
 
     public void mulmod(DataWord word1, DataWord word2) {
         if (this.isZero() || word1.isZero() || word2.isZero()) {
-            this.data = new byte[BYTES<<1];
+            this.data = new byte[BYTES << 1];
             return;
         }
 
@@ -366,7 +353,6 @@ public class DataWord implements Comparable<DataWord>, IDataWord {
         DataWord dataWord = (DataWord) o;
 
         return Arrays.equals(data, dataWord.data);
-
     }
 
     @Override
@@ -379,7 +365,9 @@ public class DataWord implements Comparable<DataWord>, IDataWord {
         if (o == null || o.getData() == null) {
             return -1;
         }
-        int result = FastByteComparisons.compareTo(data, 0, data.length, o.getData(), 0, o.getData().length);
+        int result =
+                FastByteComparisons.compareTo(
+                        data, 0, data.length, o.getData(), 0, o.getData().length);
         // Convert result into -1, 0 or 1 as is the convention
         return (int) Math.signum(result);
     }
@@ -409,5 +397,4 @@ public class DataWord implements Comparable<DataWord>, IDataWord {
     public String asString() {
         return new String(getNoLeadZeroesData());
     }
-
 }

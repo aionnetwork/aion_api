@@ -23,10 +23,9 @@
 
 package org.aion.api;
 
+import java.util.List;
 import org.aion.api.type.ApiMsg;
 import org.aion.base.type.Address;
-
-import java.util.List;
 import org.aion.base.type.Hash256;
 
 /**
@@ -34,7 +33,6 @@ import org.aion.base.type.Hash256;
  *
  * @author Jay Tseng
  */
-
 public interface IAdmin {
 
     /**
@@ -42,15 +40,13 @@ public interface IAdmin {
      * string of block numbers.*
      *
      * @param blkNum the class {@link java.lang.String String} represent by the list of blocks
-     * separated by comma [,] and/or dash [-]. eg. 600-650 eg. 700,701,750 eg. 700,800-900 eg.
-     * 500-200
+     *     separated by comma [,] and/or dash [-]. eg. 600-650 eg. 700,701,750 eg. 700,800-900 eg.
+     *     500-200
      * @return the interface {@link java.util.List List} of the class {@link
-     * org.aion.api.type.BlockDetails BlockDetails} wrapped into ApiMsg. You can retrieve through
-     * the method {@link ApiMsg#getObject() getObject}.
-     * <p>
-     * The kernel will only return the first 1000 block details fit the query interval if the user
-     * query the block over the 1000 blocks
-     * </p>
+     *     org.aion.api.type.BlockDetails BlockDetails} wrapped into ApiMsg. You can retrieve
+     *     through the method {@link ApiMsg#getObject() getObject}.
+     *     <p>The kernel will only return the first 1000 block details fit the query interval if the
+     *     user query the block over the 1000 blocks
      */
     ApiMsg getBlockDetailsByNumber(String blkNum);
 
@@ -60,11 +56,9 @@ public interface IAdmin {
      *
      * @param blkNum long value represent the block number.
      * @return the class {@link org.aion.api.type.BlockDetails BlockDetails} wrapped into ApiMsg.
-     * You can retrieve through the method {@link ApiMsg#getObject() getObject}.
-     * <p>
-     * The kernel will only return the first 1000 block details fit the query interval if the user
-     * query the block over the 1000 blocks
-     * </p>
+     *     You can retrieve through the method {@link ApiMsg#getObject() getObject}.
+     *     <p>The kernel will only return the first 1000 block details fit the query interval if the
+     *     user query the block over the 1000 blocks
      */
     ApiMsg getBlockDetailsByNumber(long blkNum);
 
@@ -73,13 +67,11 @@ public interface IAdmin {
      * block hash.
      *
      * @param blockHash 32 bytes hash of the desired block wrapped into the class {@link Hash256
-     * Hash256}.
+     *     Hash256}.
      * @return the class {@link org.aion.api.type.BlockDetails BlockDetails} wrapped into ApiMsg.
-     * You can retrieve through the method {@link ApiMsg#getObject() getObject}.
-     * <p>
-     * The kernel will only return the first 1000 block details fit the query interval if the user
-     * query the block over the 1000 blocks
-     * </p>
+     *     You can retrieve through the method {@link ApiMsg#getObject() getObject}.
+     *     <p>The kernel will only return the first 1000 block details fit the query interval if the
+     *     user query the block over the 1000 blocks
      */
     ApiMsg getBlockDetailsByHash(Hash256 blockHash);
 
@@ -89,12 +81,10 @@ public interface IAdmin {
      *
      * @param blkNum the list of block numbers, it can be discontinuous.
      * @return the interface {@link java.util.List List} of the class {@link
-     * org.aion.api.type.BlockDetails BlockDetails} wrapped into ApiMsg. You can retrieve through
-     * the method {@link ApiMsg#getObject() getObject}.
-     * <p>
-     * The kernel will only return the first 1000 block details fit the query interval if the user
-     * query the block over the 1000 blocks
-     * </p>
+     *     org.aion.api.type.BlockDetails BlockDetails} wrapped into ApiMsg. You can retrieve
+     *     through the method {@link ApiMsg#getObject() getObject}.
+     *     <p>The kernel will only return the first 1000 block details fit the query interval if the
+     *     user query the block over the 1000 blocks
      */
     ApiMsg getBlockDetailsByNumber(List<Long> blkNum);
 
@@ -105,12 +95,10 @@ public interface IAdmin {
      * @param blkStart the start block number.
      * @param blkEnd the end of block number.
      * @return the interface {@link java.util.List List} of the class {@link
-     * org.aion.api.type.BlockDetails BlockDetails} wrapped into ApiMsg. You can retrieve through
-     * the method {@link ApiMsg#getObject() getObject}.
-     * <p>
-     * The kernel will only return the first 1000 block details fit the query interval if the user
-     * query the block over the 1000 blocks
-     * </p>
+     *     org.aion.api.type.BlockDetails BlockDetails} wrapped into ApiMsg. You can retrieve
+     *     through the method {@link ApiMsg#getObject() getObject}.
+     *     <p>The kernel will only return the first 1000 block details fit the query interval if the
+     *     user query the block over the 1000 blocks
      */
     ApiMsg getBlockDetailsByRange(Long blkStart, Long blkEnd);
 
@@ -119,12 +107,10 @@ public interface IAdmin {
      *
      * @param count number of blocks from latest for which to retrieve block details
      * @return the interface {@link java.util.List List} of the class {@link
-     * org.aion.api.type.BlockDetails BlockDetails} wrapped into ApiMsg. You can retrieve through
-     * the method {@link ApiMsg#getObject() getObject}.
-     * <p>
-     * The kernel will only return the first 1000 block details fit the query interval if the user
-     * query the block over the 1000 blocks
-     * </p>
+     *     org.aion.api.type.BlockDetails BlockDetails} wrapped into ApiMsg. You can retrieve
+     *     through the method {@link ApiMsg#getObject() getObject}.
+     *     <p>The kernel will only return the first 1000 block details fit the query interval if the
+     *     user query the block over the 1000 blocks
      */
     ApiMsg getBlockDetailsByLatest(Long count);
 
@@ -135,12 +121,10 @@ public interface IAdmin {
      * @param blkStart the start block number.
      * @param blkEnd the end of block number.
      * @return the interface {@link java.util.List List} of the class {@link
-     * org.aion.api.type.BlockSql BlockSql} wrapped into ApiMsg. You can retrieve through the method
-     * {@link ApiMsg#getObject() getObject}.
-     * <p>
-     * The kernel will only return the first 1000 block details fit the query interval if the user
-     * query the block over the 1000 blocks
-     * </p>
+     *     org.aion.api.type.BlockSql BlockSql} wrapped into ApiMsg. You can retrieve through the
+     *     method {@link ApiMsg#getObject() getObject}.
+     *     <p>The kernel will only return the first 1000 block details fit the query interval if the
+     *     user query the block over the 1000 blocks
      */
     ApiMsg getBlockSqlByRange(Long blkStart, Long blkEnd);
 
@@ -149,12 +133,10 @@ public interface IAdmin {
      *
      * @param count number of blocks from latest for which to retrieve block details
      * @return the interface {@link java.util.List List} of the class {@link org.aion.api.type.Block
-     * Block} wrapped into ApiMsg. You can retrieve through the method {@link ApiMsg#getObject()
-     * getObject}.
-     * <p>
-     * The kernel will only return the first 1000 block details fit the query interval if the user
-     * query the block over the 1000 blocks
-     * </p>
+     *     Block} wrapped into ApiMsg. You can retrieve through the method {@link ApiMsg#getObject()
+     *     getObject}.
+     *     <p>The kernel will only return the first 1000 block details fit the query interval if the
+     *     user query the block over the 1000 blocks
      */
     ApiMsg getBlocksByLatest(Long count);
 
@@ -162,14 +144,12 @@ public interface IAdmin {
      * Get detailed account information, given a string of addresses
      *
      * @param addresses the class {@link java.lang.String String} represent by the list of accounts
-     * separated by comma [,]. eg. 0xA,0xB,0xC ...
+     *     separated by comma [,]. eg. 0xA,0xB,0xC ...
      * @return the interface {@link java.util.List List} of the class {@link
-     * org.aion.api.type.AccountDetails AccountDetails} wrapped into ApiMsg. You can retrieve
-     * through the method {@link ApiMsg#getObject() getObject}.
-     *
-     * <p>
-     * The kernel will only return the first 1000 account details that fit the query interval.
-     * </p>
+     *     org.aion.api.type.AccountDetails AccountDetails} wrapped into ApiMsg. You can retrieve
+     *     through the method {@link ApiMsg#getObject() getObject}.
+     *     <p>The kernel will only return the first 1000 account details that fit the query
+     *     interval.
      */
     ApiMsg getAccountDetailsByAddressList(String addresses);
 
@@ -178,19 +158,18 @@ public interface IAdmin {
      *
      * @param addresses list of addresses
      * @return the interface {@link java.util.List List} of the class {@link
-     * org.aion.base.type.Address Address} wrapped into ApiMsg. You can retrieve through the method
-     * {@link ApiMsg#getObject() getObject}.
-     * <p>
-     * The kernel will only return the first 1000 account details that fit the query interval.
-     * </p>
+     *     org.aion.base.type.Address Address} wrapped into ApiMsg. You can retrieve through the
+     *     method {@link ApiMsg#getObject() getObject}.
+     *     <p>The kernel will only return the first 1000 account details that fit the query
+     *     interval.
      */
     ApiMsg getAccountDetailsByAddressList(List<Address> addresses);
 
-    ///**
+    /// **
     // * Retrieves system information including DB size. CPU & Memory usage
     // *
     // * @return the {@link Types.SystemInfo SystemInfo} format wrapped into ApiMsg.
     // * You can retrieve through {@link ApiMsg#getObject() getObject}.
     // */
-    //ApiMsg getSystemInfo();
+    // ApiMsg getSystemInfo();
 }

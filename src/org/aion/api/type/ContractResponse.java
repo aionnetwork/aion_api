@@ -21,7 +21,6 @@
  *     Aion foundation.
  */
 
-
 package org.aion.api.type;
 
 import java.util.List;
@@ -38,8 +37,6 @@ import org.aion.base.util.ByteArrayWrapper;
  * @author Jay Tseng
  * @see org.aion.api.IContract#execute() execute
  */
-
-
 public final class ContractResponse {
 
     private final boolean constant;
@@ -59,10 +56,13 @@ public final class ContractResponse {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("constant: ").append(String.valueOf(constant)).append(",\n")
-            .append("data: ").append("\n");
+        sb.append("constant: ")
+                .append(String.valueOf(constant))
+                .append(",\n")
+                .append("data: ")
+                .append("\n");
 
         int cnt = data.size();
         for (Object o : data) {
@@ -75,15 +75,22 @@ public final class ContractResponse {
             sb.append("\n");
         }
 
-        sb.append("transactionHash: ").append(txHash.toString()).append(",\n")
-            .append("status: ").append(statusToString()).append(",\n")
-            .append("error: ").append(error).append("\n");
+        sb.append("transactionHash: ")
+                .append(txHash.toString())
+                .append(",\n")
+                .append("status: ")
+                .append(statusToString())
+                .append(",\n")
+                .append("error: ")
+                .append(error)
+                .append("\n");
 
         return sb.toString();
     }
 
     /**
      * The helper function for get detailed Contract transaction processing information.
+     *
      * @return return a the class {@link java.lang.String String} represent the status.
      */
     public final String statusToString() {
@@ -149,6 +156,7 @@ public final class ContractResponse {
      * The helper function to check the number of pending transactions stored in the API has reached
      * the limitation of the transaction pool. If yes, the user should stop sending transactions to
      * the kernel.
+     *
      * @return return a boolean value represent the pending transaction reach the client API limit.
      */
     public boolean hitTxPendingPoolLimit() {
@@ -187,9 +195,7 @@ public final class ContractResponse {
         return error != null && !error.isEmpty();
     }
 
-    /**
-     * This Builder class is used to build a {@link ContractResponse} instance.
-     */
+    /** This Builder class is used to build a {@link ContractResponse} instance. */
     public static class ContractResponseBuilder {
 
         private boolean constant;
@@ -199,8 +205,7 @@ public final class ContractResponse {
         private ByteArrayWrapper msgHash;
         private String error;
 
-        public ContractResponseBuilder() {
-        }
+        public ContractResponseBuilder() {}
 
         public ContractResponse.ContractResponseBuilder constant(final boolean constant) {
             this.constant = constant;
@@ -240,14 +245,16 @@ public final class ContractResponse {
 
             if (data == null || txHash == null || msgHash == null) {
                 throw new NullPointerException(
-                    "data#" + String.valueOf(data) +
-                        " txHash#" + String.valueOf(txHash) +
-                        " msgHash#" + String.valueOf(msgHash));
+                        "data#"
+                                + String.valueOf(data)
+                                + " txHash#"
+                                + String.valueOf(txHash)
+                                + " msgHash#"
+                                + String.valueOf(msgHash));
             }
 
             if (msgHash.getData().length != ApiUtils.MSG_HASH_LEN) {
-                throw new IllegalArgumentException(
-                    "msgHash#" + msgHash.getData().length);
+                throw new IllegalArgumentException("msgHash#" + msgHash.getData().length);
             }
 
             return new ContractResponse(this);

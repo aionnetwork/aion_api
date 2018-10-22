@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,15 +19,11 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
-
+ */
 package org.aion.api.cfg;
 
-
-/**
- * Created by Jay Tseng on 18/04/17.
- */ public class CfgConnect {
+/** Created by Jay Tseng on 18/04/17. */
+public class CfgConnect {
 
     private String ip;
     private int port;

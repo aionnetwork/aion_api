@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,9 +19,7 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
-
+ */
 package org.aion.api.keccak;
 
 import java.math.BigInteger;
@@ -32,23 +30,43 @@ public class Keccak {
 
     private static BigInteger BIT_64 = new BigInteger("18446744073709551615");
 
-    private BigInteger[] RC = new BigInteger[] { new BigInteger("0000000000000001", 16),
-            new BigInteger("0000000000008082", 16), new BigInteger("800000000000808A", 16),
-            new BigInteger("8000000080008000", 16), new BigInteger("000000000000808B", 16),
-            new BigInteger("0000000080000001", 16), new BigInteger("8000000080008081", 16),
-            new BigInteger("8000000000008009", 16), new BigInteger("000000000000008A", 16),
-            new BigInteger("0000000000000088", 16), new BigInteger("0000000080008009", 16),
-            new BigInteger("000000008000000A", 16), new BigInteger("000000008000808B", 16),
-            new BigInteger("800000000000008B", 16), new BigInteger("8000000000008089", 16),
-            new BigInteger("8000000000008003", 16), new BigInteger("8000000000008002", 16),
-            new BigInteger("8000000000000080", 16), new BigInteger("000000000000800A", 16),
-            new BigInteger("800000008000000A", 16), new BigInteger("8000000080008081", 16),
-            new BigInteger("8000000000008080", 16), new BigInteger("0000000080000001", 16),
-            new BigInteger("8000000080008008", 16) };
+    private BigInteger[] RC =
+            new BigInteger[] {
+                new BigInteger("0000000000000001", 16),
+                new BigInteger("0000000000008082", 16),
+                new BigInteger("800000000000808A", 16),
+                new BigInteger("8000000080008000", 16),
+                new BigInteger("000000000000808B", 16),
+                new BigInteger("0000000080000001", 16),
+                new BigInteger("8000000080008081", 16),
+                new BigInteger("8000000000008009", 16),
+                new BigInteger("000000000000008A", 16),
+                new BigInteger("0000000000000088", 16),
+                new BigInteger("0000000080008009", 16),
+                new BigInteger("000000008000000A", 16),
+                new BigInteger("000000008000808B", 16),
+                new BigInteger("800000000000008B", 16),
+                new BigInteger("8000000000008089", 16),
+                new BigInteger("8000000000008003", 16),
+                new BigInteger("8000000000008002", 16),
+                new BigInteger("8000000000000080", 16),
+                new BigInteger("000000000000800A", 16),
+                new BigInteger("800000008000000A", 16),
+                new BigInteger("8000000080008081", 16),
+                new BigInteger("8000000000008080", 16),
+                new BigInteger("0000000080000001", 16),
+                new BigInteger("8000000080008008", 16)
+            };
 
     //	The rotation offsets r[x,y].
-    private int[][] r = new int[][] { { 0, 36, 3, 41, 18 }, { 1, 44, 10, 45, 2 }, { 62, 6, 43, 15, 61 },
-            { 28, 55, 25, 21, 56 }, { 27, 20, 39, 8, 14 } };
+    private int[][] r =
+            new int[][] {
+                {0, 36, 3, 41, 18},
+                {1, 44, 10, 45, 2},
+                {62, 6, 43, 15, 61},
+                {28, 55, 25, 21, 56},
+                {27, 20, 39, 8, 14}
+            };
 
     private int w;
     private int n;
@@ -120,7 +138,7 @@ public class Keccak {
         BigInteger[] D = new BigInteger[5];
         BigInteger[][] B = new BigInteger[5][5];
 
-        //θ step
+        // θ step
         for (int i = 0; i < 5; i++) {
             C[i] = A[i][0].xor(A[i][1]).xor(A[i][2]).xor(A[i][3]).xor(A[i][4]);
         }
@@ -135,20 +153,20 @@ public class Keccak {
             }
         }
 
-        //ρ and π steps
+        // ρ and π steps
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
                 B[j][(2 * i + 3 * j) % 5] = rot(A[i][j], r[i][j]);
             }
         }
-        //χ step
+        // χ step
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
                 A[i][j] = B[i][j].xor(B[(i + 1) % 5][j].not().and(B[(i + 2) % 5][j]));
             }
         }
 
-        //ι step
+        // ι step
         A[0][0] = A[0][0].xor(RC);
 
         return A;
@@ -217,7 +235,6 @@ public class Keccak {
                 arrayM[i][j] = new BigInteger(revertString, 16);
                 j++;
             }
-
         }
 
         return arrayM;

@@ -23,15 +23,14 @@
 
 package org.aion.api.type;
 
-import org.aion.base.type.Address;
 import java.math.BigInteger;
+import org.aion.base.type.Address;
 
 /**
  * AccountDetails class containing all relevant information identifying an account
  *
  * @author Ali Sharif
  */
-
 public final class AccountDetails {
 
     private final Address address;
@@ -50,16 +49,13 @@ public final class AccountDetails {
         return balance;
     }
 
-    /**
-     * This Builder class is used to build a {@link AccountDetails } instance.
-     */
+    /** This Builder class is used to build a {@link AccountDetails } instance. */
     public static class AccountDetailsBuilder {
 
         private Address address;
         private BigInteger balance;
 
-        public AccountDetailsBuilder() {
-        }
+        public AccountDetailsBuilder() {}
 
         public AccountDetailsBuilder address(final Address address) {
             this.address = address;
@@ -74,7 +70,10 @@ public final class AccountDetails {
         public AccountDetails createAccountDetails() {
             if (address == null || balance == null) {
                 throw new NullPointerException(
-                    "Address#" + String.valueOf(address) + " Balance#" + String.valueOf(balance));
+                        "Address#"
+                                + String.valueOf(address)
+                                + " Balance#"
+                                + String.valueOf(balance));
             }
 
             return new AccountDetails(this);

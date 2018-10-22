@@ -23,11 +23,10 @@
 
 package org.aion.api.type;
 
+import java.math.BigInteger;
 import org.aion.api.ITx;
 import org.aion.base.type.Address;
 import org.aion.base.util.ByteArrayWrapper;
-
-import java.math.BigInteger;
 import org.aion.base.util.Bytesable;
 
 /**
@@ -38,7 +37,6 @@ import org.aion.base.util.Bytesable;
  * @see org.aion.api.ITx#contractDeploy contractDeploy
  * @see org.aion.api.type.CompileResponse CompileResponse
  */
-
 public final class ContractDeploy {
 
     private final CompileResponse cr;
@@ -87,8 +85,6 @@ public final class ContractDeploy {
         return constructor;
     }
 
-
-
     public static class ContractDeployBuilder {
 
         private CompileResponse cr;
@@ -99,13 +95,11 @@ public final class ContractDeploy {
         private long nrgPrice;
         private BigInteger value;
 
-        public ContractDeployBuilder() {
-        }
+        public ContractDeployBuilder() {}
 
         public ContractDeploy createContractDeploy() {
-            if (cr == null)  {
-                throw new NullPointerException(
-                    "CompileResponse is null");
+            if (cr == null) {
+                throw new NullPointerException("CompileResponse is null");
             }
 
             if (value == null) {
@@ -126,7 +120,7 @@ public final class ContractDeploy {
 
             if (nrgLimit < ITx.NRG_LIMIT_TX_MIN || nrgPrice < ITx.NRG_PRICE_MIN) {
                 throw new IllegalArgumentException(
-                    "nrgConsumed#" + nrgLimit + " nrgPrice#" + nrgPrice);
+                        "nrgConsumed#" + nrgLimit + " nrgPrice#" + nrgPrice);
             }
 
             return new ContractDeploy(this);

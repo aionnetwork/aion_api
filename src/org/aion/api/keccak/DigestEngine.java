@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,25 +19,24 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
-
+ */
 package org.aion.api.keccak;
 
 /**
+ * This class is a template which can be used to implement hash functions. It takes care of some of
+ * the API, and also provides an internal data buffer whose length is equal to the hash function
+ * internal block length.
+ *
  * <p>
- * This class is a template which can be used to implement hash functions. It
- * takes care of some of the API, and also provides an internal data buffer
- * whose length is equal to the hash function internal block length.</p>
+ *
+ * <p>Classes which use this template MUST provide a working {@link #getBlockLength} method even
+ * before initialization (alternatively, they may define a custom {@link #getInternalBlockLength}
+ * which does not call {@link #getBlockLength}. The {@link #getDigestLength} should also be
+ * operational from the beginning, but it is acceptable that it returns 0 while the {@link #doInit}
+ * method has not been called yet.
+ *
  * <p>
- * <p>
- * Classes which use this template MUST provide a working {@link
- * #getBlockLength} method even before initialization (alternatively, they may
- * define a custom {@link #getInternalBlockLength} which does not call
- * {@link #getBlockLength}. The {@link #getDigestLength} should also be
- * operational from the beginning, but it is acceptable that it returns 0 while
- * the {@link #doInit} method has not been called yet.</p>
- * <p>
+ *
  * <pre>
  * ==========================(LICENSE BEGIN)============================
  *
@@ -74,9 +73,7 @@ public abstract class DigestEngine implements Digest {
     private byte[] inputBuf, outputBuf;
     private long blockCount;
 
-    /**
-     * Instantiate the engine.
-     */
+    /** Instantiate the engine. */
     DigestEngine() {
         doInit();
         digestLen = getDigestLength();
@@ -88,20 +85,18 @@ public abstract class DigestEngine implements Digest {
     }
 
     /**
-     * This function is called at object creation time; the implementation
-     * should use it to perform initialization tasks. After this method is
-     * called, the implementation should be ready to process data or
-     * meaningfully honour calls such as {@link #getDigestLength}.
+     * This function is called at object creation time; the implementation should use it to perform
+     * initialization tasks. After this method is called, the implementation should be ready to
+     * process data or meaningfully honour calls such as {@link #getDigestLength}.
      */
     protected abstract void doInit();
 
     /**
-     * Get the internal block length. This is the length (in bytes) of the array
-     * which will be passed as parameter to {@link #processBlock}. The default
-     * implementation of this method calls {@link #getBlockLength} and returns
-     * the same value. Overriding this method is useful when the advertised
-     * block length (which is used, for instance, by HMAC) is suboptimal with
-     * regards to internal buffering needs.
+     * Get the internal block length. This is the length (in bytes) of the array which will be
+     * passed as parameter to {@link #processBlock}. The default implementation of this method calls
+     * {@link #getBlockLength} and returns the same value. Overriding this method is useful when the
+     * advertised block length (which is used, for instance, by HMAC) is suboptimal with regards to
+     * internal buffering needs.
      *
      * @return the internal block length (in bytes)
      */
@@ -109,9 +104,7 @@ public abstract class DigestEngine implements Digest {
         return getBlockLength();
     }
 
-    /**
-     * @see Digest
-     */
+    /** @see Digest */
     public void update(byte input) {
         inputBuf[inputLen++] = input;
         if (inputLen == blockLen) {
@@ -121,16 +114,12 @@ public abstract class DigestEngine implements Digest {
         }
     }
 
-    /**
-     * @see Digest
-     */
+    /** @see Digest */
     public void update(byte[] input) {
         update(input, 0, input.length);
     }
 
-    /**
-     * @see Digest
-     */
+    /** @see Digest */
     public void update(byte[] input, int offset, int len) {
         while (len > 0) {
             int copyLen = blockLen - inputLen;
@@ -149,9 +138,7 @@ public abstract class DigestEngine implements Digest {
         }
     }
 
-    /**
-     * @see Digest
-     */
+    /** @see Digest */
     public byte[] digest() {
         adjustDigestLen();
         byte[] result = new byte[digestLen];
@@ -159,9 +146,7 @@ public abstract class DigestEngine implements Digest {
         return result;
     }
 
-    /**
-     * @see Digest
-     */
+    /** @see Digest */
     public byte[] digest(byte[] input) {
         update(input, 0, input.length);
         return digest();
@@ -175,25 +160,19 @@ public abstract class DigestEngine implements Digest {
     }
 
     /**
-     * Perform the final padding and store the result in the provided buffer.
-     * This method shall call {@link #flush} and then {@link #update} with the
-     * appropriate padding data in order to get the full input data.
+     * Perform the final padding and store the result in the provided buffer. This method shall call
+     * {@link #flush} and then {@link #update} with the appropriate padding data in order to get the
+     * full input data.
      *
-     * @param buf
-     *         the output buffer
-     * @param off
-     *         the output offset
+     * @param buf the output buffer
+     * @param off the output offset
      */
     protected abstract void doPadding(byte[] buf, int off);
 
-    /**
-     * Reset the hash algorithm state.
-     */
+    /** Reset the hash algorithm state. */
     protected abstract void engineReset();
 
-    /**
-     * @see Digest
-     */
+    /** @see Digest */
     public int digest(byte[] buf, int offset, int len) {
         adjustDigestLen();
         if (len >= digestLen) {
@@ -208,9 +187,7 @@ public abstract class DigestEngine implements Digest {
         }
     }
 
-    /**
-     * @see Digest
-     */
+    /** @see Digest */
     public void reset() {
         engineReset();
         inputLen = 0;
@@ -220,14 +197,12 @@ public abstract class DigestEngine implements Digest {
     /**
      * Process one block of data.
      *
-     * @param data
-     *         the data block
+     * @param data the data block
      */
     protected abstract void processBlock(byte[] data);
 
     /**
-     * Flush internal buffers, so that less than a block of data may at most be
-     * upheld.
+     * Flush internal buffers, so that less than a block of data may at most be upheld.
      *
      * @return the number of bytes still unprocessed after the flush
      */
@@ -236,12 +211,11 @@ public abstract class DigestEngine implements Digest {
     }
 
     /**
-     * Get a reference to an internal buffer with the same size than a block.
-     * The contents of that buffer are defined only immediately after a call to
-     * {@link #flush()}: if {@link #flush()} return the value {@code n}, then
-     * the first {@code n} bytes of the array returned by this method are the
-     * {@code n} bytes of input data which are still unprocessed. The values of
-     * the remaining bytes are undefined and may be altered at will.
+     * Get a reference to an internal buffer with the same size than a block. The contents of that
+     * buffer are defined only immediately after a call to {@link #flush()}: if {@link #flush()}
+     * return the value {@code n}, then the first {@code n} bytes of the array returned by this
+     * method are the {@code n} bytes of input data which are still unprocessed. The values of the
+     * remaining bytes are undefined and may be altered at will.
      *
      * @return a block-sized internal buffer
      */
@@ -250,10 +224,9 @@ public abstract class DigestEngine implements Digest {
     }
 
     /**
-     * Get the "block count": this is the number of times the
-     * {@link #processBlock} method has been invoked for the current hash
-     * operation. That counter is incremented
-     * <em>after</em> the call to {@link #processBlock}.
+     * Get the "block count": this is the number of times the {@link #processBlock} method has been
+     * invoked for the current hash operation. That counter is incremented <em>after</em> the call
+     * to {@link #processBlock}.
      *
      * @return the block count
      */
@@ -262,13 +235,11 @@ public abstract class DigestEngine implements Digest {
     }
 
     /**
-     * This function copies the internal buffering state to some other instance
-     * of a class extending {@code DigestEngine}. It returns a reference to the
-     * copy. This method is intended to be called by the implementation of the
-     * {@link #copy} method.
+     * This function copies the internal buffering state to some other instance of a class extending
+     * {@code DigestEngine}. It returns a reference to the copy. This method is intended to be
+     * called by the implementation of the {@link #copy} method.
      *
-     * @param dest
-     *         the copy
+     * @param dest the copy
      * @return the value {@code dest}
      */
     Digest copyState(DigestEngine dest) {

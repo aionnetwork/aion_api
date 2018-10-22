@@ -21,7 +21,6 @@
  *     Aion foundation.
  */
 
-
 package org.aion.api.type;
 
 import org.aion.base.type.Address;
@@ -34,7 +33,6 @@ import org.aion.base.type.Hash256;
  *
  * @author Jay Tseng
  */
-
 public final class DeployResponse {
 
     private final Address address;

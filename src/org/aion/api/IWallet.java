@@ -31,15 +31,14 @@ import org.aion.base.type.Address;
  *
  * @author Jay Tseng
  */
-
 public interface IWallet {
 
     /**
      * Retrieves a list of accounts currently available on the local node.
      *
      * @return the interface {@link java.util.List List} of the class {@link Address Address}
-     * represent the public address of the return accounts wrapped into ApiMsg. You can retrieve
-     * through the method {@link ApiMsg#getObject() getObject}.
+     *     represent the public address of the return accounts wrapped into ApiMsg. You can retrieve
+     *     through the method {@link ApiMsg#getObject() getObject}.
      */
     ApiMsg getAccounts();
 
@@ -48,9 +47,9 @@ public interface IWallet {
      *
      * @param acc the class {@link Address Address} represent the account address.
      * @param passphrase the class {@link java.lang.String String} represent the passphrase of the
-     * account.
+     *     account.
      * @return a Boolean indicating the success of the unlock wrapped into ApiMsg. You can retrieve
-     * through this method {@link ApiMsg#getObject() getObject}.
+     *     through this method {@link ApiMsg#getObject() getObject}.
      */
     ApiMsg unlockAccount(Address acc, String passphrase);
 
@@ -60,11 +59,11 @@ public interface IWallet {
      *
      * @param acc the class {@link Address Address} represent the account address.
      * @param passphrase the class {@link java.lang.String String} represent the passphrase of the
-     * account.
+     *     account.
      * @param duration the duration by int value that account stays unlocked (seconds). If the
-     * duration set more then 86400 (1 day), if the kernel will unlock the given account 1 day.
+     *     duration set more then 86400 (1 day), if the kernel will unlock the given account 1 day.
      * @return returns a Boolean indicating the success of the unlock wrapped into ApiMsg. You can
-     * retrieve through the method {@link ApiMsg#getObject() getObject}.
+     *     retrieve through the method {@link ApiMsg#getObject() getObject}.
      */
     ApiMsg unlockAccount(Address acc, String passphrase, int duration);
 
@@ -73,8 +72,8 @@ public interface IWallet {
      * utilized when isMining.
      *
      * @return the class {@link Address Address} represent the miner's account address of the
-     * connected Aion kernel wrapped into ApiMsg. You can retrieve through the method {@link
-     * ApiMsg#getObject() getObject}.
+     *     connected Aion kernel wrapped into ApiMsg. You can retrieve through the method {@link
+     *     ApiMsg#getObject() getObject}.
      */
     ApiMsg getMinerAccount();
 
@@ -83,7 +82,7 @@ public interface IWallet {
      *
      * @param acc the class {@link Address Address} represent the account address.
      * @return a Boolean value indicating the success of account set wrapped into ApiMsg. You can
-     * retrieve through {@link ApiMsg#getObject() getObject}.
+     *     retrieve through {@link ApiMsg#getObject() getObject}.
      */
     ApiMsg setDefaultAccount(Address acc);
 
@@ -91,8 +90,8 @@ public interface IWallet {
      * Returns the default account of the user latest set.
      *
      * @return the class {@link Address Address} represent the default account of the user latest
-     * set wrapped into ApiMsg. You can retrieve through the method {@link ApiMsg#getObject()
-     * getObject}.
+     *     set wrapped into ApiMsg. You can retrieve through the method {@link ApiMsg#getObject()
+     *     getObject}.
      */
     ApiMsg getDefaultAccount();
 
@@ -101,9 +100,9 @@ public interface IWallet {
      *
      * @param acc the class {@link Address Address} represent the account address.
      * @param passphrase the class {@link java.lang.String String} represent the passphrase of the
-     * account.
+     *     account.
      * @return a Boolean indicating the success of the unlock wrapped into ApiMsg. You can retrieve
-     * through this method {@link ApiMsg#getObject() getObject}.
+     *     through this method {@link ApiMsg#getObject() getObject}.
      */
     ApiMsg lockAccount(Address acc, String passphrase);
 }

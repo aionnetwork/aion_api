@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,28 +19,30 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
-
+ */
 package org.aion.api.sol.impl;
 
-/**
- * Created by Jay Tseng on 05/10/16.
- */
+/** Created by Jay Tseng on 05/10/16. */
 public final class SolidityValue {
 
-    /**
-     * Internal enumeration used in {@link SolidityAbstractType} to determine
-     * the solidity type.
-     */
+    /** Internal enumeration used in {@link SolidityAbstractType} to determine the solidity type. */
     public enum SolidityTypeEnum {
-        ADDRESS, BOOL, BYTES, DYNAMICBYTES, INT, REAL, STRING, UINT, UREAL
+        ADDRESS,
+        BOOL,
+        BYTES,
+        DYNAMICBYTES,
+        INT,
+        REAL,
+        STRING,
+        UINT,
+        UREAL
     }
 
-    /**
-     * Internal enum used to determine the the status of the solidity type.
-     */
+    /** Internal enum used to determine the the status of the solidity type. */
     public enum SolidityArgsType {
-        STATIC, DYNAMIC, DYNAMICARRAY, STATICARRAY
+        STATIC,
+        DYNAMIC,
+        DYNAMICARRAY,
+        STATICARRAY
     }
 }

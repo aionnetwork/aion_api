@@ -21,7 +21,6 @@
  *     Aion foundation.
  */
 
-
 package org.aion.api.type;
 
 /**
@@ -30,7 +29,6 @@ package org.aion.api.type;
  * @author Jay Tseng
  * @see org.aion.api.INet#getActiveNodes() getActiveNodes
  */
-
 public final class Node {
 
     private final long blockNumber;
@@ -67,9 +65,7 @@ public final class Node {
         return p2pIP;
     }
 
-    /**
-     * This Builder class is used to build a {@link Node} instance.
-     */
+    /** This Builder class is used to build a {@link Node} instance. */
     public static class NodeBuilder {
 
         private long blockNumber;
@@ -78,8 +74,7 @@ public final class Node {
         private String nodeId;
         private String p2pIP;
 
-        public NodeBuilder() {
-        }
+        public NodeBuilder() {}
 
         public Node.NodeBuilder blockNumber(final long blockNumber) {
             this.blockNumber = blockNumber;
@@ -109,15 +104,12 @@ public final class Node {
         public Node createNode() {
             if (nodeId == null || p2pIP == null) {
                 throw new NullPointerException(
-                    "NodeId#" + String.valueOf(nodeId) +
-                        " P2pIP#" + String.valueOf(p2pIP));
+                        "NodeId#" + String.valueOf(nodeId) + " P2pIP#" + String.valueOf(p2pIP));
             }
 
             if (blockNumber < 0 || p2pPort < 0 || latency < 0) {
                 throw new IllegalArgumentException(
-                    "Block#" + blockNumber +
-                        " P2pPort#" + p2pPort +
-                        " Latency#" + latency);
+                        "Block#" + blockNumber + " P2pPort#" + p2pPort + " Latency#" + latency);
             }
 
             return new Node(this);

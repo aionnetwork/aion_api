@@ -21,13 +21,11 @@
  *     Aion foundation.
  */
 
-
 package org.aion.api.type;
 
+import java.util.List;
 import org.aion.base.type.Address;
 import org.aion.base.util.ByteArrayWrapper;
-
-import java.util.List;
 
 /**
  * TxLog class containing all relevant information to transaction log utilized by {@link
@@ -36,7 +34,6 @@ import java.util.List;
  * @author Jay Tseng
  * @see org.aion.api.type.TxReceipt TxReceipt
  */
-
 public final class TxLog {
 
     private final Address address;
@@ -62,11 +59,24 @@ public final class TxLog {
             lv.append("  ");
         }
 
-        StringBuilder sb = new StringBuilder()
-            .append(lv).append("address: ").append("0x").append(address.toString()).append(",\n")
-            .append(lv).append("data: ").append("0x").append(data.toString()).append(",\n")
-            .append(lv).append("topics: ").append("\n")
-            .append(lv).append("[").append("\n");
+        StringBuilder sb =
+                new StringBuilder()
+                        .append(lv)
+                        .append("address: ")
+                        .append("0x")
+                        .append(address.toString())
+                        .append(",\n")
+                        .append(lv)
+                        .append("data: ")
+                        .append("0x")
+                        .append(data.toString())
+                        .append(",\n")
+                        .append(lv)
+                        .append("topics: ")
+                        .append("\n")
+                        .append(lv)
+                        .append("[")
+                        .append("\n");
 
         int cnt = topics.size();
         for (String s : topics) {
@@ -94,4 +104,3 @@ public final class TxLog {
         return topics;
     }
 }
-

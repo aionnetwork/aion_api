@@ -29,9 +29,7 @@ import org.aion.api.sol.impl.DynamicBytes;
 import org.aion.api.sol.impl.Uint;
 import org.junit.Test;
 
-/**
- * Created by Jay Tseng on 15/12/16.
- */
+/** Created by Jay Tseng on 15/12/16. */
 public class MiscTests {
 
     @Test
@@ -51,5 +49,4 @@ public class MiscTests {
         System.out.println(bytes.isType("bytes128"));
         System.out.println(bytes.isType("bytes"));
     }
-
 }

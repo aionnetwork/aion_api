@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,16 +19,14 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
-
+ */
 package org.aion.api.keccak;
 
 /**
+ * This class implements the KeccakHash-256 digest algorithm under the {@link Digest} API.
+ *
  * <p>
- * This class implements the KeccakHash-256 digest algorithm under the
- * {@link Digest} API.</p>
- * <p>
+ *
  * <pre>
  * ==========================(LICENSE BEGIN)============================
  *
@@ -61,22 +59,15 @@ package org.aion.api.keccak;
  */
 public class Keccak256 extends KeccakCore {
 
-    /**
-     * Create the engine.
-     */
-    public Keccak256() {
-    }
+    /** Create the engine. */
+    public Keccak256() {}
 
-    /**
-     * @see Digest
-     */
+    /** @see Digest */
     public int getDigestLength() {
         return 32;
     }
 
-    /**
-     * @see Digest
-     */
+    /** @see Digest */
     public Digest copy() {
         return copyState(new Keccak256());
     }

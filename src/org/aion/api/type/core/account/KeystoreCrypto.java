@@ -43,8 +43,13 @@ public class KeystoreCrypto {
         byte[] bytesMac = RLP.encodeString(this.mac);
         byte[] bytesCipherParams = RLP.encodeElement(this.cipherParams.toRlp());
         byte[] bytesKdfParams = RLP.encodeElement(this.kdfParams.toRlp());
-        return RLP.encodeList(bytesCipher, bytesCipherText, bytesKdf, bytesMac, bytesCipherParams,
-            bytesKdfParams);
+        return RLP.encodeList(
+                bytesCipher,
+                bytesCipherText,
+                bytesKdf,
+                bytesMac,
+                bytesCipherParams,
+                bytesKdfParams);
     }
 
     public static KeystoreCrypto parse(byte[] bytes) throws UnsupportedEncodingException {
