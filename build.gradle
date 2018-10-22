@@ -80,10 +80,17 @@ if(rootProject.name != AION_PROJECT_NAME) {
 }
 
 dependencies { 
-    compile files("./mod/modAionBase.jar");
-    compile files("./mod/modCrypto.jar");
-    compile files("./mod/modLogger.jar");
-    compile files("./mod/modRlp.jar");
+    if(rootProject.name == AION_PROJECT_NAME) { 
+        compile project(':modAionBase')
+        compile project(':modCrypto')
+        compile project(':modLogger')
+        compile project(':modRlp')
+    } else {
+        compile files("./mod/modAionBase.jar");
+        compile files("./mod/modCrypto.jar");
+        compile files("./mod/modLogger.jar");
+        compile files("./mod/modRlp.jar");
+    }
     compile files("./lib/libnzmq.jar")
     compile files("./lib/libnsc.jar")
     compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.0'
