@@ -4,6 +4,10 @@ ext.moduleName = 'aion.api.client'
 apply plugin: 'java'
 apply plugin: 'idea'
 
+targetCompatibility = 10
+sourceCompatibility = 10
+
+
 /** 
  * Name of Aion root project (not aion_api); used to detect if we're being called with 
  * as a subproject or root project. 
