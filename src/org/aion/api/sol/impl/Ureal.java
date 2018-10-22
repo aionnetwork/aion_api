@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,23 +19,18 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
-
+ */
 package org.aion.api.sol.impl;
-
-import org.aion.api.impl.ErrId;
-import org.aion.api.impl.internal.ApiUtils;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
+import org.aion.api.impl.ErrId;
+import org.aion.api.impl.internal.ApiUtils;
 
-/**
- * Created by yao on 20/09/16.
- */
+/** Created by yao on 20/09/16. */
 public final class Ureal extends SolidityAbstractType {
 
     private Ureal(List in) {
@@ -65,7 +60,7 @@ public final class Ureal extends SolidityAbstractType {
     private static byte[] formatInputReal(double input) {
         double mult = input * (Math.pow(2, 128));
 
-        //TODO: Verify precision
+        // TODO: Verify precision
         byte[] bytes = new byte[8];
         ByteBuffer.wrap(bytes).putDouble(mult);
 

@@ -23,9 +23,8 @@
 
 package org.aion.api.sol;
 
-import org.aion.api.sol.impl.Bool;
-
 import java.util.List;
+import org.aion.api.sol.impl.Bool;
 
 /**
  * IBool is an interface of the class Bool inherited from SolidityAbstractType. Used for function
@@ -33,8 +32,6 @@ import java.util.List;
  *
  * @author Jay Tseng
  */
-
-
 public interface IBool extends ISolidityArg {
 
     /**

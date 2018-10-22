@@ -31,7 +31,6 @@ import org.aion.api.sol.impl.DynamicBytes;
  *
  * @author Jay Tseng
  */
-
 public interface IDynamicBytes extends ISolidityArg {
 
     /**

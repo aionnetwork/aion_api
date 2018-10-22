@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,16 +19,24 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
-
+ */
 package org.aion.api.log;
 
-/**
- * Created by Jay Tseng on 23/03/17.
- */
+/** Created by Jay Tseng on 23/03/17. */
 public enum LogEnum {
-    GEN, BSE, CHN, CNT, MNE, NET, TRX, UTL, WLT, EXE, ADM, SOL, ACC;  // discover
+    GEN,
+    BSE,
+    CHN,
+    CNT,
+    MNE,
+    NET,
+    TRX,
+    UTL,
+    WLT,
+    EXE,
+    ADM,
+    SOL,
+    ACC; // discover
 
     public static boolean contains(String _module) {
         for (LogEnum module : values())

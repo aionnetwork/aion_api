@@ -94,8 +94,10 @@ public class ContractTests {
         BigInteger balance = apiMsg.getObject();
         assertNotNull(balance);
 
-        return balance.compareTo(BigInteger.valueOf(ITx.NRG_LIMIT_CONTRACT_CREATE_MAX)
-            .multiply(BigInteger.valueOf(ITx.NRG_PRICE_MIN))) > 0;
+        return balance.compareTo(
+                        BigInteger.valueOf(ITx.NRG_LIMIT_CONTRACT_CREATE_MAX)
+                                .multiply(BigInteger.valueOf(ITx.NRG_PRICE_MIN)))
+                > 0;
     }
 
     @Before
@@ -130,8 +132,9 @@ public class ContractTests {
 
         String tc = readFile("testContract.sol");
 
-        apiMsg = api.getContractController()
-            .createFromSource(tc, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
+        apiMsg =
+                api.getContractController()
+                        .createFromSource(tc, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
         assertFalse(apiMsg.isError());
 
         IContract contract = api.getContractController().getContract();
@@ -142,7 +145,6 @@ public class ContractTests {
         assertEquals(8, contract.getAbiDefinition().size());
         api.destroyApi();
     }
-
 
     @Test(timeout = 180000)
     public void TestCreateContract2() {
@@ -170,8 +172,9 @@ public class ContractTests {
 
         String tc = readFile("byteArrayMap.sol");
 
-        apiMsg = api.getContractController()
-            .createFromSource(tc, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
+        apiMsg =
+                api.getContractController()
+                        .createFromSource(tc, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
         assertFalse(apiMsg.isError());
 
         IContract contract = api.getContractController().getContract();
@@ -210,8 +213,9 @@ public class ContractTests {
 
         String tc = readFile("testContract.sol");
 
-        apiMsg = api.getContractController()
-            .createFromSource(tc, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
+        apiMsg =
+                api.getContractController()
+                        .createFromSource(tc, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
         assertFalse(apiMsg.isError());
 
         IContract ct = api.getContractController().getContract();
@@ -221,8 +225,7 @@ public class ContractTests {
 
         String abiDef = readFile("testContract.abi");
 
-        IContract ctAt = api.getContractController()
-            .getContractAt(acc, ctAddr, abiDef);
+        IContract ctAt = api.getContractController().getContractAt(acc, ctAddr, abiDef);
 
         assertFalse(ctAt.error());
 
@@ -260,19 +263,21 @@ public class ContractTests {
         assertTrue(apiMsg.getObject());
 
         String sc = readFile("solTypes.sol");
-        apiMsg = api.getContractController()
-            .createFromSource(sc, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
+        apiMsg =
+                api.getContractController()
+                        .createFromSource(sc, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
         assertFalse(apiMsg.isError());
 
         IContract ct = api.getContractController().getContract();
         assertEquals(ct.getFrom(), acc);
         assertNotNull(ct.getContractAddress());
 
-        apiMsg = ct.newFunction("getValues")
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute();
+        apiMsg =
+                ct.newFunction("getValues")
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
 
         assertFalse(apiMsg.isError());
         ContractResponse cr = apiMsg.getObject();
@@ -280,13 +285,18 @@ public class ContractTests {
 
         assertEquals(1234L, (long) (Long) cr.getData().get(0));
         assertTrue((boolean) cr.getData().get(1));
-        assertEquals(ByteArrayWrapper.wrap((byte[]) cr.getData().get(2))
-            , ByteArrayWrapper.wrap(
-                Address.wrap("1234567890123456789012345678901234567890123456789012345678901234")
-                    .toBytes()));
-        assertEquals(ByteArrayWrapper.wrap((byte[]) cr.getData().get(3))
-            , ByteArrayWrapper.wrap(Objects.requireNonNull(IUtils
-                .hex2Bytes("1234567890123456789012345678901234567890123456789012345678901234"))));
+        assertEquals(
+                ByteArrayWrapper.wrap((byte[]) cr.getData().get(2)),
+                ByteArrayWrapper.wrap(
+                        Address.wrap(
+                                        "1234567890123456789012345678901234567890123456789012345678901234")
+                                .toBytes()));
+        assertEquals(
+                ByteArrayWrapper.wrap((byte[]) cr.getData().get(3)),
+                ByteArrayWrapper.wrap(
+                        Objects.requireNonNull(
+                                IUtils.hex2Bytes(
+                                        "1234567890123456789012345678901234567890123456789012345678901234"))));
         assertTrue(((String) cr.getData().get(4)).contentEquals("Aion!"));
         assertEquals((long) ((Long) cr.getData().get(5)), -1234L);
 
@@ -320,29 +330,36 @@ public class ContractTests {
         assertTrue(apiMsg.getObject());
 
         String sc = readFile("solArrayTypes.sol");
-        apiMsg = api.getContractController()
-            .createFromSource(sc, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
+        apiMsg =
+                api.getContractController()
+                        .createFromSource(sc, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
         assertFalse(apiMsg.isError());
 
         IContract ct = api.getContractController().getContract();
         assertEquals(ct.getFrom(), acc);
         assertNotNull(ct.getContractAddress());
 
-        apiMsg = ct.newFunction("getStaticArray")
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute();
+        apiMsg =
+                ct.newFunction("getStaticArray")
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
         assertFalse(apiMsg.isError());
 
         ContractResponse cr = apiMsg.getObject();
 
         List<Boolean> bool = Arrays.asList(true, false, true, false);
-        List<Address> addr = Arrays.asList(
-            Address.wrap("a011111111111111111111111111111111111111111111111111111111111111"),
-            Address.wrap("a022222222222222222222222222222222222222222222222222222222222222"),
-            Address.wrap("a033333333333333333333333333333333333333333333333333333333333333"),
-            Address.wrap("a044444444444444444444444444444444444444444444444444444444444444"));
+        List<Address> addr =
+                Arrays.asList(
+                        Address.wrap(
+                                "a011111111111111111111111111111111111111111111111111111111111111"),
+                        Address.wrap(
+                                "a022222222222222222222222222222222222222222222222222222222222222"),
+                        Address.wrap(
+                                "a033333333333333333333333333333333333333333333333333333333333333"),
+                        Address.wrap(
+                                "a044444444444444444444444444444444444444444444444444444444444444"));
 
         List<Long> uint = Arrays.asList(1111L, 2222L, 3333L, 4444L);
         assertEquals(cr.getData().get(0), bool);
@@ -350,9 +367,11 @@ public class ContractTests {
         List<byte[]> addrAry = (List<byte[]>) cr.getData().get(1);
         List<Address> addrTran = addrAry.stream().map(Address::wrap).collect(Collectors.toList());
 
-        IntStream.range(0, 4).forEach(i -> {
-            assertEquals(addrTran.get(i), addr.get(i));
-        });
+        IntStream.range(0, 4)
+                .forEach(
+                        i -> {
+                            assertEquals(addrTran.get(i), addr.get(i));
+                        });
         assertEquals(cr.getData().get(2), uint);
 
         api.destroyApi();
@@ -364,34 +383,36 @@ public class ContractTests {
         api.connect(AionAPIImpl.LOCALHOST_URL);
         api.getContractController().clear();
 
-        String abiDefinition = "[{\"constant\":true,\"inputs\":[],\"name\":\"getValues\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"},{\"name\":\"\",\"type\":\"bool\"},{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"bytes32\"},{\"name\":\"\",\"type\":\"string\"},{\"name\":\"\",\"type\":\"int128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"boolVal\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"name\":\"intValArr\",\"outputs\":[{\"name\":\"\",\"type\":\"int128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"addressVal\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"name\":\"uintValArr\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"name\":\"bytes32ValArr\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"stringVal\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"setValues\",\"outputs\":[],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"intVal\",\"outputs\":[{\"name\":\"\",\"type\":\"int128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"name\":\"uintBoolValArr\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"uintVal\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"bytes32Val\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getTuple\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"},{\"name\":\"\",\"type\":\"uint128[5]\"},{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"name\":\"uintAddressValArr\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getArrays\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128[5]\"},{\"name\":\"\",\"type\":\"bool[5]\"}],\"payable\":false,\"type\":\"function\"}]\n";
+        String abiDefinition =
+                "[{\"constant\":true,\"inputs\":[],\"name\":\"getValues\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"},{\"name\":\"\",\"type\":\"bool\"},{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"bytes32\"},{\"name\":\"\",\"type\":\"string\"},{\"name\":\"\",\"type\":\"int128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"boolVal\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"name\":\"intValArr\",\"outputs\":[{\"name\":\"\",\"type\":\"int128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"addressVal\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"name\":\"uintValArr\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"name\":\"bytes32ValArr\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"stringVal\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"setValues\",\"outputs\":[],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"intVal\",\"outputs\":[{\"name\":\"\",\"type\":\"int128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"name\":\"uintBoolValArr\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"uintVal\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"bytes32Val\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getTuple\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"},{\"name\":\"\",\"type\":\"uint128[5]\"},{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"name\":\"uintAddressValArr\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getArrays\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128[5]\"},{\"name\":\"\",\"type\":\"bool[5]\"}],\"payable\":false,\"type\":\"function\"}]\n";
 
         Address cb = ((List<Address>) api.getWallet().getAccounts().getObject()).get(0);
         assertNotNull(cb);
         assertTrue(api.getWallet().unlockAccount(cb, pw, 3600).getObject());
 
-        Address contractAddress = Address
-            .wrap("cf7eda19f9ef89a12a7abb708f8cc84cccf3c21d123412341234123412341234");
+        Address contractAddress =
+                Address.wrap("cf7eda19f9ef89a12a7abb708f8cc84cccf3c21d123412341234123412341234");
 
-        IContract ct = api.getContractController()
-            .getContractAt(cb, contractAddress, abiDefinition);
+        IContract ct =
+                api.getContractController().getContractAt(cb, contractAddress, abiDefinition);
         assertNotNull(ct);
 
         if (ct.error()) {
             System.out.println("deploy contract failed! " + ct.getErrString());
         }
 
-        ContractResponse cr = ct.newFunction("getTuple")
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute()
-            .getObject();
+        ContractResponse cr =
+                ct.newFunction("getTuple")
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute()
+                        .getObject();
 
         assertNotNull(cr);
 
-        //TODO:
-        //adding data check
+        // TODO:
+        // adding data check
 
         api.destroyApi();
     }
@@ -403,7 +424,8 @@ public class ContractTests {
         api.connect(AionAPIImpl.LOCALHOST_URL);
         api.getContractController().clear();
 
-        String abiDefinition = "[{\"constant\":true,\"inputs\":[],\"name\":\"getValues\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"},{\"name\":\"\",\"type\":\"bool\"},{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"bytes32\"},{\"name\":\"\",\"type\":\"string\"},{\"name\":\"\",\"type\":\"int128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"boolVal\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"name\":\"intValArr\",\"outputs\":[{\"name\":\"\",\"type\":\"int128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"addressVal\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"name\":\"uintValArr\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"name\":\"bytes32ValArr\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"stringVal\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"setValues\",\"outputs\":[],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"intVal\",\"outputs\":[{\"name\":\"\",\"type\":\"int128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getTupleWithString\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"},{\"name\":\"\",\"type\":\"uint128[5]\"},{\"name\":\"\",\"type\":\"string\"},{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"name\":\"uintBoolValArr\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"uintVal\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"bytes32Val\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getTuple\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"},{\"name\":\"\",\"type\":\"uint128[5]\"},{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"name\":\"uintAddressValArr\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getArrays\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128[5]\"},{\"name\":\"\",\"type\":\"bool[5]\"}],\"payable\":false,\"type\":\"function\"}]\n";
+        String abiDefinition =
+                "[{\"constant\":true,\"inputs\":[],\"name\":\"getValues\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"},{\"name\":\"\",\"type\":\"bool\"},{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"bytes32\"},{\"name\":\"\",\"type\":\"string\"},{\"name\":\"\",\"type\":\"int128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"boolVal\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"name\":\"intValArr\",\"outputs\":[{\"name\":\"\",\"type\":\"int128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"addressVal\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"name\":\"uintValArr\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"name\":\"bytes32ValArr\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"stringVal\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"setValues\",\"outputs\":[],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"intVal\",\"outputs\":[{\"name\":\"\",\"type\":\"int128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getTupleWithString\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"},{\"name\":\"\",\"type\":\"uint128[5]\"},{\"name\":\"\",\"type\":\"string\"},{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"name\":\"uintBoolValArr\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"uintVal\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"bytes32Val\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getTuple\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"},{\"name\":\"\",\"type\":\"uint128[5]\"},{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"name\":\"uintAddressValArr\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getArrays\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128[5]\"},{\"name\":\"\",\"type\":\"bool[5]\"}],\"payable\":false,\"type\":\"function\"}]\n";
 
         Address cb = ((List<Address>) api.getWallet().getAccounts().getObject()).get(0);
         assertNotNull(cb);
@@ -411,25 +433,26 @@ public class ContractTests {
 
         Address contractAddress = Address.wrap("825bdcc890ea6ed616f00424bb893cef93703b00");
 
-        IContract ct = api.getContractController()
-            .getContractAt(cb, contractAddress, abiDefinition);
+        IContract ct =
+                api.getContractController().getContractAt(cb, contractAddress, abiDefinition);
         assertNotNull(ct);
 
         if (ct.error()) {
             System.out.println("deploy contract failed! " + ct.getErrString());
         }
 
-        ContractResponse cr = ct.newFunction("getTupleWithString")
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute()
-            .getObject();
+        ContractResponse cr =
+                ct.newFunction("getTupleWithString")
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute()
+                        .getObject();
 
         assertNotNull(cr);
 
-        //TODO:
-        //adding data check
+        // TODO:
+        // adding data check
 
         api.destroyApi();
     }
@@ -461,8 +484,9 @@ public class ContractTests {
         assertTrue(apiMsg.getObject());
 
         String sc = readFile("prescription.sol");
-        apiMsg = api.getContractController()
-            .createFromSource(sc, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
+        apiMsg =
+                api.getContractController()
+                        .createFromSource(sc, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
         assertFalse(apiMsg.isError());
 
         IContract ct = api.getContractController().getContract();
@@ -475,43 +499,55 @@ public class ContractTests {
         assertEquals(2, ct.getContractEventList().size());
 
         String abi = readFile("prescription.abi");
-        IContract ct2 = api.getContractController()
-            .getContractAt(acc, ct.getContractAddress(), abi);
+        IContract ct2 =
+                api.getContractController().getContractAt(acc, ct.getContractAddress(), abi);
         assertNotNull(ct2);
 
-        apiMsg = ct2.newFunction("prescribe")
-            .setParam(IAddress.copyFrom(
-                Address.wrap("0000000000000000000000000000000000000000000000000000000000000001")
-                    .toBytes()))
-            .setParam(ISString.copyFrom("drug"))
-            .setParam(IUint.copyFrom(25L))
-            .setParam(IAddress.copyFrom(
-                Address.wrap("0000000000000000000000000000000000000000000000000000000000001234")
-                    .toBytes()))
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute();
+        apiMsg =
+                ct2.newFunction("prescribe")
+                        .setParam(
+                                IAddress.copyFrom(
+                                        Address.wrap(
+                                                        "0000000000000000000000000000000000000000000000000000000000000001")
+                                                .toBytes()))
+                        .setParam(ISString.copyFrom("drug"))
+                        .setParam(IUint.copyFrom(25L))
+                        .setParam(
+                                IAddress.copyFrom(
+                                        Address.wrap(
+                                                        "0000000000000000000000000000000000000000000000000000000000001234")
+                                                .toBytes()))
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
 
         assertFalse(apiMsg.isError());
 
         ContractResponse cr = apiMsg.getObject();
         assertNotNull(cr);
 
-        cr = ct2.newFunction("prescription")
-            .setParam(IAddress.copyFrom(
-                Address.wrap("0000000000000000000000000000000000000000000000000000000000001234")
-                    .toBytes()))
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute()
-            .getObject();
+        cr =
+                ct2.newFunction("prescription")
+                        .setParam(
+                                IAddress.copyFrom(
+                                        Address.wrap(
+                                                        "0000000000000000000000000000000000000000000000000000000000001234")
+                                                .toBytes()))
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute()
+                        .getObject();
 
         List<Object> oparams = cr.getData();
 
-        assertThat(oparams.get(1), is(equalTo(
-            IUtils.hex2Bytes("0000000000000000000000000000000000000000000000000000000000000000"))));
+        assertThat(
+                oparams.get(1),
+                is(
+                        equalTo(
+                                IUtils.hex2Bytes(
+                                        "0000000000000000000000000000000000000000000000000000000000000000"))));
         assertThat(oparams.get(2), is(equalTo("drug")));
         assertThat(oparams.get(3), is(equalTo(25L)));
         assertThat(oparams.get(4), is(equalTo(false)));
@@ -546,8 +582,9 @@ public class ContractTests {
 
         String tc = readFile("testContract2.sol");
 
-        apiMsg = api.getContractController()
-            .createFromSource(tc, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
+        apiMsg =
+                api.getContractController()
+                        .createFromSource(tc, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
         assertFalse(apiMsg.isError());
 
         IContract ct = api.getContractController().getContract();
@@ -555,122 +592,146 @@ public class ContractTests {
         assertEquals(ct.getFrom(), acc);
         assertNotNull(ct.getContractAddress());
 
-        apiMsg = ct.newFunction("input32")
-            .setParam(IBytes.copyFrom(
-                new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 1}))
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute();
+        apiMsg =
+                ct.newFunction("input32")
+                        .setParam(
+                                IBytes.copyFrom(
+                                        new byte[] {
+                                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+                                        }))
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
 
         assertFalse(apiMsg.isError());
 
         ContractResponse cr = apiMsg.getObject();
         System.out.println("Response Hash: " + cr.getTxHash().toString());
 
-        apiMsg = ct.newFunction("a")
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute();
+        apiMsg =
+                ct.newFunction("a")
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
         assertFalse(apiMsg.isError());
 
         cr = apiMsg.getObject();
 
-        assertThat(cr.getData().get(0), is(equalTo(
-            new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 1})));
+        assertThat(
+                cr.getData().get(0),
+                is(
+                        equalTo(
+                                new byte[] {
+                                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+                                })));
 
-        apiMsg = ct.newFunction("inputS")
-            .setParam(ISString.copyFrom("25"))
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute();
-        assertFalse(apiMsg.isError());
-
-        cr = apiMsg.getObject();
-
-        System.out.println("Response Hash: " + cr.getTxHash().toString());
-
-        apiMsg = ct.newFunction("e")
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute();
-        assertFalse(apiMsg.isError());
-
-        cr = apiMsg.getObject();
-
-        apiMsg = ct.newFunction("input")
-            .setParam(IDynamicBytes.copyFrom(new byte[]{2, 5}))
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute();
+        apiMsg =
+                ct.newFunction("inputS")
+                        .setParam(ISString.copyFrom("25"))
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
         assertFalse(apiMsg.isError());
 
         cr = apiMsg.getObject();
 
         System.out.println("Response Hash: " + cr.getTxHash().toString());
 
-        apiMsg = ct.newFunction("b")
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute();
+        apiMsg =
+                ct.newFunction("e")
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
         assertFalse(apiMsg.isError());
 
         cr = apiMsg.getObject();
 
-        assertTrue(Arrays.equals((byte[]) cr.getData().get(0), new byte[]{2, 5}));
-
-        apiMsg = ct.newFunction("input8")
-            .setParam(IBytes.copyFrom(new byte[]{0, 0, 0, 0, 0, 0, 0, 1}))
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute();
+        apiMsg =
+                ct.newFunction("input")
+                        .setParam(IDynamicBytes.copyFrom(new byte[] {2, 5}))
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
         assertFalse(apiMsg.isError());
 
         cr = apiMsg.getObject();
 
         System.out.println("Response Hash: " + cr.getTxHash().toString());
 
-        apiMsg = ct.newFunction("c")
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute();
+        apiMsg =
+                ct.newFunction("b")
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
         assertFalse(apiMsg.isError());
 
         cr = apiMsg.getObject();
 
-        assertThat(cr.getData().get(0),
-            is(equalTo(new byte[]{0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0})));
+        assertTrue(Arrays.equals((byte[]) cr.getData().get(0), new byte[] {2, 5}));
 
-        cr = ct.newFunction("input16")
-            .setParam(IBytes.copyFrom(new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}))
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute()
-            .getObject();
+        apiMsg =
+                ct.newFunction("input8")
+                        .setParam(IBytes.copyFrom(new byte[] {0, 0, 0, 0, 0, 0, 0, 1}))
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
+        assertFalse(apiMsg.isError());
+
+        cr = apiMsg.getObject();
 
         System.out.println("Response Hash: " + cr.getTxHash().toString());
 
-        apiMsg = ct.newFunction("d")
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute();
+        apiMsg =
+                ct.newFunction("c")
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
         assertFalse(apiMsg.isError());
 
         cr = apiMsg.getObject();
 
-        assertThat(cr.getData().get(0),
-            is(equalTo(new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1})));
+        assertThat(
+                cr.getData().get(0),
+                is(equalTo(new byte[] {0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0})));
+
+        cr =
+                ct.newFunction("input16")
+                        .setParam(
+                                IBytes.copyFrom(
+                                        new byte[] {
+                                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+                                        }))
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute()
+                        .getObject();
+
+        System.out.println("Response Hash: " + cr.getTxHash().toString());
+
+        apiMsg =
+                ct.newFunction("d")
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
+        assertFalse(apiMsg.isError());
+
+        cr = apiMsg.getObject();
+
+        assertThat(
+                cr.getData().get(0),
+                is(equalTo(new byte[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1})));
 
         api.destroyApi();
     }
@@ -701,8 +762,10 @@ public class ContractTests {
 
         String ticker = readFile("ticker.sol");
 
-        apiMsg = api.getContractController()
-            .createFromSource(ticker, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
+        apiMsg =
+                api.getContractController()
+                        .createFromSource(
+                                ticker, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
         assertFalse(apiMsg.isError());
 
         IContract contract = api.getContractController().getContract();
@@ -714,12 +777,13 @@ public class ContractTests {
         inputUint.add(3);
         inputUint.add(4);
 
-        apiMsg = contract.newFunction("tick")
-            .setParam(IUint.copyFrom(inputUint))
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute();
+        apiMsg =
+                contract.newFunction("tick")
+                        .setParam(IUint.copyFrom(inputUint))
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
 
         assertFalse(apiMsg.isError());
 
@@ -755,8 +819,10 @@ public class ContractTests {
 
         String ticker = readFile("ticker2.sol");
 
-        apiMsg = api.getContractController()
-            .createFromSource(ticker, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
+        apiMsg =
+                api.getContractController()
+                        .createFromSource(
+                                ticker, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
         assertFalse(apiMsg.isError());
 
         IContract contract = api.getContractController().getContract();
@@ -775,14 +841,15 @@ public class ContractTests {
         inputAddress.add("0000000000000000000000000000000000000000000000000000000000001004");
         inputAddress.add("0000000000000000000000000000000000000000000000000000000000001005");
 
-        apiMsg = contract.newFunction("tick")
-            .setParam(IBool.copyFrom(true))
-            .setParam(IUint.copyFrom(inputUint))
-            .setParam(IAddress.copyFrom(inputAddress))
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute();
+        apiMsg =
+                contract.newFunction("tick")
+                        .setParam(IBool.copyFrom(true))
+                        .setParam(IUint.copyFrom(inputUint))
+                        .setParam(IAddress.copyFrom(inputAddress))
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
 
         ContractResponse contractResponse = apiMsg.getObject();
         assertNotNull(contractResponse);
@@ -817,8 +884,10 @@ public class ContractTests {
 
         String ticker = readFile("ticker3.sol");
 
-        apiMsg = api.getContractController()
-            .createFromSource(ticker, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
+        apiMsg =
+                api.getContractController()
+                        .createFromSource(
+                                ticker, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
         assertFalse(apiMsg.isError());
 
         IContract contract = api.getContractController().getContract();
@@ -831,13 +900,14 @@ public class ContractTests {
         ContractResponse cr;
         long cnt = 100;
         for (int i = 0; i < cnt; i++) {
-            apiMsg = contract.newFunction("tick")
-                .setFrom(acc)
-                .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-                .setTxNrgPrice(NRG_PRICE_MIN)
-                .build()
-                .nonBlock()
-                .execute();
+            apiMsg =
+                    contract.newFunction("tick")
+                            .setFrom(acc)
+                            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                            .setTxNrgPrice(NRG_PRICE_MIN)
+                            .build()
+                            .nonBlock()
+                            .execute();
             assertFalse(apiMsg.isError());
         }
 
@@ -852,12 +922,13 @@ public class ContractTests {
             }
         }
 
-        apiMsg = contract.newFunction("val")
-            .setFrom(acc)
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute();
+        apiMsg =
+                contract.newFunction("val")
+                        .setFrom(acc)
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
         assertFalse(apiMsg.isError());
 
         cr = apiMsg.getObject();
@@ -897,19 +968,22 @@ public class ContractTests {
 
         String throwMe = readFile("throw.sol");
 
-        apiMsg = api.getContractController()
-            .createFromSource(throwMe, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
+        apiMsg =
+                api.getContractController()
+                        .createFromSource(
+                                throwMe, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
         assertFalse(apiMsg.isError());
 
         IContract contract = api.getContractController().getContract();
         assertNotNull(contract);
 
-        apiMsg = contract.newFunction("throwMe")
-            .setFrom(acc)
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute();
+        apiMsg =
+                contract.newFunction("throwMe")
+                        .setFrom(acc)
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
         assertFalse(apiMsg.isError());
 
         ContractResponse cr = apiMsg.getObject();
@@ -946,8 +1020,9 @@ public class ContractTests {
 
         String payee = readFile("customerPayee.sol");
 
-        apiMsg = api.getContractController()
-            .createFromSource(payee, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
+        apiMsg =
+                api.getContractController()
+                        .createFromSource(payee, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
         assertFalse(apiMsg.isError());
 
         IContract contract = api.getContractController().getContract();
@@ -990,16 +1065,20 @@ public class ContractTests {
 
         ArrayList<ISolidityArg> param = new ArrayList<>();
         param.add(
-            IAddress.copyFrom("1111111111111111111111111111111111111111111111111111111111111111"));
+                IAddress.copyFrom(
+                        "1111111111111111111111111111111111111111111111111111111111111111"));
         param.add(
-            IAddress.copyFrom("1111111111111111111111111111111111111111111111111111111111111111"));
+                IAddress.copyFrom(
+                        "1111111111111111111111111111111111111111111111111111111111111111"));
         param.add(IUint.copyFrom(10));
         param.add(IUint.copyFrom(10));
 
         System.out.println("Prepare to deploy the token contract.");
 
-        apiMsg = api.getContractController()
-            .createFromSource(payee, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN, param);
+        apiMsg =
+                api.getContractController()
+                        .createFromSource(
+                                payee, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN, param);
         assertFalse(apiMsg.isError());
 
         IContract ct = api.getContractController().getContract();
@@ -1044,20 +1123,23 @@ public class ContractTests {
         param.add(IUint.copyFrom(10));
         param.add(ISString.copyFrom("AION"));
 
-        apiMsg = api.getContractController()
-            .createFromSource(token, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN, param);
+        apiMsg =
+                api.getContractController()
+                        .createFromSource(
+                                token, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN, param);
         assertFalse(apiMsg.isError());
 
         IContract contract = api.getContractController().getContract();
 
-        //Check initial default account balance
-        apiMsg = contract.newFunction("balanceOf")
-            .setFrom(acc)
-            .setParam(IAddress.copyFrom(acc.toString()))
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute();
+        // Check initial default account balance
+        apiMsg =
+                contract.newFunction("balanceOf")
+                        .setFrom(acc)
+                        .setParam(IAddress.copyFrom(acc.toString()))
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
         assertFalse(apiMsg.isError());
 
         ContractResponse cr = apiMsg.getObject();
@@ -1069,26 +1151,28 @@ public class ContractTests {
             assertThat(a.toString(), is(equalTo("100000")));
         }
 
-        //Transfer balance to another account
-        apiMsg = contract.newFunction("transfer")
-            .setParam(IAddress.copyFrom(acc2.toString()))
-            .setParam(IUint.copyFrom(1))
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute();
+        // Transfer balance to another account
+        apiMsg =
+                contract.newFunction("transfer")
+                        .setParam(IAddress.copyFrom(acc2.toString()))
+                        .setParam(IUint.copyFrom(1))
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
         assertFalse(apiMsg.isError());
 
         cr = apiMsg.getObject();
         assertNotNull(cr);
 
-        //Check account2's balance
-        apiMsg = contract.newFunction("balanceOf")
-            .setParam(IAddress.copyFrom(acc2.toString()))
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute();
+        // Check account2's balance
+        apiMsg =
+                contract.newFunction("balanceOf")
+                        .setParam(IAddress.copyFrom(acc2.toString()))
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
         assertFalse(apiMsg.isError());
 
         cr = apiMsg.getObject();
@@ -1100,13 +1184,14 @@ public class ContractTests {
             assertThat(a.toString(), is(equalTo("1")));
         }
 
-        //Check account1's balance
-        apiMsg = contract.newFunction("balanceOf")
-            .setParam(IAddress.copyFrom(acc.toString()))
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute();
+        // Check account1's balance
+        apiMsg =
+                contract.newFunction("balanceOf")
+                        .setParam(IAddress.copyFrom(acc.toString()))
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
         assertFalse(apiMsg.isError());
 
         cr = apiMsg.getObject();
@@ -1148,9 +1233,10 @@ public class ContractTests {
         /* deploy contract */
         String contract = readFile("revert.sol");
 
-        apiMsg = api.getContractController()
-            .createFromSource(contract, acc, NRG_LIMIT_CONTRACT_CREATE_MAX,
-                NRG_PRICE_MIN);
+        apiMsg =
+                api.getContractController()
+                        .createFromSource(
+                                contract, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
         assertFalse(apiMsg.isError());
 
         IContract ct = api.getContractController().getContract();
@@ -1159,11 +1245,12 @@ public class ContractTests {
         System.out.println("Contract Address: " + ct.getContractAddress().toString());
 
         /* getData */
-        apiMsg = ct.newFunction("getData")
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute();
+        apiMsg =
+                ct.newFunction("getData")
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
         assertFalse(apiMsg.isError());
 
         ContractResponse rsp = apiMsg.getObject();
@@ -1172,22 +1259,24 @@ public class ContractTests {
         assertThat(rsp.getData().get(0), is(equalTo(3L)));
 
         /* setData and getData */
-        apiMsg = ct.newFunction("setData")
-            .setParam(IUint.copyFrom(5L))
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute();
+        apiMsg =
+                ct.newFunction("setData")
+                        .setParam(IUint.copyFrom(5L))
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
         assertFalse(apiMsg.isError());
 
         rsp = apiMsg.getObject();
         assertNotNull(rsp);
 
-        apiMsg = ct.newFunction("getData")
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute();
+        apiMsg =
+                ct.newFunction("getData")
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
         assertFalse(apiMsg.isError());
 
         rsp = apiMsg.getObject();
@@ -1197,23 +1286,25 @@ public class ContractTests {
         assertThat(rsp.getData().get(0), is(equalTo(5L)));
 
         /* setData2 and getData */
-        apiMsg = ct.newFunction("setData2")
-            .setParam(IUint.copyFrom(7L))
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute();
+        apiMsg =
+                ct.newFunction("setData2")
+                        .setParam(IUint.copyFrom(7L))
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
         assertFalse(apiMsg.isError());
 
         rsp = apiMsg.getObject();
         assertNotNull(rsp);
         assertNotNull(rsp.getData());
 
-        apiMsg = ct.newFunction("getData")
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute();
+        apiMsg =
+                ct.newFunction("getData")
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
         assertFalse(apiMsg.isError());
 
         rsp = apiMsg.getObject();
@@ -1253,9 +1344,10 @@ public class ContractTests {
         /* deploy contract */
         String contract = readFile("ticker4.sol");
 
-        apiMsg = api.getContractController()
-            .createFromSource(contract, acc, NRG_LIMIT_CONTRACT_CREATE_MAX,
-                NRG_PRICE_MIN);
+        apiMsg =
+                api.getContractController()
+                        .createFromSource(
+                                contract, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
         assertFalse(apiMsg.isError());
 
         IContract ct = api.getContractController().getContract();
@@ -1264,11 +1356,12 @@ public class ContractTests {
         System.out.println("Contract Address: " + ct.getContractAddress().toString());
 
         /* getData */
-        apiMsg = ct.newFunction("getData")
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute();
+        apiMsg =
+                ct.newFunction("getData")
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
         assertFalse(apiMsg.isError());
 
         ContractResponse rsp = apiMsg.getObject();
@@ -1277,18 +1370,20 @@ public class ContractTests {
         assertThat(rsp.getData().get(0), is(equalTo(1L)));
 
         /* setData and getData */
-        apiMsg = ct.newFunction("tick")
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute();
+        apiMsg =
+                ct.newFunction("tick")
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
         assertFalse(apiMsg.isError());
 
-        apiMsg = ct.newFunction("getData")
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute();
+        apiMsg =
+                ct.newFunction("getData")
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
         assertFalse(apiMsg.isError());
 
         rsp = apiMsg.getObject();
@@ -1297,19 +1392,21 @@ public class ContractTests {
         assertThat(rsp.getData().get(0), is(equalTo(2L)));
 
         for (int i = 0; i < 2; i++) {
-            apiMsg = ct.newFunction("tick")
-                .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-                .setTxNrgPrice(NRG_PRICE_MIN)
-                .build()
-                .execute();
+            apiMsg =
+                    ct.newFunction("tick")
+                            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                            .setTxNrgPrice(NRG_PRICE_MIN)
+                            .build()
+                            .execute();
             assertFalse(apiMsg.isError());
         }
 
-        apiMsg = ct.newFunction("getData")
-            .setTxNrgLimit(NRG_LIMIT_TX_MAX)
-            .setTxNrgPrice(NRG_PRICE_MIN)
-            .build()
-            .execute();
+        apiMsg =
+                ct.newFunction("getData")
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
         assertFalse(apiMsg.isError());
 
         rsp = apiMsg.getObject();
@@ -1318,37 +1415,38 @@ public class ContractTests {
         assertThat(rsp.getData().get(0), is(equalTo(4L)));
 
         // need to register event to the kernel
-//        List<ContractEvent> ce = ct.getEvents();
-//        assertThat(ce.size(), is(equalTo(3)));
+        //        List<ContractEvent> ce = ct.getEvents();
+        //        assertThat(ce.size(), is(equalTo(3)));
 
-        //TODO: test ContractEventFilter
-        //ContractEventFilter.ContractEventFilterBuilder builder = new ContractEventFilter.ContractEventFilterBuilder()
+        // TODO: test ContractEventFilter
+        // ContractEventFilter.ContractEventFilterBuilder builder = new
+        // ContractEventFilter.ContractEventFilterBuilder()
         //        .fromBlock("latest")
         //        .toBlock("10")
         //        .topics(new ArrayList())
         //        .expireTime(0)
         //        .addresses(new ArrayList());
 
-        //msg = ct.queryEvents(builder.createContractEventFilter());
-        //if (msg.isError()) {
+        // msg = ct.queryEvents(builder.createContractEventFilter());
+        // if (msg.isError()) {
         //    throw new Exception();
-        //}
+        // }
         //
-        //List<ContractEvent> cts = msg.getObject();
-        //assertThat(cts.size(), is(equalTo(4)));
+        // List<ContractEvent> cts = msg.getObject();
+        // assertThat(cts.size(), is(equalTo(4)));
         //
-        //List<String> topics = new ArrayList();
-        //topics.add("Ti");
+        // List<String> topics = new ArrayList();
+        // topics.add("Ti");
         //
-        //builder.topics(topics);
+        // builder.topics(topics);
         //
-        //msg = ct.queryEvents(builder.createContractEventFilter());
-        //if (msg.isError()) {
+        // msg = ct.queryEvents(builder.createContractEventFilter());
+        // if (msg.isError()) {
         //    throw new Exception();
-        //}
+        // }
         //
-        //cts = msg.getObject();
-        //assertThat(cts.size(), is(equalTo(1)));
+        // cts = msg.getObject();
+        // assertThat(cts.size(), is(equalTo(1)));
 
         api.destroyApi();
     }

@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,14 +19,14 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
-
+ */
 package org.aion.api.keccak;
 
 /**
  * This class implements the core operations for the Keccak digest algorithm.
+ *
  * <p>
+ *
  * <pre>
  * ==========================(LICENSE BEGIN)============================
  *
@@ -59,30 +59,45 @@ package org.aion.api.keccak;
  */
 abstract class KeccakCore extends DigestEngine {
 
-    private static final long[] RC = { 0x0000000000000001L, 0x0000000000008082L, 0x800000000000808AL,
-            0x8000000080008000L, 0x000000000000808BL, 0x0000000080000001L, 0x8000000080008081L, 0x8000000000008009L,
-            0x000000000000008AL, 0x0000000000000088L, 0x0000000080008009L, 0x000000008000000AL, 0x000000008000808BL,
-            0x800000000000008BL, 0x8000000000008089L, 0x8000000000008003L, 0x8000000000008002L, 0x8000000000000080L,
-            0x000000000000800AL, 0x800000008000000AL, 0x8000000080008081L, 0x8000000000008080L, 0x0000000080000001L,
-            0x8000000080008008L };
+    private static final long[] RC = {
+        0x0000000000000001L,
+        0x0000000000008082L,
+        0x800000000000808AL,
+        0x8000000080008000L,
+        0x000000000000808BL,
+        0x0000000080000001L,
+        0x8000000080008081L,
+        0x8000000000008009L,
+        0x000000000000008AL,
+        0x0000000000000088L,
+        0x0000000080008009L,
+        0x000000008000000AL,
+        0x000000008000808BL,
+        0x800000000000008BL,
+        0x8000000000008089L,
+        0x8000000000008003L,
+        0x8000000000008002L,
+        0x8000000000000080L,
+        0x000000000000800AL,
+        0x800000008000000AL,
+        0x8000000080008081L,
+        0x8000000000008080L,
+        0x0000000080000001L,
+        0x8000000080008008L
+    };
     private long[] A;
     private byte[] tmpOut;
 
-    KeccakCore() {
-    }
+    KeccakCore() {}
 
-    /**
-     * @see DigestEngine
-     */
+    /** @see DigestEngine */
     protected void doInit() {
         A = new long[25];
         tmpOut = new byte[(getDigestLength() + 7) & ~7];
         doReset();
     }
 
-    /**
-     * @see DigestEngine
-     */
+    /** @see DigestEngine */
     protected void processBlock(byte[] data) {
         /* Input block */
         for (int i = 0; i < data.length; i += 8) {
@@ -96,9 +111,9 @@ abstract class KeccakCore extends DigestEngine {
 
         /*
          * Unrolling four rounds kills performance big time
-		 * on Intel x86 Core2, in both 32-bit and 64-bit modes
-		 * (less than 1 MB/s instead of 55 MB/s on x86-64).
-		 * Unrolling two rounds appears to be fine.
+         * on Intel x86 Core2, in both 32-bit and 64-bit modes
+         * (less than 1 MB/s instead of 55 MB/s on x86-64).
+         * Unrolling two rounds appears to be fine.
          */
         for (int j = 0; j < 24; j += 2) {
 
@@ -492,9 +507,7 @@ abstract class KeccakCore extends DigestEngine {
         }
     }
 
-    /**
-     * @see DigestEngine
-     */
+    /** @see DigestEngine */
     protected void doPadding(byte[] out, int off) {
         int ptr = flush();
         byte[] buf = getBlockBuffer();
@@ -521,9 +534,7 @@ abstract class KeccakCore extends DigestEngine {
         System.arraycopy(tmpOut, 0, out, off, dlen);
     }
 
-    /**
-     * @see DigestEngine
-     */
+    /** @see DigestEngine */
     protected void engineReset() {
         doReset();
     }
@@ -541,15 +552,12 @@ abstract class KeccakCore extends DigestEngine {
     }
 
     /**
-     * Encode the 64-bit word {@code val} into the array {@code buf} at offset
-     * {@code off}, in little-endian convention (least significant byte first).
+     * Encode the 64-bit word {@code val} into the array {@code buf} at offset {@code off}, in
+     * little-endian convention (least significant byte first).
      *
-     * @param val
-     *         the value to encode
-     * @param buf
-     *         the destination buffer
-     * @param off
-     *         the destination offset
+     * @param val the value to encode
+     * @param buf the destination buffer
+     * @param off the destination offset
      */
     private static void encodeLELong(long val, byte[] buf, int off) {
         buf[off] = (byte) val;
@@ -563,39 +571,35 @@ abstract class KeccakCore extends DigestEngine {
     }
 
     /**
-     * Decode a 64-bit little-endian word from the array {@code buf} at offset
-     * {@code off}.
+     * Decode a 64-bit little-endian word from the array {@code buf} at offset {@code off}.
      *
-     * @param buf
-     *         the source buffer
-     * @param off
-     *         the source offset
+     * @param buf the source buffer
+     * @param off the source offset
      * @return the decoded value
      */
     private static long decodeLELong(byte[] buf, int off) {
-        return (buf[off] & 0xFFL) | ((buf[off + 1] & 0xFFL) << 8) | ((buf[off + 2] & 0xFFL) << 16) | (
-                (buf[off + 3] & 0xFFL) << 24) | ((buf[off + 4] & 0xFFL) << 32) | ((buf[off + 5] & 0xFFL) << 40) | (
-                (buf[off + 6] & 0xFFL) << 48) | ((buf[off + 7] & 0xFFL) << 56);
+        return (buf[off] & 0xFFL)
+                | ((buf[off + 1] & 0xFFL) << 8)
+                | ((buf[off + 2] & 0xFFL) << 16)
+                | ((buf[off + 3] & 0xFFL) << 24)
+                | ((buf[off + 4] & 0xFFL) << 32)
+                | ((buf[off + 5] & 0xFFL) << 40)
+                | ((buf[off + 6] & 0xFFL) << 48)
+                | ((buf[off + 7] & 0xFFL) << 56);
     }
 
-    /**
-     * @see Digest
-     */
+    /** @see Digest */
     public int getBlockLength() {
         return 200 - 2 * getDigestLength();
     }
 
-    /**
-     * @see DigestEngine
-     */
+    /** @see DigestEngine */
     Digest copyState(KeccakCore dst) {
         System.arraycopy(A, 0, dst.A, 0, 25);
         return super.copyState(dst);
     }
 
-    /**
-     * @see Digest
-     */
+    /** @see Digest */
     public String toString() {
         return "Keccak-" + (getDigestLength() << 3);
     }

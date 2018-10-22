@@ -21,7 +21,6 @@
  *     Aion foundation.
  */
 
-
 package org.aion.api.type;
 
 /**
@@ -29,8 +28,6 @@ package org.aion.api.type;
  *
  * @see org.aion.api.INet#syncInfo() SyncInfo
  */
-
-
 public final class SyncInfo {
 
     private final boolean syncing;
@@ -39,13 +36,25 @@ public final class SyncInfo {
     private final long maxImportBlocks;
     private final long startingBlock;
 
-    public SyncInfo(boolean syncing, long networkBestBlock, long chainBestBlock,
-        long maxImportBlocks, long startingBlock) {
-        if (networkBestBlock < 0 || chainBestBlock < 0 || startingBlock < 0 || maxImportBlocks < 1) {
-            throw new IllegalArgumentException("networkBestBlock#" + networkBestBlock +
-                " chainBestBlock#" + chainBestBlock +
-                " maxImportBlocks#" + maxImportBlocks +
-                " startingBlock#" + startingBlock);
+    public SyncInfo(
+            boolean syncing,
+            long networkBestBlock,
+            long chainBestBlock,
+            long maxImportBlocks,
+            long startingBlock) {
+        if (networkBestBlock < 0
+                || chainBestBlock < 0
+                || startingBlock < 0
+                || maxImportBlocks < 1) {
+            throw new IllegalArgumentException(
+                    "networkBestBlock#"
+                            + networkBestBlock
+                            + " chainBestBlock#"
+                            + chainBestBlock
+                            + " maxImportBlocks#"
+                            + maxImportBlocks
+                            + " startingBlock#"
+                            + startingBlock);
         }
 
         this.syncing = syncing;
@@ -74,5 +83,4 @@ public final class SyncInfo {
     public long getStartingBlock() {
         return startingBlock;
     }
-
 }

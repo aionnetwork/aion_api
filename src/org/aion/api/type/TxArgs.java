@@ -21,23 +21,21 @@
  *     Aion foundation.
  */
 
-
 package org.aion.api.type;
-
-import org.aion.api.ITx;
-import org.aion.base.type.Address;
-import org.aion.base.util.ByteArrayWrapper;
-
-import java.math.BigInteger;
 
 import static org.aion.api.ITx.NRG_LIMIT_TX_MIN;
 import static org.aion.api.ITx.NRG_PRICE_MIN;
 
-/**
- * The transaction input arguments used in {@link org.aion.api.ITx#sendTransaction(org.aion.api.type.TxArgs)
- * sendTransaction} and {@link org.aion.api.ITx#call(org.aion.api.type.TxArgs) call}.
- */
+import java.math.BigInteger;
+import org.aion.api.ITx;
+import org.aion.base.type.Address;
+import org.aion.base.util.ByteArrayWrapper;
 
+/**
+ * The transaction input arguments used in {@link
+ * org.aion.api.ITx#sendTransaction(org.aion.api.type.TxArgs) sendTransaction} and {@link
+ * org.aion.api.ITx#call(org.aion.api.type.TxArgs) call}.
+ */
 public final class TxArgs {
 
     private final Address from;
@@ -86,9 +84,7 @@ public final class TxArgs {
         return data;
     }
 
-    /**
-     * This Builder class is used to build a {@link TxArgs} instance.
-     */
+    /** This Builder class is used to build a {@link TxArgs} instance. */
     public static class TxArgsBuilder {
 
         private Address from;
@@ -99,8 +95,7 @@ public final class TxArgs {
         private long nrgPrice;
         private ByteArrayWrapper data;
 
-        public TxArgsBuilder() {
-        }
+        public TxArgsBuilder() {}
 
         public TxArgs.TxArgsBuilder from(final Address from) {
             this.from = from;
@@ -137,7 +132,6 @@ public final class TxArgs {
             return this;
         }
 
-
         public TxArgs createTxArgs() {
 
             if (value == null) {
@@ -161,8 +155,10 @@ public final class TxArgs {
             }
 
             if (nrgLimit == 0) {
-                nrgLimit = to.equals(Address.EMPTY_ADDRESS()) ? ITx.NRG_LIMIT_CONTRACT_CREATE_MAX
-                    : ITx.NRG_LIMIT_TX_MAX;
+                nrgLimit =
+                        to.equals(Address.EMPTY_ADDRESS())
+                                ? ITx.NRG_LIMIT_CONTRACT_CREATE_MAX
+                                : ITx.NRG_LIMIT_TX_MAX;
             }
 
             if (nrgPrice == 0) {
@@ -171,8 +167,7 @@ public final class TxArgs {
 
             if (nrgLimit < NRG_LIMIT_TX_MIN || nrgPrice < NRG_PRICE_MIN) {
                 throw new IllegalArgumentException(
-                    "NrgLimit#" + nrgLimit +
-                        " NrgPrice#" + nrgPrice);
+                        "NrgLimit#" + nrgLimit + " NrgPrice#" + nrgPrice);
             }
 
             return new TxArgs(this);

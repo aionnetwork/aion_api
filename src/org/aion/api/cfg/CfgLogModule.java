@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,24 +19,18 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
-
+ */
 package org.aion.api.cfg;
 
 import org.aion.api.log.LogEnum;
 import org.aion.api.log.LogLevels;
-
-
 
 public class CfgLogModule {
 
     protected String label;
     protected String level;
 
-    public CfgLogModule() {
-
-    }
+    public CfgLogModule() {}
 
     public CfgLogModule(String _label, String _level) {
         setLabel(_label);
@@ -68,5 +62,4 @@ public class CfgLogModule {
             this.level = LogLevels.INFO.name();
         }
     }
-
 }

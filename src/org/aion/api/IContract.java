@@ -22,13 +22,18 @@
  */
 package org.aion.api;
 
+import java.util.List;
 import org.aion.api.sol.ISolidityArg;
-import org.aion.api.type.*;
+import org.aion.api.type.ApiMsg;
+import org.aion.api.type.ContractAbiEntry;
+import org.aion.api.type.ContractEvent;
+import org.aion.api.type.ContractEventFilter;
+import org.aion.api.type.ContractResponse;
+import org.aion.api.type.JsonFmt;
+import org.aion.api.type.TxArgs;
 import org.aion.base.type.Address;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
-
-import java.util.List;
 
 /**
  * A Contract class that sits above the Aion Java API layer that provides the user with convenient
@@ -36,8 +41,7 @@ import java.util.List;
  * IContract interface has no public constructors, instead the user utilizes the {@link
  * IContractController IContractController} to create the Contract.
  *
- * <pre>
- * {@code
+ * <pre>{@code
  * IAionAPI api = IAionAPI.init();
  * IContractController cc = new ContractController(api);
  * IContractController.createFromSource(String, Address, long, long) or
@@ -70,12 +74,10 @@ import java.util.List;
  *
  * for class instantiation.
  * This class requires the user tp provide an active and connected the class {@link IAionAPI IAionAPI}.
- *
  * </pre>
  *
  * @see IContractController IContractController
  */
-
 public interface IContract {
 
     /**
@@ -83,8 +85,8 @@ public interface IContract {
      * with {@link IContract#setParam(ISolidityArg) setParam}, {@link #build() build} and {@link
      * IContract#execute() execute} to execute a contract function call as a chain call. Intended
      * usage is shown as below :
-     * <pre>
-     * {@code
+     *
+     * <pre>{@code
      * IAionAPI api = IAionAPI.init();
      * IContractController cc = new ContractController(api);
      * cc.createFromSource(contract_source, deployer, energyLimit, energyPrice)
@@ -98,12 +100,10 @@ public interface IContract {
      *      .setTxValue(value)
      * 		.build()
      * 		.execute(); //executes function call
-     * }
-     *
-     * </pre>
+     * }</pre>
      *
      * @param f name of the function call by {@link java.lang.String String} exactly as it appears
-     * in the ABI definition.
+     *     in the ABI definition.
      * @return the contract interface {@link IContract IContract}.
      */
     IContract newFunction(String f);
@@ -114,7 +114,7 @@ public interface IContract {
      * parameter order and size are correct.
      *
      * @param val the Solidity Type like {@link org.aion.api.sol.IInt IInt}, {@link
-     * org.aion.api.sol.IBool IBool} or {@link org.aion.api.sol.ISString ISString}.
+     *     org.aion.api.sol.IBool IBool} or {@link org.aion.api.sol.ISString ISString}.
      * @return the contract interface {@link IContract IContract}.
      */
     IContract setParam(ISolidityArg val);
@@ -123,9 +123,9 @@ public interface IContract {
      * Sets the transaction energy for function be executed.
      *
      * @param val set the max energy consume for the desiring transaction. The transaction will not
-     * been executed when the energy is not enough. Current kernel limitations for one transaction
-     * must be higher than 21K but lower than 2M for the regular transaction and the contract
-     * transaction. For a contract create transaction, it can be maximum 5M energy.
+     *     been executed when the energy is not enough. Current kernel limitations for one
+     *     transaction must be higher than 21K but lower than 2M for the regular transaction and the
+     *     contract transaction. For a contract create transaction, it can be maximum 5M energy.
      * @return the contract interface {@link IContract IContract}.
      */
     IContract setTxNrgLimit(long val);
@@ -134,7 +134,7 @@ public interface IContract {
      * Sets the transaction energy price for function be executed.
      *
      * @param val given the energy price for each energy unit consume. Currently the price can not
-     * lower than 10 amp AION and higher than 9 AION. (10^10 to 9^18)
+     *     lower than 10 amp AION and higher than 9 AION. (10^10 to 9^18)
      * @return the contract interface {@link IContract IContract}.
      */
     IContract setTxNrgPrice(long val);
@@ -164,11 +164,11 @@ public interface IContract {
     IContract build();
 
     /**
-     * Executes the built transaction in the VM of the connection kernel for evaluating the execution
-     * result. Refer to {@link #newFunction(String)} for function use.
+     * Executes the built transaction in the VM of the connection kernel for evaluating the
+     * execution result. Refer to {@link #newFunction(String)} for function use.
      *
      * @return the class {@link ContractResponse} containing all relevant information wrapped by the
-     * class {@link ApiMsg ApiMsg}.
+     *     class {@link ApiMsg ApiMsg}.
      */
     ApiMsg call();
 
@@ -176,7 +176,7 @@ public interface IContract {
      * Executes the built transaction. Refer to {@link #newFunction(String)} for function use.
      *
      * @return the class {@link ContractResponse} containing all relevant information wrapped by the
-     * class {@link ApiMsg ApiMsg}.
+     *     class {@link ApiMsg ApiMsg}.
      */
     ApiMsg execute();
 
@@ -319,7 +319,7 @@ public interface IContract {
      * Retrieve the contract function input parameters.
      *
      * @return the interface {@link List List} of the class {@link ISolidityArg ISolidityArg}, need
-     * to cast to response solidity type by the contract function.
+     *     to cast to response solidity type by the contract function.
      */
     List<ISolidityArg> getInputParams();
 
@@ -327,7 +327,7 @@ public interface IContract {
      * Retrieve the contract function output parameters.
      *
      * @return the interface {@link List List} of the class {@link ISolidityArg ISolidityArg}, need
-     * to cast to response solidity type by contract function.
+     *     to cast to response solidity type by contract function.
      */
     List<ISolidityArg> getOutputParams();
 
@@ -343,7 +343,7 @@ public interface IContract {
      * This is the builder method to set the events the developer want to listen.
      *
      * @param e the interface {@link List List} of the class {@link String String} represent to the
-     * event name.
+     *     event name.
      * @return the interface {@link IContract IContract}
      */
     IContract newEvents(List<String> e);
@@ -361,7 +361,7 @@ public interface IContract {
      * IContract#allEvents} to the Aion network and listening events until deregister it.
      *
      * @return the boolean value represent the status of the register wrapped by the class {@link
-     * ApiMsg}.
+     *     ApiMsg}.
      */
     ApiMsg register();
 
@@ -373,7 +373,7 @@ public interface IContract {
      *
      * @param s the class {@link String String} represent the block number.
      * @return the boolean value represent the status of the register wrapped by the class {@link
-     * ApiMsg}.
+     *     ApiMsg}.
      */
     ApiMsg register(String s);
 
@@ -384,10 +384,10 @@ public interface IContract {
      * a class {@link String String}.
      *
      * @param ef the class {@link ContractEventFilter ContractEventFilter} represent the event
-     * listening condition such as the start block number , the end block number, or the specific
-     * address.
+     *     listening condition such as the start block number , the end block number, or the
+     *     specific address.
      * @return the boolean value represent the status of the register wrapped by the class {@link
-     * ApiMsg}.
+     *     ApiMsg}.
      */
     ApiMsg register(ContractEventFilter ef);
 
@@ -395,9 +395,9 @@ public interface IContract {
      * deregister the contract events listening from the Aion network given by the event name.
      *
      * @param e the interface {@link List List} of the class {@link String String} represent the
-     * event name.
+     *     event name.
      * @return the boolean value represent the status of the register wrapped by the class {@link
-     * ApiMsg}.
+     *     ApiMsg}.
      */
     ApiMsg deregister(List<String> e);
 
@@ -405,7 +405,7 @@ public interface IContract {
      * deregister all of the contract events listening from the Aion network.
      *
      * @return the boolean value represent the status of the register wrapped by the class {@link
-     * ApiMsg}.
+     *     ApiMsg}.
      */
     ApiMsg deregisterAll();
 
@@ -413,7 +413,7 @@ public interface IContract {
      * Retrieve the event callbacks to the Aion JavaAPI.
      *
      * @return the interface {@link List List} of the class {@link ContractEvent ContractEvent}
-     * represent the happened events.
+     *     represent the happened events.
      */
     List<ContractEvent> getEvents();
 
@@ -421,25 +421,27 @@ public interface IContract {
      * Check which events been registered to the Aion network kernel.
      *
      * @return the interface {@link List List} of the class {@link String String} represent the
-     * event name.
+     *     event name.
      */
     List<String> issuedEvents();
 
-    ///**
+    /// **
     // * Query the past events in the Aion network kernel by given specified conditions.
     // *
     // * @param ef
-    // *      the class {@link ContractEventFilter ContractEventFilter} represent the event query conditions.
-    // * @return the interface {@link List List} of the class {@link ContractEvent ContractEvent} represent the event detail
+    // *      the class {@link ContractEventFilter ContractEventFilter} represent the event query
+    // conditions.
+    // * @return the interface {@link List List} of the class {@link ContractEvent ContractEvent}
+    // represent the event detail
     // * information.
     // */
-    //ApiMsg queryEvents(ContractEventFilter ef);
+    // ApiMsg queryEvents(ContractEventFilter ef);
 
     /**
      * retrieve the event list of the deployed contract
      *
      * @return the interface {@link List List} of the class {@link String String} represent the
-     * event name;
+     *     event name;
      */
     List<String> getContractEventList();
 }

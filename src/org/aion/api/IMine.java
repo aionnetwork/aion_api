@@ -30,7 +30,6 @@ import org.aion.api.type.ApiMsg;
  *
  * @author Jay Tseng
  */
-
 public interface IMine {
 
     /**
@@ -39,5 +38,4 @@ public interface IMine {
      * @return boolean value of isMining status.
      */
     ApiMsg isMining();
-
 }

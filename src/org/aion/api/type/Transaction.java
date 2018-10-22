@@ -21,26 +21,23 @@
  *     Aion foundation.
  */
 
-
 package org.aion.api.type;
 
+import java.math.BigInteger;
 import org.aion.base.type.Address;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
-
-import java.math.BigInteger;
 
 /**
  * The Transaction return data structure, typically used in Transaction getter API.
  *
  * @author Jay Tseng
  * @see org.aion.api.IChain#getTransactionByBlockHashAndIndex(org.aion.base.type.Hash256, int)
- * getTransactionByBlockHashAndIndex
+ *     getTransactionByBlockHashAndIndex
  * @see org.aion.api.IChain#getTransactionByBlockNumberAndIndex(long, int)
- * GetTransactionByBlockNumberAndIndex
+ *     GetTransactionByBlockNumberAndIndex
  * @see org.aion.api.IChain#getTransactionByHash(org.aion.base.type.Hash256) getTransactionByHash
  */
-
 public final class Transaction {
 
     private final int transactionIndex;
@@ -121,22 +118,46 @@ public final class Transaction {
 
     @Override
     public String toString() {
-        return "nrgPrice: " + nrgPrice + ",\n"
-            + "nrg: " + nrgConsumed + ",\n"
-            + "nonce: " + nonce.toString() + ",\n"
-            + "transactionIndex: " + transactionIndex + ",\n"
-            + "input: " + "0x" + data.toString() + ",\n"
-            + "blockNumber: " + blockNumber + ",\n"
-            + "from: " + "0x" + from.toString() + ",\n"
-            + "to: " + "0x" + to.toString() + ",\n"
-            + "value: " + value.toString() + ",\n"
-            + "hash: " + "0x" + txHash.toString() + ",\n"
-            + "timestamp: " + timeStamp + "\n";
+        return "nrgPrice: "
+                + nrgPrice
+                + ",\n"
+                + "nrg: "
+                + nrgConsumed
+                + ",\n"
+                + "nonce: "
+                + nonce.toString()
+                + ",\n"
+                + "transactionIndex: "
+                + transactionIndex
+                + ",\n"
+                + "input: "
+                + "0x"
+                + data.toString()
+                + ",\n"
+                + "blockNumber: "
+                + blockNumber
+                + ",\n"
+                + "from: "
+                + "0x"
+                + from.toString()
+                + ",\n"
+                + "to: "
+                + "0x"
+                + to.toString()
+                + ",\n"
+                + "value: "
+                + value.toString()
+                + ",\n"
+                + "hash: "
+                + "0x"
+                + txHash.toString()
+                + ",\n"
+                + "timestamp: "
+                + timeStamp
+                + "\n";
     }
 
-    /**
-     * This Builder class is used to build a {@link Transaction} instance.
-     */
+    /** This Builder class is used to build a {@link Transaction} instance. */
     public static class TransactionBuilder {
 
         private int transactionIndex;
@@ -152,8 +173,7 @@ public final class Transaction {
         private BigInteger value;
         private ByteArrayWrapper data;
 
-        public TransactionBuilder() {
-        }
+        public TransactionBuilder() {}
 
         public Transaction.TransactionBuilder transactionIndex(final int transactionIndex) {
             this.transactionIndex = transactionIndex;
@@ -215,29 +235,48 @@ public final class Transaction {
             return this;
         }
 
-
         public Transaction createTransaction() {
 
-            if (from == null || to == null || blockHash == null || txHash == null ||
-                nonce == null || value == null || data == null) {
+            if (from == null
+                    || to == null
+                    || blockHash == null
+                    || txHash == null
+                    || nonce == null
+                    || value == null
+                    || data == null) {
                 throw new NullPointerException(
-                    "From#" + String.valueOf(from) +
-                        " To#" + String.valueOf(to) +
-                        " BlockHash#" + String.valueOf(blockHash) +
-                        " TxHash#" + String.valueOf(txHash) +
-                        " Value#" + String.valueOf(value) +
-                        " Data#" + String.valueOf(data) +
-                        " Nonce#" + String.valueOf(nonce));
+                        "From#"
+                                + String.valueOf(from)
+                                + " To#"
+                                + String.valueOf(to)
+                                + " BlockHash#"
+                                + String.valueOf(blockHash)
+                                + " TxHash#"
+                                + String.valueOf(txHash)
+                                + " Value#"
+                                + String.valueOf(value)
+                                + " Data#"
+                                + String.valueOf(data)
+                                + " Nonce#"
+                                + String.valueOf(nonce));
             }
 
-            if (transactionIndex < 0 || blockNumber < 0 || timeStamp < 0 || nrgConsumed < 0
-                || nrgPrice < 0) {
+            if (transactionIndex < 0
+                    || blockNumber < 0
+                    || timeStamp < 0
+                    || nrgConsumed < 0
+                    || nrgPrice < 0) {
                 throw new IllegalArgumentException(
-                    "TxIndex#" + transactionIndex +
-                        " BlockNumber#" + blockNumber +
-                        " TimeStamp#" + timeStamp +
-                        " NrgConsumed#" + nrgConsumed +
-                        " NrgPrice#" + nrgPrice);
+                        "TxIndex#"
+                                + transactionIndex
+                                + " BlockNumber#"
+                                + blockNumber
+                                + " TimeStamp#"
+                                + timeStamp
+                                + " NrgConsumed#"
+                                + nrgConsumed
+                                + " NrgPrice#"
+                                + nrgPrice);
             }
 
             return new Transaction(this);

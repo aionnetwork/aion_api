@@ -1,5 +1,8 @@
 New Updates (most recent on top)
 
+Aion Java API v0.1.14
+- update build tool to gradle
+
 Aion Java API v0.1.13
 - support zmq curve secure connection
 

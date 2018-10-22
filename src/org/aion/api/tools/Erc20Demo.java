@@ -23,6 +23,17 @@
 
 package org.aion.api.tools;
 
+import static java.lang.System.exit;
+import static org.aion.api.ITx.NRG_LIMIT_CONTRACT_CREATE_MAX;
+import static org.aion.api.ITx.NRG_LIMIT_TX_MAX;
+import static org.aion.api.ITx.NRG_PRICE_MIN;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Scanner;
 import org.aion.api.IAionAPI;
 import org.aion.api.IContract;
 import org.aion.api.IUtils;
@@ -35,58 +46,80 @@ import org.aion.api.type.ContractEvent;
 import org.aion.api.type.ContractResponse;
 import org.aion.base.type.Address;
 
-import java.util.*;
-
-import static java.lang.System.exit;
-import static org.aion.api.ITx.NRG_LIMIT_CONTRACT_CREATE_MAX;
-import static org.aion.api.ITx.NRG_LIMIT_TX_MAX;
-import static org.aion.api.ITx.NRG_PRICE_MIN;
-
-/**
- * Created by Jay Tseng on 26/06/17.
- */
+/** Created by Jay Tseng on 26/06/17. */
 public class Erc20Demo {
 
-    private final static String tokenSC_ERC20 = "pragma solidity ^0.4.0;\n" + "contract MyToken{\n"
-        + "    event Transfer(address  _from, address  _to, uint128 _value);\n"
-        + "    event Approval(address  _owner, address  _spender, uint128 _value);\n" + "\n" + "\n"
-        + "    string public name;  \n" + "    string public symbol;  \n"
-        + "    uint8 public decimals; \n"
-        + "    uint128 tokenSupply;\n" + "    \n" + "    mapping(address => uint128) balances; \n"
-        + "    mapping(address => mapping (address => uint128)) allowed;\n" + "\n" + "\n"
-        + "    function MyToken(uint128 INITIALSUPPLY, string tokenName, uint8 decimalUnits, string tokenSymbol){ \n"
-        + "        balances[msg.sender] = INITIALSUPPLY; \n"
-        + "        tokenSupply = INITIALSUPPLY;\n"
-        + "        name = tokenName;\n" + "        symbol = tokenSymbol;\n"
-        + "        decimals = decimalUnits;\n"
-        + "    }\n" + "    \n"
-        + "    function totalSupply() constant returns (uint128 totalSupply){\n"
-        + "        return tokenSupply;\n" + "    }\n" + "    \n"
-        + "    function balanceOf(address _owner) constant returns (uint128 balance) {\n"
-        + "        return balances[_owner];\n" + "    }\n" + "    \n"
-        + "    function transfer(address _to, uint128 _value) returns (bool success) {\n"
-        + "        if (balances[msg.sender] < _value \n" + "            || _value <= 0\n"
-        + "            || balances[_to] + _value <= balances[_to]) return false;    \n"
-        + "            \n"
-        + "        balances[msg.sender] -= _value;\n" + "        balances[_to] += _value;    \n"
-        + "\n" + "\n"
-        + "        Transfer(msg.sender, _to, _value);\n" + "        return true;\n" + "    }\n"
-        + "    \n"
-        + "    function transferFrom(address _from, address _to, uint128 _value) returns (bool success) {\n"
-        + "        if (balances[_from] < _value \n" + "            || _value <= 0\n"
-        + "            || balances[_to] + _value < balances[_to]\n"
-        + "            || allowed[_from][msg.sender] < _value) return false;\n" + "            \n"
-        + "        balances[_from] -= _value;\n" + "        balances[_to] += _value;  \n"
-        + "        allowed[_from][msg.sender] -= _value;\n" + "        \n"
-        + "        Transfer(msg.sender, _to, _value);\n" + "        return true;\n" + "    }\n"
-        + "    \n"
-        + "    function approve(address _spender, uint128 _value) returns (bool success) {\n"
-        + "        if (balances[msg.sender] < _value) return false;\n" + "        \n"
-        + "        allowed[msg.sender][_spender] = _value;\n"
-        + "        Approval(msg.sender, _spender, _value);\n"
-        + "        return true;\n" + "    }\n" + "    \n"
-        + "    function allowance(address _owner, address _spender) constant returns (uint128 remaining) {\n"
-        + "        return allowed[_owner][_spender];\n" + "    }\n" + "}";
+    private static final String tokenSC_ERC20 =
+            "pragma solidity ^0.4.0;\n"
+                    + "contract MyToken{\n"
+                    + "    event Transfer(address  _from, address  _to, uint128 _value);\n"
+                    + "    event Approval(address  _owner, address  _spender, uint128 _value);\n"
+                    + "\n"
+                    + "\n"
+                    + "    string public name;  \n"
+                    + "    string public symbol;  \n"
+                    + "    uint8 public decimals; \n"
+                    + "    uint128 tokenSupply;\n"
+                    + "    \n"
+                    + "    mapping(address => uint128) balances; \n"
+                    + "    mapping(address => mapping (address => uint128)) allowed;\n"
+                    + "\n"
+                    + "\n"
+                    + "    function MyToken(uint128 INITIALSUPPLY, string tokenName, uint8 decimalUnits, string tokenSymbol){ \n"
+                    + "        balances[msg.sender] = INITIALSUPPLY; \n"
+                    + "        tokenSupply = INITIALSUPPLY;\n"
+                    + "        name = tokenName;\n"
+                    + "        symbol = tokenSymbol;\n"
+                    + "        decimals = decimalUnits;\n"
+                    + "    }\n"
+                    + "    \n"
+                    + "    function totalSupply() constant returns (uint128 totalSupply){\n"
+                    + "        return tokenSupply;\n"
+                    + "    }\n"
+                    + "    \n"
+                    + "    function balanceOf(address _owner) constant returns (uint128 balance) {\n"
+                    + "        return balances[_owner];\n"
+                    + "    }\n"
+                    + "    \n"
+                    + "    function transfer(address _to, uint128 _value) returns (bool success) {\n"
+                    + "        if (balances[msg.sender] < _value \n"
+                    + "            || _value <= 0\n"
+                    + "            || balances[_to] + _value <= balances[_to]) return false;    \n"
+                    + "            \n"
+                    + "        balances[msg.sender] -= _value;\n"
+                    + "        balances[_to] += _value;    \n"
+                    + "\n"
+                    + "\n"
+                    + "        Transfer(msg.sender, _to, _value);\n"
+                    + "        return true;\n"
+                    + "    }\n"
+                    + "    \n"
+                    + "    function transferFrom(address _from, address _to, uint128 _value) returns (bool success) {\n"
+                    + "        if (balances[_from] < _value \n"
+                    + "            || _value <= 0\n"
+                    + "            || balances[_to] + _value < balances[_to]\n"
+                    + "            || allowed[_from][msg.sender] < _value) return false;\n"
+                    + "            \n"
+                    + "        balances[_from] -= _value;\n"
+                    + "        balances[_to] += _value;  \n"
+                    + "        allowed[_from][msg.sender] -= _value;\n"
+                    + "        \n"
+                    + "        Transfer(msg.sender, _to, _value);\n"
+                    + "        return true;\n"
+                    + "    }\n"
+                    + "    \n"
+                    + "    function approve(address _spender, uint128 _value) returns (bool success) {\n"
+                    + "        if (balances[msg.sender] < _value) return false;\n"
+                    + "        \n"
+                    + "        allowed[msg.sender][_spender] = _value;\n"
+                    + "        Approval(msg.sender, _spender, _value);\n"
+                    + "        return true;\n"
+                    + "    }\n"
+                    + "    \n"
+                    + "    function allowance(address _owner, address _spender) constant returns (uint128 remaining) {\n"
+                    + "        return allowed[_owner][_spender];\n"
+                    + "    }\n"
+                    + "}";
 
     private static boolean UNLOCKLOOP = true;
     private static int CNT = 0;
@@ -196,39 +229,59 @@ public class Erc20Demo {
 
     private static void setMsgSender() {
         if (validArgs(1)) {
-            Optional.ofNullable(validAddr(0)).ifPresent(
-                (String sd) -> Optional.ofNullable(getServerAccounts())
-                    .ifPresent(accs -> accs.forEach(acc -> {
-                        if (sd.equals(acc.toString())) {
-                            System.out.println("Account found, message sender set to " + sd);
-                            MSGSENDER = Address.wrap(sd);
-                        }
-                    })));
+            Optional.ofNullable(validAddr(0))
+                    .ifPresent(
+                            (String sd) ->
+                                    Optional.ofNullable(getServerAccounts())
+                                            .ifPresent(
+                                                    accs ->
+                                                            accs.forEach(
+                                                                    acc -> {
+                                                                        if (sd.equals(
+                                                                                acc.toString())) {
+                                                                            System.out.println(
+                                                                                    "Account found, message sender set to "
+                                                                                            + sd);
+                                                                            MSGSENDER =
+                                                                                    Address.wrap(
+                                                                                            sd);
+                                                                        }
+                                                                    })));
         }
     }
 
     private static void balanceOf() {
         if (validArgs(1)) {
-            Optional.ofNullable(validAddr(0)).ifPresent(acc -> {
-                ApiMsg apiMsg = CONTRACT.newFunction("balanceOf").setFrom(COINBASE)
-                    .setParam(IAddress.copyFrom(acc))
-                    .setTxNrgLimit(NRG_LIMIT_TX_MAX).setTxNrgPrice(NRG_PRICE_MIN)
-                    .build()
-                    .nonBlock().execute();
+            Optional.ofNullable(validAddr(0))
+                    .ifPresent(
+                            acc -> {
+                                ApiMsg apiMsg =
+                                        CONTRACT.newFunction("balanceOf")
+                                                .setFrom(COINBASE)
+                                                .setParam(IAddress.copyFrom(acc))
+                                                .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                                                .setTxNrgPrice(NRG_PRICE_MIN)
+                                                .build()
+                                                .nonBlock()
+                                                .execute();
 
-                if (apiMsg.isError()) {
-                    System.out.println("Function execution isError! " + apiMsg.getErrString());
-                    exit(0);
-                    return;
-                }
+                                if (apiMsg.isError()) {
+                                    System.out.println(
+                                            "Function execution isError! " + apiMsg.getErrString());
+                                    exit(0);
+                                    return;
+                                }
 
-                ContractResponse contractResponse = apiMsg.getObject();
+                                ContractResponse contractResponse = apiMsg.getObject();
 
-                for (Object a : contractResponse.getData()) {
-                    System.out
-                        .println("The balance Of the account: " + acc + " is " + a.toString());
-                }
-            });
+                                for (Object a : contractResponse.getData()) {
+                                    System.out.println(
+                                            "The balance Of the account: "
+                                                    + acc
+                                                    + " is "
+                                                    + a.toString());
+                                }
+                            });
         }
     }
 
@@ -265,27 +318,37 @@ public class Erc20Demo {
     private static void transfer() {
 
         if (validArgs(2) && digitArgs(1)) {
-            Optional.ofNullable(validAddr(0)).ifPresent(acc -> {
-                ApiMsg apiMsg = CONTRACT.newFunction("transfer").setFrom(MSGSENDER)
-                    .setParam(IAddress.copyFrom(acc))
-                    .setParam(IUint.copyFrom(Long.valueOf(FUNCTION_ARGS.get(1))))
-                    .setTxNrgLimit(NRG_LIMIT_TX_MAX).setTxNrgPrice(NRG_PRICE_MIN)
-                    .build().execute();
+            Optional.ofNullable(validAddr(0))
+                    .ifPresent(
+                            acc -> {
+                                ApiMsg apiMsg =
+                                        CONTRACT.newFunction("transfer")
+                                                .setFrom(MSGSENDER)
+                                                .setParam(IAddress.copyFrom(acc))
+                                                .setParam(
+                                                        IUint.copyFrom(
+                                                                Long.valueOf(FUNCTION_ARGS.get(1))))
+                                                .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                                                .setTxNrgPrice(NRG_PRICE_MIN)
+                                                .build()
+                                                .execute();
 
-                if (apiMsg.isError()) {
-                    System.out.println("Function execution isError! " + apiMsg.getErrString());
-                    return;
-                }
+                                if (apiMsg.isError()) {
+                                    System.out.println(
+                                            "Function execution isError! " + apiMsg.getErrString());
+                                    return;
+                                }
 
-                System.out.println("Token sent!");
+                                System.out.println("Token sent!");
 
-                ContractResponse contractResponse = apiMsg.getObject();
-                for (Object a : contractResponse.getData()) {
-                    System.out.println("The result of the token sent is " + a.toString());
-                }
+                                ContractResponse contractResponse = apiMsg.getObject();
+                                for (Object a : contractResponse.getData()) {
+                                    System.out.println(
+                                            "The result of the token sent is " + a.toString());
+                                }
 
-                checkEvents();
-            });
+                                checkEvents();
+                            });
         }
     }
 
@@ -294,49 +357,73 @@ public class Erc20Demo {
         List<ContractEvent> ctEvt = CONTRACT.getEvents();
 
         if (!ctEvt.isEmpty()) {
-            ctEvt.forEach(e -> {
-                System.out.println("Event call back: " + e.getEventName());
-                final int[] idx = {1};
-                e.getResults().forEach(arg -> {
-                    System.out
-                        .println("Event arg value " + idx[0]++ + " : " + (arg instanceof Long ?
-                            arg :
-                            IUtils.bytes2Hex((byte[]) arg)));
-                });
-            });
+            ctEvt.forEach(
+                    e -> {
+                        System.out.println("Event call back: " + e.getEventName());
+                        final int[] idx = {1};
+                        e.getResults()
+                                .forEach(
+                                        arg -> {
+                                            System.out.println(
+                                                    "Event arg value "
+                                                            + idx[0]++
+                                                            + " : "
+                                                            + (arg instanceof Long
+                                                                    ? arg
+                                                                    : IUtils.bytes2Hex(
+                                                                            (byte[]) arg)));
+                                        });
+                    });
         }
     }
 
     private static void transferFrom() {
 
         if (validArgs(3) && digitArgs(2)) {
-            Optional.ofNullable(validAddr(Arrays.asList(0, 1))).ifPresent(accs -> {
-                ApiMsg apiMsg = CONTRACT.newFunction("transferFrom").setFrom(MSGSENDER)
-                    .setParam(IAddress.copyFrom((String) accs.get(1)))
-                    .setParam(IAddress.copyFrom((String) accs.get(2)))
-                    .setParam(IUint.copyFrom(Long.valueOf(FUNCTION_ARGS.get(3))))
-                    .setTxNrgLimit(NRG_LIMIT_TX_MAX).setTxNrgPrice(NRG_PRICE_MIN).build().execute();
+            Optional.ofNullable(validAddr(Arrays.asList(0, 1)))
+                    .ifPresent(
+                            accs -> {
+                                ApiMsg apiMsg =
+                                        CONTRACT.newFunction("transferFrom")
+                                                .setFrom(MSGSENDER)
+                                                .setParam(IAddress.copyFrom((String) accs.get(1)))
+                                                .setParam(IAddress.copyFrom((String) accs.get(2)))
+                                                .setParam(
+                                                        IUint.copyFrom(
+                                                                Long.valueOf(FUNCTION_ARGS.get(3))))
+                                                .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                                                .setTxNrgPrice(NRG_PRICE_MIN)
+                                                .build()
+                                                .execute();
 
-                if (apiMsg.isError()) {
-                    System.out.println("Function execution isError! " + apiMsg.getErrString());
-                    return;
-                }
+                                if (apiMsg.isError()) {
+                                    System.out.println(
+                                            "Function execution isError! " + apiMsg.getErrString());
+                                    return;
+                                }
 
-                System.out.println("Token sent!");
+                                System.out.println("Token sent!");
 
-                ContractResponse contractResponse = apiMsg.getObject();
-                for (Object a : contractResponse.getData()) {
-                    System.out.println("The result of the token sent is " + a.toString());
-                }
+                                ContractResponse contractResponse = apiMsg.getObject();
+                                for (Object a : contractResponse.getData()) {
+                                    System.out.println(
+                                            "The result of the token sent is " + a.toString());
+                                }
 
-                checkEvents();
-            });
+                                checkEvents();
+                            });
         }
     }
 
     private static void totalSupply() {
-        ApiMsg apiMsg = CONTRACT.newFunction("totalSupply").setFrom(COINBASE)
-            .setTxNrgLimit(200_000L).setTxNrgPrice(1).build().nonBlock().execute();
+        ApiMsg apiMsg =
+                CONTRACT.newFunction("totalSupply")
+                        .setFrom(COINBASE)
+                        .setTxNrgLimit(200_000L)
+                        .setTxNrgPrice(1)
+                        .build()
+                        .nonBlock()
+                        .execute();
 
         if (apiMsg.isError()) {
             System.out.println("Function execution isError! " + apiMsg.getErrString());
@@ -353,89 +440,136 @@ public class Erc20Demo {
         System.out.println("approve(spenderAccount, amount)");
 
         if (validArgs(2) && digitArgs(1)) {
-            Optional.ofNullable(validAddr(0)).ifPresent(acc -> {
-                ApiMsg apiMsg = CONTRACT.newFunction("approve").setFrom(MSGSENDER)
-                    .setParam(IAddress.copyFrom(acc))
-                    .setParam(IUint.copyFrom(Long.valueOf(FUNCTION_ARGS.get(1))))
-                    .setTxNrgLimit(NRG_LIMIT_TX_MAX).setTxNrgPrice(NRG_PRICE_MIN).build().execute();
+            Optional.ofNullable(validAddr(0))
+                    .ifPresent(
+                            acc -> {
+                                ApiMsg apiMsg =
+                                        CONTRACT.newFunction("approve")
+                                                .setFrom(MSGSENDER)
+                                                .setParam(IAddress.copyFrom(acc))
+                                                .setParam(
+                                                        IUint.copyFrom(
+                                                                Long.valueOf(FUNCTION_ARGS.get(1))))
+                                                .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                                                .setTxNrgPrice(NRG_PRICE_MIN)
+                                                .build()
+                                                .execute();
 
-                if (apiMsg.isError()) {
-                    System.out.println("Function execution isError! " + apiMsg.getErrString());
-                    return;
-                }
+                                if (apiMsg.isError()) {
+                                    System.out.println(
+                                            "Function execution isError! " + apiMsg.getErrString());
+                                    return;
+                                }
 
-                System.out.println("Token sent!");
+                                System.out.println("Token sent!");
 
-                ContractResponse contractResponse = apiMsg.getObject();
-                for (Object a : contractResponse.getData()) {
-                    System.out.println("The approve of " + acc + "is : " + a.toString());
-                }
+                                ContractResponse contractResponse = apiMsg.getObject();
+                                for (Object a : contractResponse.getData()) {
+                                    System.out.println(
+                                            "The approve of " + acc + "is : " + a.toString());
+                                }
 
-                checkEvents();
-            });
+                                checkEvents();
+                            });
         }
     }
 
     private static void allowance() {
         if (validArgs(2)) {
-            Optional.ofNullable(validAddr(Arrays.asList(0, 1))).ifPresent(accs -> {
-                ApiMsg apiMsg = CONTRACT.newFunction("allowance").setFrom(MSGSENDER)
-                    .setParam(IAddress.copyFrom((String) accs.get(0)))
-                    .setParam(IAddress.copyFrom((String) accs.get(1)))
-                    .setTxNrgLimit(NRG_LIMIT_TX_MAX).setTxNrgPrice(NRG_PRICE_MIN)
-                    .build().nonBlock().execute();
+            Optional.ofNullable(validAddr(Arrays.asList(0, 1)))
+                    .ifPresent(
+                            accs -> {
+                                ApiMsg apiMsg =
+                                        CONTRACT.newFunction("allowance")
+                                                .setFrom(MSGSENDER)
+                                                .setParam(IAddress.copyFrom((String) accs.get(0)))
+                                                .setParam(IAddress.copyFrom((String) accs.get(1)))
+                                                .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                                                .setTxNrgPrice(NRG_PRICE_MIN)
+                                                .build()
+                                                .nonBlock()
+                                                .execute();
 
-                if (apiMsg.isError()) {
-                    System.out.println("Function execution isError! " + apiMsg.getErrString());
-                    return;
-                }
+                                if (apiMsg.isError()) {
+                                    System.out.println(
+                                            "Function execution isError! " + apiMsg.getErrString());
+                                    return;
+                                }
 
-                ContractResponse contractResponse = apiMsg.getObject();
+                                ContractResponse contractResponse = apiMsg.getObject();
 
-                for (Object a : contractResponse.getData()) {
-                    System.out.println(
-                        "The allowance from " + accs.get(0) + " to " + accs.get(1) + " is " + a
-                            .toString());
-                }
-            });
+                                for (Object a : contractResponse.getData()) {
+                                    System.out.println(
+                                            "The allowance from "
+                                                    + accs.get(0)
+                                                    + " to "
+                                                    + accs.get(1)
+                                                    + " is "
+                                                    + a.toString());
+                                }
+                            });
         }
     }
 
     private static void unlockAccount() {
         if (validArgs(2)) {
-            Optional.ofNullable(validAddr(0)).ifPresent(ulAcc -> {
-                Optional.ofNullable(getServerAccounts()).ifPresent(accs -> {
-                    accs.forEach(acc -> {
-                        if (acc.equals(Address.wrap(ulAcc))) {
-                            System.out.println("UnlockAccount: " + ulAcc);
-                            ApiMsg apiMsg = API.getWallet()
-                                .unlockAccount((Address) acc, FUNCTION_ARGS.get(1), 86400);
-                            if (apiMsg.isError() || !(boolean) apiMsg.getObject()) {
-                                System.out.println(
-                                    "Unlock account failed! Please check your password input! "
-                                        + apiMsg
-                                        .getErrString());
-                            }
-                            System.out.println("UnlockAccount: success!");
-                        }
-                    });
-                });
-            });
+            Optional.ofNullable(validAddr(0))
+                    .ifPresent(
+                            ulAcc -> {
+                                Optional.ofNullable(getServerAccounts())
+                                        .ifPresent(
+                                                accs -> {
+                                                    accs.forEach(
+                                                            acc -> {
+                                                                if (acc.equals(
+                                                                        Address.wrap(ulAcc))) {
+                                                                    System.out.println(
+                                                                            "UnlockAccount: "
+                                                                                    + ulAcc);
+                                                                    ApiMsg apiMsg =
+                                                                            API.getWallet()
+                                                                                    .unlockAccount(
+                                                                                            (Address)
+                                                                                                    acc,
+                                                                                            FUNCTION_ARGS
+                                                                                                    .get(
+                                                                                                            1),
+                                                                                            86400);
+                                                                    if (apiMsg.isError()
+                                                                            || !(boolean)
+                                                                                    apiMsg
+                                                                                            .getObject()) {
+                                                                        System.out.println(
+                                                                                "Unlock account failed! Please check your password input! "
+                                                                                        + apiMsg
+                                                                                                .getErrString());
+                                                                    }
+                                                                    System.out.println(
+                                                                            "UnlockAccount: success!");
+                                                                }
+                                                            });
+                                                });
+                            });
         }
     }
 
     private static void account() {
 
         if (validArgs(1) && digitArgs(0)) {
-            Optional.ofNullable(getServerAccounts()).ifPresent(accs -> {
-                Address acc = (Address) accs.get(Integer.valueOf(FUNCTION_ARGS.get(0)));
+            Optional.ofNullable(getServerAccounts())
+                    .ifPresent(
+                            accs -> {
+                                Address acc =
+                                        (Address) accs.get(Integer.valueOf(FUNCTION_ARGS.get(0)));
 
-                Optional.ofNullable(acc).ifPresent(a -> {
-                    System.out.println(a.toString());
-                });
+                                Optional.ofNullable(acc)
+                                        .ifPresent(
+                                                a -> {
+                                                    System.out.println(a.toString());
+                                                });
 
-                System.out.println("Out of the index of the accounts!");
-            });
+                                System.out.println("Out of the index of the accounts!");
+                            });
         }
     }
 
@@ -458,10 +592,12 @@ public class Erc20Demo {
     }
 
     private static void getAccounts() {
-        Optional.ofNullable(getServerAccounts()).ifPresent(accs -> {
-            System.out.println("List " + accs.size() + " account addresses!");
-            accs.forEach(acc -> System.out.println(acc.toString()));
-        });
+        Optional.ofNullable(getServerAccounts())
+                .ifPresent(
+                        accs -> {
+                            System.out.println("List " + accs.size() + " account addresses!");
+                            accs.forEach(acc -> System.out.println(acc.toString()));
+                        });
     }
 
     private static boolean parseInput(String input) {
@@ -505,7 +641,7 @@ public class Erc20Demo {
         System.out.println("account(index), get the account address by the input index.");
         System.out.println("unlockAccount(Account, password), unlock the account address.");
         System.out.println(
-            "SetMsgSender(senderAccount), set the message sender, default is the coinbase account.");
+                "SetMsgSender(senderAccount), set the message sender, default is the coinbase account.");
         System.out.println("getMsgSender(), get the current message sender.");
         System.out.println();
         System.out.println("The general command.");
@@ -517,7 +653,7 @@ public class Erc20Demo {
         resetLoopCondition();
         Scanner scan = new Scanner(System.in);
         System.out.println(
-            "Now prepare to initial the token contract, please input the initial token supply:");
+                "Now prepare to initial the token contract, please input the initial token supply:");
         while (UNLOCKLOOP) {
             String input = scan.nextLine();
 
@@ -554,8 +690,14 @@ public class Erc20Demo {
         scan = new Scanner(System.in);
         scan.nextLine();
 
-        ApiMsg apiMsg = API.getContractController()
-            .createFromSource(tokenSC_ERC20, COINBASE, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN, param);
+        ApiMsg apiMsg =
+                API.getContractController()
+                        .createFromSource(
+                                tokenSC_ERC20,
+                                COINBASE,
+                                NRG_LIMIT_CONTRACT_CREATE_MAX,
+                                NRG_PRICE_MIN,
+                                param);
 
         if (apiMsg.isError()) {
             System.out.println("Deploy contract failed!" + apiMsg.getErrString());
@@ -598,7 +740,7 @@ public class Erc20Demo {
 
         if (accs.size() < 3) {
             System.out.println(
-                "The number of accounts in the server is lower than 3, please check the server has a least 3 accounts to support the demo!");
+                    "The number of accounts in the server is lower than 3, please check the server has a least 3 accounts to support the demo!");
             return false;
         }
 
@@ -612,8 +754,8 @@ public class Erc20Demo {
 
     private static boolean UnlockAccount() {
 
-        System.out
-            .println("Unlock account before deploy smart contract and execute tokens transfer.");
+        System.out.println(
+                "Unlock account before deploy smart contract and execute tokens transfer.");
         System.out.println("Please press the enter key to go next step!");
         Scanner scan = new Scanner(System.in);
         scan.nextLine();
@@ -626,10 +768,10 @@ public class Erc20Demo {
             apiMsg.set(API.getWallet().unlockAccount(COINBASE, input, 86400));
             if (apiMsg.isError() || !(boolean) apiMsg.getObject()) {
                 System.out.println(
-                    "Unlock account failed! Please check your password input! " + apiMsg
-                        .getErrString());
-                System.out
-                    .println("Please check your password input or press q to exit this demo! ");
+                        "Unlock account failed! Please check your password input! "
+                                + apiMsg.getErrString());
+                System.out.println(
+                        "Please check your password input or press q to exit this demo! ");
 
                 input = scan.nextLine();
                 if (Objects.equals(input, "q") || Objects.equals(input, "Q")) {
@@ -654,8 +796,8 @@ public class Erc20Demo {
 
     private static boolean ConnectServer() {
 
-        System.out
-            .println("Create api instance and connect, please press enter key to go next step!");
+        System.out.println(
+                "Create api instance and connect, please press enter key to go next step!");
         Scanner scan = new Scanner(System.in);
         scan.nextLine();
 

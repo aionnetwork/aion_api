@@ -21,7 +21,6 @@
  *     Aion foundation.
  */
 
-
 package org.aion.api.type;
 
 import org.aion.base.type.Hash256;
@@ -52,7 +51,6 @@ import org.aion.base.util.ByteArrayWrapper;
  *
  * @author Jay Tseng
  */
-
 public class MsgRsp {
 
     private byte preStatus;
@@ -63,8 +61,7 @@ public class MsgRsp {
     private ByteArrayWrapper txDeploy;
     private String error;
 
-    private MsgRsp() {
-    }
+    private MsgRsp() {}
 
     public MsgRsp(int rValue, ByteArrayWrapper hash) {
         this.setPreStatus((byte) 106);

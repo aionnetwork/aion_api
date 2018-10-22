@@ -31,7 +31,6 @@ import org.aion.api.sol.impl.SString;
  *
  * @author Jay Tseng
  */
-
 public interface ISString extends ISolidityArg {
 
     /**

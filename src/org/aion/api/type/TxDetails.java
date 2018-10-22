@@ -23,12 +23,11 @@
 
 package org.aion.api.type;
 
+import java.math.BigInteger;
+import java.util.List;
 import org.aion.base.type.Address;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
-
-import java.math.BigInteger;
-import java.util.List;
 
 /**
  * TxLog class containing all relevant information to transaction log utilized by {@link
@@ -37,7 +36,6 @@ import java.util.List;
  * @author Jay Tseng
  * @see org.aion.api.type.TxReceipt TxReceipt
  */
-
 public final class TxDetails {
 
     private final Address from;
@@ -135,19 +133,59 @@ public final class TxDetails {
             lv.append("  ");
         }
 
-        StringBuilder sb = new StringBuilder()
-            .append(lv).append("nrgPrice: ").append(nrgPrice).append(",\n")
-            .append(lv).append("nrg: ").append(nrgConsumed).append(",\n")
-            .append(lv).append("transactionIndex: ").append(txIndex).append(",\n")
-            .append(lv).append("nonce: ").append(nonce.toString()).append(",\n")
-            .append(lv).append("input: ").append("0x").append(data.toString()).append(",\n")
-            .append(lv).append("from: ").append("0x").append(from.toString()).append(",\n")
-            .append(lv).append("to: ").append("0x").append(to.toString()).append(",\n")
-            .append(lv).append("value: ").append(value.toString()).append(",\n")
-            .append(lv).append("hash: ").append("0x").append(txHash.toString()).append(",\n")
-            .append(lv).append("timestamp: ").append(timestamp).append(",\n")
-            .append(lv).append("error: ").append(error).append(",\n")
-            .append(lv).append("log: ").append("\n");
+        StringBuilder sb =
+                new StringBuilder()
+                        .append(lv)
+                        .append("nrgPrice: ")
+                        .append(nrgPrice)
+                        .append(",\n")
+                        .append(lv)
+                        .append("nrg: ")
+                        .append(nrgConsumed)
+                        .append(",\n")
+                        .append(lv)
+                        .append("transactionIndex: ")
+                        .append(txIndex)
+                        .append(",\n")
+                        .append(lv)
+                        .append("nonce: ")
+                        .append(nonce.toString())
+                        .append(",\n")
+                        .append(lv)
+                        .append("input: ")
+                        .append("0x")
+                        .append(data.toString())
+                        .append(",\n")
+                        .append(lv)
+                        .append("from: ")
+                        .append("0x")
+                        .append(from.toString())
+                        .append(",\n")
+                        .append(lv)
+                        .append("to: ")
+                        .append("0x")
+                        .append(to.toString())
+                        .append(",\n")
+                        .append(lv)
+                        .append("value: ")
+                        .append(value.toString())
+                        .append(",\n")
+                        .append(lv)
+                        .append("hash: ")
+                        .append("0x")
+                        .append(txHash.toString())
+                        .append(",\n")
+                        .append(lv)
+                        .append("timestamp: ")
+                        .append(timestamp)
+                        .append(",\n")
+                        .append(lv)
+                        .append("error: ")
+                        .append(error)
+                        .append(",\n")
+                        .append(lv)
+                        .append("log: ")
+                        .append("\n");
 
         int cnt = logs.size();
         for (TxLog tl : logs) {
@@ -164,9 +202,7 @@ public final class TxDetails {
         return sb.toString();
     }
 
-    /**
-     * This Builder class is used to build a {@link TxDetails} instance.
-     */
+    /** This Builder class is used to build a {@link TxDetails} instance. */
     public static class TxDetailsBuilder {
 
         private Address from;
@@ -183,8 +219,7 @@ public final class TxDetails {
         private long timestamp;
         private String error;
 
-        public TxDetailsBuilder() {
-        }
+        public TxDetailsBuilder() {}
 
         public TxDetailsBuilder from(final Address from) {
             this.from = from;
@@ -251,26 +286,41 @@ public final class TxDetails {
             return this;
         }
 
-
         public TxDetails createTxDetails() {
-            if (from == null || to == null || contract == null || txHash == null || value == null
-                || nonce == null || data == null) {
+            if (from == null
+                    || to == null
+                    || contract == null
+                    || txHash == null
+                    || value == null
+                    || nonce == null
+                    || data == null) {
                 throw new NullPointerException(
-                    "From#" + String.valueOf(from) +
-                        " To#" + String.valueOf(to) +
-                        " Contract#" + String.valueOf(contract) +
-                        " Hash#" + String.valueOf(txHash) +
-                        " Value#" + String.valueOf(value) +
-                        " Nonce#" + String.valueOf(nonce) +
-                        " Data#" + String.valueOf(data) +
-                        " Logs#" + String.valueOf(logs));
+                        "From#"
+                                + String.valueOf(from)
+                                + " To#"
+                                + String.valueOf(to)
+                                + " Contract#"
+                                + String.valueOf(contract)
+                                + " Hash#"
+                                + String.valueOf(txHash)
+                                + " Value#"
+                                + String.valueOf(value)
+                                + " Nonce#"
+                                + String.valueOf(nonce)
+                                + " Data#"
+                                + String.valueOf(data)
+                                + " Logs#"
+                                + String.valueOf(logs));
             }
 
             if (nrgConsumed < 0 || nrgPrice < 0 || txIndex < 0) {
                 throw new IllegalArgumentException(
-                    "NrgConsumed#" + nrgConsumed +
-                        " TxIndex#" + String.valueOf(txIndex) +
-                        " NrgPrice#" + nrgPrice);
+                        "NrgConsumed#"
+                                + nrgConsumed
+                                + " TxIndex#"
+                                + String.valueOf(txIndex)
+                                + " NrgPrice#"
+                                + nrgPrice);
             }
 
             return new TxDetails(this);

@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,14 +19,14 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
-
+ */
 package org.aion.api.log;
 
 public enum LogLevels {
-
-    INFO, DEBUG, ERROR, TRACE;
+    INFO,
+    DEBUG,
+    ERROR,
+    TRACE;
 
     public static boolean contains(String _level) {
         for (LogLevels LogLevel : values())

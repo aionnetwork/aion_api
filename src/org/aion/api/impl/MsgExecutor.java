@@ -23,12 +23,30 @@
 
 package org.aion.api.impl;
 
+import static java.lang.Thread.sleep;
+
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.aion.api.IUtils;
 import org.aion.api.cfg.CfgApi;
 import org.aion.api.impl.internal.ApiUtils;
@@ -51,16 +69,7 @@ import org.zeromq.ZMQ.Context;
 import org.zeromq.ZMQ.PollItem;
 import org.zeromq.ZMQ.Socket;
 
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static java.lang.Thread.sleep;
-
-/**
- * Created by Jay Tseng on 15/03/17.
- */
+/** Created by Jay Tseng on 15/03/17. */
 public class MsgExecutor implements Runnable {
 
     private final int qSize = 50_000;
@@ -70,16 +79,16 @@ public class MsgExecutor implements Runnable {
     private final String CB_BIND_ADDR = "inproc://apicbTh";
     private final String HB_BIND_ADDR = "inproc://apihbTh";
 
-    private final static int HB_TOLERANCE = 3;
-    private final static int HB_POLL_MS = 500;
-    private final static int RECVTIMEOUT = 3000;
+    private static final int HB_TOLERANCE = 3;
+    private static final int HB_POLL_MS = 500;
+    private static final int RECVTIMEOUT = 3000;
     private static String ServerPubkeyString;
 
     private byte[] serverPubKey;
     // = If api is unresponsive for more than ~2 seconds, kill the api.
     // TODO: implement auto-reconnect on kernel failure
 
-    //TODO: update kernel api privilege then remove this flag
+    // TODO: update kernel api privilege then remove this flag
     private final boolean PRIVILEGE = true; // temp flag
     private Socket nbSocket;
     AtomicBoolean isInitialized = new AtomicBoolean(false);
@@ -146,11 +155,11 @@ public class MsgExecutor implements Runnable {
     }
 
     private void update(ByteArrayWrapper msgHash, ByteArrayWrapper rsp, int status)
-        throws CloneNotSupportedException {
+            throws CloneNotSupportedException {
 
         if (msgHash == null || rsp == null) {
             throw new NullPointerException(
-                "msgHash#" + String.valueOf(msgHash) + " rsp#" + String.valueOf(rsp));
+                    "msgHash#" + String.valueOf(msgHash) + " rsp#" + String.valueOf(rsp));
         }
 
         MsgRsp newRsp = this.hashMap.get(msgHash);
@@ -172,20 +181,27 @@ public class MsgExecutor implements Runnable {
                     }
 
                     if (status == 105) {
-                        msgRsp.setTxResult(ByteArrayWrapper.wrap(
-                            Arrays.copyOfRange(rsp.getData(), rsp.getData()[0] + 1, rsp.getData().length)));
+                        msgRsp.setTxResult(
+                                ByteArrayWrapper.wrap(
+                                        Arrays.copyOfRange(
+                                                rsp.getData(),
+                                                rsp.getData()[0] + 1,
+                                                rsp.getData().length)));
                     }
                 } else {
                     // if response message = 68, that is a contract deploy
                     if (rsp.getData().length == 68) {
-                        Message.rsp_contractDeploy result = Message.rsp_contractDeploy
-                            .parseFrom(rsp.getData());
+                        Message.rsp_contractDeploy result =
+                                Message.rsp_contractDeploy.parseFrom(rsp.getData());
                         msgRsp.setTxHash(Hash256.wrap(result.getTxHash().toByteArray()));
                         msgRsp.setTxDeploy(ByteArrayWrapper.wrap(rsp.getData()));
                     } else {
-                        msgRsp.setTxHash(Hash256.wrap(
-                            Message.rsp_sendTransaction.parseFrom(rsp.getData()).getTxHash()
-                                .toByteArray()));
+                        msgRsp.setTxHash(
+                                Hash256.wrap(
+                                        Message.rsp_sendTransaction
+                                                .parseFrom(rsp.getData())
+                                                .getTxHash()
+                                                .toByteArray()));
                     }
                 }
 
@@ -202,17 +218,20 @@ public class MsgExecutor implements Runnable {
             msgRsp.setStatus((byte) status);
             this.hashMap.replace(msgHash, msgRsp);
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("[update] Msg: [{}] Msgbody: [{}]", msgHash.toString(),
-                    msgRsp.getTxHash().toString());
+                LOGGER.debug(
+                        "[update] Msg: [{}] Msgbody: [{}]",
+                        msgHash.toString(),
+                        msgRsp.getTxHash().toString());
             }
         } else if (update) {
             this.hashMap.replace(msgHash, msgRsp);
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("[update] late update Msg: [{}] Msgbody: [{}]", msgHash.toString(),
-                    msgRsp.getTxHash().toString());
+                LOGGER.debug(
+                        "[update] late update Msg: [{}] Msgbody: [{}]",
+                        msgHash.toString(),
+                        msgRsp.getTxHash().toString());
             }
         }
-
     }
 
     private synchronized void process(final byte[] rsp) {
@@ -235,7 +254,7 @@ public class MsgExecutor implements Runnable {
         }
 
         if ((short) rsp[1] >= Message.Retcode.r_NA_VALUE
-            || (short) rsp[1] <= Message.Retcode.r_fail_unknown_VALUE) {
+                || (short) rsp[1] <= Message.Retcode.r_fail_unknown_VALUE) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[process] {}", ErrId.getErrString(-319L));
             }
@@ -251,8 +270,8 @@ public class MsgExecutor implements Runnable {
                 update(ApiUtils.parseHash(rsp), ApiUtils.parseBody(rsp), (int) rsp[1]);
             } catch (CloneNotSupportedException e) {
                 if (LOGGER.isErrorEnabled()) {
-                    LOGGER
-                        .error("[process] update data get a CloneNotSupportedException exception");
+                    LOGGER.error(
+                            "[process] update data get a CloneNotSupportedException exception");
                 }
             }
         }
@@ -264,11 +283,12 @@ public class MsgExecutor implements Runnable {
 
             List<String> privileges = up.getPrivilegeList();
             if (Optional.ofNullable(privileges).isPresent()) {
-                privileges.forEach(p -> {
-                    if (Optional.ofNullable(this.privilege.get(p)).isPresent()) {
-                        this.privilege.put(p, true);
-                    }
-                });
+                privileges.forEach(
+                        p -> {
+                            if (Optional.ofNullable(this.privilege.get(p)).isPresent()) {
+                                this.privilege.put(p, true);
+                            }
+                        });
             }
         } catch (InvalidProtocolBufferException e) {
             if (LOGGER.isErrorEnabled()) {
@@ -295,16 +315,17 @@ public class MsgExecutor implements Runnable {
             }
 
             for (Message.t_EventCt cte : evt.getEcList()) {
-                ContractEvent.ContractEventBuilder builder = new ContractEvent.ContractEventBuilder()
-                    .address(Address.wrap(cte.getAddress().toByteArray()))
-                    .blockHash(Hash256.wrap(cte.getBlockHash().toByteArray()))
-                    .blockNumber(cte.getBlockNumber())
-                    .data(ByteArrayWrapper.wrap(cte.getData().toByteArray()))
-                    .eventName(cte.getEventName())
-                    .logIndex(cte.getLogIndex())
-                    .removed(cte.getRemoved())
-                    .txHash(Hash256.wrap(cte.getTxHash().toByteArray()))
-                    .txIndex(cte.getTxIndex());
+                ContractEvent.ContractEventBuilder builder =
+                        new ContractEvent.ContractEventBuilder()
+                                .address(Address.wrap(cte.getAddress().toByteArray()))
+                                .blockHash(Hash256.wrap(cte.getBlockHash().toByteArray()))
+                                .blockNumber(cte.getBlockNumber())
+                                .data(ByteArrayWrapper.wrap(cte.getData().toByteArray()))
+                                .eventName(cte.getEventName())
+                                .logIndex(cte.getLogIndex())
+                                .removed(cte.getRemoved())
+                                .txHash(Hash256.wrap(cte.getTxHash().toByteArray()))
+                                .txIndex(cte.getTxIndex());
 
                 ContractEvent d = builder.createContractEvent();
 
@@ -334,7 +355,9 @@ public class MsgExecutor implements Runnable {
 
             if (CfgApi.inst().isSecureConnectEnabled()) {
                 if (ServerPubkeyString != null && !ServerPubkeyString.isEmpty()) {
-                    LOGGER.info("Set secure connect with input server public key string! [{}]", ServerPubkeyString);
+                    LOGGER.info(
+                            "Set secure connect with input server public key string! [{}]",
+                            ServerPubkeyString);
                     ZMQ.Curve.KeyPair kp = ZMQ.Curve.generateKeyPair();
                     if (kp != null) {
                         feSocket.setCurvePublicKey(kp.publicKey.getBytes());
@@ -342,7 +365,8 @@ public class MsgExecutor implements Runnable {
                         feSocket.setCurveServerKey(ServerPubkeyString.getBytes());
                         LOGGER.info("Secure connection enabled!");
                     } else {
-                        LOGGER.error("Can't generate client curve keypair. Secured connection disabled!");
+                        LOGGER.error(
+                                "Can't generate client curve keypair. Secured connection disabled!");
                     }
                 } else {
                     LOGGER.info("Loading the connecting server's public key from the folder!");
@@ -357,10 +381,11 @@ public class MsgExecutor implements Runnable {
                             LOGGER.info("Secure connection enabled!");
                         } else {
                             LOGGER.error(
-                                "Can't generate client curve keypair. Secure connection disabled!");
+                                    "Can't generate client curve keypair. Secure connection disabled!");
                         }
                     } else {
-                        LOGGER.info("Can't find the connecting server's public key. Secured connection disabled!");
+                        LOGGER.info(
+                                "Can't find the connecting server's public key. Secured connection disabled!");
                     }
                 }
             } else {
@@ -397,16 +422,19 @@ public class MsgExecutor implements Runnable {
 
             // Check user api privilege
             if (!PRIVILEGE) {
-                byte[] header = ApiUtils
-                    .toReqHeader(this.ver, Message.Servs.s_privilege,
-                        Message.Funcs.f_userPrivilege);
+                byte[] header =
+                        ApiUtils.toReqHeader(
+                                this.ver, Message.Servs.s_privilege, Message.Funcs.f_userPrivilege);
 
                 String user = CfgApi.inst().getConnect().getUser();
                 String pw = CfgApi.inst().getConnect().getPassword();
 
-                Message.req_userPrivilege reqBody = Message.req_userPrivilege.newBuilder()
-                    .setUsername(user)
-                    .setPassword(pw).build();
+                Message.req_userPrivilege reqBody =
+                        Message.req_userPrivilege
+                                .newBuilder()
+                                .setUsername(user)
+                                .setPassword(pw)
+                                .build();
 
                 byte[] body = reqBody.toByteArray();
 
@@ -452,21 +480,24 @@ public class MsgExecutor implements Runnable {
             ExecutorService es = Executors.newFixedThreadPool(thNum);
             for (int i = 0; i < thNum; i++) {
                 if (i == 0) {
-                    es.execute(() -> {
-                        Thread.currentThread().setName("es_hb0");
-                        heartBeatRun(ctx);
-                    });
+                    es.execute(
+                            () -> {
+                                Thread.currentThread().setName("es_hb0");
+                                heartBeatRun(ctx);
+                            });
                 } else if (i == 1) {
-                    es.execute(() -> {
-                        Thread.currentThread().setName("ws_cb0");
-                        callbackRun(ctx);
-                    });
+                    es.execute(
+                            () -> {
+                                Thread.currentThread().setName("ws_cb0");
+                                callbackRun(ctx);
+                            });
                 } else {
                     int finalI = i;
-                    es.execute(() -> {
-                        Thread.currentThread().setName("es_wk" + (finalI - 2));
-                        workerRun(ctx);
-                    });
+                    es.execute(
+                            () -> {
+                                Thread.currentThread().setName("es_wk" + (finalI - 2));
+                                workerRun(ctx);
+                            });
                 }
             }
 
@@ -502,11 +533,10 @@ public class MsgExecutor implements Runnable {
                 } catch (Exception f) {
                     if (LOGGER.isErrorEnabled()) {
                         LOGGER.error(
-                            "feSocket.disconnect failed, probably due to forceful context close [{}].",
-                            f.getMessage());
+                                "feSocket.disconnect failed, probably due to forceful context close [{}].",
+                                f.getMessage());
                     }
                 }
-
             }
         } finally {
             this.isInitialized.set(false);
@@ -594,8 +624,8 @@ public class MsgExecutor implements Runnable {
             byte[] rsp = cbWorker.recv(ZMQ.PAIR);
             if (this.running) {
                 if (LOGGER.isTraceEnabled()) {
-                    LOGGER
-                        .trace("recv msg: [{}]", (rsp != null ? IUtils.bytes2Hex(rsp) : "= null"));
+                    LOGGER.trace(
+                            "recv msg: [{}]", (rsp != null ? IUtils.bytes2Hex(rsp) : "= null"));
                 }
                 process(rsp);
             } else {
@@ -664,8 +694,8 @@ public class MsgExecutor implements Runnable {
         LOGGER.info("closed!");
     }
 
-    private void proxy(Socket feSocket, Socket beSocket, Socket cbSocket, Socket nbDealer,
-        Socket hbDealer) {
+    private void proxy(
+            Socket feSocket, Socket beSocket, Socket cbSocket, Socket nbDealer, Socket hbDealer) {
         PollItem[] items = new PollItem[4];
         items[0] = new PollItem(feSocket, ZMQ.Poller.POLLIN);
         items[1] = new PollItem(beSocket, ZMQ.Poller.POLLIN);
@@ -734,8 +764,8 @@ public class MsgExecutor implements Runnable {
         }
     }
 
-    private boolean msgHandle(Socket receiver, Socket sender, Socket sender2, Socket sender3,
-        Socket sender4) {
+    private boolean msgHandle(
+            Socket receiver, Socket sender, Socket sender2, Socket sender3, Socket sender4) {
 
         byte[] msg = receiver.recv(ZMQ.PAIR);
         if (msg == null) {
@@ -855,50 +885,55 @@ public class MsgExecutor implements Runnable {
 
     Future<MsgRsp> aSyncSend(byte[] hash, byte[] req) {
         new CompletableFuture();
-        return CompletableFuture.supplyAsync(() -> {
-            int code = this.put(hash, req);
-            if (1 == code) {
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("[aSyncSend] Req msg put: [{}] req: [{}]", IUtils.bytes2Hex(hash),
-                        IUtils.bytes2Hex(req));
-                }
-                MsgRsp msgRsp = this.getStatus(ByteArrayWrapper.wrap(hash));
-                long start = System.currentTimeMillis();
-                boolean timeout = false;
-                while (msgRsp != null && !this.endState(msgRsp.getStatus())) {
-
-                    if (System.currentTimeMillis() - start > 180_000) {
-                        timeout = true;
-                        break;
-                    }
-
-                    msgRsp = this.getStatus(ByteArrayWrapper.wrap(hash));
-                    try {
-                        sleep(500);
-                    } catch (InterruptedException e) {
-                        if (LOGGER.isErrorEnabled()) {
-                            LOGGER.error("[aSyncSend] {} Exception: [{}]", ErrId.getErrString(50L),
-                                e.getMessage());
+        return CompletableFuture.supplyAsync(
+                () -> {
+                    int code = this.put(hash, req);
+                    if (1 == code) {
+                        if (LOGGER.isDebugEnabled()) {
+                            LOGGER.debug(
+                                    "[aSyncSend] Req msg put: [{}] req: [{}]",
+                                    IUtils.bytes2Hex(hash),
+                                    IUtils.bytes2Hex(req));
                         }
-                        return new MsgRsp(50, null);
-                    }
-                }
+                        MsgRsp msgRsp = this.getStatus(ByteArrayWrapper.wrap(hash));
+                        long start = System.currentTimeMillis();
+                        boolean timeout = false;
+                        while (msgRsp != null && !this.endState(msgRsp.getStatus())) {
 
-                if (timeout) {
-                    if (LOGGER.isErrorEnabled()) {
-                        LOGGER.error("[aSyncSend] Transaction timeout");
-                    }
-                    return new MsgRsp(51, null);
-                }
+                            if (System.currentTimeMillis() - start > 180_000) {
+                                timeout = true;
+                                break;
+                            }
 
-                return msgRsp;
-            } else {
-                if (LOGGER.isErrorEnabled()) {
-                    LOGGER.error("[aSyncSend]" + ErrId.getErrString(53L));
-                }
-                return new MsgRsp(53, null);
-            }
-        });
+                            msgRsp = this.getStatus(ByteArrayWrapper.wrap(hash));
+                            try {
+                                sleep(500);
+                            } catch (InterruptedException e) {
+                                if (LOGGER.isErrorEnabled()) {
+                                    LOGGER.error(
+                                            "[aSyncSend] {} Exception: [{}]",
+                                            ErrId.getErrString(50L),
+                                            e.getMessage());
+                                }
+                                return new MsgRsp(50, null);
+                            }
+                        }
+
+                        if (timeout) {
+                            if (LOGGER.isErrorEnabled()) {
+                                LOGGER.error("[aSyncSend] Transaction timeout");
+                            }
+                            return new MsgRsp(51, null);
+                        }
+
+                        return msgRsp;
+                    } else {
+                        if (LOGGER.isErrorEnabled()) {
+                            LOGGER.error("[aSyncSend]" + ErrId.getErrString(53L));
+                        }
+                        return new MsgRsp(53, null);
+                    }
+                });
     }
 
     synchronized MsgRsp getStatus(ByteArrayWrapper msgHash) {
@@ -934,8 +969,8 @@ public class MsgExecutor implements Runnable {
 
     private boolean endState(int status) {
         return status == Message.Retcode.r_tx_Included_VALUE
-            || status == Message.Retcode.r_tx_Dropped_VALUE
-            || status <= Message.Retcode.r_wallet_nullcb_VALUE;
+                || status == Message.Retcode.r_tx_Dropped_VALUE
+                || status <= Message.Retcode.r_wallet_nullcb_VALUE;
     }
 
     public synchronized int put(byte[] hash, byte[] payload) {
@@ -948,8 +983,9 @@ public class MsgExecutor implements Runnable {
         }
 
         try {
-            this.hashMap.put(ByteArrayWrapper.wrap(hash),
-                new MsgRsp(Message.Retcode.r_tx_Init_VALUE, ByteArrayWrapper.wrap(hash)));
+            this.hashMap.put(
+                    ByteArrayWrapper.wrap(hash),
+                    new MsgRsp(Message.Retcode.r_tx_Init_VALUE, ByteArrayWrapper.wrap(hash)));
         } catch (Throwable e) {
             e.printStackTrace();
         }
@@ -993,8 +1029,10 @@ public class MsgExecutor implements Runnable {
         int code = this.put(hash, req);
         if (code == 1) {
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("[send] Reqmsg hash: [{}] msg: [{}]", IUtils.bytes2Hex(hash),
-                    IUtils.bytes2Hex(req));
+                LOGGER.debug(
+                        "[send] Reqmsg hash: [{}] msg: [{}]",
+                        IUtils.bytes2Hex(hash),
+                        IUtils.bytes2Hex(req));
             }
             return this.getStatus(ByteArrayWrapper.wrap(hash));
         } else {
@@ -1046,22 +1084,25 @@ public class MsgExecutor implements Runnable {
     public List<Event> getEvents(List<String> evtNames) {
         List<Event> result = new ArrayList<>();
         if (Optional.ofNullable(evtNames).isPresent()) {
-            evtNames.forEach((ev) -> {
-                Optional<BlockingQueue<Event>> evtQ = Optional.ofNullable(this.eventMap.get(ev));
-                if (evtQ.isPresent()) {
-                    int number = evtQ.get().size();
-                    for (int i = 0; i < number; i++) {
-                        try {
-                            result.add(evtQ.get().take());
-                        } catch (InterruptedException e) {
-                            if (LOGGER.isErrorEnabled()) {
-                                LOGGER.error("[getEvents] Get event exception: " + e.toString());
+            evtNames.forEach(
+                    (ev) -> {
+                        Optional<BlockingQueue<Event>> evtQ =
+                                Optional.ofNullable(this.eventMap.get(ev));
+                        if (evtQ.isPresent()) {
+                            int number = evtQ.get().size();
+                            for (int i = 0; i < number; i++) {
+                                try {
+                                    result.add(evtQ.get().take());
+                                } catch (InterruptedException e) {
+                                    if (LOGGER.isErrorEnabled()) {
+                                        LOGGER.error(
+                                                "[getEvents] Get event exception: " + e.toString());
+                                    }
+                                    break;
+                                }
                             }
-                            break;
                         }
-                    }
-                }
-            });
+                    });
         }
 
         return result;

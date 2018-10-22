@@ -21,7 +21,6 @@
  *     Aion foundation.
  */
 
-
 package org.aion.api.impl;
 
 import java.util.Optional;
@@ -39,8 +38,8 @@ import org.aion.api.type.ApiMsg;
 
 /**
  * Nucoapi base class, contains the majority of Aion frontend Java APIs. High chance of finding what
- * you're looking for here, unless it is related to contract transactions. AionAPI provides a
- * static method that returns an instance. All API functionality requires the user to connect to the
+ * you're looking for here, unless it is related to contract transactions. AionAPI provides a static
+ * method that returns an instance. All API functionality requires the user to connect to the
  * backend utilizing {@link #connect(String)}.
  *
  * @see Contract
@@ -74,7 +73,6 @@ public final class AionAPIImpl extends ApiBase implements IAionAPI {
         admin = new Admin(this);
     }
 
-
     public boolean isConnected() {
         if (this.isInitialized.get() && this.msgExecutor.isInitialized.get()) {
             return true;
@@ -88,8 +86,8 @@ public final class AionAPIImpl extends ApiBase implements IAionAPI {
     }
 
     public INet getNet() {
-        if (Optional.ofNullable(this.getPrivilege().get("Net")).isPresent() && this.getPrivilege()
-            .get("Net")) {
+        if (Optional.ofNullable(this.getPrivilege().get("Net")).isPresent()
+                && this.getPrivilege().get("Net")) {
             return net;
         }
 
@@ -101,8 +99,8 @@ public final class AionAPIImpl extends ApiBase implements IAionAPI {
     }
 
     public IChain getChain() {
-        if (Optional.ofNullable(this.getPrivilege().get("Chain")).isPresent() && this.getPrivilege()
-            .get("Chain")) {
+        if (Optional.ofNullable(this.getPrivilege().get("Chain")).isPresent()
+                && this.getPrivilege().get("Chain")) {
             return chain;
         }
 
@@ -122,9 +120,8 @@ public final class AionAPIImpl extends ApiBase implements IAionAPI {
     }
 
     public ITx getTx() {
-        if (Optional.ofNullable(this.getPrivilege().get("Transaction")).isPresent() && this
-            .getPrivilege()
-            .get("Transaction")) {
+        if (Optional.ofNullable(this.getPrivilege().get("Transaction")).isPresent()
+                && this.getPrivilege().get("Transaction")) {
             return tx;
         }
 
@@ -136,9 +133,8 @@ public final class AionAPIImpl extends ApiBase implements IAionAPI {
     }
 
     public IWallet getWallet() {
-        if (Optional.ofNullable(this.getPrivilege().get("Wallet")).isPresent() && this.msgExecutor
-            .getPrivilege()
-            .get("Wallet")) {
+        if (Optional.ofNullable(this.getPrivilege().get("Wallet")).isPresent()
+                && this.msgExecutor.getPrivilege().get("Wallet")) {
             return wallet;
         }
 
@@ -154,8 +150,8 @@ public final class AionAPIImpl extends ApiBase implements IAionAPI {
     }
 
     public IAccount getAccount() {
-        if (Optional.ofNullable(this.getPrivilege().get("Account")).isPresent() && this
-            .getPrivilege().get("Account")) {
+        if (Optional.ofNullable(this.getPrivilege().get("Account")).isPresent()
+                && this.getPrivilege().get("Account")) {
             return account;
         }
 

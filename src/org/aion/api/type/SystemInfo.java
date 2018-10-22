@@ -21,7 +21,6 @@
  *     Aion foundation.
  */
 
-
 package org.aion.api.type;
 
 /**
@@ -29,7 +28,6 @@ package org.aion.api.type;
  *
  * @see org.aion.api.IAdmin#getSystemInfo() getSystemInfo
  */
-
 public final class SystemInfo {
 
     private final long dbSize;

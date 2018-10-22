@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017-2018 Aion foundation.
  *
  *     This file is part of the aion network project.
@@ -19,28 +19,23 @@
  *
  * Contributors:
  *     Aion foundation.
- *
- ******************************************************************************/
-
+ */
 package org.aion.api.sol.impl;
-
-import org.aion.api.impl.ErrId;
-import org.aion.api.impl.internal.ApiUtils;
-import org.aion.api.sol.IInt;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+import org.aion.api.impl.ErrId;
+import org.aion.api.impl.internal.ApiUtils;
+import org.aion.api.sol.IInt;
+
+/** Created by yao on 20/09/16. */
 
 /**
- * Created by yao on 20/09/16.
- */
-
-/**
- * Class Int inherit from class SolidityAbstractType. Contains functions for
- * encoding string, decoding string, datatype checking, Most functions used are
- * not intended to be user facing, and should be left unused by the user.
+ * Class Int inherit from class SolidityAbstractType. Contains functions for encoding string,
+ * decoding string, datatype checking, Most functions used are not intended to be user facing, and
+ * should be left unused by the user.
  */
 public final class Int extends SolidityAbstractType implements IInt {
     // use copyFrom instead
@@ -108,9 +103,7 @@ public final class Int extends SolidityAbstractType implements IInt {
         return new Int(l);
     }
 
-    /**
-     * for contract internal encode/decode.
-     */
+    /** for contract internal encode/decode. */
     private static byte[] formatInputInt(Integer input) {
         if (input == null) {
             if (LOGGER.isErrorEnabled()) {
@@ -142,9 +135,7 @@ public final class Int extends SolidityAbstractType implements IInt {
         return new Int(l);
     }
 
-    /**
-     * for contract internal encode/decode.
-     */
+    /** for contract internal encode/decode. */
     private static byte[] formatInputInt(Long input) {
         if (input == null) {
             if (LOGGER.isErrorEnabled()) {
@@ -156,9 +147,8 @@ public final class Int extends SolidityAbstractType implements IInt {
     }
 
     /**
-     * Generates an Uint object from an ArrayList, String or byte array, this
-     * structure should match the list structure defined in the ABI and consist
-     * only of Bytes.
+     * Generates an Uint object from an ArrayList, String or byte array, this structure should match
+     * the list structure defined in the ABI and consist only of Bytes.
      *
      * @param l
      * @return {@link Int}
@@ -178,9 +168,7 @@ public final class Int extends SolidityAbstractType implements IInt {
         return new Int(inputArrayList);
     }
 
-    /**
-     * for contract internal encode/decode.
-     */
+    /** for contract internal encode/decode. */
     private static byte[] formatInputInt(String input) {
         if (input == null) {
             if (LOGGER.isErrorEnabled()) {
@@ -246,8 +234,7 @@ public final class Int extends SolidityAbstractType implements IInt {
     /**
      * Checks that inputted string is Int type. To be used with ABI.
      *
-     * @param in
-     *         Solidity Type.
+     * @param in Solidity Type.
      * @return returns a boolean indicating the type is Int.
      */
     public boolean isType(String in) {
@@ -262,12 +249,10 @@ public final class Int extends SolidityAbstractType implements IInt {
     }
 
     /**
-     * Returns a correctly formatted hex string, given an input byte array
-     * (usually 32 bytes). Encoding varies depending on the solidity type being
-     * encoded.
+     * Returns a correctly formatted hex string, given an input byte array (usually 32 bytes).
+     * Encoding varies depending on the solidity type being encoded.
      *
-     * @param entry
-     *         data need to be formatted.
+     * @param entry data need to be formatted.
      * @return formatted string for encode.
      */
     public String formatToString(byte[] entry) {
@@ -286,9 +271,8 @@ public final class Int extends SolidityAbstractType implements IInt {
     }
 
     /**
-     * Returns a correctly formatted hex string, given an input byte array
-     * (usually 32 bytes). Encoding varies depending on the solidity type being
-     * encoded.
+     * Returns a correctly formatted hex string, given an input byte array (usually 32 bytes).
+     * Encoding varies depending on the solidity type being encoded.
      *
      * @param data
      * @param offset

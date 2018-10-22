@@ -26,13 +26,9 @@ package org.aion.api.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by Jay Tseng on 22/11/16.
- */
+/** Created by Jay Tseng on 22/11/16. */
 
-/**
- * <p>This class show the response message by given the isError code.</p>
- */
+/** This class show the response message by given the isError code. */
 public final class ErrId {
 
     private static final Map<Long, String> ERROR_CODES;
@@ -52,8 +48,8 @@ public final class ErrId {
         ERROR_CODES.put(-111L, "Cannot execute without function definition.");
         ERROR_CODES.put(-112L, "Input Parameter type unmatched.");
         ERROR_CODES.put(-113L, "Function has not been built!");
-        ERROR_CODES.put(-114L,
-            "Internal type should only consist of byte[] and ArrayList! What happened?");
+        ERROR_CODES.put(
+                -114L, "Internal type should only consist of byte[] and ArrayList! What happened?");
         ERROR_CODES.put(-115L, "Input too large, keep within 256bits.");
         ERROR_CODES.put(-116L, "Arraylist is empty or null!");
         ERROR_CODES.put(-117L, "Unsupported input type to instantiate Uint!");
@@ -65,8 +61,9 @@ public final class ErrId {
         ERROR_CODES.put(-124L, "Unsupported input type to instantiate Ureal!");
         ERROR_CODES.put(-125L, "Should not reach here! Something is wrong!");
         ERROR_CODES.put(-126L, "Server return empty contract!");
-        ERROR_CODES.put(-127L,
-            "Contract compile failed! Please check your solidity compiler and SmartContract!");
+        ERROR_CODES.put(
+                -127L,
+                "Contract compile failed! Please check your solidity compiler and SmartContract!");
         ERROR_CODES.put(-128L, "Contract deploy timeout!");
         ERROR_CODES.put(-129L, "Null api call msg!");
         ERROR_CODES.put(-130L, "The event filter input is null.");
@@ -159,7 +156,6 @@ public final class ErrId {
         ERROR_CODES.put(103L, "Transaction in the pending block of the kernel!");
         ERROR_CODES.put(104L, "Transaction in the new pending block of the kernel!");
         ERROR_CODES.put(105L, "Transaction been included in a new block!");
-
     }
 
     public static String getErrString(long code) {
