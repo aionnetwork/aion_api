@@ -125,6 +125,10 @@ task getVersion(type: JavaExec) {
     }
 }
 
+task cleanPack {
+    delete "pack"
+}
+
 task configFatJar {
     dependsOn getVersion
     doLast {
