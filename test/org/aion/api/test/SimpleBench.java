@@ -31,7 +31,7 @@ import org.aion.api.sol.IUint;
 import org.aion.api.type.ApiMsg;
 import org.aion.api.type.ContractResponse;
 import org.aion.api.type.MsgRsp;
-import org.aion.base.type.Address;
+import org.aion.base.type.AionAddress;
 import org.aion.base.util.ByteArrayWrapper;
 
 import java.util.List;
@@ -84,7 +84,7 @@ public class SimpleBench {
         List acc = api.getWallet().getAccounts().getObject();
         assertThat(acc.size(), is(greaterThan(0)));
 
-        Address cb = (Address) acc.get(0);
+        AionAddress cb = (AionAddress) acc.get(0);
         assertThat(cb, not(equalTo(null)));
         assertTrue(api.getWallet().unlockAccount(cb, DEFAULT_PASSWORD, 3600).getObject());
 

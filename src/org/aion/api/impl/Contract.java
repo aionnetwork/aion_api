@@ -61,7 +61,7 @@ import org.aion.api.type.DeployResponse;
 import org.aion.api.type.JsonFmt;
 import org.aion.api.type.MsgRsp;
 import org.aion.api.type.TxArgs;
-import org.aion.base.type.Address;
+import org.aion.base.type.AionAddress;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
 import org.apache.commons.collections4.map.LRUMap;
@@ -93,7 +93,7 @@ public final class Contract implements IContract {
 
     private final AionAPIImpl api;
     private final String contractName;
-    private final org.aion.base.type.Address contractAddress;
+    private final AionAddress contractAddress;
     private final List<ContractAbiEntry> abiDefinition;
     private final Map<String, List<ContractAbiEntry>> funcParams;
     private final String abiDefStr;
@@ -107,7 +107,7 @@ public final class Contract implements IContract {
     private final Hash256 deployTxId;
 
     // Transaction relative settings
-    private Address from;
+    private AionAddress from;
     private long txNrgLimit;
     private long txNrgPrice;
     private BigInteger txValue;
@@ -141,7 +141,7 @@ public final class Contract implements IContract {
         private CompileResponse cr;
         private DeployResponse dr;
         private AionAPIImpl api;
-        private Address from;
+        private AionAddress from;
         private String contractName;
 
         ContractBuilder() {}
@@ -161,7 +161,7 @@ public final class Contract implements IContract {
             return this;
         }
 
-        public ContractBuilder from(final Address from) {
+        public ContractBuilder from(final AionAddress from) {
             this.from = from;
             return this;
         }
@@ -439,7 +439,7 @@ public final class Contract implements IContract {
                         .nrgPrice(this.txNrgPrice)
                         .nrgLimit(this.txNrgLimit)
                         .from(this.from)
-                        .to(isConstructor ? Address.EMPTY_ADDRESS() : this.contractAddress)
+                        .to(isConstructor ? AionAddress.EMPTY_ADDRESS() : this.contractAddress)
                         .data(
                                 isConstructor
                                         ? ByteArrayWrapper.wrap(assembled.toString().getBytes())
@@ -487,11 +487,11 @@ public final class Contract implements IContract {
         return this;
     }
 
-    public Address getFrom() {
+    public AionAddress getFrom() {
         return this.from;
     }
 
-    public Contract setFrom(Address from) {
+    public Contract setFrom(AionAddress from) {
         if (from == null) {
             throw new NullPointerException();
         }
@@ -511,7 +511,7 @@ public final class Contract implements IContract {
         return null;
     }
 
-    public Address getContractAddress() {
+    public AionAddress getContractAddress() {
         return this.contractAddress;
     }
 

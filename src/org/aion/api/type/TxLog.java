@@ -24,7 +24,7 @@
 package org.aion.api.type;
 
 import java.util.List;
-import org.aion.base.type.Address;
+import org.aion.base.type.AionAddress;
 import org.aion.base.util.ByteArrayWrapper;
 
 /**
@@ -36,11 +36,11 @@ import org.aion.base.util.ByteArrayWrapper;
  */
 public final class TxLog {
 
-    private final Address address;
+    private final AionAddress address;
     private final ByteArrayWrapper data;
     private final List<String> topics;
 
-    public TxLog(Address address, ByteArrayWrapper data, List<String> topics) {
+    public TxLog(AionAddress address, ByteArrayWrapper data, List<String> topics) {
         this.address = address;
         this.data = data;
         this.topics = topics;
@@ -92,7 +92,7 @@ public final class TxLog {
         return sb.toString();
     }
 
-    public Address getAddress() {
+    public AionAddress getAddress() {
         return address;
     }
 

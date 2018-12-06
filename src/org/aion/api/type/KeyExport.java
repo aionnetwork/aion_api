@@ -24,7 +24,7 @@
 package org.aion.api.type;
 
 import java.util.List;
-import org.aion.base.type.Address;
+import org.aion.base.type.AionAddress;
 import org.aion.base.util.ByteArrayWrapper;
 
 /**
@@ -40,9 +40,9 @@ import org.aion.base.util.ByteArrayWrapper;
 public final class KeyExport {
 
     private final List<ByteArrayWrapper> keyFiles;
-    private final List<Address> invalidAddress;
+    private final List<AionAddress> invalidAddress;
 
-    public KeyExport(final List<ByteArrayWrapper> keyfiles, final List<Address> invalidAddr) {
+    public KeyExport(final List<ByteArrayWrapper> keyfiles, final List<AionAddress> invalidAddr) {
         if (keyfiles == null || invalidAddr == null) {
             throw new NullPointerException();
         }
@@ -54,7 +54,7 @@ public final class KeyExport {
         return this.keyFiles;
     }
 
-    public List<Address> getInvalidAddress() {
+    public List<AionAddress> getInvalidAddress() {
         return this.invalidAddress;
     }
 }

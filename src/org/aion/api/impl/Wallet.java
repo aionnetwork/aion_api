@@ -32,7 +32,7 @@ import org.aion.api.impl.internal.Message;
 import org.aion.api.log.AionLoggerFactory;
 import org.aion.api.log.LogEnum;
 import org.aion.api.type.ApiMsg;
-import org.aion.base.type.Address;
+import org.aion.base.type.AionAddress;
 import org.aion.base.util.ByteUtil;
 import org.slf4j.Logger;
 
@@ -65,9 +65,9 @@ public class Wallet implements IWallet {
                     Message.rsp_accounts.parseFrom(ApiUtils.parseBody(rsp).getData());
             List<ByteString> accBs = msgRsp.getAccoutList();
 
-            List<Address> account = new ArrayList<>();
+            List<AionAddress> account = new ArrayList<>();
             for (ByteString bs : accBs) {
-                account.add(Address.wrap(bs.toByteArray()));
+                account.add(AionAddress.wrap(bs.toByteArray()));
             }
 
             if (LOGGER.isDebugEnabled()) {
@@ -85,11 +85,11 @@ public class Wallet implements IWallet {
         }
     }
 
-    public ApiMsg unlockAccount(Address acc, String passphrase) {
+    public ApiMsg unlockAccount(AionAddress acc, String passphrase) {
         return unlockAccount(acc, passphrase, 60);
     }
 
-    public ApiMsg unlockAccount(Address acc, String passphrase, int duration) {
+    public ApiMsg unlockAccount(AionAddress acc, String passphrase, int duration) {
         if (!this.apiInst.isConnected()) {
             return new ApiMsg(-1003);
         }
@@ -156,7 +156,7 @@ public class Wallet implements IWallet {
         try {
             Message.rsp_minerAddress msgRsp =
                     Message.rsp_minerAddress.parseFrom(ApiUtils.parseBody(rsp).getData());
-            this.apiInst.minerAddress = Address.wrap(msgRsp.getMinerAddr().toByteArray());
+            this.apiInst.minerAddress = AionAddress.wrap(msgRsp.getMinerAddr().toByteArray());
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("[getMinerAccount] minerAddress: [{}]", this.apiInst.minerAddress);
             }
@@ -174,7 +174,7 @@ public class Wallet implements IWallet {
         }
     }
 
-    public ApiMsg setDefaultAccount(Address addr) {
+    public ApiMsg setDefaultAccount(AionAddress addr) {
         this.apiInst.defaultAccount = addr;
         return new ApiMsg(true, ApiMsg.cast.BOOLEAN);
     }
@@ -183,7 +183,7 @@ public class Wallet implements IWallet {
         return new ApiMsg(this.apiInst.defaultAccount, ApiMsg.cast.OTHERS);
     }
 
-    public ApiMsg lockAccount(Address acc, String passphrase) {
+    public ApiMsg lockAccount(AionAddress acc, String passphrase) {
         if (!this.apiInst.isConnected()) {
             return new ApiMsg(-1003);
         }

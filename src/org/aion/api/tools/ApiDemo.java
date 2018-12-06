@@ -42,7 +42,7 @@ import org.aion.api.sol.ISolidityArg;
 import org.aion.api.sol.IUint;
 import org.aion.api.type.ApiMsg;
 import org.aion.api.type.ContractResponse;
-import org.aion.base.type.Address;
+import org.aion.base.type.AionAddress;
 
 /**
  * This class shows the basic operation of the Aion Java API.
@@ -248,9 +248,9 @@ public class ApiDemo {
 
         System.out.println("Get " + accs.size() + " accounts!");
 
-        Address acc = (Address) accs.get(0);
+        AionAddress acc = (AionAddress) accs.get(0);
         System.out.println("Get the first account: " + acc.toString());
-        Address acc2 = (Address) accs.get(1);
+        AionAddress acc2 = (AionAddress) accs.get(1);
         System.out.println("Get the second account: " + acc2.toString());
         System.out.println();
 
@@ -486,7 +486,7 @@ public class ApiDemo {
             System.out.println("Found account: " + acc1.toString());
         }
 
-        Address acc = (Address) accs.get(0);
+        AionAddress acc = (AionAddress) accs.get(0);
         System.out.println("Get the first account: " + acc.toString());
 
         // unlockAccount before deployContract or send a transaction.
@@ -551,7 +551,7 @@ public class ApiDemo {
 
         System.out.println("Get " + accs.size() + " accounts!");
 
-        Address acc = (Address) accs.get(0);
+        AionAddress acc = (AionAddress) accs.get(0);
         System.out.println("Get the first account: " + acc.toString());
         System.out.println();
 

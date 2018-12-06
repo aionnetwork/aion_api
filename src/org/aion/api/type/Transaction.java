@@ -24,7 +24,7 @@
 package org.aion.api.type;
 
 import java.math.BigInteger;
-import org.aion.base.type.Address;
+import org.aion.base.type.AionAddress;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
 
@@ -45,8 +45,8 @@ public final class Transaction {
     private final long timeStamp;
     private final long nrgConsumed;
     private final long nrgPrice;
-    private final Address from;
-    private final Address to;
+    private final AionAddress from;
+    private final AionAddress to;
     private final Hash256 blockHash;
     private final Hash256 txHash;
     private final BigInteger nonce;
@@ -88,11 +88,11 @@ public final class Transaction {
         return nrgPrice;
     }
 
-    public Address getFrom() {
+    public AionAddress getFrom() {
         return from;
     }
 
-    public Address getTo() {
+    public AionAddress getTo() {
         return to;
     }
 
@@ -165,8 +165,8 @@ public final class Transaction {
         private long timeStamp;
         private long nrgConsumed;
         private long nrgPrice;
-        private Address from;
-        private Address to;
+        private AionAddress from;
+        private AionAddress to;
         private Hash256 blockHash;
         private Hash256 txHash;
         private BigInteger nonce;
@@ -200,12 +200,12 @@ public final class Transaction {
             return this;
         }
 
-        public Transaction.TransactionBuilder from(final Address from) {
+        public Transaction.TransactionBuilder from(final AionAddress from) {
             this.from = from;
             return this;
         }
 
-        public Transaction.TransactionBuilder to(final Address to) {
+        public Transaction.TransactionBuilder to(final AionAddress to) {
             this.to = to;
             return this;
         }

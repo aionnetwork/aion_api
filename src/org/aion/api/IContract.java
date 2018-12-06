@@ -31,7 +31,7 @@ import org.aion.api.type.ContractEventFilter;
 import org.aion.api.type.ContractResponse;
 import org.aion.api.type.JsonFmt;
 import org.aion.api.type.TxArgs;
-import org.aion.base.type.Address;
+import org.aion.base.type.AionAddress;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
 
@@ -142,10 +142,10 @@ public interface IContract {
     /**
      * Sets the message sender address for function be executed.
      *
-     * @param address the class {@link Address Address} represent the desired sender account.
+     * @param address the class {@link AionAddress Address} represent the desired sender account.
      * @return the contract interface {@link IContract IContract}.
      */
-    IContract setFrom(Address address);
+    IContract setFrom(AionAddress address);
 
     /**
      * Sets the transaction value for certain functions.
@@ -191,16 +191,16 @@ public interface IContract {
     /**
      * Retrieve the current sender's account address of the contract.
      *
-     * @return the class {@link Address Address} represent the sender's account address.
+     * @return the class {@link AionAddress Address} represent the sender's account address.
      */
-    Address getFrom();
+    AionAddress getFrom();
 
     /**
      * Retrieve the address of the deployed contract.
      *
-     * @return the class {@link Address Address} represent the contractaddress.
+     * @return the class {@link AionAddress Address} represent the contractaddress.
      */
-    Address getContractAddress();
+    AionAddress getContractAddress();
 
     /**
      * Retrieve the transaction hash of the deployed contract.

@@ -74,7 +74,7 @@ import org.aion.api.type.Transaction;
 import org.aion.api.type.TxArgs;
 import org.aion.api.type.TxReceipt;
 import org.aion.api.type.core.tx.AionTransaction;
-import org.aion.base.type.Address;
+import org.aion.base.type.AionAddress;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
 import org.aion.base.util.Bytesable;
@@ -173,7 +173,7 @@ public class BaseAPITests {
         ApiMsg apiMsg = api.getWallet().getMinerAccount();
         assertFalse(apiMsg.isError());
 
-        Address buff = apiMsg.getObject();
+        AionAddress buff = apiMsg.getObject();
         assertNotNull(buff);
 
         api.destroyApi();
@@ -209,7 +209,7 @@ public class BaseAPITests {
             return;
         }
 
-        apiMsg = api.getChain().getBalance((Address) accs.get(0));
+        apiMsg = api.getChain().getBalance((AionAddress) accs.get(0));
         assertFalse(apiMsg.isError());
 
         BigInteger balance = apiMsg.getObject();
@@ -257,8 +257,8 @@ public class BaseAPITests {
             return;
         }
 
-        Address acc = (Address) accs.get(0);
-        Address acc2 = (Address) accs.get(1);
+        AionAddress acc = (AionAddress) accs.get(0);
+        AionAddress acc2 = (AionAddress) accs.get(1);
 
         if (!isEnoughBalance(acc)) {
             System.out.println("balance of the account is not enough, skip this test!");
@@ -334,7 +334,7 @@ public class BaseAPITests {
             return;
         }
 
-        Address acc = (Address) accs.get(0);
+        AionAddress acc = (AionAddress) accs.get(0);
 
         if (!isEnoughBalance(acc)) {
             System.out.println("balance of the account is not enough, skip this test!");
@@ -405,7 +405,7 @@ public class BaseAPITests {
         ApiMsg apiMsg = api.getWallet().getAccounts();
         assertFalse(apiMsg.isError());
 
-        List<Address> accs = apiMsg.getObject();
+        List<AionAddress> accs = apiMsg.getObject();
         assertNotNull(accs);
 
         if (accs.isEmpty()) {
@@ -482,7 +482,7 @@ public class BaseAPITests {
         assertEquals(transaction.getFrom(), accs.get(0));
         assertTrue(transaction.getNrgConsumed() > NRG_LIMIT_TX_MIN);
         assertEquals(transaction.getNrgPrice(), NRG_PRICE_MIN);
-        assertEquals(transaction.getTo(), Address.EMPTY_ADDRESS());
+        assertEquals(transaction.getTo(), AionAddress.EMPTY_ADDRESS());
         assertTrue(transaction.getNonce().compareTo(BigInteger.ZERO) > -1);
         assertEquals(0, transaction.getTransactionIndex());
         assertEquals(transaction.getValue(), BigInteger.ZERO);
@@ -491,7 +491,7 @@ public class BaseAPITests {
         api.destroyApi();
     }
 
-    private boolean isEnoughBalance(Address address) {
+    private boolean isEnoughBalance(AionAddress address) {
         ApiMsg apiMsg = api.getChain().getBalance(address);
         assertFalse(apiMsg.isError());
         BigInteger balance = apiMsg.getObject();
@@ -519,7 +519,7 @@ public class BaseAPITests {
             return;
         }
 
-        Address acc = (Address) accs.get(0);
+        AionAddress acc = (AionAddress) accs.get(0);
         if (!isEnoughBalance(acc)) {
             System.out.println("balance of the account is not enough, skip this test!");
             return;
@@ -599,7 +599,7 @@ public class BaseAPITests {
             return;
         }
 
-        Address acc = (Address) accs.get(0);
+        AionAddress acc = (AionAddress) accs.get(0);
         apiMsg = api.getWallet().unlockAccount(acc, pw, 300);
         assertFalse(apiMsg.isError());
         assertTrue(apiMsg.getObject());
@@ -613,7 +613,7 @@ public class BaseAPITests {
         assertFalse(apiMsg.getObject());
 
         if (accs.size() > 1) {
-            Address acc2 = (Address) accs.get(1);
+            AionAddress acc2 = (AionAddress) accs.get(1);
 
             apiMsg = api.getWallet().unlockAccount(acc2, pw, 99999);
             assertFalse(apiMsg.isError());
@@ -632,15 +632,15 @@ public class BaseAPITests {
         assertTrue(apiMsg.isError());
         System.out.println(apiMsg.getErrString());
 
-        Address fakeAcc = Address.ZERO_ADDRESS();
+        AionAddress fakeAcc = AionAddress.ZERO_ADDRESS();
         apiMsg = api.getWallet().unlockAccount(fakeAcc, "", 99999);
         assertFalse(apiMsg.isError());
         assertFalse(apiMsg.getObject());
 
         boolean expectGoCatch = false;
         try {
-            Address fakeAcc2 =
-                    Address.wrap(
+            AionAddress fakeAcc2 =
+                    AionAddress.wrap(
                             new byte[] {
                                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
@@ -672,7 +672,7 @@ public class BaseAPITests {
             return;
         }
 
-        Address acc = (Address) accs.get(0);
+        AionAddress acc = (AionAddress) accs.get(0);
         if (!isEnoughBalance(acc)) {
             System.out.println("balance of the account is not enough, skip this test!");
             return;
@@ -762,7 +762,7 @@ public class BaseAPITests {
             return;
         }
 
-        Address acc = (Address) accs.get(0);
+        AionAddress acc = (AionAddress) accs.get(0);
         if (!isEnoughBalance(acc)) {
             System.out.println("balance of the account is not enough, skip this test!");
             return;
@@ -833,7 +833,7 @@ public class BaseAPITests {
         ApiMsg apiMsg = api.getWallet().getAccounts();
         assertFalse(apiMsg.isError());
 
-        List<Address> accs = apiMsg.getObject();
+        List<AionAddress> accs = apiMsg.getObject();
         assertNotNull(accs);
         if (accs.isEmpty()) {
             System.out.println("Empty account, skip this test!");
@@ -912,7 +912,7 @@ public class BaseAPITests {
         ApiMsg apiMsg = api.getWallet().getAccounts();
         assertFalse(apiMsg.isError());
 
-        List<Address> accs = apiMsg.getObject();
+        List<AionAddress> accs = apiMsg.getObject();
         assertNotNull(accs);
 
         if (accs.isEmpty()) {
@@ -976,7 +976,7 @@ public class BaseAPITests {
         ApiMsg apiMsg = api.getWallet().getAccounts();
         assertFalse(apiMsg.isError());
 
-        List<Address> accs = apiMsg.getObject();
+        List<AionAddress> accs = apiMsg.getObject();
         assertNotNull(accs);
 
         if (accs.isEmpty()) {
@@ -989,7 +989,7 @@ public class BaseAPITests {
             return;
         }
 
-        Address acc = accs.get(0);
+        AionAddress acc = accs.get(0);
         apiMsg = api.getWallet().unlockAccount(acc, pw, 300);
         assertFalse(apiMsg.isError());
         assertTrue(apiMsg.getObject());
@@ -1057,7 +1057,7 @@ public class BaseAPITests {
         ApiMsg apiMsg = api.getWallet().getAccounts();
         assertFalse(apiMsg.isError());
 
-        List<Address> accs = apiMsg.getObject();
+        List<AionAddress> accs = apiMsg.getObject();
         assertNotNull(accs);
 
         if (accs.isEmpty()) {
@@ -1070,7 +1070,7 @@ public class BaseAPITests {
             return;
         }
 
-        Address acc = accs.get(0);
+        AionAddress acc = accs.get(0);
         apiMsg = api.getWallet().unlockAccount(acc, pw, 300);
         assertFalse(apiMsg.isError());
         assertTrue(apiMsg.getObject());
@@ -1165,7 +1165,7 @@ public class BaseAPITests {
         ApiMsg apiMsg = api.getWallet().getAccounts();
         assertFalse(apiMsg.isError());
 
-        List<Address> accs = apiMsg.getObject();
+        List<AionAddress> accs = apiMsg.getObject();
         assertNotNull(accs);
 
         if (accs.isEmpty()) {
@@ -1178,7 +1178,7 @@ public class BaseAPITests {
             return;
         }
 
-        Address acc = accs.get(0);
+        AionAddress acc = accs.get(0);
         apiMsg = api.getWallet().unlockAccount(acc, pw, 300);
         assertFalse(apiMsg.isError());
         assertTrue(apiMsg.getObject());
@@ -1251,7 +1251,7 @@ public class BaseAPITests {
         ApiMsg apiMsg = api.getWallet().getAccounts();
         assertFalse(apiMsg.isError());
 
-        List<Address> accs = apiMsg.getObject();
+        List<AionAddress> accs = apiMsg.getObject();
         assertNotNull(accs);
 
         if (accs.isEmpty()) {
@@ -1264,7 +1264,7 @@ public class BaseAPITests {
             return;
         }
 
-        Address acc = accs.get(0);
+        AionAddress acc = accs.get(0);
         apiMsg = api.getWallet().unlockAccount(acc, pw, 300);
         assertFalse(apiMsg.isError());
         assertTrue(apiMsg.getObject());
@@ -1339,7 +1339,7 @@ public class BaseAPITests {
         ApiMsg apiMsg = api.getWallet().getAccounts();
         assertFalse(apiMsg.isError());
 
-        List<Address> accs = apiMsg.getObject();
+        List<AionAddress> accs = apiMsg.getObject();
         assertNotNull(accs);
 
         if (accs.isEmpty()) {
@@ -1352,7 +1352,7 @@ public class BaseAPITests {
             return;
         }
 
-        Address acc = accs.get(0);
+        AionAddress acc = accs.get(0);
         apiMsg = api.getWallet().unlockAccount(acc, pw, 300);
         assertFalse(apiMsg.isError());
         assertTrue(apiMsg.getObject());
@@ -1426,7 +1426,7 @@ public class BaseAPITests {
         ApiMsg apiMsg = api.getWallet().getAccounts();
         assertFalse(apiMsg.isError());
 
-        List<Address> accs = apiMsg.getObject();
+        List<AionAddress> accs = apiMsg.getObject();
         assertNotNull(accs);
 
         if (accs.isEmpty()) {
@@ -1439,7 +1439,7 @@ public class BaseAPITests {
             return;
         }
 
-        Address acc = accs.get(0);
+        AionAddress acc = accs.get(0);
         apiMsg = api.getWallet().unlockAccount(acc, pw, 300);
         assertFalse(apiMsg.isError());
         assertTrue(apiMsg.getObject());
@@ -1533,7 +1533,7 @@ public class BaseAPITests {
         ApiMsg apiMsg = api.getWallet().getAccounts();
         assertFalse(apiMsg.isError());
 
-        List<Address> accs = apiMsg.getObject();
+        List<AionAddress> accs = apiMsg.getObject();
         assertNotNull(accs);
 
         if (accs.isEmpty()) {
@@ -1546,7 +1546,7 @@ public class BaseAPITests {
             return;
         }
 
-        Address acc = accs.get(0);
+        AionAddress acc = accs.get(0);
         apiMsg = api.getWallet().unlockAccount(acc, pw, 300);
         assertFalse(apiMsg.isError());
         assertTrue(apiMsg.getObject());
@@ -1604,7 +1604,7 @@ public class BaseAPITests {
         ApiMsg apiMsg = api.getWallet().getAccounts();
         assertFalse(apiMsg.isError());
 
-        List<Address> accs = apiMsg.getObject();
+        List<AionAddress> accs = apiMsg.getObject();
         assertNotNull(accs);
 
         if (accs.isEmpty()) {
@@ -1612,7 +1612,7 @@ public class BaseAPITests {
             return;
         }
 
-        Address acc = accs.get(0);
+        AionAddress acc = accs.get(0);
         if (!isEnoughBalance(acc)) {
             System.out.println("balance of the account is not enough, skip this test!");
             return;
@@ -1879,7 +1879,7 @@ public class BaseAPITests {
 
         ApiMsg apiMsg = api.getWallet().getAccounts();
         assertFalse(apiMsg.isError());
-        List<Address> accs = apiMsg.getObject();
+        List<AionAddress> accs = apiMsg.getObject();
         assertNotNull(accs);
 
         if (accs.isEmpty()) {
@@ -1912,7 +1912,7 @@ public class BaseAPITests {
 
         ApiMsg apiMsg = api.getWallet().getAccounts();
         assertFalse(apiMsg.isError());
-        List<Address> accs = apiMsg.getObject();
+        List<AionAddress> accs = apiMsg.getObject();
         assertNotNull(accs);
         if (accs.isEmpty()) {
             System.out.println("Empty account, skip this test!");
@@ -1944,7 +1944,7 @@ public class BaseAPITests {
 
         ApiMsg apiMsg = api.getWallet().getAccounts();
         assertFalse(apiMsg.isError());
-        List<Address> accs = apiMsg.getObject();
+        List<AionAddress> accs = apiMsg.getObject();
         assertNotNull(accs);
         if (accs.isEmpty()) {
             System.out.println("Empty account, skip this test!");
@@ -1987,14 +1987,14 @@ public class BaseAPITests {
 
         ApiMsg apiMsg = api.getWallet().getAccounts();
         assertFalse(apiMsg.isError());
-        List<Address> accs = apiMsg.getObject();
+        List<AionAddress> accs = apiMsg.getObject();
         assertNotNull(accs);
         if (accs.isEmpty()) {
             System.out.println("Empty account, skip this test!");
             return;
         }
 
-        Address acc = accs.get(0);
+        AionAddress acc = accs.get(0);
         apiMsg = api.getWallet().lockAccount(acc, pw);
         assertFalse(apiMsg.isError());
         assertTrue(apiMsg.getObject());
@@ -2015,7 +2015,7 @@ public class BaseAPITests {
         ApiMsg apiMsg = api.getWallet().getAccounts();
         assertFalse(apiMsg.isError());
 
-        List<Address> accs = apiMsg.getObject();
+        List<AionAddress> accs = apiMsg.getObject();
         assertNotNull(accs);
 
         if (accs.isEmpty()) {
@@ -2023,7 +2023,7 @@ public class BaseAPITests {
             return;
         }
 
-        Address acc = accs.get(0);
+        AionAddress acc = accs.get(0);
         if (!isEnoughBalance(acc)) {
             System.out.println("balance of the account is not enough, skip this test!");
             return;
@@ -2076,7 +2076,7 @@ public class BaseAPITests {
         ApiMsg apiMsg = api.getWallet().getAccounts();
         assertFalse(apiMsg.isError());
 
-        List<Address> accs = apiMsg.getObject();
+        List<AionAddress> accs = apiMsg.getObject();
         assertNotNull(accs);
 
         if (accs.size() < 2) {
@@ -2084,7 +2084,7 @@ public class BaseAPITests {
             return;
         }
 
-        Address acc = accs.get(0);
+        AionAddress acc = accs.get(0);
         if (!isEnoughBalance(acc)) {
             System.out.println("balance of the account is not enough, skip this test!");
             return;
@@ -2408,7 +2408,7 @@ public class BaseAPITests {
         List accs = apiMsg.getObject();
         assertFalse(accs.isEmpty());
 
-        Address acc = (Address) accs.get(0);
+        AionAddress acc = (AionAddress) accs.get(0);
         apiMsg = api.getChain().getNonce(acc);
         assertFalse(apiMsg.isError());
 
@@ -2431,7 +2431,7 @@ public class BaseAPITests {
         ApiMsg apiMsg = api.getWallet().getAccounts();
         assertFalse(apiMsg.isError());
 
-        List<Address> accs = apiMsg.getObject();
+        List<AionAddress> accs = apiMsg.getObject();
         assertNotNull(accs);
 
         if (accs.isEmpty()) {
@@ -2439,7 +2439,7 @@ public class BaseAPITests {
             return;
         }
 
-        Address acc = accs.get(0);
+        AionAddress acc = accs.get(0);
         if (!isEnoughBalance(acc)) {
             System.out.println("balance of the account is not enough, skip this test!");
             return;
@@ -2630,7 +2630,7 @@ public class BaseAPITests {
         ApiMsg apiMsg = api.getWallet().getAccounts();
         assertFalse(apiMsg.isError());
 
-        List<Address> accs = apiMsg.getObject();
+        List<AionAddress> accs = apiMsg.getObject();
         assertNotNull(accs);
 
         if (accs.isEmpty()) {

@@ -57,7 +57,7 @@ import org.aion.api.type.ApiMsg;
 import org.aion.api.type.Key;
 import org.aion.api.type.KeyExport;
 import org.aion.api.type.core.account.KeystoreFormat;
-import org.aion.base.type.Address;
+import org.aion.base.type.AionAddress;
 import org.aion.base.util.ByteUtil;
 import org.aion.base.util.TypeConverter;
 import org.aion.crypto.ECKey;
@@ -161,7 +161,7 @@ public final class Account implements IAccount {
         }
 
         Set<Message.t_Key> mkeys = new HashSet<>();
-        Set<Address> invalidAddress = new HashSet<>();
+        Set<AionAddress> invalidAddress = new HashSet<>();
         for (Key key1 : keys) {
             try {
                 t_Key key =
@@ -229,7 +229,7 @@ public final class Account implements IAccount {
         }
 
         Set<Message.t_Key> mkeys = new HashSet<>();
-        Set<Address> invalidAddress = new HashSet<>();
+        Set<AionAddress> invalidAddress = new HashSet<>();
         for (Key key1 : keys) {
             try {
                 t_Key key =

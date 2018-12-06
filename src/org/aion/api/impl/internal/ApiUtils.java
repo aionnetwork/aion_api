@@ -35,7 +35,6 @@ import java.util.Random;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.aion.api.impl.Utils;
-import org.aion.api.impl.internal.Message;
 import org.aion.api.keccak.Keccak;
 import org.aion.api.keccak.Keccak256;
 import org.aion.api.type.AccountDetails;
@@ -48,7 +47,7 @@ import org.aion.api.type.Transaction;
 import org.aion.api.type.TxDetails;
 import org.aion.api.type.TxLog;
 import org.aion.api.type.TxReceipt;
-import org.aion.base.type.Address;
+import org.aion.base.type.AionAddress;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
 import org.aion.base.util.ByteUtil;
@@ -119,8 +118,8 @@ public class ApiUtils {
                 .blockHash(Hash256.wrap(rsp.getBlockhash().toByteArray()))
                 .blockNumber(rsp.getBlocknumber())
                 .data(ByteArrayWrapper.wrap(rsp.getData().toByteArray()))
-                .from(Address.wrap(rsp.getFrom().toByteArray()))
-                .to(Address.wrap(rsp.getTo().toByteArray()))
+                .from(AionAddress.wrap(rsp.getFrom().toByteArray()))
+                .to(AionAddress.wrap(rsp.getTo().toByteArray()))
                 .timeStamp(rsp.getTimeStamp())
                 .nonce(new BigInteger(rsp.getNonce().toByteArray()))
                 .value(new BigInteger(rsp.getValue().toByteArray()))
@@ -151,17 +150,17 @@ public class ApiUtils {
 
             txLogList.add(
                     new TxLog(
-                            Address.wrap(tl.getAddress().toByteArray()),
+                            AionAddress.wrap(tl.getAddress().toByteArray()),
                             ByteArrayWrapper.wrap(tl.getData().toByteArray()),
                             topics));
         }
 
         return builder.blockHash(Hash256.wrap(rsp.getBlockHash().toByteArray()))
                 .blockNumber(rsp.getBlockNumber())
-                .contractAddress(Address.wrap(rsp.getContractAddress().toByteArray()))
+                .contractAddress(AionAddress.wrap(rsp.getContractAddress().toByteArray()))
                 .cumulativeNrgUsed(rsp.getCumulativeNrgUsed())
-                .from(Address.wrap(rsp.getFrom().toByteArray()))
-                .to(Address.wrap(rsp.getTo().toByteArray()))
+                .from(AionAddress.wrap(rsp.getFrom().toByteArray()))
+                .to(AionAddress.wrap(rsp.getTo().toByteArray()))
                 .nrgConsumed(rsp.getNrgConsumed())
                 .txHash(Hash256.wrap(rsp.getTxHash().toByteArray()))
                 .txIndex(rsp.getTxIndex())
@@ -495,7 +494,7 @@ public class ApiUtils {
         for (int i = 0; i < account.getAddressList().size(); i++) {
             Key key =
                     new Key(
-                            Address.wrap(account.getAddress(i).toByteArray()),
+                            AionAddress.wrap(account.getAddress(i).toByteArray()),
                             pk
                                     ? ByteArrayWrapper.wrap(account.getPrivateKey(i).toByteArray())
                                     : ByteArrayWrapper.wrap(ByteArrayWrapper.NULL_BYTE));
@@ -518,11 +517,11 @@ public class ApiUtils {
                         .map(bs -> ByteArrayWrapper.wrap(bs.toByteArray()))
                         .collect(Collectors.toList());
 
-        List<Address> invalidAddr =
+        List<AionAddress> invalidAddr =
                 rsp_exportAccounts
                         .getFailedKeyList()
                         .parallelStream()
-                        .map(bs -> Address.wrap(bs.toByteArray()))
+                        .map(bs -> AionAddress.wrap(bs.toByteArray()))
                         .collect(Collectors.toList());
 
         return new KeyExport(keyFiles, invalidAddr);
@@ -540,7 +539,7 @@ public class ApiUtils {
                             .bloom(ByteArrayWrapper.wrap(bd.getLogsBloom().toByteArray()))
                             .difficulty(new BigInteger(1, bd.getDifficulty().toByteArray()))
                             .extraData(ByteArrayWrapper.wrap(bd.getExtraData().toByteArray()))
-                            .miner(Address.wrap(bd.getMinerAddress().toByteArray()))
+                            .miner(AionAddress.wrap(bd.getMinerAddress().toByteArray()))
                             .nonce(new BigInteger(1, bd.getNonce().toByteArray()))
                             .nrgConsumed(bd.getNrgConsumed())
                             .nrgLimit(bd.getNrgLimit())
@@ -562,9 +561,9 @@ public class ApiUtils {
                 TxDetails.TxDetailsBuilder txBuilder =
                         new TxDetails.TxDetailsBuilder()
                                 .data(ByteArrayWrapper.wrap(td.getData().toByteArray()))
-                                .from(Address.wrap(td.getFrom().toByteArray()))
-                                .to(Address.wrap(td.getTo().toByteArray()))
-                                .contract(Address.wrap(td.getContract().toByteArray()))
+                                .from(AionAddress.wrap(td.getFrom().toByteArray()))
+                                .to(AionAddress.wrap(td.getTo().toByteArray()))
+                                .contract(AionAddress.wrap(td.getContract().toByteArray()))
                                 .txHash(Hash256.wrap(td.getTxHash().toByteArray()))
                                 .txIndex(td.getTxIndex())
                                 .nonce(new BigInteger(1, td.getNonce().toByteArray()))
@@ -578,7 +577,7 @@ public class ApiUtils {
                 for (Message.t_LgEle log : td.getLogsList()) {
                     TxLog txlog =
                             new TxLog(
-                                    Address.wrap(log.getAddress().toByteArray()),
+                                    AionAddress.wrap(log.getAddress().toByteArray()),
                                     ByteArrayWrapper.wrap(log.getData().toByteArray()),
                                     log.getTopicsList());
                     txLogs.add(txlog);
@@ -630,7 +629,7 @@ public class ApiUtils {
                             .difficulty(new BigInteger(b.getDifficulty().toByteArray()))
                             .extraData(ByteArrayWrapper.wrap(b.getExtraData().toByteArray()))
                             .nonce(new BigInteger(b.getNonce().toByteArray()))
-                            .miner(Address.wrap(b.getMinerAddress().toByteArray()))
+                            .miner(AionAddress.wrap(b.getMinerAddress().toByteArray()))
                             .nrgConsumed(b.getNrgConsumed())
                             .nrgLimit(b.getNrgLimit())
                             .txTrieRoot(Hash256.wrap(b.getTxTrieRoot().toByteArray()))
@@ -660,7 +659,7 @@ public class ApiUtils {
         for (Message.t_AccountDetail a : accs) {
             AccountDetails built =
                     new AccountDetails.AccountDetailsBuilder()
-                            .address(Address.wrap(a.getAddress().toByteArray()))
+                            .address(AionAddress.wrap(a.getAddress().toByteArray()))
                             .balance(new BigInteger(a.getBalance().toByteArray()))
                             .createAccountDetails();
 

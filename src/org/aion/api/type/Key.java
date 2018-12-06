@@ -23,7 +23,7 @@
 
 package org.aion.api.type;
 
-import org.aion.base.type.Address;
+import org.aion.base.type.AionAddress;
 import org.aion.base.util.ByteArrayWrapper;
 
 /**
@@ -37,12 +37,12 @@ import org.aion.base.util.ByteArrayWrapper;
 public final class Key {
 
     // 32 bytes array
-    private final Address publicKey;
+    private final AionAddress publicKey;
     // 64 bytes array
     private final ByteArrayWrapper privateKey;
     private final String passPhrase;
 
-    public Key(final Address s, final ByteArrayWrapper k) {
+    public Key(final AionAddress s, final ByteArrayWrapper k) {
         if (s == null || k == null) {
             throw new NullPointerException();
         }
@@ -52,7 +52,7 @@ public final class Key {
         this.passPhrase = null;
     }
 
-    public Key(final Address s, final String pw) {
+    public Key(final AionAddress s, final String pw) {
         if (s == null || pw == null) {
             throw new NullPointerException();
         }
@@ -62,7 +62,7 @@ public final class Key {
         this.privateKey = null;
     }
 
-    public Address getPubKey() {
+    public AionAddress getPubKey() {
         return publicKey;
     }
 

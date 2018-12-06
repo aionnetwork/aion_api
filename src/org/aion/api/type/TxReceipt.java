@@ -24,7 +24,7 @@
 package org.aion.api.type;
 
 import java.util.List;
-import org.aion.base.type.Address;
+import org.aion.base.type.AionAddress;
 import org.aion.base.type.Hash256;
 
 /**
@@ -39,9 +39,9 @@ public final class TxReceipt {
     private final long cumulativeNrgUsed;
     private final Hash256 blockHash;
     private final Hash256 txHash;
-    private final Address from;
-    private final Address to;
-    private final Address contractAddress;
+    private final AionAddress from;
+    private final AionAddress to;
+    private final AionAddress contractAddress;
     private final List<TxLog> txLogs;
 
     private TxReceipt(TxReceiptBuilder builder) {
@@ -81,15 +81,15 @@ public final class TxReceipt {
         return txHash;
     }
 
-    public Address getFrom() {
+    public AionAddress getFrom() {
         return from;
     }
 
-    public Address getTo() {
+    public AionAddress getTo() {
         return to;
     }
 
-    public Address getContractAddress() {
+    public AionAddress getContractAddress() {
         return contractAddress;
     }
 
@@ -160,9 +160,9 @@ public final class TxReceipt {
         private long cumulativeNrgUsed;
         private Hash256 blockHash;
         private Hash256 txHash;
-        private Address from;
-        private Address to;
-        private Address contractAddress;
+        private AionAddress from;
+        private AionAddress to;
+        private AionAddress contractAddress;
         private List<TxLog> txLogs;
 
         public TxReceiptBuilder() {}
@@ -197,17 +197,17 @@ public final class TxReceipt {
             return this;
         }
 
-        public TxReceipt.TxReceiptBuilder from(final Address from) {
+        public TxReceipt.TxReceiptBuilder from(final AionAddress from) {
             this.from = from;
             return this;
         }
 
-        public TxReceipt.TxReceiptBuilder to(final Address to) {
+        public TxReceipt.TxReceiptBuilder to(final AionAddress to) {
             this.to = to;
             return this;
         }
 
-        public TxReceipt.TxReceiptBuilder contractAddress(final Address contractAddress) {
+        public TxReceipt.TxReceiptBuilder contractAddress(final AionAddress contractAddress) {
             this.contractAddress = contractAddress;
             return this;
         }
