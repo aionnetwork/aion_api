@@ -1,6 +1,6 @@
 package org.aion.api.type;
 
-import org.aion.base.type.Address;
+import org.aion.base.type.AionAddress;
 import org.aion.base.type.Hash256;
 
 /**
@@ -12,15 +12,15 @@ import org.aion.base.type.Hash256;
  */
 public final class DeployResponse {
 
-    private final Address address;
+    private final AionAddress address;
     private final Hash256 txid;
 
-    public DeployResponse(Address address, Hash256 txid) {
+    public DeployResponse(AionAddress address, Hash256 txid) {
         this.address = address;
         this.txid = txid;
     }
 
-    public Address getAddress() {
+    public AionAddress getAddress() {
         return address;
     }
 

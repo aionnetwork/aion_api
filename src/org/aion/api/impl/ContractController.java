@@ -25,7 +25,7 @@ import org.aion.api.type.ContractAbiEntry;
 import org.aion.api.type.ContractDeploy;
 import org.aion.api.type.DeployResponse;
 import org.aion.api.type.JsonFmt;
-import org.aion.base.type.Address;
+import org.aion.base.type.AionAddress;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
 import org.slf4j.Logger;
@@ -34,7 +34,7 @@ public final class ContractController implements IContractController {
 
     private static final Logger LOGGER = AionLoggerFactory.getLogger(LogEnum.CNT.name());
     private static final String REGEX_SC_REPLACER = "\\p{Cc}";
-    private static final Map<Address, IContract> CONTAINER = new HashMap<>();
+    private static final Map<AionAddress, IContract> CONTAINER = new HashMap<>();
     private static AionAPIImpl API;
 
     ContractController(final AionAPIImpl api) {
@@ -42,13 +42,13 @@ public final class ContractController implements IContractController {
     }
 
     public ApiMsg createFromSource(
-            final String source, final Address from, final long nrgLimit, final long nrgPrice) {
+            final String source, final AionAddress from, final long nrgLimit, final long nrgPrice) {
         return createFromSource(source, from, nrgLimit, nrgPrice, BigInteger.ZERO, new HashMap<>());
     }
 
     public ApiMsg createFromSource(
             final String source,
-            final Address from,
+            final AionAddress from,
             final long nrgLimit,
             final long nrgPrice,
             final BigInteger value) {
@@ -57,7 +57,7 @@ public final class ContractController implements IContractController {
 
     public ApiMsg createFromSource(
             final String source,
-            final Address from,
+            final AionAddress from,
             final long nrgLimit,
             final long nrgPrice,
             List<ISolidityArg> params) {
@@ -70,7 +70,7 @@ public final class ContractController implements IContractController {
 
     public ApiMsg createFromSource(
             final String source,
-            final Address from,
+            final AionAddress from,
             final long nrgLimit,
             final long nrgPrice,
             final Map<String, List<ISolidityArg>> params) {
@@ -79,7 +79,7 @@ public final class ContractController implements IContractController {
 
     public ApiMsg createFromSource(
             final String source,
-            final Address from,
+            final AionAddress from,
             final long nrgLimit,
             final long nrgPrice,
             final BigInteger value,
@@ -93,7 +93,7 @@ public final class ContractController implements IContractController {
 
     public ApiMsg createFromSource(
             final String source,
-            final Address from,
+            final AionAddress from,
             final long nrgLimit,
             final long nrgPrice,
             final BigInteger value,
@@ -215,7 +215,7 @@ public final class ContractController implements IContractController {
         return apiMsg.set(1);
     }
 
-    public IContract getContractAt(final Address from, final Address contract, final String abi) {
+    public IContract getContractAt(final AionAddress from, final AionAddress contract, final String abi) {
 
         // generate type for Gson parsing
         Type abiType = new TypeToken<ArrayList<ContractAbiEntry>>() {}.getType();
@@ -249,7 +249,7 @@ public final class ContractController implements IContractController {
         return CONTAINER.get(contract);
     }
 
-    public final IContract getContract(Address addr) {
+    public final IContract getContract(AionAddress addr) {
         return CONTAINER.get(addr);
     }
 
@@ -268,10 +268,10 @@ public final class ContractController implements IContractController {
                 .collect(Collectors.toList());
     }
 
-    public Map<Address, String> getContractMap() {
-        Map<Address, String> rtn = new HashMap<>();
+    public Map<AionAddress, String> getContractMap() {
+        Map<AionAddress, String> rtn = new HashMap<>();
 
-        for (Map.Entry<Address, IContract> ct : CONTAINER.entrySet()) {
+        for (Map.Entry<AionAddress, IContract> ct : CONTAINER.entrySet()) {
             rtn.put(ct.getKey(), ct.getValue().getContractName());
         }
 
