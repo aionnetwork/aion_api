@@ -15,7 +15,7 @@ import org.aion.api.log.LogEnum;
 import org.aion.api.type.ApiMsg;
 import org.aion.api.type.ApiMsg.cast;
 import org.aion.api.type.Block;
-import org.aion.base.type.Address;
+import org.aion.base.type.AionAddress;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
 import org.aion.base.util.ByteUtil;
@@ -64,11 +64,11 @@ public final class Chain implements IChain {
         }
     }
 
-    public ApiMsg getBalance(Address address) {
+    public ApiMsg getBalance(AionAddress address) {
         return getBalance(address, blockNumber().getObject());
     }
 
-    public ApiMsg getBalance(Address address, long blockNumber) {
+    public ApiMsg getBalance(AionAddress address, long blockNumber) {
 
         if (!apiInst.isInitialized.get()) {
             return new ApiMsg(-1003);
@@ -349,7 +349,7 @@ public final class Chain implements IChain {
         }
     }
 
-    public ApiMsg getTransactionCount(Address address, long blockNumber) {
+    public ApiMsg getTransactionCount(AionAddress address, long blockNumber) {
         if (!this.apiInst.isConnected()) {
             return new ApiMsg(-1003);
         }
@@ -531,7 +531,7 @@ public final class Chain implements IChain {
                 .difficulty(new BigInteger(rsp.getDifficulty().toByteArray()))
                 .extraData(ByteArrayWrapper.wrap(rsp.getExtraData().toByteArray()))
                 .nonce(new BigInteger(rsp.getNonce().toByteArray()))
-                .miner(Address.wrap(rsp.getMinerAddress().toByteArray()))
+                .miner(AionAddress.wrap(rsp.getMinerAddress().toByteArray()))
                 .nrgConsumed(rsp.getNrgConsumed())
                 .nrgLimit(rsp.getNrgLimit())
                 .txTrieRoot(Hash256.wrap(rsp.getTxTrieRoot().toByteArray()))
@@ -552,10 +552,10 @@ public final class Chain implements IChain {
      * GetNonce returns a BigInteger representing the nonce of the account address at the latest
      * block number.
      *
-     * @param address the class {@link Address Address} of the desired account to get the nonce of.
+     * @param address the class {@link AionAddress Address} of the desired account to get the nonce of.
      * @return the account's nonce.
      */
-    public ApiMsg getNonce(Address address) {
+    public ApiMsg getNonce(AionAddress address) {
         if (!apiInst.isInitialized.get()) {
             return new ApiMsg(-1003);
         }
@@ -599,11 +599,11 @@ public final class Chain implements IChain {
         }
     }
 
-    public ApiMsg getStorageAt(Address address, int position) {
+    public ApiMsg getStorageAt(AionAddress address, int position) {
         return getStorageAt(address, position, -1L);
     }
 
-    public ApiMsg getStorageAt(Address address, int position, long blockNumber) {
+    public ApiMsg getStorageAt(AionAddress address, int position, long blockNumber) {
         if (!apiInst.isInitialized.get()) {
             return new ApiMsg(-1003);
         }

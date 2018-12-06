@@ -19,7 +19,7 @@ import org.aion.api.sol.ISolidityArg;
 import org.aion.api.sol.IUint;
 import org.aion.api.type.ApiMsg;
 import org.aion.api.type.ContractResponse;
-import org.aion.base.type.Address;
+import org.aion.base.type.AionAddress;
 import org.junit.Test;
 
 public class MyToken {
@@ -33,11 +33,11 @@ public class MyToken {
         api.connect(IAionAPI.LOCALHOST_URL);
 
         // unlockAccount before deployContract or send a transaction.
-        List<Address> accs = api.getWallet().getAccounts().getObject();
+        List<AionAddress> accs = api.getWallet().getAccounts().getObject();
         assertThat(accs.size(), is(greaterThanOrEqualTo(2)));
         String password = "PLAT4life";
-        Address acc = accs.get(0);
-        Address acc2 = accs.get(1);
+        AionAddress acc = accs.get(0);
+        AionAddress acc2 = accs.get(1);
 
         assertTrue(api.getWallet().unlockAccount(acc, password, 300).getObject());
 

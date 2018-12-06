@@ -1,7 +1,7 @@
 package org.aion.api.type;
 
 import java.util.List;
-import org.aion.base.type.Address;
+import org.aion.base.type.AionAddress;
 
 /**
  * The helper class for gather all of the contract event filter conditions. Use the builder class to
@@ -14,7 +14,7 @@ public final class ContractEventFilter {
 
     private final String fromBlock;
     private final String toBlock;
-    private final List<Address> addresses;
+    private final List<AionAddress> addresses;
     private final List<String> topics;
     private final long expireTime; // 0 means no expire. time unit is sec.
 
@@ -34,7 +34,7 @@ public final class ContractEventFilter {
         return toBlock;
     }
 
-    public List<Address> getAddresses() {
+    public List<AionAddress> getAddresses() {
         return addresses;
     }
 
@@ -51,7 +51,7 @@ public final class ContractEventFilter {
 
         private String fromBlock;
         private String toBlock;
-        private List<Address> addresses;
+        private List<AionAddress> addresses;
         private List<String> topics;
         private long expireTime;
 
@@ -76,7 +76,7 @@ public final class ContractEventFilter {
         }
 
         public ContractEventFilter.ContractEventFilterBuilder addresses(
-                final List<Address> addresses) {
+                final List<AionAddress> addresses) {
             this.addresses = addresses;
             return this;
         }
