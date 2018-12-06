@@ -278,7 +278,7 @@ public final class Int extends SolidityAbstractType implements IInt {
      * @param offset
      * @return decoded Solidity data.
      */
-    public Long decodeToSolidityType(byte[] data, int offset) {
+    public BigInteger decodeToSolidityType(byte[] data, int offset) {
         if (data == null) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[decodeToSolidityType] {}", ErrId.getErrString(-315L));
@@ -287,10 +287,10 @@ public final class Int extends SolidityAbstractType implements IInt {
         }
 
         if (offset + encodeUnitLength > data.length) {
-            return 0L;
+            return BigInteger.ZERO;
         }
 
-        return ApiUtils.toLong(data, offset, encodeUnitLength);
+        return ApiUtils.toBigInteger(data, offset, encodeUnitLength);
     }
 
     @Override

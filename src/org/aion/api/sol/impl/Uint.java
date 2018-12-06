@@ -23,9 +23,11 @@
 package org.aion.api.sol.impl;
 
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+import javax.annotation.Nonnull;
 import org.aion.api.impl.ErrId;
 import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.sol.IUint;
@@ -122,9 +124,33 @@ public class Uint extends SolidityAbstractType implements IUint {
         return new Uint(l);
     }
 
+    /**
+     * Generates an Uint object from a BigInteger.
+     *
+     * @param in
+     * @return Uint object.
+     */
+    public static Uint copyFrom(@Nonnull BigInteger in) {
+        if (in.signum() == -1 || in.bitLength() > 128) {
+            throw new IllegalArgumentException();
+        }
+
+        List<Object> l = new ArrayList<>();
+        l.add(formatInputUint(in));
+
+        return new Uint(l);
+    }
+
+
+
     /** for contract internal encode/decode. */
     private static byte[] formatInputUint(long input) {
         return ApiUtils.toTwosComplement(input);
+    }
+
+    private static byte[] formatInputUint(BigInteger input) {
+        byte[] b = input.toByteArray();
+        return ByteBuffer.allocate(16).put(b).array();
     }
 
     /**
@@ -189,6 +215,8 @@ public class Uint extends SolidityAbstractType implements IUint {
                 localArrayList.add(formatInputUint((String) entry));
             } else if (entry instanceof Long) {
                 localArrayList.add(formatInputUint((Long) entry));
+            } else if (entry instanceof BigInteger) {
+                localArrayList.add(formatInputUint((BigInteger) entry));
             } else if (entry instanceof ArrayList) {
                 localArrayList.add(copyFromHelper((ArrayList) entry));
             } else {
@@ -221,7 +249,7 @@ public class Uint extends SolidityAbstractType implements IUint {
             }
             return false;
         }
-        return Pattern.matches("^uint([0-9]*)?(\\[([0-9]*)\\])*$", in);
+        return Pattern.matches("^uint([0-9]*)?(\\[([0-9]*)])*$", in);
     }
 
     /**
@@ -255,7 +283,7 @@ public class Uint extends SolidityAbstractType implements IUint {
      * @param offset
      * @return decoded Solidity data.
      */
-    public Long decodeToSolidityType(byte[] data, int offset) {
+    public BigInteger decodeToSolidityType(byte[] data, int offset) {
         if (data == null) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[decodeToSolidityType] {}", ErrId.getErrString(-315L));
@@ -264,10 +292,10 @@ public class Uint extends SolidityAbstractType implements IUint {
         }
 
         if (offset + encodeUnitLength > data.length) {
-            return 0L;
+            return BigInteger.ZERO;
         }
 
-        return ApiUtils.toUnsignedLong(data, offset, encodeUnitLength);
+        return ApiUtils.toBigInteger(data, offset, encodeUnitLength);
     }
 
     @Override
