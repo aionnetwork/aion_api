@@ -28,6 +28,7 @@ import org.aion.base.type.AionAddress;
 import org.aion.base.type.ITransaction;
 import org.aion.crypto.ISignature;
 import org.slf4j.Logger;
+import org.aion.vm.api.interfaces.Address;
 
 /** @author jin */
 public abstract class AbstractTransaction implements ITransaction {
@@ -129,13 +130,13 @@ public abstract class AbstractTransaction implements ITransaction {
 
     public abstract byte[] getEncoded();
 
-    public abstract AionAddress getFrom();
+    public abstract Address getSenderAddress();
 
-    public abstract AionAddress getTo();
+    public abstract Address getDestinationAddress();
 
     public abstract byte[] getNonce();
 
-    public abstract byte[] getTimeStamp();
+    public abstract byte[] getTimestamp();
 
     public abstract AionAddress getContractAddress();
 
@@ -145,5 +146,5 @@ public abstract class AbstractTransaction implements ITransaction {
 
     public abstract void setNrgConsume(long consume);
 
-    public abstract byte getType();
+    public abstract byte getTransactionType();
 }
