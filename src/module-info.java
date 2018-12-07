@@ -7,6 +7,7 @@ module aion.api.client {
     requires aion.crypto;
     requires logback.core;
     requires logback.classic;
+    requires aion.vm.api;
 
     exports org.aion.api;
     exports org.aion.api.type;

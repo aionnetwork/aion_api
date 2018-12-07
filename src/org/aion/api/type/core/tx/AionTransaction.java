@@ -36,6 +36,10 @@ import org.aion.crypto.ISignature;
 import org.aion.crypto.SignatureFac;
 import org.aion.rlp.RLP;
 import org.aion.rlp.RLPList;
+import org.aion.vm.api.interfaces.Address;
+
+// NOTE: a number of methods are now duplicated here (but with different names) because of issue #734.
+// This should be eventually cleaned up, but is not currently a priority.
 
 /** Aion transaction class. */
 public class AionTransaction extends AbstractTransaction {
@@ -176,6 +180,11 @@ public class AionTransaction extends AbstractTransaction {
         return parsed;
     }
 
+    @Override
+    public byte[] getTransactionHash() {
+        return getHash();
+    }
+
     public byte[] getHash() {
         if (hash != null) {
             return hash;
@@ -209,6 +218,11 @@ public class AionTransaction extends AbstractTransaction {
         return new BigInteger(1, getNonce());
     }
 
+    @Override
+    public byte[] getTimestamp() {
+        return getTimeStamp();
+    }
+
     public byte[] getTimeStamp() {
         if (!parsed) {
             rlpParse();
@@ -225,6 +239,11 @@ public class AionTransaction extends AbstractTransaction {
             rlpParse();
         }
         return this.nrg;
+    }
+
+    @Override
+    public long getEnergyPrice() {
+        return getNrgPrice();
     }
 
     public long getNrgPrice() {
@@ -247,6 +266,11 @@ public class AionTransaction extends AbstractTransaction {
     }
 
     @Override
+    public Address getDestinationAddress() {
+        return getTo();
+    }
+
+    @Override
     public AionAddress getTo() {
         if (!parsed) {
             rlpParse();
@@ -259,6 +283,11 @@ public class AionTransaction extends AbstractTransaction {
             rlpParse();
         }
         return data;
+    }
+
+    @Override
+    public byte getTransactionType() {
+        return getType();
     }
 
     public byte getType() {
@@ -294,11 +323,21 @@ public class AionTransaction extends AbstractTransaction {
         }
     }
 
+    @Override
+    public boolean isContractCreationTransaction() {
+        return isContractCreation();
+    }
+
     public boolean isContractCreation() {
         if (!parsed) {
             rlpParse();
         }
         return (this.to == null || this.to.equals(AionAddress.EMPTY_ADDRESS()));
+    }
+
+    @Override
+    public Address getSenderAddress() {
+        return getFrom();
     }
 
     @Override
@@ -491,6 +530,11 @@ public class AionTransaction extends AbstractTransaction {
 
     public DataWord nrgPrice() {
         return new DataWord(this.nrgPrice);
+    }
+
+    @Override
+    public long getEnergyLimit() {
+        return nrgLimit();
     }
 
     public long nrgLimit() {
