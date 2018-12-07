@@ -24,7 +24,9 @@ package org.aion.api.sol.impl;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.regex.Pattern;
+import javax.annotation.Nonnull;
 import org.aion.api.IUtils;
 import org.aion.api.impl.ErrId;
 import org.aion.api.impl.internal.ApiUtils;
@@ -57,11 +59,7 @@ public final class SString extends SolidityAbstractType implements ISString {
      * @param in
      * @return {@link SString}
      */
-    public static SString copyFrom(String in) {
-        if (in == null) {
-            LOGGER.error("[copyFrom] {}", ErrId.getErrString(-315L));
-            return null;
-        }
+    public static SString copyFrom(@Nonnull String in) {
         return new SString(in);
     }
 
@@ -85,7 +83,7 @@ public final class SString extends SolidityAbstractType implements ISString {
             LOGGER.error("[isType] {}", ErrId.getErrString(-315L));
             return false;
         }
-        return Pattern.matches("^string(\\[([0-9]*)\\])*$", in);
+        return Pattern.matches("^string(\\[([0-9]*)])*$", in);
     }
 
     /**
@@ -103,7 +101,7 @@ public final class SString extends SolidityAbstractType implements ISString {
         String hexInput = IUtils.bytes2Hex(entry);
 
         assert hexInput != null;
-        Integer length = hexInput.length() / 2;
+        int length = hexInput.length() / 2;
         int l = ((hexInput.length() + encodeUnitLengthDouble - 1) / encodeUnitLengthDouble);
 
         // TODO: optimize
@@ -161,7 +159,7 @@ public final class SString extends SolidityAbstractType implements ISString {
     /** for contract internal encode/decode. */
     @Override
     public int getDynamicPartLength() {
-        return formatToString(val.getBytes()).length();
+        return Objects.requireNonNull(formatToString(val.getBytes())).length();
     }
 
     @Override

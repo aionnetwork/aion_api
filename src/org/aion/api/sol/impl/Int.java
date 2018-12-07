@@ -26,6 +26,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+import javax.annotation.Nonnull;
 import org.aion.api.impl.ErrId;
 import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.sol.IInt;
@@ -57,14 +58,7 @@ public final class Int extends SolidityAbstractType implements IInt {
      * @param in
      * @return {@link Int}
      */
-    public static Int copyFrom(String in) {
-        if (in == null) {
-            if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[copyFrom] {}", ErrId.getErrString(-315L));
-            }
-            return null;
-        }
-
+    public static Int copyFrom(@Nonnull String in) {
         if (in.length() == 1) {
             in = "0" + in;
         }
@@ -86,17 +80,10 @@ public final class Int extends SolidityAbstractType implements IInt {
     /**
      * Generates an Integer object from a Long.
      *
-     * @param in
+     * @param in int value.
      * @return {@link Int}
      */
-    public static Int copyFrom(Integer in) {
-        if (in == null) {
-            if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[copyFrom] {}", ErrId.getErrString(-315L));
-            }
-            return null;
-        }
-
+    public static Int copyFrom(int in) {
         List<Object> l = new ArrayList<>();
         l.add(formatInputInt(in));
 
@@ -104,30 +91,31 @@ public final class Int extends SolidityAbstractType implements IInt {
     }
 
     /** for contract internal encode/decode. */
-    private static byte[] formatInputInt(Integer input) {
-        if (input == null) {
-            if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[formatInputInt] {}", ErrId.getErrString(-315L));
-            }
-            return null;
-        }
-
+    private static byte[] formatInputInt(int input) {
         return ApiUtils.toTwosComplement(input);
     }
 
     /**
      * Generates an Int object from a Long.
      *
-     * @param in
+     * @param in long value.
      * @return {@link Int}
      */
-    public static Int copyFrom(Long in) {
-        if (in == null) {
-            if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[copyFrom] {}", ErrId.getErrString(-315L));
-            }
-            return null;
-        }
+    public static Int copyFrom(long in) {
+
+        List<Object> l = new ArrayList<>();
+        l.add(formatInputInt(in));
+
+        return new Int(l);
+    }
+
+    /**
+     * Generates an Int object from a BigInteger.
+     *
+     * @param in {@link BigInteger}
+     * @return {@link Int}
+     */
+    public static Int copyFrom(@Nonnull BigInteger in) {
 
         List<Object> l = new ArrayList<>();
         l.add(formatInputInt(in));
@@ -136,14 +124,19 @@ public final class Int extends SolidityAbstractType implements IInt {
     }
 
     /** for contract internal encode/decode. */
-    private static byte[] formatInputInt(Long input) {
-        if (input == null) {
+    private static byte[] formatInputInt(long input) {
+        return ApiUtils.toTwosComplement(input);
+    }
+
+    /** for contract internal encode/decode. */
+    private static byte[] formatInputInt(@Nonnull BigInteger input) {
+        if (input.bitLength() > 127) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[formatInputInt] {}", ErrId.getErrString(-315L));
             }
             return null;
         }
-        return ApiUtils.toTwosComplement(input);
+        return input.toByteArray();
     }
 
     /**
@@ -153,11 +146,11 @@ public final class Int extends SolidityAbstractType implements IInt {
      * @param l
      * @return {@link Int}
      */
-    public static Int copyFrom(List l) {
+    public static Int copyFrom(@Nonnull List l) {
 
         // at this point we don't know about type yet
         // assume first variable is the correct Type
-        if (l == null || l.size() == 0) {
+        if (l.isEmpty()) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[copyFrom] {}", ErrId.getErrString(-315L));
             }
@@ -169,13 +162,7 @@ public final class Int extends SolidityAbstractType implements IInt {
     }
 
     /** for contract internal encode/decode. */
-    private static byte[] formatInputInt(String input) {
-        if (input == null) {
-            if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[formatInputAddress] {}", ErrId.getErrString(-315L));
-            }
-            return null;
-        }
+    private static byte[] formatInputInt(@Nonnull String input) {
 
         if (input.length() == 1) {
             input = "0" + input;
@@ -192,9 +179,9 @@ public final class Int extends SolidityAbstractType implements IInt {
         return bytes;
     }
 
-    private static List copyFromHelper(List l) {
+    private static List copyFromHelper(@Nonnull List l) {
 
-        if (l == null || l.size() == 0) {
+        if (l.isEmpty()) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("[copyFromHelper] {}", ErrId.getErrString(-315L));
             }
@@ -205,11 +192,13 @@ public final class Int extends SolidityAbstractType implements IInt {
 
         for (Object entry : l) {
             if (entry instanceof Integer) {
-                localArrayList.add(formatInputInt((Integer) entry));
+                localArrayList.add(formatInputInt((int) entry));
             } else if (entry instanceof String) {
                 localArrayList.add(formatInputInt((String) entry));
             } else if (entry instanceof Long) {
-                localArrayList.add(formatInputInt((Long) entry));
+                localArrayList.add(formatInputInt((long) entry));
+            } else if (entry instanceof BigInteger) {
+                localArrayList.add(formatInputInt((BigInteger) entry));
             } else if (entry instanceof ArrayList) {
                 localArrayList.add(copyFromHelper((ArrayList) entry));
             } else {
@@ -245,7 +234,7 @@ public final class Int extends SolidityAbstractType implements IInt {
             return false;
         }
 
-        return Pattern.matches("^int([0-9]*)?(\\[([0-9]*)\\])*$", in);
+        return Pattern.matches("^int([0-9]*)?(\\[([0-9]*)])*$", in);
     }
 
     /**
@@ -274,8 +263,8 @@ public final class Int extends SolidityAbstractType implements IInt {
      * Returns a correctly formatted hex string, given an input byte array (usually 32 bytes).
      * Encoding varies depending on the solidity type being encoded.
      *
-     * @param data
-     * @param offset
+     * @param data byte array
+     * @param offset int value
      * @return decoded Solidity data.
      */
     public BigInteger decodeToSolidityType(byte[] data, int offset) {

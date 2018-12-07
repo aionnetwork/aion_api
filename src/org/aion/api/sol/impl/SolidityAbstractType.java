@@ -227,7 +227,7 @@ public abstract class SolidityAbstractType {
      *
      * @return true if type is dynamic.
      */
-    private boolean getIsDynamic() {
+    public boolean getIsDynamic() {
         return (this.typeProperty == SolidityValue.SolidityArgsType.DYNAMICARRAY)
                 || (this.typeProperty == SolidityValue.SolidityArgsType.DYNAMIC);
     }

@@ -186,7 +186,7 @@ public final class Address extends SolidityAbstractType implements IAddress {
             return false;
         }
 
-        return Pattern.matches("address(\\[([0-9]*)\\])?", in);
+        return Pattern.matches("address(\\[([0-9]*)])?", in);
     }
 
     /**

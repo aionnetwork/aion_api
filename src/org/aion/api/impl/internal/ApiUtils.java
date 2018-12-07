@@ -395,11 +395,11 @@ public class ApiUtils {
         return result;
     }
 
-    public static byte[] toTwosComplement(Integer in) {
+    public static byte[] toTwosComplement(int in) {
         return ByteBuffer.allocate(4).putInt(in).array();
     }
 
-    public static byte[] toTwosComplement(Long in) {
+    public static byte[] toTwosComplement(long in) {
         return ByteBuffer.allocate(8).putLong(in).array();
     }
 
@@ -692,7 +692,6 @@ public class ApiUtils {
     }
 
     public static BigInteger toBigInteger(byte[] data, int offset, int encodeUnitLength) {
-        ByteBuffer wrapped = ByteBuffer.wrap(data, offset, encodeUnitLength);
-        return new BigInteger(wrapped.array());
+        return new BigInteger(ByteBuffer.allocate(encodeUnitLength).put(data, offset, encodeUnitLength).array());
     }
 }

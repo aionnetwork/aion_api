@@ -25,6 +25,7 @@ package org.aion.api.sol;
 
 import java.math.BigInteger;
 import java.util.List;
+import javax.annotation.Nonnull;
 import org.aion.api.sol.impl.Uint;
 
 /**
@@ -42,27 +43,27 @@ public interface IUint extends ISolidityArg {
      * @param in {@link java.lang.String}.
      * @return interface itself.
      */
-    static IUint copyFrom(String in) {
+    static IUint copyFrom(@Nonnull String in) {
         return Uint.copyFrom(in);
     }
 
     /**
      * Generates an Integer object from a Integer object.
      *
-     * @param in {@link java.lang.Integer}
+     * @param in int value
      * @return interface itself.
      */
-    static IUint copyFrom(Integer in) {
+    static IUint copyFrom(int in) {
         return Uint.copyFrom(in);
     }
 
     /**
      * Generates an Uint object from a Long object.
      *
-     * @param in {@link java.lang.Long}
+     * @param in long value
      * @return interface itself.
      */
-    static IUint copyFrom(Long in) {
+    static IUint copyFrom(long in) {
         return Uint.copyFrom(in);
     }
 
@@ -72,7 +73,7 @@ public interface IUint extends ISolidityArg {
      * @param in {@link java.math.BigInteger}
      * @return interface itself.
      */
-    static IUint copyFrom(BigInteger in) {
+    static IUint copyFrom(@Nonnull BigInteger in) {
         return Uint.copyFrom(in);
     }
 
@@ -80,11 +81,11 @@ public interface IUint extends ISolidityArg {
      * Generates an Int object from an ArrayList, String or byte array, this structure should match
      * the list structure defined in the ABI and consist only of Bytes.
      *
-     * @param l {@link java.util.List} of {@link java.lang.String}, {@link java.lang.Integer},
-     *     {@link java.math.BigInteger} or {@link java.lang.Long}.
+     * @param l {@link java.util.List} of {@link java.lang.String}, int, long, or {@link
+     *     java.math.BigInteger}.
      * @return interface itself.
      */
-    static IUint copyFrom(List l) {
+    static IUint copyFrom(@Nonnull List l) {
         return Uint.copyFrom(l);
     }
 }

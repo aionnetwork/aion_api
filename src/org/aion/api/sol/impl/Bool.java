@@ -49,7 +49,7 @@ public final class Bool extends SolidityAbstractType implements IBool {
     /**
      * Generates an Bool object from a Boolean value.
      *
-     * @param in
+     * @param in a boolean value.
      * @return {@link Bool}
      */
     public static Bool copyFrom(boolean in) {
@@ -63,7 +63,7 @@ public final class Bool extends SolidityAbstractType implements IBool {
      * Generates an Bool object from an ArrayList of Boolean, this structure should match the list
      * structure defined in the ABI and consist only of Boolean.
      *
-     * @param l
+     * @param l List of objects.
      * @return {@link Bool}.
      */
     public static Bool copyFrom(List l) {
@@ -116,6 +116,7 @@ public final class Bool extends SolidityAbstractType implements IBool {
         return new Bool();
     }
 
+
     /**
      * Checks that inputted string is the correct type. To be used with ABI.
      *
@@ -129,7 +130,7 @@ public final class Bool extends SolidityAbstractType implements IBool {
             }
             return false;
         }
-        return Pattern.matches("^bool(\\[([0-9]*)\\])*$", in);
+        return Pattern.matches("^bool(\\[([0-9]*)])*$", in);
     }
 
     /**
