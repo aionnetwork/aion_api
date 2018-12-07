@@ -151,7 +151,7 @@ public class AionTransaction extends AbstractTransaction {
         }
 
         this.parsed = true;
-        this.hash = getHash();
+        this.hash = getTransactionHash();
     }
 
     public boolean isParsed() {
@@ -160,10 +160,6 @@ public class AionTransaction extends AbstractTransaction {
 
     @Override
     public byte[] getTransactionHash() {
-        return getHash();
-    }
-
-    public byte[] getHash() {
         if (hash != null) {
             return hash;
         }
@@ -198,10 +194,6 @@ public class AionTransaction extends AbstractTransaction {
 
     @Override
     public byte[] getTimestamp() {
-        return getTimeStamp();
-    }
-
-    public byte[] getTimeStamp() {
         if (!parsed) {
             rlpParse();
         }
@@ -209,7 +201,7 @@ public class AionTransaction extends AbstractTransaction {
     }
 
     public BigInteger getTimeStampBI() {
-        return new BigInteger(1, getTimeStamp());
+        return new BigInteger(1, this.getTimestamp());
     }
 
     public long getNrg() {
@@ -221,10 +213,6 @@ public class AionTransaction extends AbstractTransaction {
 
     @Override
     public long getEnergyPrice() {
-        return getNrgPrice();
-    }
-
-    public long getNrgPrice() {
         if (!parsed) {
             rlpParse();
         }
@@ -245,11 +233,6 @@ public class AionTransaction extends AbstractTransaction {
 
     @Override
     public Address getDestinationAddress() {
-        return getTo();
-    }
-
-    @Override
-    public AionAddress getTo() {
         if (!parsed) {
             rlpParse();
         }
@@ -265,10 +248,6 @@ public class AionTransaction extends AbstractTransaction {
 
     @Override
     public byte getTransactionType() {
-        return getType();
-    }
-
-    public byte getType() {
         if (!parsed) {
             rlpParse();
         }
@@ -283,11 +262,11 @@ public class AionTransaction extends AbstractTransaction {
     }
 
     public AionAddress getContractAddress() {
-        if (!isContractCreation()) {
+        if (!isContractCreationTransaction()) {
             return null;
         }
 
-        AionAddress from = this.getFrom();
+        Address from = this.getSenderAddress();
 
         if (from == null) {
             return null;
@@ -303,10 +282,6 @@ public class AionTransaction extends AbstractTransaction {
 
     @Override
     public boolean isContractCreationTransaction() {
-        return isContractCreation();
-    }
-
-    public boolean isContractCreation() {
         if (!parsed) {
             rlpParse();
         }
@@ -314,13 +289,7 @@ public class AionTransaction extends AbstractTransaction {
     }
 
     @Override
-    public Address getSenderAddress() {
-        return getFrom();
-    }
-
-    @Override
-    public synchronized AionAddress getFrom() {
-
+    public synchronized Address getSenderAddress() {
         if (from != null) {
             return this.from;
         }
@@ -458,7 +427,7 @@ public class AionTransaction extends AbstractTransaction {
         sigs = RLP.encodeElement(signature.toBytes());
         this.rlpEncoded =
                 RLP.encodeList(nonce, to, value, data, timeStamp, nrg, nrgPrice, type, sigs);
-        this.hash = this.getHash();
+        this.hash = this.getTransactionHash();
 
         return rlpEncoded;
     }
@@ -466,7 +435,7 @@ public class AionTransaction extends AbstractTransaction {
     @Override
     public int hashCode() {
 
-        byte[] hash = this.getHash();
+        byte[] hash = this.getTransactionHash();
         int hashCode = 0;
 
         for (int i = 0; i < hash.length; ++i) {
@@ -512,10 +481,6 @@ public class AionTransaction extends AbstractTransaction {
 
     @Override
     public long getEnergyLimit() {
-        return nrgLimit();
-    }
-
-    public long nrgLimit() {
         return new DataWord(this.nrg).longValue();
     }
 
@@ -523,7 +488,7 @@ public class AionTransaction extends AbstractTransaction {
         long nonZeroes = nonZeroBytesInData();
         long zeroes = zeroBytesInData();
 
-        return (isContractCreation() ? NRG_TX_CREATE : 0)
+        return (isContractCreationTransaction() ? NRG_TX_CREATE : 0)
                 + NRG_TRANSACTION
                 + zeroes * NRG_TX_DATA_ZERO
                 + nonZeroes * NRG_TX_DATA_NONZERO;
