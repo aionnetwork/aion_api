@@ -35,7 +35,6 @@ import java.util.Random;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.aion.api.impl.Utils;
-import org.aion.api.impl.internal.Message;
 import org.aion.api.keccak.Keccak;
 import org.aion.api.keccak.Keccak256;
 import org.aion.api.type.AccountDetails;
@@ -96,8 +95,8 @@ public class ApiUtils {
         return toReqHeader(vers, serv, func, false);
     }
 
-    public static byte[] toReqHeader(
-            int vers, Message.Servs serv, Message.Funcs func, boolean hasHash) {
+    private static byte[] toReqHeader(
+        int vers, Message.Servs serv, Message.Funcs func, boolean hasHash) {
         byte[] result = new byte[4];
         result[0] = (byte) vers;
         result[1] = (byte) serv.ordinal();
@@ -144,10 +143,7 @@ public class ApiUtils {
         List<TxLog> txLogList = new ArrayList<>();
         for (Message.t_LgEle tl : rsp.getLogsList()) {
 
-            List<String> topics = new ArrayList<>();
-            for (String bs : tl.getTopicsList()) {
-                topics.add(bs);
-            }
+            List<String> topics = new ArrayList<>(tl.getTopicsList());
 
             txLogList.add(
                     new TxLog(
@@ -181,8 +177,7 @@ public class ApiUtils {
 
         String data = bytes2Hex(bytes);
 
-        String rtn = data.length() <= 64 ? zeroes.substring(data.length()) + data : data;
-        return rtn;
+        return data.length() <= 64 ? zeroes.substring(data.length()) + data : data;
     }
 
     /**
@@ -196,8 +191,11 @@ public class ApiUtils {
 
         String data = bytes2Hex(bytes);
 
-        String rtn = data.length() <= 32 ? zeroes.substring(data.length()) + data : data;
-        return rtn;
+        if (data != null) {
+            return data.length() <= 32 ? zeroes.substring(data.length()) + data : data;
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -213,7 +211,11 @@ public class ApiUtils {
 
         String data = bytes2Hex(bytes);
 
-        return data.length() <= 64 ? zeroes.substring(data.length()) + data : data;
+        if (data != null) {
+            return data.length() <= 64 ? zeroes.substring(data.length()) + data : data;
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -228,7 +230,11 @@ public class ApiUtils {
 
         String data = bytes2Hex(bytes);
 
-        return data.length() <= 32 ? zeroes.substring(data.length()) + data : data;
+        if (data != null) {
+            return data.length() <= 32 ? zeroes.substring(data.length()) + data : data;
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -292,8 +298,7 @@ public class ApiUtils {
     public static String keccak256(byte[] in) {
         String hexInput = Utils.bytes2Hex(in);
         Keccak k = new Keccak(1600);
-        String hashed = k.getHash(hexInput, 1088, 32);
-        return hashed;
+        return k.getHash(hexInput, 1088, 32);
     }
 
     /**
@@ -390,49 +395,49 @@ public class ApiUtils {
         return result;
     }
 
-    public static byte[] toTwosComplement(Integer in) {
+    public static byte[] toTwosComplement(int in) {
         return ByteBuffer.allocate(4).putInt(in).array();
     }
 
-    public static byte[] toTwosComplement(Long in) {
+    public static byte[] toTwosComplement(long in) {
         return ByteBuffer.allocate(8).putLong(in).array();
     }
 
     // Solidity Type Checkers
     public static boolean isTypeAddress(String in) {
-        return Pattern.matches("address((\\[([0-9]*)\\])+)?", in);
+        return Pattern.matches("address((\\[([0-9]*)])+)?", in);
     }
 
     public static boolean isTypeBoolean(String in) {
-        return Pattern.matches("^bool(\\[([0-9]*)\\])*$", in);
+        return Pattern.matches("^bool(\\[([0-9]*)])*$", in);
     }
 
     public static boolean isTypeBytes(String in) {
-        return Pattern.matches("^bytes([0-9]{1,})(\\[([0-9]*)\\])*$", in);
+        return Pattern.matches("^bytes([0-9]{1,})(\\[([0-9]*)])*$", in);
     }
 
     public static boolean isTypeDynamicBytes(String in) {
-        return Pattern.matches("^bytes(\\[([0-9]*)\\])*$", in);
+        return Pattern.matches("^bytes(\\[([0-9]*)])*$", in);
     }
 
     public static boolean isTypeInt(String in) {
-        return Pattern.matches("^int([0-9]*)?(\\[([0-9]*)\\])*$", in);
+        return Pattern.matches("^int([0-9]*)?(\\[([0-9]*)])*$", in);
     }
 
     public static boolean isTypeReal(String in) {
-        return Pattern.matches("real([0-9]*)?(\\[([0-9]*)\\])?", in);
+        return Pattern.matches("real([0-9]*)?(\\[([0-9]*)])?", in);
     }
 
     public static boolean isTypeString(String in) {
-        return Pattern.matches("^string(\\[([0-9]*)\\])*$", in);
+        return Pattern.matches("^string(\\[([0-9]*)])*$", in);
     }
 
     public static boolean isTypeUint(String in) {
-        return Pattern.matches("^uint([0-9]*)?(\\[([0-9]*)\\])*$", in);
+        return Pattern.matches("^uint([0-9]*)?(\\[([0-9]*)])*$", in);
     }
 
     public static boolean isTypeUreal(String in) {
-        return Pattern.matches("ureal([0-9]*)?(\\[([0-9]*)\\])?", in);
+        return Pattern.matches("ureal([0-9]*)?(\\[([0-9]*)])?", in);
     }
 
     public static byte[] genHash(int hashlen) {
@@ -459,7 +464,7 @@ public class ApiUtils {
     }
 
     public static ByteArrayWrapper parseBody(byte[] rsp) {
-        boolean hasHash = (rsp[2] == 1 ? true : false);
+        boolean hasHash = (rsp[2] == 1);
         int bodyLen = rsp.length - (hasHash ? RSP_HEADER_LEN : RSP_HEADER_NOHASH_LEN);
 
         if (hasHash) {
@@ -473,7 +478,7 @@ public class ApiUtils {
     }
 
     public static boolean isTypeBoolean(byte b) {
-        return b == 1 ? true : false;
+        return b == 1;
     }
 
     public static boolean endTxStatus(int status) {
@@ -670,7 +675,7 @@ public class ApiUtils {
         return rtn;
     }
 
-    public static String getOsName() {
+    private static String getOsName() {
         String osName = System.getProperty("os.name");
         if (osName.toLowerCase().contains("windows")) {
             osName = "Windows";
@@ -684,5 +689,9 @@ public class ApiUtils {
 
     public static boolean isWindows() {
         return getOsName().equals("Windows");
+    }
+
+    public static BigInteger toBigInteger(byte[] data, int offset, int encodeUnitLength) {
+        return new BigInteger(ByteBuffer.allocate(encodeUnitLength).put(data, offset, encodeUnitLength).array());
     }
 }

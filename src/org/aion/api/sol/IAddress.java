@@ -24,6 +24,7 @@
 package org.aion.api.sol;
 
 import java.util.List;
+import javax.annotation.Nonnull;
 import org.aion.api.sol.impl.Address;
 
 /**
@@ -43,7 +44,7 @@ public interface IAddress extends ISolidityArg {
      * @param l {@link java.util.List} of {@link java.lang.String} or bytes array.
      * @return interface itself.
      */
-    static IAddress copyFrom(List l) {
+    static IAddress copyFrom(@Nonnull List l) {
         return Address.copyFrom(l);
     }
 
@@ -53,7 +54,7 @@ public interface IAddress extends ISolidityArg {
      * @param in {@link java.lang.String}.
      * @return interface itself.
      */
-    static IAddress copyFrom(String in) {
+    static IAddress copyFrom(@Nonnull String in) {
         return Address.copyFrom(in);
     }
 
@@ -63,7 +64,7 @@ public interface IAddress extends ISolidityArg {
      * @param in 32 bytes array.
      * @return interface itself.
      */
-    static IAddress copyFrom(byte[] in) {
+    static IAddress copyFrom(@Nonnull byte[] in) {
         return Address.copyFrom(in);
     }
 }

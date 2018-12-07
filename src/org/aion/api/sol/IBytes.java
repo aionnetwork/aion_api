@@ -24,6 +24,7 @@
 package org.aion.api.sol;
 
 import java.util.List;
+import javax.annotation.Nonnull;
 import org.aion.api.sol.impl.Bytes;
 
 /**
@@ -40,7 +41,7 @@ public interface IBytes extends ISolidityArg {
      * @param in a bytes array.
      * @return interface itself.
      */
-    static IBytes copyFrom(byte[] in) {
+    static IBytes copyFrom(@Nonnull byte[] in) {
         return Bytes.copyFrom(in);
     }
 
@@ -51,7 +52,7 @@ public interface IBytes extends ISolidityArg {
      * @param l {@link java.util.List} of bytes array.
      * @return interface itself.
      */
-    static IBytes copyFrom(List l) {
+    static IBytes copyFrom(@Nonnull List l) {
         return Bytes.copyFrom(l);
     }
 }
