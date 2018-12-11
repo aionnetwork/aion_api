@@ -1,6 +1,8 @@
 package org.aion.api.sol;
 
+import java.math.BigInteger;
 import java.util.List;
+import javax.annotation.Nonnull;
 import org.aion.api.sol.impl.Int;
 
 /**
@@ -18,27 +20,37 @@ public interface IInt extends ISolidityArg {
      * @param in {@link java.lang.String}.
      * @return the class {@link Int Int}.
      */
-    static IInt copyFrom(String in) {
+    static IInt copyFrom(@Nonnull String in) {
         return Int.copyFrom(in);
     }
 
     /**
      * Generates an Integer object from a Integer object.
      *
-     * @param in {@link java.lang.Integer}
+     * @param in int value.
      * @return interface itself.
      */
-    static IInt copyFrom(Integer in) {
+    static IInt copyFrom(int in) {
         return Int.copyFrom(in);
     }
 
     /**
      * Generates an Int object from a Long object.
      *
-     * @param in {@link java.lang.Long}
+     * @param in long value
      * @return interface itself.
      */
-    static IInt copyFrom(Long in) {
+    static IInt copyFrom(long in) {
+        return Int.copyFrom(in);
+    }
+
+    /**
+     * Generates an Int object from a Long object.
+     *
+     * @param in {@link java.math.BigInteger}
+     * @return interface itself.
+     */
+    static IInt copyFrom(@Nonnull BigInteger in) {
         return Int.copyFrom(in);
     }
 
@@ -46,11 +58,11 @@ public interface IInt extends ISolidityArg {
      * Generates an Int object from an ArrayList, String or byte array, this structure should match
      * the list structure defined in the ABI and consist only of Bytes.
      *
-     * @param l {@link java.util.List} of {@link java.lang.String}, {@link java.lang.Integer} or
-     *     {@link java.lang.Long}.
+     * @param l {@link java.util.List} of {@link java.lang.String}, int, long, or {@link
+     *     java.math.BigInteger}.
      * @return interface itself.
      */
-    static IInt copyFrom(List l) {
+    static IInt copyFrom(@Nonnull List l) {
         return Int.copyFrom(l);
     }
 }

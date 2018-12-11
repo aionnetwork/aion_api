@@ -1,5 +1,6 @@
 package org.aion.api.sol;
 
+import javax.annotation.Nonnull;
 import org.aion.api.sol.impl.SString;
 
 /**
@@ -16,7 +17,7 @@ public interface ISString extends ISolidityArg {
      * @param in {@link java.lang.String}.
      * @return interface itself.
      */
-    static ISString copyFrom(String in) {
+    static ISString copyFrom(@Nonnull String in) {
         return SString.copyFrom(in);
     }
 }

@@ -12,6 +12,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,13 +45,24 @@ import org.junit.Test;
 public class ContractTests {
 
     // Make sure the password of the testing account been set properly
-    private String pw = "PLAT4life";
+    private String pw = "";
 
     private IAionAPI api;
 
     private static String readFile(String fileName) {
         StringBuilder contract = new StringBuilder();
-        Scanner s = new Scanner(ContractTests.class.getResourceAsStream("./contract/" + fileName));
+        Scanner s;
+        try {
+            s =
+                    new Scanner(
+                            new File(
+                                    System.getProperty("user.dir")
+                                            + "/test/org/aion/api/test/contract/"
+                                            + fileName));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
         while (s.hasNextLine()) {
             contract.append(s.nextLine());
             contract.append("\n");
@@ -260,7 +273,8 @@ public class ContractTests {
         ContractResponse cr = apiMsg.getObject();
         assertNotNull(ct);
 
-        assertEquals(1234L, (long) (Long) cr.getData().get(0));
+        assertEquals(BigInteger.valueOf(1234), cr.getData().get(0));
+
         assertTrue((boolean) cr.getData().get(1));
         assertEquals(
                 ByteArrayWrapper.wrap((byte[]) cr.getData().get(2)),
@@ -275,7 +289,8 @@ public class ContractTests {
                                 IUtils.hex2Bytes(
                                         "1234567890123456789012345678901234567890123456789012345678901234"))));
         assertTrue(((String) cr.getData().get(4)).contentEquals("Aion!"));
-        assertEquals((long) ((Long) cr.getData().get(5)), -1234L);
+
+        assertEquals(BigInteger.valueOf(-1234), cr.getData().get(5));
 
         api.destroyApi();
     }
@@ -338,7 +353,12 @@ public class ContractTests {
                         Address.wrap(
                                 "a044444444444444444444444444444444444444444444444444444444444444"));
 
-        List<Long> uint = Arrays.asList(1111L, 2222L, 3333L, 4444L);
+        List<BigInteger> uint =
+                Arrays.asList(
+                        BigInteger.valueOf(1111),
+                        BigInteger.valueOf(2222),
+                        BigInteger.valueOf(3333),
+                        BigInteger.valueOf(4444));
         assertEquals(cr.getData().get(0), bool);
 
         List<byte[]> addrAry = (List<byte[]>) cr.getData().get(1);
@@ -349,7 +369,7 @@ public class ContractTests {
                         i -> {
                             assertEquals(addrTran.get(i), addr.get(i));
                         });
-        assertEquals(cr.getData().get(2), uint);
+        assertEquals(uint, cr.getData().get(2));
 
         api.destroyApi();
     }
@@ -912,9 +932,7 @@ public class ContractTests {
         assertNotNull(cr);
         assertNotNull(cr.getData());
 
-        cnt = (Long) cr.getData().get(0);
-
-        assertEquals(100L, cnt);
+        assertEquals(BigInteger.valueOf(100), cr.getData().get(0));
 
         api.destroyApi();
     }
@@ -1233,7 +1251,7 @@ public class ContractTests {
         ContractResponse rsp = apiMsg.getObject();
         assertNotNull(rsp);
         assertNotNull(rsp.getData());
-        assertThat(rsp.getData().get(0), is(equalTo(3L)));
+        assertEquals(BigInteger.valueOf(3), rsp.getData().get(0));
 
         /* setData and getData */
         apiMsg =
@@ -1260,7 +1278,7 @@ public class ContractTests {
         assertNotNull(rsp);
         assertNotNull(rsp.getData());
 
-        assertThat(rsp.getData().get(0), is(equalTo(5L)));
+        assertEquals(BigInteger.valueOf(5), rsp.getData().get(0));
 
         /* setData2 and getData */
         apiMsg =
@@ -1288,7 +1306,7 @@ public class ContractTests {
         assertNotNull(rsp);
         assertNotNull(rsp.getData());
 
-        assertThat(rsp.getData().get(0), is(equalTo(5L)));
+        assertEquals(BigInteger.valueOf(5), rsp.getData().get(0));
 
         api.destroyApi();
     }
@@ -1344,7 +1362,8 @@ public class ContractTests {
         ContractResponse rsp = apiMsg.getObject();
         assertNotNull(rsp);
         assertNotNull(rsp.getData());
-        assertThat(rsp.getData().get(0), is(equalTo(1L)));
+
+        assertEquals(BigInteger.valueOf(1), rsp.getData().get(0));
 
         /* setData and getData */
         apiMsg =
@@ -1366,7 +1385,7 @@ public class ContractTests {
         rsp = apiMsg.getObject();
         assertNotNull(rsp);
         assertNotNull(rsp.getData());
-        assertThat(rsp.getData().get(0), is(equalTo(2L)));
+        assertEquals(BigInteger.valueOf(2), rsp.getData().get(0));
 
         for (int i = 0; i < 2; i++) {
             apiMsg =
@@ -1389,7 +1408,7 @@ public class ContractTests {
         rsp = apiMsg.getObject();
         assertNotNull(rsp);
         assertNotNull(rsp.getData());
-        assertThat(rsp.getData().get(0), is(equalTo(4L)));
+        assertEquals(BigInteger.valueOf(4), rsp.getData().get(0));
 
         // need to register event to the kernel
         //        List<ContractEvent> ce = ct.getEvents();

@@ -10,6 +10,8 @@ module aion.api.client {
     requires commons.collections4;
     requires libnzmq;
     requires protobuf.java;
+    requires jsr305;
+    requires gson;
 
     exports org.aion.api;
     exports org.aion.api.type;

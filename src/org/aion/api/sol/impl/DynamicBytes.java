@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import org.aion.api.IUtils;
 import org.aion.api.impl.ErrId;
@@ -169,7 +170,7 @@ public final class DynamicBytes extends SolidityAbstractType implements IDynamic
     /** for contract internal encode/decode. */
     @Override
     public int getDynamicPartLength() {
-        return formatToString((byte[]) valArray.get(0)).length();
+        return Objects.requireNonNull(formatToString((byte[]) valArray.get(0))).length();
     }
 
     @Override

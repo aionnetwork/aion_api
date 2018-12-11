@@ -1,6 +1,7 @@
 package org.aion.api.sol;
 
 import java.util.List;
+import javax.annotation.Nonnull;
 import org.aion.api.sol.impl.Bool;
 
 /**
@@ -28,7 +29,7 @@ public interface IBool extends ISolidityArg {
      * @param l {@link java.util.List} of boolean.
      * @return interface itself.
      */
-    static IBool copyFrom(List l) {
+    static IBool copyFrom(@Nonnull List l) {
         return Bool.copyFrom(l);
     }
 }

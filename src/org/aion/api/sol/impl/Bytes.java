@@ -136,7 +136,7 @@ public final class Bytes extends SolidityAbstractType implements IBytes {
             }
             return false;
         }
-        return Pattern.matches("^bytes([0-9]{1,})(\\[([0-9]*)\\])*$", in);
+        return Pattern.matches("^bytes([0-9]{1,})(\\[([0-9]*)])*$", in);
     }
 
     /**

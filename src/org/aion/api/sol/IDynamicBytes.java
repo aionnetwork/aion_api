@@ -1,5 +1,6 @@
 package org.aion.api.sol;
 
+import javax.annotation.Nonnull;
 import org.aion.api.sol.impl.DynamicBytes;
 
 /**
@@ -16,7 +17,7 @@ public interface IDynamicBytes extends ISolidityArg {
      * @param in a variable bytes array.
      * @return interface itself.
      */
-    static IDynamicBytes copyFrom(byte[] in) {
+    static IDynamicBytes copyFrom(@Nonnull byte[] in) {
         return DynamicBytes.copyFrom(in);
     }
 }
