@@ -7,6 +7,9 @@ module aion.api.client {
     requires aion.crypto;
     requires logback.core;
     requires logback.classic;
+    requires commons.collections4;
+    requires libnzmq;
+    requires protobuf.java;
 
     exports org.aion.api;
     exports org.aion.api.type;
