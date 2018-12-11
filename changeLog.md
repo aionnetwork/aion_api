@@ -1,5 +1,9 @@
 New Updates (most recent on top)
 
+Aion Java API v0.1.15
+- revise license to MIT
+- fixed overflow issue in the Contract decode return value
+
 Aion Java API v0.1.14
 - update build tool to gradle
 
