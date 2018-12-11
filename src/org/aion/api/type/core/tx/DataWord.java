@@ -397,4 +397,9 @@ public class DataWord implements Comparable<DataWord>, IDataWord {
     public String asString() {
         return new String(getNoLeadZeroesData());
     }
+
+    @Override
+    public ByteArrayWrapper toWrapper() {
+        return ByteArrayWrapper.wrap(data);
+    }
 }
