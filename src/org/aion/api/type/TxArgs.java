@@ -7,6 +7,7 @@ import java.math.BigInteger;
 import org.aion.api.ITx;
 import org.aion.base.type.AionAddress;
 import org.aion.base.util.ByteArrayWrapper;
+import org.aion.vm.api.interfaces.Address;
 
 /**
  * The transaction input arguments used in {@link
@@ -15,8 +16,8 @@ import org.aion.base.util.ByteArrayWrapper;
  */
 public final class TxArgs {
 
-    private final AionAddress from;
-    private final AionAddress to;
+    private final Address from;
+    private final Address to;
     private final BigInteger value;
     private final BigInteger nonce;
     private final long nrgLimit;
@@ -33,11 +34,11 @@ public final class TxArgs {
         this.data = builder.data;
     }
 
-    public AionAddress getFrom() {
+    public Address getFrom() {
         return from;
     }
 
-    public AionAddress getTo() {
+    public Address getTo() {
         return to;
     }
 
@@ -64,8 +65,8 @@ public final class TxArgs {
     /** This Builder class is used to build a {@link TxArgs} instance. */
     public static class TxArgsBuilder {
 
-        private AionAddress from;
-        private AionAddress to;
+        private Address from;
+        private Address to;
         private BigInteger value;
         private BigInteger nonce;
         private long nrgLimit;
@@ -74,12 +75,12 @@ public final class TxArgs {
 
         public TxArgsBuilder() {}
 
-        public TxArgs.TxArgsBuilder from(final AionAddress from) {
+        public TxArgs.TxArgsBuilder from(final Address from) {
             this.from = from;
             return this;
         }
 
-        public TxArgs.TxArgsBuilder to(final AionAddress to) {
+        public TxArgs.TxArgsBuilder to(final Address to) {
             this.to = to;
             return this;
         }

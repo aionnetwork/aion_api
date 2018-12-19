@@ -1,5 +1,20 @@
 package org.aion.api.test;
 
+import static junit.framework.TestCase.assertTrue;
+import static org.aion.api.ITx.NRG_LIMIT_CONTRACT_CREATE_MAX;
+import static org.aion.api.ITx.NRG_LIMIT_TX_MAX;
+import static org.aion.api.ITx.NRG_PRICE_MIN;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+
+import java.util.List;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.aion.api.IAionAPI;
 import org.aion.api.IContract;
 import org.aion.api.IUtils;
@@ -8,21 +23,8 @@ import org.aion.api.sol.IUint;
 import org.aion.api.type.ApiMsg;
 import org.aion.api.type.ContractResponse;
 import org.aion.api.type.MsgRsp;
-import org.aion.base.type.AionAddress;
 import org.aion.base.util.ByteArrayWrapper;
-
-import java.util.List;
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static junit.framework.TestCase.assertTrue;
-import static org.aion.api.ITx.NRG_LIMIT_CONTRACT_CREATE_MAX;
-import static org.aion.api.ITx.NRG_LIMIT_TX_MAX;
-import static org.aion.api.ITx.NRG_PRICE_MIN;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import org.aion.vm.api.interfaces.Address;
 
 /** Created by Jay Tseng on 18/05/17. */
 public class SimpleBench {
@@ -61,7 +63,7 @@ public class SimpleBench {
         List acc = api.getWallet().getAccounts().getObject();
         assertThat(acc.size(), is(greaterThan(0)));
 
-        AionAddress cb = (AionAddress) acc.get(0);
+        Address cb = (Address) acc.get(0);
         assertThat(cb, not(equalTo(null)));
         assertTrue(api.getWallet().unlockAccount(cb, DEFAULT_PASSWORD, 3600).getObject());
 

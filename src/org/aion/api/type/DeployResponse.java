@@ -1,7 +1,7 @@
 package org.aion.api.type;
 
-import org.aion.base.type.AionAddress;
 import org.aion.base.type.Hash256;
+import org.aion.vm.api.interfaces.Address;
 
 /**
  * Contains the response information after deployed a contract by {@link
@@ -12,15 +12,15 @@ import org.aion.base.type.Hash256;
  */
 public final class DeployResponse {
 
-    private final AionAddress address;
+    private final Address address;
     private final Hash256 txid;
 
-    public DeployResponse(AionAddress address, Hash256 txid) {
+    public DeployResponse(Address address, Hash256 txid) {
         this.address = address;
         this.txid = txid;
     }
 
-    public AionAddress getAddress() {
+    public Address getAddress() {
         return address;
     }
 

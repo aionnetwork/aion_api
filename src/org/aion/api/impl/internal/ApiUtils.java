@@ -29,6 +29,7 @@ import org.aion.base.type.AionAddress;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
 import org.aion.base.util.ByteUtil;
+import org.aion.vm.api.interfaces.Address;
 
 public class ApiUtils {
     public static final int PROTOCOL_VER = 2;
@@ -74,7 +75,7 @@ public class ApiUtils {
     }
 
     private static byte[] toReqHeader(
-        int vers, Message.Servs serv, Message.Funcs func, boolean hasHash) {
+            int vers, Message.Servs serv, Message.Funcs func, boolean hasHash) {
         byte[] result = new byte[4];
         result[0] = (byte) vers;
         result[1] = (byte) serv.ordinal();
@@ -501,7 +502,7 @@ public class ApiUtils {
                         .map(bs -> ByteArrayWrapper.wrap(bs.toByteArray()))
                         .collect(Collectors.toList());
 
-        List<AionAddress> invalidAddr =
+        List<Address> invalidAddr =
                 rsp_exportAccounts
                         .getFailedKeyList()
                         .parallelStream()
@@ -670,6 +671,7 @@ public class ApiUtils {
     }
 
     public static BigInteger toBigInteger(byte[] data, int offset, int encodeUnitLength) {
-        return new BigInteger(ByteBuffer.allocate(encodeUnitLength).put(data, offset, encodeUnitLength).array());
+        return new BigInteger(
+                ByteBuffer.allocate(encodeUnitLength).put(data, offset, encodeUnitLength).array());
     }
 }
