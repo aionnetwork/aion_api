@@ -2,11 +2,10 @@ package org.aion.api.type.core.tx;
 
 import org.aion.api.log.AionLoggerFactory;
 import org.aion.api.log.LogEnum;
-import org.aion.base.type.AionAddress;
 import org.aion.base.type.ITransaction;
 import org.aion.crypto.ISignature;
-import org.slf4j.Logger;
 import org.aion.vm.api.interfaces.Address;
+import org.slf4j.Logger;
 
 /** @author jin */
 public abstract class AbstractTransaction implements ITransaction {
@@ -28,7 +27,7 @@ public abstract class AbstractTransaction implements ITransaction {
 
     /* the address of the destination account
      * In creation transaction the receive address is - 0 */
-    protected AionAddress to;
+    protected Address to;
 
     /* a counter used to make sure each transaction can only be processed once */
     protected byte[] nonce;
@@ -49,7 +48,7 @@ public abstract class AbstractTransaction implements ITransaction {
 
     AbstractTransaction() {}
 
-    private AbstractTransaction(byte[] nonce, AionAddress receiveAddress, byte[] value, byte[] data) {
+    private AbstractTransaction(byte[] nonce, Address receiveAddress, byte[] value, byte[] data) {
         this.nonce = nonce;
         this.to = receiveAddress;
         this.value = value;
@@ -60,7 +59,7 @@ public abstract class AbstractTransaction implements ITransaction {
 
     AbstractTransaction(
             byte[] nonce,
-            AionAddress receiveAddress,
+            Address receiveAddress,
             byte[] value,
             byte[] data,
             long nrg,
@@ -72,7 +71,7 @@ public abstract class AbstractTransaction implements ITransaction {
 
     public AbstractTransaction(
             byte[] nonce,
-            AionAddress receiveAddress,
+            Address receiveAddress,
             byte[] value,
             byte[] data,
             long nrg,
@@ -116,7 +115,7 @@ public abstract class AbstractTransaction implements ITransaction {
 
     public abstract byte[] getTimestamp();
 
-    public abstract AionAddress getContractAddress();
+    public abstract Address getContractAddress();
 
     public abstract AbstractTransaction clone();
 

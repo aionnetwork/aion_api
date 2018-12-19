@@ -2,8 +2,8 @@ package org.aion.api;
 
 import java.util.List;
 import org.aion.api.type.ApiMsg;
-import org.aion.base.type.AionAddress;
 import org.aion.base.type.Hash256;
+import org.aion.vm.api.interfaces.Address;
 
 /**
  * This interface dedicate to contact with Aion kernel for certain purpose.
@@ -134,13 +134,13 @@ public interface IAdmin {
      * Get detailed account information, given a string of addresses.
      *
      * @param addresses list of addresses
-     * @return the interface {@link java.util.List List} of the class {@link
-     *     AionAddress Address} wrapped into ApiMsg. You can retrieve through the
-     *     method {@link ApiMsg#getObject() getObject}.
+     * @return the interface {@link java.util.List List} of the class {@link Address Address}
+     *     wrapped into ApiMsg. You can retrieve through the method {@link ApiMsg#getObject()
+     *     getObject}.
      *     <p>The kernel will only return the first 1000 account details that fit the query
      *     interval.
      */
-    ApiMsg getAccountDetailsByAddressList(List<AionAddress> addresses);
+    ApiMsg getAccountDetailsByAddressList(List<Address> addresses);
 
     /// **
     // * Retrieves system information including DB size. CPU & Memory usage

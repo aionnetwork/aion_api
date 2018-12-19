@@ -2,9 +2,9 @@ package org.aion.api.type;
 
 import java.math.BigInteger;
 import java.util.List;
-import org.aion.base.type.AionAddress;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
+import org.aion.vm.api.interfaces.Address;
 
 /**
  * The Block return data structure, typically used in Block getter API.
@@ -28,7 +28,7 @@ public class Block {
     private final BigInteger nonce;
     private final BigInteger difficulty;
     private final BigInteger totalDifficulty;
-    private final AionAddress minerAddress;
+    private final Address minerAddress;
     private final Hash256 stateRoot;
     private final Hash256 txTrieRoot;
     private final Hash256 receiptTxRoot;
@@ -99,7 +99,7 @@ public class Block {
         return difficulty;
     }
 
-    public AionAddress getMinerAddress() {
+    public Address getMinerAddress() {
         return minerAddress;
     }
 
@@ -226,7 +226,7 @@ public class Block {
         private Hash256 parentHash;
         private BigInteger nonce;
         private BigInteger difficulty;
-        private AionAddress minerAddress;
+        private Address minerAddress;
         private Hash256 stateRoot;
         private Hash256 txTrieRoot;
         private Hash256 receiptTxRoot;
@@ -295,7 +295,7 @@ public class Block {
             return this;
         }
 
-        public BlockBuilder miner(final AionAddress miner) {
+        public BlockBuilder miner(final Address miner) {
             this.minerAddress = miner;
             return this;
         }

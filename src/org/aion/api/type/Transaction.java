@@ -1,9 +1,9 @@
 package org.aion.api.type;
 
 import java.math.BigInteger;
-import org.aion.base.type.AionAddress;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
+import org.aion.vm.api.interfaces.Address;
 
 /**
  * The Transaction return data structure, typically used in Transaction getter API.
@@ -22,8 +22,8 @@ public final class Transaction {
     private final long timeStamp;
     private final long nrgConsumed;
     private final long nrgPrice;
-    private final AionAddress from;
-    private final AionAddress to;
+    private final Address from;
+    private final Address to;
     private final Hash256 blockHash;
     private final Hash256 txHash;
     private final BigInteger nonce;
@@ -65,11 +65,11 @@ public final class Transaction {
         return nrgPrice;
     }
 
-    public AionAddress getFrom() {
+    public Address getFrom() {
         return from;
     }
 
-    public AionAddress getTo() {
+    public Address getTo() {
         return to;
     }
 
@@ -142,8 +142,8 @@ public final class Transaction {
         private long timeStamp;
         private long nrgConsumed;
         private long nrgPrice;
-        private AionAddress from;
-        private AionAddress to;
+        private Address from;
+        private Address to;
         private Hash256 blockHash;
         private Hash256 txHash;
         private BigInteger nonce;
@@ -177,12 +177,12 @@ public final class Transaction {
             return this;
         }
 
-        public Transaction.TransactionBuilder from(final AionAddress from) {
+        public Transaction.TransactionBuilder from(final Address from) {
             this.from = from;
             return this;
         }
 
-        public Transaction.TransactionBuilder to(final AionAddress to) {
+        public Transaction.TransactionBuilder to(final Address to) {
             this.to = to;
             return this;
         }

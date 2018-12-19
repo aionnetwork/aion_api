@@ -41,6 +41,7 @@ import org.aion.api.type.TxArgs;
 import org.aion.base.type.AionAddress;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
+import org.aion.vm.api.interfaces.Address;
 import org.apache.commons.collections4.map.LRUMap;
 import org.slf4j.Logger;
 
@@ -70,7 +71,7 @@ public final class Contract implements IContract {
 
     private final AionAPIImpl api;
     private final String contractName;
-    private final AionAddress contractAddress;
+    private final Address contractAddress;
     private final List<ContractAbiEntry> abiDefinition;
     private final Map<String, List<ContractAbiEntry>> funcParams;
     private final String abiDefStr;
@@ -84,7 +85,7 @@ public final class Contract implements IContract {
     private final Hash256 deployTxId;
 
     // Transaction relative settings
-    private AionAddress from;
+    private Address from;
     private long txNrgLimit;
     private long txNrgPrice;
     private BigInteger txValue;
@@ -118,7 +119,7 @@ public final class Contract implements IContract {
         private CompileResponse cr;
         private DeployResponse dr;
         private AionAPIImpl api;
-        private AionAddress from;
+        private Address from;
         private String contractName;
 
         ContractBuilder() {}
@@ -138,7 +139,7 @@ public final class Contract implements IContract {
             return this;
         }
 
-        public ContractBuilder from(final AionAddress from) {
+        public ContractBuilder from(final Address from) {
             this.from = from;
             return this;
         }
@@ -464,11 +465,11 @@ public final class Contract implements IContract {
         return this;
     }
 
-    public AionAddress getFrom() {
+    public Address getFrom() {
         return this.from;
     }
 
-    public Contract setFrom(AionAddress from) {
+    public Contract setFrom(Address from) {
         if (from == null) {
             throw new NullPointerException();
         }
@@ -488,7 +489,7 @@ public final class Contract implements IContract {
         return null;
     }
 
-    public AionAddress getContractAddress() {
+    public Address getContractAddress() {
         return this.contractAddress;
     }
 

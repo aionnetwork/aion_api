@@ -1,7 +1,7 @@
 package org.aion.api.type;
 
 import java.math.BigInteger;
-import org.aion.base.type.AionAddress;
+import org.aion.vm.api.interfaces.Address;
 
 /**
  * AccountDetails class containing all relevant information identifying an account
@@ -10,7 +10,7 @@ import org.aion.base.type.AionAddress;
  */
 public final class AccountDetails {
 
-    private final AionAddress address;
+    private final Address address;
     private final BigInteger balance;
 
     private AccountDetails(AccountDetailsBuilder builder) {
@@ -18,7 +18,7 @@ public final class AccountDetails {
         this.balance = builder.balance;
     }
 
-    public AionAddress getAddress() {
+    public Address getAddress() {
         return address;
     }
 
@@ -29,12 +29,12 @@ public final class AccountDetails {
     /** This Builder class is used to build a {@link AccountDetails } instance. */
     public static class AccountDetailsBuilder {
 
-        private AionAddress address;
+        private Address address;
         private BigInteger balance;
 
         public AccountDetailsBuilder() {}
 
-        public AccountDetailsBuilder address(final AionAddress address) {
+        public AccountDetailsBuilder address(final Address address) {
             this.address = address;
             return this;
         }

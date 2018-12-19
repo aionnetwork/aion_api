@@ -1,8 +1,8 @@
 package org.aion.api.type;
 
 import java.util.List;
-import org.aion.base.type.AionAddress;
 import org.aion.base.util.ByteArrayWrapper;
+import org.aion.vm.api.interfaces.Address;
 
 /**
  * TxLog class containing all relevant information to transaction log utilized by {@link
@@ -13,11 +13,11 @@ import org.aion.base.util.ByteArrayWrapper;
  */
 public final class TxLog {
 
-    private final AionAddress address;
+    private final Address address;
     private final ByteArrayWrapper data;
     private final List<String> topics;
 
-    public TxLog(AionAddress address, ByteArrayWrapper data, List<String> topics) {
+    public TxLog(Address address, ByteArrayWrapper data, List<String> topics) {
         this.address = address;
         this.data = data;
         this.topics = topics;
@@ -69,7 +69,7 @@ public final class TxLog {
         return sb.toString();
     }
 
-    public AionAddress getAddress() {
+    public Address getAddress() {
         return address;
     }
 
