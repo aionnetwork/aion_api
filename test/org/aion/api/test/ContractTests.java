@@ -38,6 +38,7 @@ import org.aion.api.type.ApiMsg;
 import org.aion.api.type.ContractResponse;
 import org.aion.base.type.AionAddress;
 import org.aion.base.util.ByteArrayWrapper;
+import org.aion.vm.api.interfaces.Address;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -78,7 +79,7 @@ public class ContractTests {
         assertTrue(apiMsg.getObject());
     }
 
-    private boolean isEnoughBalance(AionAddress address) {
+    private boolean isEnoughBalance(Address address) {
         ApiMsg apiMsg = api.getChain().getBalance(address);
         assertFalse(apiMsg.isError());
         BigInteger balance = apiMsg.getObject();
@@ -110,7 +111,7 @@ public class ContractTests {
             return;
         }
 
-        AionAddress acc = (AionAddress) accs.get(0);
+        Address acc = (Address) accs.get(0);
         if (!isEnoughBalance(acc)) {
             System.out.println("balance of the account is not enough, skip this test!");
             return;
@@ -150,7 +151,7 @@ public class ContractTests {
             return;
         }
 
-        AionAddress acc = (AionAddress) accs.get(0);
+        Address acc = (Address) accs.get(0);
         if (!isEnoughBalance(acc)) {
             System.out.println("balance of the account is not enough, skip this test!");
             return;
@@ -191,7 +192,7 @@ public class ContractTests {
             return;
         }
 
-        AionAddress acc = (AionAddress) accs.get(0);
+        Address acc = (Address) accs.get(0);
         if (!isEnoughBalance(acc)) {
             System.out.println("balance of the account is not enough, skip this test!");
             return;
@@ -211,7 +212,7 @@ public class ContractTests {
         IContract ct = api.getContractController().getContract();
         assertNotNull(ct);
 
-        AionAddress ctAddr = ct.getContractAddress();
+        Address ctAddr = ct.getContractAddress();
 
         String abiDef = readFile("testContract.abi");
 
@@ -242,7 +243,7 @@ public class ContractTests {
             return;
         }
 
-        AionAddress acc = (AionAddress) accs.get(0);
+        Address acc = (Address) accs.get(0);
         if (!isEnoughBalance(acc)) {
             System.out.println("balance of the account is not enough, skip this test!");
             return;
@@ -311,7 +312,7 @@ public class ContractTests {
             return;
         }
 
-        AionAddress acc = (AionAddress) accs.get(0);
+        Address acc = (Address) accs.get(0);
         if (!isEnoughBalance(acc)) {
             System.out.println("balance of the account is not enough, skip this test!");
             return;
@@ -342,7 +343,7 @@ public class ContractTests {
         ContractResponse cr = apiMsg.getObject();
 
         List<Boolean> bool = Arrays.asList(true, false, true, false);
-        List<AionAddress> addr =
+        List<Address> addr =
                 Arrays.asList(
                         AionAddress.wrap(
                                 "a011111111111111111111111111111111111111111111111111111111111111"),
@@ -362,7 +363,8 @@ public class ContractTests {
         assertEquals(cr.getData().get(0), bool);
 
         List<byte[]> addrAry = (List<byte[]>) cr.getData().get(1);
-        List<AionAddress> addrTran = addrAry.stream().map(AionAddress::wrap).collect(Collectors.toList());
+        List<Address> addrTran =
+                addrAry.stream().map(AionAddress::wrap).collect(Collectors.toList());
 
         IntStream.range(0, 4)
                 .forEach(
@@ -383,12 +385,13 @@ public class ContractTests {
         String abiDefinition =
                 "[{\"constant\":true,\"inputs\":[],\"name\":\"getValues\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"},{\"name\":\"\",\"type\":\"bool\"},{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"bytes32\"},{\"name\":\"\",\"type\":\"string\"},{\"name\":\"\",\"type\":\"int128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"boolVal\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"name\":\"intValArr\",\"outputs\":[{\"name\":\"\",\"type\":\"int128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"addressVal\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"name\":\"uintValArr\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"name\":\"bytes32ValArr\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"stringVal\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"setValues\",\"outputs\":[],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"intVal\",\"outputs\":[{\"name\":\"\",\"type\":\"int128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"name\":\"uintBoolValArr\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"uintVal\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"bytes32Val\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getTuple\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"},{\"name\":\"\",\"type\":\"uint128[5]\"},{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"name\":\"uintAddressValArr\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getArrays\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128[5]\"},{\"name\":\"\",\"type\":\"bool[5]\"}],\"payable\":false,\"type\":\"function\"}]\n";
 
-        AionAddress cb = ((List<AionAddress>) api.getWallet().getAccounts().getObject()).get(0);
+        Address cb = ((List<Address>) api.getWallet().getAccounts().getObject()).get(0);
         assertNotNull(cb);
         assertTrue(api.getWallet().unlockAccount(cb, pw, 3600).getObject());
 
-        AionAddress contractAddress =
-                AionAddress.wrap("cf7eda19f9ef89a12a7abb708f8cc84cccf3c21d123412341234123412341234");
+        Address contractAddress =
+                AionAddress.wrap(
+                        "cf7eda19f9ef89a12a7abb708f8cc84cccf3c21d123412341234123412341234");
 
         IContract ct =
                 api.getContractController().getContractAt(cb, contractAddress, abiDefinition);
@@ -424,11 +427,11 @@ public class ContractTests {
         String abiDefinition =
                 "[{\"constant\":true,\"inputs\":[],\"name\":\"getValues\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"},{\"name\":\"\",\"type\":\"bool\"},{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"bytes32\"},{\"name\":\"\",\"type\":\"string\"},{\"name\":\"\",\"type\":\"int128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"boolVal\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"name\":\"intValArr\",\"outputs\":[{\"name\":\"\",\"type\":\"int128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"addressVal\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"name\":\"uintValArr\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"name\":\"bytes32ValArr\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"stringVal\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"setValues\",\"outputs\":[],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"intVal\",\"outputs\":[{\"name\":\"\",\"type\":\"int128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getTupleWithString\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"},{\"name\":\"\",\"type\":\"uint128[5]\"},{\"name\":\"\",\"type\":\"string\"},{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"name\":\"uintBoolValArr\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"uintVal\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"bytes32Val\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getTuple\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128\"},{\"name\":\"\",\"type\":\"uint128[5]\"},{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint128\"}],\"name\":\"uintAddressValArr\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getArrays\",\"outputs\":[{\"name\":\"\",\"type\":\"uint128[5]\"},{\"name\":\"\",\"type\":\"bool[5]\"}],\"payable\":false,\"type\":\"function\"}]\n";
 
-        AionAddress cb = ((List<AionAddress>) api.getWallet().getAccounts().getObject()).get(0);
+        Address cb = ((List<Address>) api.getWallet().getAccounts().getObject()).get(0);
         assertNotNull(cb);
         assertTrue(api.getWallet().unlockAccount(cb, pw, 3600).getObject());
 
-        AionAddress contractAddress = AionAddress.wrap("825bdcc890ea6ed616f00424bb893cef93703b00");
+        Address contractAddress = AionAddress.wrap("825bdcc890ea6ed616f00424bb893cef93703b00");
 
         IContract ct =
                 api.getContractController().getContractAt(cb, contractAddress, abiDefinition);
@@ -470,7 +473,7 @@ public class ContractTests {
             return;
         }
 
-        AionAddress acc = (AionAddress) accs.get(0);
+        Address acc = (Address) accs.get(0);
         if (!isEnoughBalance(acc)) {
             System.out.println("balance of the account is not enough, skip this test!");
             return;
@@ -567,7 +570,7 @@ public class ContractTests {
             return;
         }
 
-        AionAddress acc = (AionAddress) accs.get(0);
+        Address acc = (Address) accs.get(0);
         if (!isEnoughBalance(acc)) {
             System.out.println("balance of the account is not enough, skip this test!");
             return;
@@ -747,7 +750,7 @@ public class ContractTests {
             return;
         }
 
-        AionAddress acc = (AionAddress) accs.get(0);
+        Address acc = (Address) accs.get(0);
         if (!isEnoughBalance(acc)) {
             System.out.println("balance of the account is not enough, skip this test!");
             return;
@@ -804,7 +807,7 @@ public class ContractTests {
             return;
         }
 
-        AionAddress acc = (AionAddress) accs.get(0);
+        Address acc = (Address) accs.get(0);
         if (!isEnoughBalance(acc)) {
             System.out.println("balance of the account is not enough, skip this test!");
             return;
@@ -869,7 +872,7 @@ public class ContractTests {
             return;
         }
 
-        AionAddress acc = (AionAddress) accs.get(0);
+        Address acc = (Address) accs.get(0);
         if (!isEnoughBalance(acc)) {
             System.out.println("balance of the account is not enough, skip this test!");
             return;
@@ -951,7 +954,7 @@ public class ContractTests {
             return;
         }
 
-        AionAddress acc = (AionAddress) accs.get(0);
+        Address acc = (Address) accs.get(0);
         if (!isEnoughBalance(acc)) {
             System.out.println("balance of the account is not enough, skip this test!");
             return;
@@ -1003,7 +1006,7 @@ public class ContractTests {
             return;
         }
 
-        AionAddress acc = (AionAddress) accs.get(0);
+        Address acc = (Address) accs.get(0);
         if (!isEnoughBalance(acc)) {
             System.out.println("balance of the account is not enough, skip this test!");
             return;
@@ -1044,7 +1047,7 @@ public class ContractTests {
             return;
         }
 
-        AionAddress acc = (AionAddress) accs.get(0);
+        Address acc = (Address) accs.get(0);
         if (!isEnoughBalance(acc)) {
             System.out.println("balance of the account is not enough, skip this test!");
             return;
@@ -1096,8 +1099,8 @@ public class ContractTests {
             return;
         }
 
-        AionAddress acc = (AionAddress) accs.get(0);
-        AionAddress acc2 = (AionAddress) accs.get(1);
+        Address acc = (Address) accs.get(0);
+        Address acc2 = (Address) accs.get(1);
 
         if (!isEnoughBalance(acc)) {
             System.out.println("balance of the account is not enough, skip this test!");
@@ -1214,7 +1217,7 @@ public class ContractTests {
             return;
         }
 
-        AionAddress acc = (AionAddress) accs.get(0);
+        Address acc = (Address) accs.get(0);
         if (!isEnoughBalance(acc)) {
             System.out.println("balance of the account is not enough, skip this test!");
             return;
@@ -1325,7 +1328,7 @@ public class ContractTests {
             return;
         }
 
-        AionAddress acc = (AionAddress) accs.get(0);
+        Address acc = (Address) accs.get(0);
         if (!isEnoughBalance(acc)) {
             System.out.println("balance of the account is not enough, skip this test!");
             return;

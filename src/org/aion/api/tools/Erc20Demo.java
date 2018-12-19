@@ -22,6 +22,7 @@ import org.aion.api.type.ApiMsg;
 import org.aion.api.type.ContractEvent;
 import org.aion.api.type.ContractResponse;
 import org.aion.base.type.AionAddress;
+import org.aion.vm.api.interfaces.Address;
 
 /** Created by Jay Tseng on 26/06/17. */
 public class Erc20Demo {
@@ -101,13 +102,13 @@ public class Erc20Demo {
     private static boolean UNLOCKLOOP = true;
     private static int CNT = 0;
     private static long INITIALSUPPLY = 0;
-    private static AionAddress COINBASE;
+    private static Address COINBASE;
     private static IContract CONTRACT;
     private static IAionAPI API = null;
     private static int ERROR_CNT = 3;
     private static String FUNCTION_NAME = "";
     private static List<String> FUNCTION_ARGS = new ArrayList<>();
-    private static AionAddress MSGSENDER;
+    private static Address MSGSENDER;
 
     public static void main(String[] args) {
         System.out.println("Erc20 demo start:");
@@ -220,8 +221,9 @@ public class Erc20Demo {
                                                                                     "Account found, message sender set to "
                                                                                             + sd);
                                                                             MSGSENDER =
-                                                                                    AionAddress.wrap(
-                                                                                            sd);
+                                                                                    AionAddress
+                                                                                            .wrap(
+                                                                                                    sd);
                                                                         }
                                                                     })));
         }
@@ -506,7 +508,7 @@ public class Erc20Demo {
                                                                     ApiMsg apiMsg =
                                                                             API.getWallet()
                                                                                     .unlockAccount(
-                                                                                            (AionAddress)
+                                                                                            (Address)
                                                                                                     acc,
                                                                                             FUNCTION_ARGS
                                                                                                     .get(
@@ -536,8 +538,8 @@ public class Erc20Demo {
             Optional.ofNullable(getServerAccounts())
                     .ifPresent(
                             accs -> {
-                                AionAddress acc =
-                                        (AionAddress) accs.get(Integer.valueOf(FUNCTION_ARGS.get(0)));
+                                Address acc =
+                                        (Address) accs.get(Integer.valueOf(FUNCTION_ARGS.get(0)));
 
                                 Optional.ofNullable(acc)
                                         .ifPresent(
@@ -712,7 +714,7 @@ public class Erc20Demo {
             return false;
         }
 
-        List<AionAddress> accs = apiMsg.getObject();
+        List<Address> accs = apiMsg.getObject();
         System.out.println("Get " + accs.size() + " accounts!");
 
         if (accs.size() < 3) {

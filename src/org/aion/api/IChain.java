@@ -4,8 +4,8 @@ import java.math.BigInteger;
 import org.aion.api.type.ApiMsg;
 import org.aion.api.type.Block;
 import org.aion.api.type.Transaction;
-import org.aion.base.type.AionAddress;
 import org.aion.base.type.Hash256;
+import org.aion.vm.api.interfaces.Address;
 
 /**
  * This interface provides methods for fetching blockchain specific details such as blocks and
@@ -27,34 +27,34 @@ public interface IChain {
      * GetBalance returns a BigInteger representing the balance of the account address at latest
      * block number.
      *
-     * @param address the class {@link AionAddress Address} of the desired account to get the balance
+     * @param address the class {@link Address Address} of the desired account to get the balance
      *     of.
      * @return balance of the desired account by the class {@link BigInteger BigInteger} wrapped
      *     into ApiMsg. You can retrieve through the method {@link ApiMsg#getObject() getObject}.
      */
-    ApiMsg getBalance(AionAddress address);
+    ApiMsg getBalance(Address address);
 
     /**
      * GetBalance returns a Long value representing the balance of the account address at a certain
      * block number.
      *
-     * @param address the class {@link AionAddress Address} of the desired account.
+     * @param address the class {@link Address Address} of the desired account.
      * @param blockNumber the block number by long value at which the balance of the address should
      *     be retrieved from.
      * @return balance of the desired account by the class {@link BigInteger BigInteger} wrapped
      *     into ApiMsg. You can retrieve through the method {@link ApiMsg#getObject() getObject}.
      */
-    ApiMsg getBalance(AionAddress address, long blockNumber);
+    ApiMsg getBalance(Address address, long blockNumber);
 
     /**
      * GetNonce returns a BigInteger representing the nonce of the account address at the latest
      * block number.
      *
-     * @param address the class {@link AionAddress Address} of the desired account to get the nonce of.
+     * @param address the class {@link Address Address} of the desired account to get the nonce of.
      * @return nonce of the desired account by the class {@link BigInteger BigInteger} wrapped into
      *     ApiMsg. You can retrieve through the method {@link ApiMsg#getObject() getObject}.
      */
-    ApiMsg getNonce(AionAddress address);
+    ApiMsg getNonce(Address address);
 
     /**
      * Gets the block corresponding to the block number.
@@ -121,12 +121,12 @@ public interface IChain {
      * Retrieves the total transactions committed by a certain account address at a given block
      * number.
      *
-     * @param address the class {@link AionAddress Address} of the desired account.
+     * @param address the class {@link Address Address} of the desired account.
      * @param blockNumber the block number by long value of the desired block.
      * @return the transaction number of the block by long value wrapped into ApiMsg. You can
      *     retrieve through the method {@link ApiMsg#getObject() getObject}.
      */
-    ApiMsg getTransactionCount(AionAddress address, long blockNumber);
+    ApiMsg getTransactionCount(Address address, long blockNumber);
 
     /**
      * Retrieves the transaction given the transaction hash. Function will throw if transaction is
@@ -143,27 +143,27 @@ public interface IChain {
     /**
      * Get the storage at a specific position of an address by current blockchain database status.
      *
-     * @param address the class {@link AionAddress Address} of the desired address to get the storage
+     * @param address the class {@link Address Address} of the desired address to get the storage
      *     from.
      * @param position the index position of the storage.
      * @return the class {@link java.lang.String String} represent the hexString of the byte array
      *     wrapped into ApiMsg.
      */
-    ApiMsg getStorageAt(AionAddress address, int position);
+    ApiMsg getStorageAt(Address address, int position);
 
     /**
      * Get the storage at a specific position of an address by giving blockNumber; Current kernel
      * version doesn't support the query status by giving blockNumber. please use
      * getStorageAt(Address address, int position) or giving the blockNumber = -1L.
      *
-     * @param address the class {@link AionAddress Address} of the desired address to get the storage
+     * @param address the class {@link Address Address} of the desired address to get the storage
      *     from.
      * @param position the index position of the storage.
      * @param blockNumber the block number by long value of the desired block.
      * @return the class {@link java.lang.String String} represent the hexString of the byte array
      *     wrapped into ApiMsg.
      */
-    ApiMsg getStorageAt(AionAddress address, int position, long blockNumber);
+    ApiMsg getStorageAt(Address address, int position, long blockNumber);
 
     /// **
     // * Returns the current miner hashrate.

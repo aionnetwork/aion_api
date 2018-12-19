@@ -15,6 +15,7 @@ import org.aion.api.type.Event;
 import org.aion.api.type.MsgRsp;
 import org.aion.base.type.AionAddress;
 import org.aion.base.util.ByteArrayWrapper;
+import org.aion.vm.api.interfaces.Address;
 import org.slf4j.Logger;
 import org.zeromq.ZMQ;
 
@@ -25,8 +26,8 @@ public class ApiBase {
     private final int SLEEPTIME = 3000;
     AtomicBoolean isInitialized = new AtomicBoolean(false);
     // END PRIVATE MEMBERS --------------------------------------------
-    AionAddress minerAddress;
-    AionAddress defaultAccount = AionAddress.EMPTY_ADDRESS();
+    Address minerAddress;
+    Address defaultAccount = AionAddress.EMPTY_ADDRESS();
     String url;
     boolean nb = false;
     int timeout = 300_000;
