@@ -51,6 +51,7 @@ import org.aion.api.type.Transaction;
 import org.aion.api.type.TxArgs;
 import org.aion.api.type.TxReceipt;
 import org.aion.api.type.core.tx.AionTransaction;
+import org.aion.base.type.AionAddress;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
 import org.aion.base.util.Bytesable;
@@ -459,7 +460,7 @@ public class BaseAPITests {
         assertEquals(transaction.getFrom(), accs.get(0));
         assertTrue(transaction.getNrgConsumed() > NRG_LIMIT_TX_MIN);
         assertEquals(transaction.getNrgPrice(), NRG_PRICE_MIN);
-        assertEquals(transaction.getTo(), Address.EMPTY_ADDRESS());
+        assertEquals(transaction.getTo(), AionAddress.EMPTY_ADDRESS());
         assertTrue(transaction.getNonce().compareTo(BigInteger.ZERO) > -1);
         assertEquals(0, transaction.getTransactionIndex());
         assertEquals(transaction.getValue(), BigInteger.ZERO);
@@ -609,7 +610,7 @@ public class BaseAPITests {
         assertTrue(apiMsg.isError());
         System.out.println(apiMsg.getErrString());
 
-        Address fakeAcc = Address.ZERO_ADDRESS();
+        Address fakeAcc = AionAddress.ZERO_ADDRESS();
         apiMsg = api.getWallet().unlockAccount(fakeAcc, "", 99999);
         assertFalse(apiMsg.isError());
         assertFalse(apiMsg.getObject());
@@ -617,7 +618,7 @@ public class BaseAPITests {
         boolean expectGoCatch = false;
         try {
             Address fakeAcc2 =
-                    Address.wrap(
+                    AionAddress.wrap(
                             new byte[] {
                                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
