@@ -285,28 +285,21 @@ task updateAionDeps(type: Copy) {
 
 }
 
-task updateNativeDeps { 
+task updateNativeDeps(type: Copy) { 
     doFirst {
         if(rootProject.name != AION_PROJECT_NAME) { 
             throw new GradleException('Can only update kernel dependencies when calling this task with aion as the root project');
         }
     }
 
-    if(rootProject.tasks.findByName('ant-3rd_build')) { 
-        dependsOn(rootProject.tasks['ant-3rd_build'])
-    }
-
-    doLast { 
-        copy { 
-            from rootProject.file('native/linux/zmq') into file('lib/linux/zmq')
-        }
-        copy { 
-            from rootProject.file('native/linux/sodium') into file('lib/linux/sodium')
-        }
-        copy { 
-            from rootProject.file('native/linux/blake2b') into file('lib/linux/blake2b')
+    ['3rdParty/libnzmq'].each {
+        def maybeProj = rootProject.findProject(":${it}")
+        if(maybeProj != null) { 
+            dependsOn maybeProj.jar
+            from maybeProj.jar.outputs
         }
     }
+    into file('lib')
 }
 
 /** 
