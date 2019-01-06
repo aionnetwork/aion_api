@@ -8,6 +8,7 @@ import static org.aion.api.ITx.NRG_PRICE_MIN;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -22,6 +23,7 @@ import java.util.Objects;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import junit.framework.TestCase;
 import org.aion.api.IAionAPI;
 import org.aion.api.IContract;
 import org.aion.api.ITx;
@@ -271,7 +273,7 @@ public class ContractTests {
 
         assertFalse(apiMsg.isError());
         ContractResponse cr = apiMsg.getObject();
-        assertNotNull(ct);
+        assertNotNull(cr);
 
         assertEquals(BigInteger.valueOf(1234), cr.getData().get(0));
 
@@ -291,6 +293,77 @@ public class ContractTests {
         assertTrue(((String) cr.getData().get(4)).contentEquals("Aion!"));
 
         assertEquals(BigInteger.valueOf(-1234), cr.getData().get(5));
+
+        apiMsg =
+                ct.newFunction("uintVal2")
+                        .setParam(
+                                IUint.copyFrom(
+                                        new BigInteger("170141183460469231731687303715884105727")))
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
+
+        assertFalse(apiMsg.isError());
+        cr = apiMsg.getObject();
+        assertNotNull(cr);
+
+        assertEquals(
+                new BigInteger("170141183460469231731687303715884105727"), cr.getData().get(0));
+
+        apiMsg =
+                ct.newFunction("boolVal2")
+                        .setParam(IBool.copyFrom(true))
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
+
+        assertFalse(apiMsg.isError());
+        cr = apiMsg.getObject();
+        assertNotNull(cr);
+
+        assertEquals(true, cr.getData().get(0));
+
+        apiMsg =
+                ct.newFunction("boolVal2")
+                        .setParam(IBool.copyFrom(false))
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
+
+        assertFalse(apiMsg.isError());
+        cr = apiMsg.getObject();
+        assertNotNull(cr);
+
+        assertEquals(false, cr.getData().get(0));
+
+        byte[] byte32_1 = new byte[32];
+        byte32_1[0] = 1;
+        byte[] byte32_2 = new byte[32];
+        byte32_2[0] = 2;
+        byte[] byte32_3 = new byte[32];
+        byte32_3[0] = 3;
+
+        List<byte[]> byte32List = new ArrayList<>();
+        byte32List.add(byte32_1);
+        byte32List.add(byte32_2);
+        byte32List.add(byte32_3);
+
+        apiMsg =
+                ct.newFunction("bytes32Val2")
+                        .setParam(IBytes.copyFrom(byte32List))
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
+
+        assertFalse(apiMsg.isError());
+        cr = apiMsg.getObject();
+        assertNotNull(cr);
+
+        assertArrayEquals(byte32_1, (byte[]) cr.getData().get(0));
 
         api.destroyApi();
     }
@@ -358,7 +431,8 @@ public class ContractTests {
                         BigInteger.valueOf(1111),
                         BigInteger.valueOf(2222),
                         BigInteger.valueOf(3333),
-                        BigInteger.valueOf(4444));
+                        BigInteger.valueOf(4444),
+                        new BigInteger("170141183460469231731687303715884105727")); // 2^127-1
         assertEquals(cr.getData().get(0), bool);
 
         List<byte[]> addrAry = (List<byte[]>) cr.getData().get(1);
