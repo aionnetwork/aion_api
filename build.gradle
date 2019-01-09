@@ -95,8 +95,9 @@ dependencies {
         compile files("./mod/modLogger.jar");
         compile files("./mod/modRlp.jar");
     }
-    compile files("./lib/libnzmq.jar")
-    compile files("./lib/libnsc.jar")
+    compile files('./lib/libnzmq.jar')
+    compile 'com.madgag.spongycastle:prov:1.58.0.0'
+    compile 'com.madgag.spongycastle:core:1.58.0.0'
     compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.0'
     compile 'org.slf4j:slf4j-api:1.7.25'
     compile group: 'com.google.protobuf', name: 'protobuf-java', version: '3.5.0'
@@ -230,8 +231,10 @@ task postBuildTar(type: Tar) {
         include '**'
     }
 
-    // also extract all the contents into pack, since
-    // aion project expects stuff there for its own pack
+    // This is needed so Gradle notices in case pack dir gets deleted,
+    // and causes it to re-run this task to create the tar file again.
+    // Not sure why pack gets deleted by Gradle sometimes.
+    outputs.dir destinationDir
 }
 
 task configExtractTarToPack { 
@@ -282,28 +285,21 @@ task updateAionDeps(type: Copy) {
 
 }
 
-task updateNativeDeps { 
+task updateNativeDeps(type: Copy) { 
     doFirst {
         if(rootProject.name != AION_PROJECT_NAME) { 
             throw new GradleException('Can only update kernel dependencies when calling this task with aion as the root project');
         }
     }
 
-    if(rootProject.tasks.findByName('ant-3rd_build')) { 
-        dependsOn(rootProject.tasks['ant-3rd_build'])
-    }
-
-    doLast { 
-        copy { 
-            from rootProject.file('native/linux/zmq') into file('lib/linux/zmq')
-        }
-        copy { 
-            from rootProject.file('native/linux/sodium') into file('lib/linux/sodium')
-        }
-        copy { 
-            from rootProject.file('native/linux/blake2b') into file('lib/linux/blake2b')
+    ['3rdParty/libnzmq'].each {
+        def maybeProj = rootProject.findProject(":${it}")
+        if(maybeProj != null) { 
+            dependsOn maybeProj.jar
+            from maybeProj.jar.outputs
         }
     }
+    into file('lib')
 }
 
 /** 
