@@ -23,7 +23,6 @@ import java.util.Objects;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import junit.framework.TestCase;
 import org.aion.api.IAionAPI;
 import org.aion.api.IContract;
 import org.aion.api.ITx;
@@ -1517,6 +1516,184 @@ public class ContractTests {
         //
         // cts = msg.getObject();
         // assertThat(cts.size(), is(equalTo(1)));
+
+        api.destroyApi();
+    }
+
+    @Test
+    public void TestCallBytes16DynamicArray() {
+
+        connectAPI();
+
+        Address acc =
+                new Address("0xa0fa13d31f541dbcbd8efac881b7d7b44750ef5bea26209451379109833fea59");
+
+        ApiMsg apiMsg = api.getWallet().unlockAccount(acc, pw, 300);
+
+        if (apiMsg.isError()) {
+            System.out.println("Couldn't unlock, skip this test!");
+            return;
+        }
+
+        if (!isEnoughBalance(acc)) {
+            System.out.println("balance of the account is not enough, skip this test!");
+            return;
+        }
+
+        String sc = readFile("testContractDynamicArray.sol");
+
+        apiMsg =
+                api.getContractController()
+                        .createFromSource(sc, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
+        assertFalse(apiMsg.isError());
+
+        IContract ct = api.getContractController().getContract();
+        assertEquals(ct.getFrom(), acc);
+        assertNotNull(ct.getContractAddress());
+
+        byte[] bts16a = new byte[16];
+
+        bts16a[0] = 1;
+        bts16a[1] = 2;
+        bts16a[2] = 3;
+        bts16a[3] = 4;
+        bts16a[10] = 5;
+        bts16a[11] = 6;
+        bts16a[12] = 7;
+        bts16a[13] = 8;
+
+        List<byte[]> bts = new ArrayList<>();
+
+        bts.add(bts16a);
+        bts.add(bts16a);
+        bts.add(bts16a);
+
+        apiMsg =
+                ct.newFunction("setByte16")
+                        .setParam(IBytes.copyFrom(bts))
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
+
+        assertFalse(apiMsg.isError());
+
+        apiMsg =
+                ct.newFunction("bt16param")
+                        .setParam(IUint.copyFrom(1))
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
+
+        assertFalse(apiMsg.isError());
+        ContractResponse cr = apiMsg.getObject();
+        assertNotNull(cr);
+
+        byte[] retByteArray = (byte[]) cr.getData().get(0);
+
+        System.out.println(cr);
+
+        assertEquals(1, retByteArray[0]);
+        assertEquals(2, retByteArray[1]);
+        assertEquals(3, retByteArray[2]);
+        assertEquals(4, retByteArray[3]);
+        assertEquals(5, retByteArray[10]);
+        assertEquals(6, retByteArray[11]);
+        assertEquals(7, retByteArray[12]);
+        assertEquals(8, retByteArray[13]);
+
+        api.destroyApi();
+    }
+
+    @Test
+    public void TestCallBytes32DynamicArray() {
+        connectAPI();
+
+        Address acc =
+                new Address("0xa0fa13d31f541dbcbd8efac881b7d7b44750ef5bea26209451379109833fea59");
+
+        ApiMsg apiMsg = api.getWallet().unlockAccount(acc, pw, 300);
+
+        if (apiMsg.isError()) {
+            System.out.println("Couldn't unlock, skip this test!");
+            return;
+        }
+
+        if (!isEnoughBalance(acc)) {
+            System.out.println("balance of the account is not enough, skip this test!");
+            return;
+        }
+
+        String sc = readFile("testContractDynamicArray.sol");
+
+        apiMsg =
+                api.getContractController()
+                        .createFromSource(sc, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
+        assertFalse(apiMsg.isError());
+
+        IContract ct = api.getContractController().getContract();
+        assertEquals(ct.getFrom(), acc);
+        assertNotNull(ct.getContractAddress());
+
+        byte[] bts32a = new byte[32];
+
+        bts32a[0] = 1;
+        bts32a[1] = 2;
+        bts32a[2] = 3;
+        bts32a[3] = 4;
+        bts32a[10] = 5;
+        bts32a[11] = 6;
+        bts32a[12] = 7;
+        bts32a[13] = 8;
+        bts32a[20] = 9;
+        bts32a[21] = 10;
+        bts32a[22] = 11;
+        bts32a[23] = 12;
+        List<byte[]> bts = new ArrayList<>();
+
+        bts.add(bts32a);
+        bts.add(bts32a);
+        bts.add(bts32a);
+
+        apiMsg =
+                ct.newFunction("setByte32")
+                        .setParam(IBytes.copyFrom(bts))
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
+
+        assertFalse(apiMsg.isError());
+
+        apiMsg =
+                ct.newFunction("bt32param")
+                        .setParam(IUint.copyFrom(1))
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
+
+        assertFalse(apiMsg.isError());
+        ContractResponse cr = apiMsg.getObject();
+        assertNotNull(cr);
+
+        byte[] retByteArray = (byte[]) cr.getData().get(0);
+
+        System.out.println(cr);
+
+        assertEquals(1, retByteArray[0]);
+        assertEquals(2, retByteArray[1]);
+        assertEquals(3, retByteArray[2]);
+        assertEquals(4, retByteArray[3]);
+        assertEquals(5, retByteArray[10]);
+        assertEquals(6, retByteArray[11]);
+        assertEquals(7, retByteArray[12]);
+        assertEquals(8, retByteArray[13]);
+        assertEquals(9, retByteArray[20]);
+        assertEquals(10, retByteArray[21]);
+        assertEquals(11, retByteArray[22]);
+        assertEquals(12, retByteArray[23]);
 
         api.destroyApi();
     }
