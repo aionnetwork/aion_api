@@ -104,6 +104,7 @@ dependencies {
     compile group: 'com.google.code.gson', name: 'gson', version: '2.7'
     compile 'ch.qos.logback:logback-core:1.2.3'
     compile 'ch.qos.logback:logback-classic:1.2.3'
+    compile 'com.google.code.findbugs:jsr305:3.0.2'
     
     testCompile 'junit:junit:4.12'
     testCompile 'com.google.truth:truth:0.42'
