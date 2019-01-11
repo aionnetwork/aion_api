@@ -305,7 +305,12 @@ public abstract class SolidityAbstractType {
 
         boolean doubleUnit = isDoubleUnit();
 
-        if (getIsStatic()) {
+        if (this.getIsDynamic()) {
+
+            // The static part of a dynamic type is its offset, which is always 16 bytes.
+            return encodeUnitLength;
+
+        } else if (getIsStatic()) {
             return doubleUnit ? encodeUnitLength << 1 : encodeUnitLength;
         } else {
             // else is static array
