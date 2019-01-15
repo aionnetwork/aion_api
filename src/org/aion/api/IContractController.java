@@ -1,5 +1,6 @@
 package org.aion.api;
 
+import java.io.File;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
@@ -176,6 +177,39 @@ public interface IContractController {
      */
     ApiMsg createFromSource(
             String source,
+            Address from,
+            long nrgLimit,
+            long nrgPrice,
+            BigInteger value,
+            Map<String, List<ISolidityArg>> params);
+
+    /**
+     * Multiple contract create methods for deploy a contract to the Aion blockchain network.
+     *
+     * @param sourceDir a zip of the directory {@link java.io.File File} that contains the Solidity
+     *     contracts to be compiled.
+     * @param from the class {@link Address Address} represent the sender or the contract owner whom
+     *     deploy the contract.
+     * @param nrgLimit the long value represent the maximum energy consume during this contract
+     *     deploy been allowed. if the contract consume energy more than this number. the deploy
+     *     will fail, Also the contract deployer will been charged all of the energy for trying to
+     *     deploy this contract.
+     * @param nrgPrice the long value represent the unit price of the energy the contract deployer
+     *     want to pay. It effect the contract deploy response time by the current network
+     *     environment.
+     * @param value the class {@link BigInteger BigInteger} represent how many blanceof the the
+     *     sender's account want to send during this deploy.
+     * @param params the interface {@link Map Map} of the pair of the class {@link String String}
+     *     and the interface {@link ISolidityArg ISolidityArg} represent the contract name and the
+     *     constructor arguments when the contract has the constructor.
+     * @return the the deploy status wrapped into {@link ApiMsg ApiMsg}. The deployed contract will
+     *     been store inside the Controller and user can retrieve it by given the contract address
+     * @see IContractController#getContract
+     *     <p>A multi-contract source, set key value pair when you want to deploy the contract "key"
+     *     with initial parameters "value"
+     */
+    ApiMsg createFromDirectory(
+            File sourceDir,
             Address from,
             long nrgLimit,
             long nrgPrice,

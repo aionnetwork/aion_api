@@ -5,6 +5,8 @@ import static org.aion.api.impl.ErrId.getErrString;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.google.protobuf.Api;
+import java.io.File;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -98,25 +100,62 @@ public final class ContractController implements IContractController {
             final long nrgPrice,
             final BigInteger value,
             Map<String, List<ISolidityArg>> params) {
-        if (from == null || source == null || params == null || value == null) {
-            throw new NullPointerException(
-                    "Source#"
-                            + String.valueOf(source)
-                            + " from#"
-                            + String.valueOf(from)
-                            + " value#"
-                            + String.valueOf(value)
-                            + " inputParams#"
-                            + String.valueOf(params));
-        }
 
-        if (nrgLimit < 0 || nrgPrice < 0) {
-            throw new IllegalArgumentException("nrgConsumed#" + nrgLimit + " nrgPrice" + nrgPrice);
+        checkParams(from, nrgLimit, nrgPrice, value, params);
+
+        if (source == null) {
+            throw new IllegalArgumentException("Source is null");
         }
 
         final String s = source.replaceAll(REGEX_SC_REPLACER, "");
 
         ApiMsg apiMsg = Objects.requireNonNull(API.getTx()).compile(s);
+
+        return processCompiledContracts(apiMsg, from, nrgLimit, nrgPrice, value, params);
+    }
+
+    public ApiMsg createFromDirectory(
+            final File sourceDir,
+            final Address from,
+            final long nrgLimit,
+            final long nrgPrice,
+            final BigInteger value,
+            Map<String, List<ISolidityArg>> params) {
+
+        checkParams(from, nrgLimit, nrgPrice, value, params);
+
+        if (sourceDir == null || !sourceDir.isDirectory()) {
+            throw new IllegalArgumentException("SourceDir#" + sourceDir);
+        }
+
+        ApiMsg apiMsg = Objects.requireNonNull(API.getTx()).compile(sourceDir.toPath());
+        return processCompiledContracts(apiMsg, from, nrgLimit, nrgPrice, value, params);
+    }
+
+    private void checkParams(
+            final Address from,
+            final long nrgLimit,
+            final long nrgPrice,
+            final BigInteger value,
+            Map<String, List<ISolidityArg>> params) {
+
+        if (from == null || params == null || value == null) {
+            throw new NullPointerException(
+                    " from#" + from + " value#" + value + " inputParams#" + params);
+        }
+
+        if (nrgLimit < 0 || nrgPrice < 0) {
+            throw new IllegalArgumentException("nrgConsumed#" + nrgLimit + " nrgPrice" + nrgPrice);
+        }
+    }
+
+    private ApiMsg processCompiledContracts(
+            ApiMsg apiMsg,
+            final Address from,
+            final long nrgLimit,
+            final long nrgPrice,
+            final BigInteger value,
+            Map<String, List<ISolidityArg>> params) {
         if (apiMsg.isError()) {
             return apiMsg;
         }
