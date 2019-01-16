@@ -19,6 +19,7 @@ repositories {
     mavenLocal()
     mavenCentral()
     jcenter()
+    maven { url "https://dl.bintray.com/aionjayt/aion_api" }    
     flatDir { dirs './lib', './mod' }
 }
 
@@ -34,7 +35,7 @@ sourceCompatibility = 10
  */
 def AION_PROJECT_NAME = 'aion'
 
-group = 'aionnetwork'
+group = 'org.aion.network'
 version = '0.1.15'
 
 sourceSets {
@@ -375,10 +376,12 @@ artifacts {
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            groupId 'org.aion.network'
             artifactId = 'aionapi'
             artifact fatJar
             artifact javadocZip
             artifact nativeZip
+            artifact sourcesJar
 
             pom.withXml {
                 def root = asNode()
@@ -403,7 +406,7 @@ bintray {
     filesSpec {
         from './'
         include 'pom.xml'
-        into 'aionnetwork/aion_api/0.1.15'
+        into 'org/aion/network/aion_api/0.1.15/'
         rename('pom.xml', 'aion_api-0.1.15.pom')
     }
 

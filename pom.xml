@@ -1,33 +1,37 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<settings xsi:schemaLocation='http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd'
-          xmlns='http://maven.apache.org/SETTINGS/1.0.0' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>
-    
-    <profiles>
-        <profile>
-            <repositories>
-                <repository>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                    <id>bintray-aionjayt-aion_api</id>
-                    <name>bintray</name>
-                    <url>https://dl.bintray.com/aionjayt/aion_api</url>
-                </repository>
-            </repositories>
-            <pluginRepositories>
-                <pluginRepository>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                    <id>bintray-aionjayt-aion_api</id>
-                    <name>bintray-plugins</name>
-                    <url>https://dl.bintray.com/aionjayt/aion_api</url>
-                </pluginRepository>
-            </pluginRepositories>
-            <id>bintray</id>
-        </profile>
-    </profiles>
-    <activeProfiles>
-        <activeProfile>bintray</activeProfile>
-    </activeProfiles>
-</settings>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.aion.network</groupId>
+  <artifactId>aion_api</artifactId>
+  <version>0.1.15</version>
+  <packaging>jar</packaging>
+
+  <name>aionnetwork-aionapi</name>
+  <description>client api for aion kernel</description>
+  <url>https://github.com/aionnetwork/aion_api</url>
+
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>https://github.com/aionnetwork/aion_api/blob/master/LICENSE</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Aion developers</name>
+      <email>engineering@aion.network</email>
+      <organization>Aion Foundation</organization>
+      <organizationUrl>https://aion.network/</organizationUrl>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git://github.com/aionnetwork/aion_api.git</connection>
+    <developerConnection>scm:git:ssh://github.com:aionnetwork/aion_api.git</developerConnection>
+    <url>https://github.com/aionnetwork/aion_api/tree/master</url>
+  </scm>
+</project>
