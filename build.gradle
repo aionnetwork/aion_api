@@ -1,33 +1,52 @@
- //TODO task for updating dependent libs (jar+native) from kernel
+//TODO task for updating dependent libs (jar+native) from kernel
+
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+    }
+}
+
+plugins {
+    id "com.jfrog.bintray" version "1.7.3"
+    id "maven-publish"
+    id "java"
+    id "idea"
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    jcenter()
+    maven { url "https://dl.bintray.com/aionjayt/aion_api" }    
+    flatDir { dirs './lib', './mod' }
+}
 
 ext.moduleName = 'aion.api.client'
-apply plugin: 'java'
-apply plugin: 'idea'
 
 targetCompatibility = 10
 sourceCompatibility = 10
 
 
-/** 
+/**
  * Name of Aion root project (not aion_api); used to detect if we're being called with 
  * as a subproject or root project. 
  */
 def AION_PROJECT_NAME = 'aion'
 
-repositories {
-    jcenter()
-    flatDir { dirs './lib', './mod' }
-}
+group = 'org.aion.network'
+version = '0.1.15'
 
-sourceSets { 
+sourceSets {
     main {
         java.srcDirs = ['src']
     }
     test {
         java.srcDirs = ['test']
     }
-    integTest { 
-        java { 
+    integTest {
+        java {
             srcDirs = ['integration-test']
             compileClasspath += main.output + test.output
             runtimeClasspath += main.output + test.output
@@ -35,20 +54,20 @@ sourceSets {
     }
 }
 
-if(rootProject.name != AION_PROJECT_NAME) { 
-    afterEvaluate { 
+if (rootProject.name != AION_PROJECT_NAME) {
+    afterEvaluate {
         // Override java plug-in behaviour to make JDK9+ module logic work
         // From: https://guides.gradle.org/building-java-9-modules/#step_2_produce_java_9_modules_for_all_subprojects
         compileJava {
             inputs.property("moduleName", moduleName)
             doFirst {
                 options.compilerArgs = [
-                    '--module-path', classpath.asPath,
+                        '--module-path', classpath.asPath,
                 ]
                 classpath = files()
             }
         }
-        
+
         // Need to comment this out for now, modules-info.java doesn't have 'require' declarations
         // used by the test code.  The ant build.xml, similarly, uses module-path for build, but 
         // classpath for building the tests (at least in modRlp).  Need to sort out how to properly set the module-path
@@ -83,26 +102,29 @@ if(rootProject.name != AION_PROJECT_NAME) {
     }
 }
 
-dependencies { 
-    if(rootProject.name == AION_PROJECT_NAME) { 
+dependencies {
+    if (rootProject.name == AION_PROJECT_NAME) {
         compile project(':modAionBase')
         compile project(':modCrypto')
         compile project(':modLogger')
         compile project(':modRlp')
     } else {
-        compile files("./mod/modAionBase.jar");
-        compile files("./mod/modCrypto.jar");
-        compile files("./mod/modLogger.jar");
-        compile files("./mod/modRlp.jar");
+        compile files("./mod/modAionBase.jar")
+        compile files("./mod/modCrypto.jar")
+        compile files("./mod/modLogger.jar")
+        compile files("./mod/modRlp.jar")
     }
-    compile files("./lib/libnzmq.jar")
+    compile files('./lib/libnzmq.jar')
+    compile 'com.madgag.spongycastle:prov:1.58.0.0'
+    compile 'com.madgag.spongycastle:core:1.58.0.0'
     compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.0'
     compile 'org.slf4j:slf4j-api:1.7.25'
     compile group: 'com.google.protobuf', name: 'protobuf-java', version: '3.5.0'
     compile group: 'com.google.code.gson', name: 'gson', version: '2.7'
     compile 'ch.qos.logback:logback-core:1.2.3'
     compile 'ch.qos.logback:logback-classic:1.2.3'
-    
+    compile 'com.google.code.findbugs:jsr305:3.0.2'
+
     testCompile 'junit:junit:4.12'
     testCompile 'com.google.truth:truth:0.42'
     testCompile 'org.hamcrest:hamcrest-all:1.3'
@@ -111,16 +133,16 @@ dependencies {
 // TODO just implement the script as Groovy here instead of calling sh
 task preBuild(type: Exec) { commandLine 'sh', 'script/prebuild.sh' }
 
-task getVersion(type: JavaExec) { 
+task getVersion(type: JavaExec) {
     description "Execute the apiDemo to get the version of release"
     classpath = sourceSets.main.runtimeClasspath
     main = 'org.aion.api.tools.ApiDemo'
     args '-v'
     standardOutput = new ByteArrayOutputStream()
-    project.ext["compiled_version"] = "Unknown";
-    doLast { 
-       def date = new Date().format('YY-MM-dd')
-       project.ext["compiled_version"] = standardOutput.toString().replace('\n', '') + '-' + date;
+    project.ext["compiled_version"] = "Unknown"
+    doLast {
+        def date = new Date().format('YY-MM-dd')
+        project.ext["compiled_version"] = standardOutput.toString().replace('\n', '') + '-' + date
     }
 }
 
@@ -135,7 +157,7 @@ task configFatJar {
     }
 }
 
-task fatJar(type: Jar) { 
+task fatJar(type: Jar) {
     dependsOn configFatJar
 
     description "Produce JAR containing all dependencies and runs demo as main class"
@@ -143,25 +165,25 @@ task fatJar(type: Jar) {
 
     manifest {
         attributes 'Main-Class': 'org.aion.api.tools.ApiDemo',
-                   'Implementation-Vendor': 'The Aion Foundation',
-                   'Implementation-Vendor-Id': 'aion.network',
-                   'Specification-Title': 'Aion Foundation Java API'
-	
+                'Implementation-Vendor': 'The Aion Foundation',
+                'Implementation-Vendor-Id': 'aion.network',
+                'Specification-Title': 'Aion Foundation Java API'
+
     }
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
     destinationDir file('build')
 }
 
-task collectDependentJars(type: Copy) { 
+task collectDependentJars(type: Copy) {
     description = "Put all runtime jars (mod* and dependencies) into jars directory"
     into 'jars'
-    from { project.configurations.runtime } 
-    from { project.jar}
+    from { project.configurations.runtime }
+    from { project.jar }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-javadoc { 
+javadoc {
     include "org/aion/api/I*.java"
     include "org/aion/api/sol/I*.java"
     include "org/aion/api/type/AccountDetails.java"
@@ -189,25 +211,26 @@ javadoc {
     include "org/aion/api/type/TxArgs.java"
     include "org/aion/api/type/TxDetails.java"
     include "org/aion/api/type/TxLog.java"
-    include "org/aion/api/type/TxReceipt.java"               
+    include "org/aion/api/type/TxReceipt.java"
     options.bottom = '<i>Copyright (c) 2017-2018 Aion foundation</i>'
     title "Aion API"
 }
 
-task javadocZip(type: Zip) { 
+task javadocZip(type: Zip) {
     dependsOn javadoc
     dependsOn getVersion
 
+    classifier = 'javadoc'
     doFirst {
         archiveName = "Java-API-v${project.ext["compiled_version"]}-doc.zip"
     }
     destinationDir = file('build/')
-    from javadoc.outputs 
+    from javadoc.outputs
 }
 
-task postBuildTar(type: Tar) { 
+task postBuildTar(type: Tar) {
     description "Creates the full libAionApi-VERSION.tar.gz for distribution"
-    dependsOn fatJar 
+    dependsOn fatJar
     dependsOn getVersion
     dependsOn javadocZip
 
@@ -219,24 +242,26 @@ task postBuildTar(type: Tar) {
         archiveName = "libAionApi-v${project.ext["compiled_version"]}.tar.gz"
         ant.echo("Aion Api build ver - ${project.ext["compiled_version"]}")
     }
-    into('/') { 
+    into('/') {
         from 'build'
         include "Java-API-v*-doc.zip"
         include "libAionApi-v*.jar"
     }
-    into('/native') { 
+    into('/native') {
         from 'native'
         include '**'
     }
 
-    // also extract all the contents into pack, since
-    // aion project expects stuff there for its own pack
+    // This is needed so Gradle notices in case pack dir gets deleted,
+    // and causes it to re-run this task to create the tar file again.
+    // Not sure why pack gets deleted by Gradle sometimes.
+    outputs.dir destinationDir
 }
 
-task configExtractTarToPack { 
+task configExtractTarToPack {
     dependsOn postBuildTar
-    
-    doLast { 
+
+    doLast {
         extractTarToPack.from tarTree("${postBuildTar.destinationDir}/" + "libAionApi-v${project.ext["compiled_version"]}.tar.gz")
     }
 }
@@ -247,7 +272,7 @@ task extractTarToPack(type: Copy) {
     destinationDir = file('pack')
 }
 
-task postBuildRevertVersion(type: Exec) { 
+task postBuildRevertVersion(type: Exec) {
     description "Reverts the in-code version change applied by prebuild"
     commandLine 'git', 'checkout', './src/org/aion/api/IAionAPI.java'
 }
@@ -258,21 +283,21 @@ build.finalizedBy(extractTarToPack)
 compileJava.dependsOn preBuild
 compileJava.finalizedBy(postBuildRevertVersion)
 
-clean.doFirst { 
+clean.doFirst {
     delete "pack"
 }
 
-task updateAionDeps(type: Copy) { 
+task updateAionDeps(type: Copy) {
     doFirst {
-        if(rootProject.name != AION_PROJECT_NAME) { 
-            throw new GradleException('Can only update kernel dependencies when calling this task with aion as the root project');
+        if (rootProject.name != AION_PROJECT_NAME) {
+            throw new GradleException('Can only update kernel dependencies when calling this task with aion as the root project')
         }
     }
 
     // note: dependencies of the projects aren't copied
-    ['modAionBase', 'modCrypto', 'modLogger', 'modRlp'].each{
+    ['modAionBase', 'modCrypto', 'modLogger', 'modRlp'].each {
         def maybeProj = rootProject.findProject(":${it}")
-        if(maybeProj != null) { 
+        if (maybeProj != null) {
             dependsOn maybeProj.jar
             from maybeProj.jar.outputs
         }
@@ -281,35 +306,123 @@ task updateAionDeps(type: Copy) {
 
 }
 
-task updateNativeDeps { 
+task updateNativeDeps(type: Copy) {
     doFirst {
-        if(rootProject.name != AION_PROJECT_NAME) { 
-            throw new GradleException('Can only update kernel dependencies when calling this task with aion as the root project');
+        if (rootProject.name != AION_PROJECT_NAME) {
+            throw new GradleException('Can only update kernel dependencies when calling this task with aion as the root project')
         }
     }
 
-    if(rootProject.tasks.findByName('ant-3rd_build')) { 
-        dependsOn(rootProject.tasks['ant-3rd_build'])
+    ['3rdParty/libnzmq'].each {
+        def maybeProj = rootProject.findProject(":${it}")
+        if (maybeProj != null) {
+            dependsOn maybeProj.jar
+            from maybeProj.jar.outputs
+        }
     }
+    into file('lib')
+}
 
-    doLast { 
-        copy { 
-            from rootProject.file('native/linux/zmq') into file('lib/linux/zmq')
+/**
+ * Update the jars in aion_api using jars from aion (kernel).  Replaces ant
+ * target 'clean_build_from_kernel'
+ */
+task updateKernelDeps {
+    dependsOn updateAionDeps
+    dependsOn updateNativeDeps
+}
+
+def pomConfig = {
+    licenses {
+        license {
+            name = 'MIT License'
+            url = 'https://github.com/aionnetwork/aion_api/blob/master/LICENSE'
         }
-        copy { 
-            from rootProject.file('native/linux/sodium') into file('lib/linux/sodium')
+    }
+    developers {
+        developer {
+            id = 'aion developers'
+            name = 'aion developers'
+            email = 'https://aion.network'
         }
-        copy { 
-            from rootProject.file('native/linux/blake2b') into file('lib/linux/blake2b')
+    }
+    scm {
+        connection = 'scm:git:git://github.com/aionnetwork/aion_api.git'
+        developerConnection = 'scm:git:ssh://github.com:aionnetwork/aion_api.git'
+        url = 'https://github.com/aionnetwork/aion_api/tree/master'
+    }
+}
+
+task nativeZip(type: Zip) {
+    classifier = 'native'
+    from 'native/'
+    include '**'
+    archiveName 'native.zip'
+    destinationDir = file('build/')
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives fatJar
+    archives javadocZip
+    archives nativeZip
+    archives sourcesJar
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId 'org.aion.network'
+            artifactId = 'aionapi'
+            artifact fatJar
+            artifact javadocZip
+            artifact nativeZip
+            artifact sourcesJar
+
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', 'Client api for aion kernel')
+                root.appendNode('name', 'aion_api')
+                root.appendNode('url', 'https://github.com/aionnetwork/aion_api/tree/master')
+                root.children().last() + pomConfig
+            }
         }
     }
 }
 
-/** 
- * Update the jars in aion_api using jars from aion (kernel).  Replaces ant
- * target 'clean_build_from_kernel'
- */
-task updateKernelDeps { 
-    dependsOn updateAionDeps
-    dependsOn updateNativeDeps
+def pomFile = 'aion_api-0.1.15.pom'
+
+bintray {
+    user = System.getProperty('bintray.user')
+    key = System.getProperty('bintray.key')
+    publications = ['mavenPublication']
+
+    configurations = ['archives']
+
+    filesSpec {
+        from './'
+        include 'pom.xml'
+        into 'org/aion/network/aion_api/0.1.15/'
+        rename('pom.xml', 'aion_api-0.1.15.pom')
+    }
+
+    pkg {
+        repo = 'aion_api'
+        name = 'aion_api'
+        userOrg = 'aionjayt'
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/aionnetwork/aion_api.git'
+        version {
+            name = '0.1.15'
+            desc = '0.1.15'
+            released = new Date()
+        }
+    }
+
+    publish = true
+    override = true
 }

@@ -125,7 +125,7 @@ public final class Bool extends SolidityAbstractType implements IBool {
             }
             return null;
         }
-        return ApiUtils.toHexPadded(entry);
+        return ApiUtils.toHexPadded16(entry);
     }
 
     /**

@@ -15,9 +15,9 @@ import org.aion.api.sol.impl.Uint;
 public interface IUint extends ISolidityArg {
 
     /**
-     * Generates an Integer object from a String object.
+     * Generates an Integer object from a String object in hex format.
      *
-     * @param in {@link java.lang.String}.
+     * @param in {@link java.lang.String} in hex format.
      * @return interface itself.
      */
     static IUint copyFrom(@Nonnull String in) {

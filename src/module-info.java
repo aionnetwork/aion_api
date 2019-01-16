@@ -8,7 +8,6 @@ module aion.api.client {
     requires logback.core;
     requires logback.classic;
     requires commons.collections4;
-    requires libnzmq;
     requires protobuf.java;
     requires jsr305;
     requires gson;

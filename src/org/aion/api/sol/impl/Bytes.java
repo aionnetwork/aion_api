@@ -3,6 +3,7 @@ package org.aion.api.sol.impl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.aion.api.IUtils;
 import org.aion.api.impl.ErrId;
@@ -190,7 +191,9 @@ public final class Bytes extends SolidityAbstractType implements IBytes {
     @Override
     protected boolean isDoubleUnit() {
         String t = this.type;
-        int len = Integer.valueOf(t.replace("bytes", ""));
+        Matcher matcher = Pattern.compile("\\d+").matcher(t);
+        matcher.find();
+        int len = Integer.valueOf(matcher.group());
         return len > 16;
     }
 }
