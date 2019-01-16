@@ -1697,4 +1697,64 @@ public class ContractTests {
 
         api.destroyApi();
     }
+
+    @Test
+    public void TestBlake2b() {
+        connectAPI();
+
+        Address acc =
+                new Address("0xa0fa13d31f541dbcbd8efac881b7d7b44750ef5bea26209451379109833fea59");
+
+        ApiMsg apiMsg = api.getWallet().unlockAccount(acc, pw, 300);
+
+        if (apiMsg.isError()) {
+            System.out.println("Couldn't unlock, skip this test!");
+            return;
+        }
+
+        if (!isEnoughBalance(acc)) {
+            System.out.println("balance of the account is not enough, skip this test!");
+            return;
+        }
+
+        String sc = readFile("testBlake2b.sol");
+
+        apiMsg =
+                api.getContractController()
+                        .createFromSource(sc, acc, NRG_LIMIT_CONTRACT_CREATE_MAX, NRG_PRICE_MIN);
+        assertFalse(apiMsg.isError());
+
+        IContract ct = api.getContractController().getContract();
+        assertEquals(ct.getFrom(), acc);
+        assertNotNull(ct.getContractAddress());
+
+        byte[] bts32a = new byte[30];
+
+        bts32a[0] = 1;
+        bts32a[1] = 2;
+        bts32a[2] = 3;
+        bts32a[3] = 4;
+        bts32a[10] = 5;
+        bts32a[11] = 6;
+        bts32a[12] = 7;
+        bts32a[13] = 8;
+        bts32a[20] = 9;
+        bts32a[21] = 10;
+        bts32a[22] = 11;
+        bts32a[23] = 12;
+
+        apiMsg =
+                ct.newFunction("blake2bhash")
+                        .setParam(IDynamicBytes.copyFrom(bts32a))
+                        .setTxNrgLimit(NRG_LIMIT_TX_MAX)
+                        .setTxNrgPrice(NRG_PRICE_MIN)
+                        .build()
+                        .execute();
+
+        assertFalse(apiMsg.isError());
+        ContractResponse cr = apiMsg.getObject();
+        assertNotNull(cr);
+
+        api.destroyApi();
+    }
 }
