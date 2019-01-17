@@ -116,6 +116,70 @@ public final class ContractController implements IContractController {
 
     public ApiMsg createFromDirectory(
             final File sourceDir,
+            final String entryPoint,
+            final Address from,
+            final long nrgLimit,
+            final long nrgPrice) {
+        return createFromDirectory(
+                sourceDir, entryPoint, from, nrgLimit, nrgPrice, BigInteger.ZERO, new HashMap<>());
+    }
+
+    public ApiMsg createFromDirectory(
+            final File sourceDir,
+            final String entryPoint,
+            final Address from,
+            final long nrgLimit,
+            final long nrgPrice,
+            final BigInteger value) {
+        return createFromDirectory(
+                sourceDir, entryPoint, from, nrgLimit, nrgPrice, value, new HashMap<>());
+    }
+
+    public ApiMsg createFromDirectory(
+            final File sourceDir,
+            final String entryPoint,
+            final Address from,
+            final long nrgLimit,
+            final long nrgPrice,
+            List<ISolidityArg> params) {
+
+        Map<String, List<ISolidityArg>> paramsMap = new HashMap<>();
+        paramsMap.put("", params);
+
+        return createFromDirectory(
+                sourceDir, entryPoint, from, nrgLimit, nrgPrice, BigInteger.ZERO, paramsMap);
+    }
+
+    public ApiMsg createFromDirectory(
+            final File sourceDir,
+            final String entryPoint,
+            final Address from,
+            final long nrgLimit,
+            final long nrgPrice,
+            Map<String, List<ISolidityArg>> params) {
+        return createFromDirectory(
+                sourceDir, entryPoint, from, nrgLimit, nrgPrice, BigInteger.ZERO, params);
+    }
+
+    public ApiMsg createFromDirectory(
+            final File sourceDir,
+            final String entryPoint,
+            final Address from,
+            final long nrgLimit,
+            final long nrgPrice,
+            BigInteger value,
+            List<ISolidityArg> params) {
+
+        Map<String, List<ISolidityArg>> paramsMap = new HashMap<>();
+        paramsMap.put("", params);
+
+        return createFromDirectory(
+                sourceDir, entryPoint, from, nrgLimit, nrgPrice, value, paramsMap);
+    }
+
+    public ApiMsg createFromDirectory(
+            final File sourceDir,
+            final String entryPoint,
             final Address from,
             final long nrgLimit,
             final long nrgPrice,
@@ -124,11 +188,11 @@ public final class ContractController implements IContractController {
 
         checkParams(from, nrgLimit, nrgPrice, value, params);
 
-        if (sourceDir == null || !sourceDir.isDirectory()) {
+        if (sourceDir == null) {
             throw new IllegalArgumentException("SourceDir#" + sourceDir);
         }
 
-        ApiMsg apiMsg = Objects.requireNonNull(API.getTx()).compile(sourceDir.toPath());
+        ApiMsg apiMsg = Objects.requireNonNull(API.getTx()).compile(sourceDir.toPath(), entryPoint);
         return processCompiledContracts(apiMsg, from, nrgLimit, nrgPrice, value, params);
     }
 

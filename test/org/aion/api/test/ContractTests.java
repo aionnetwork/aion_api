@@ -1760,4 +1760,45 @@ public class ContractTests {
 
         api.destroyApi();
     }
+
+    @Test
+    public void TestCompileZip() {
+        connectAPI();
+
+        Address acc =
+                new Address("0xa0fa13d31f541dbcbd8efac881b7d7b44750ef5bea26209451379109833fea59");
+
+        ApiMsg apiMsg = api.getWallet().unlockAccount(acc, pw, 300);
+
+        if (apiMsg.isError()) {
+            System.out.println("Couldn't unlock, skip this test!");
+            return;
+        }
+
+        if (!isEnoughBalance(acc)) {
+            System.out.println("balance of the account is not enough, skip this test!");
+            return;
+        }
+
+        File source =
+                new File(
+                        System.getProperty("user.dir")
+                                + "/test/org/aion/api/test/contract/contracts.zip");
+
+        apiMsg =
+                api.getContractController()
+                        .createFromDirectory(
+                                source,
+                                "Import.sol",
+                                acc,
+                                NRG_LIMIT_CONTRACT_CREATE_MAX,
+                                NRG_PRICE_MIN);
+        assertFalse(apiMsg.isError());
+
+        IContract ct = api.getContractController().getContract();
+        assertEquals(ct.getFrom(), acc);
+        assertNotNull(ct.getContractAddress());
+
+        api.destroyApi();
+    }
 }

@@ -449,7 +449,7 @@ public final class Tx implements ITx {
         return processCompileRsp(this.apiInst.nbProcess(reqMsg));
     }
 
-    public ApiMsg compile(Path directoryPath) {
+    public ApiMsg compile(Path directoryPath, String entryPoint) {
         if (!this.apiInst.isConnected()) {
             return new ApiMsg(-1003);
         }
@@ -470,6 +470,7 @@ public final class Tx implements ITx {
                 Message.req_compileSolidityZip
                         .newBuilder()
                         .setZipfile(ByteString.copyFrom(zipBytes))
+                        .setEntryPoint(entryPoint)
                         .build();
 
         byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());

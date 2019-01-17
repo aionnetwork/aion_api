@@ -133,11 +133,13 @@ public interface ITx {
      *
      * @param directoryPath the path {@link Path Path} of the directory containing the Solidity
      *     files to be compiled.
+     * @param entryPoint the name {@link String String} of the entry point of these Solidity
+     *     contracts
      * @return the interface {@link java.util.Map Map} of the class {@link CompileResponse
      *     CompileResponse} containing the contract name as key and as value wrapped into ApiMsg.
      *     You can retrieve through the method {@link ApiMsg#getObject() getObject}.
      */
-    ApiMsg compile(Path directoryPath);
+    ApiMsg compile(Path directoryPath, String entryPoint);
 
     /**
      * Sends the source code to be compiled in the backend, and returns all relevant information
