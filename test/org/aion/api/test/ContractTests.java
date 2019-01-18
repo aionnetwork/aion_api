@@ -1525,8 +1525,8 @@ public class ContractTests {
 
         connectAPI();
 
-        Address acc =
-                new Address("0xa0fa13d31f541dbcbd8efac881b7d7b44750ef5bea26209451379109833fea59");
+        AionAddress acc =
+                new AionAddress("0xa0fa13d31f541dbcbd8efac881b7d7b44750ef5bea26209451379109833fea59");
 
         ApiMsg apiMsg = api.getWallet().unlockAccount(acc, pw, 300);
 
@@ -1610,8 +1610,8 @@ public class ContractTests {
     public void TestCallBytes32DynamicArray() {
         connectAPI();
 
-        Address acc =
-                new Address("0xa0fa13d31f541dbcbd8efac881b7d7b44750ef5bea26209451379109833fea59");
+        AionAddress acc =
+                new AionAddress("0xa0fa13d31f541dbcbd8efac881b7d7b44750ef5bea26209451379109833fea59");
 
         ApiMsg apiMsg = api.getWallet().unlockAccount(acc, pw, 300);
 
@@ -1702,8 +1702,8 @@ public class ContractTests {
     public void TestBlake2b() {
         connectAPI();
 
-        Address acc =
-                new Address("0xa0fa13d31f541dbcbd8efac881b7d7b44750ef5bea26209451379109833fea59");
+        AionAddress acc =
+                new AionAddress("0xa0fa13d31f541dbcbd8efac881b7d7b44750ef5bea26209451379109833fea59");
 
         ApiMsg apiMsg = api.getWallet().unlockAccount(acc, pw, 300);
 
