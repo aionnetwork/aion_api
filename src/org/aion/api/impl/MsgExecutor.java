@@ -34,7 +34,7 @@ import org.aion.api.log.LogEnum;
 import org.aion.api.type.ContractEvent;
 import org.aion.api.type.Event;
 import org.aion.api.type.MsgRsp;
-import org.aion.base.type.Address;
+import org.aion.base.type.AionAddress;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
 import org.aion.base.util.ByteUtil;
@@ -294,7 +294,7 @@ public class MsgExecutor implements Runnable {
             for (Message.t_EventCt cte : evt.getEcList()) {
                 ContractEvent.ContractEventBuilder builder =
                         new ContractEvent.ContractEventBuilder()
-                                .address(Address.wrap(cte.getAddress().toByteArray()))
+                                .address(AionAddress.wrap(cte.getAddress().toByteArray()))
                                 .blockHash(Hash256.wrap(cte.getBlockHash().toByteArray()))
                                 .blockNumber(cte.getBlockNumber())
                                 .data(ByteArrayWrapper.wrap(cte.getData().toByteArray()))

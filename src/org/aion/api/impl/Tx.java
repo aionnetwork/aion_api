@@ -31,7 +31,7 @@ import org.aion.api.type.MsgRsp;
 import org.aion.api.type.TxArgs;
 import org.aion.api.type.TxArgs.TxArgsBuilder;
 import org.aion.api.type.core.tx.AionTransaction;
-import org.aion.base.type.Address;
+import org.aion.base.type.AionAddress;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
 import org.aion.base.util.ByteUtil;
@@ -110,7 +110,7 @@ public final class Tx implements ITx {
                     Message.rsp_contractDeploy.parseFrom(rsp.getTxDeploy().toBytes());
             return new ApiMsg(
                     new DeployResponse(
-                            Address.wrap(msgRsp.getContractAddress().toByteArray()),
+                            AionAddress.wrap(msgRsp.getContractAddress().toByteArray()),
                             Hash256.wrap(msgRsp.getTxHash().toByteArray())),
                     ApiMsg.cast.OTHERS);
 
@@ -567,11 +567,11 @@ public final class Tx implements ITx {
         }
     }
 
-    public ApiMsg getCode(Address address) {
+    public ApiMsg getCode(AionAddress address) {
         return getCode(address, -1L);
     }
 
-    public ApiMsg getCode(Address address, long blockNumber) {
+    public ApiMsg getCode(AionAddress address, long blockNumber) {
         if (!this.apiInst.isConnected()) {
             return new ApiMsg(-1003);
         }
@@ -688,8 +688,8 @@ public final class Tx implements ITx {
                 new TxArgsBuilder()
                         .data(ByteArrayWrapper.wrap(byteCode))
                         .from(
-                                apiInst.defaultAccount.equals(Address.EMPTY_ADDRESS())
-                                        ? Address.wrap(
+                                apiInst.defaultAccount.equals(AionAddress.EMPTY_ADDRESS())
+                                        ? AionAddress.wrap(
                                                 "0xa000000000000000000000000000000000000000000000000000000000000000")
                                         : apiInst.defaultAccount)
                         .createTxArgs();
@@ -772,7 +772,7 @@ public final class Tx implements ITx {
         return new ApiMsg(this.apiInst.msgExecutor.getStatus(b), ApiMsg.cast.OTHERS);
     }
 
-    public ApiMsg eventRegister(List<String> evt, ContractEventFilter ef, Address address) {
+    public ApiMsg eventRegister(List<String> evt, ContractEventFilter ef, AionAddress address) {
 
         if (evt == null || ef == null || address == null) {
             throw new NullPointerException(
@@ -790,7 +790,7 @@ public final class Tx implements ITx {
 
         List<ByteString> addrList = new ArrayList<>();
 
-        for (Address ad : ef.getAddresses()) {
+        for (AionAddress ad : ef.getAddresses()) {
             addrList.add(ByteString.copyFrom(ad.toBytes()));
         }
 
@@ -838,7 +838,7 @@ public final class Tx implements ITx {
         }
     }
 
-    public ApiMsg eventDeregister(List<String> evt, Address address) {
+    public ApiMsg eventDeregister(List<String> evt, AionAddress address) {
 
         if (evt == null || address == null) {
             throw new NullPointerException(

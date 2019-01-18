@@ -13,7 +13,7 @@ import org.aion.api.log.LogEnum;
 import org.aion.api.type.ApiMsg;
 import org.aion.api.type.Event;
 import org.aion.api.type.MsgRsp;
-import org.aion.base.type.Address;
+import org.aion.base.type.AionAddress;
 import org.aion.base.util.ByteArrayWrapper;
 import org.slf4j.Logger;
 import org.zeromq.ZMQ;
@@ -25,8 +25,8 @@ public class ApiBase {
     private final int SLEEPTIME = 3000;
     AtomicBoolean isInitialized = new AtomicBoolean(false);
     // END PRIVATE MEMBERS --------------------------------------------
-    Address minerAddress;
-    Address defaultAccount = Address.EMPTY_ADDRESS();
+    AionAddress minerAddress;
+    AionAddress defaultAccount = AionAddress.EMPTY_ADDRESS();
     String url;
     boolean nb = false;
     int timeout = 300_000;

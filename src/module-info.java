@@ -11,6 +11,7 @@ module aion.api.client {
     requires protobuf.java;
     requires jsr305;
     requires gson;
+    requires aion.vm.api;
 
     exports org.aion.api;
     exports org.aion.api.type;
