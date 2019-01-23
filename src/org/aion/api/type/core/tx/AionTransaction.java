@@ -123,6 +123,11 @@ public class AionTransaction extends AbstractTransaction {
     }
 
     @Override
+    public byte getTargetVM() {
+        return type;
+    }
+
+    @Override
     public AionTransaction clone() {
         if (!parsed) {
             rlpParse();
