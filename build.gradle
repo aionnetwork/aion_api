@@ -19,8 +19,11 @@ repositories {
     mavenLocal()
     mavenCentral()
     jcenter()
-    maven { url "https://dl.bintray.com/aionjayt/aion_api" }    
-    flatDir { dirs './lib', './mod' }
+    maven { 
+        url "https://dl.bintray.com/aionjayt/aion_api" 
+        url "${rootDir}/lib/maven_repo"
+    }    
+    flatDir { dirs './lib' }
 }
 
 ext.moduleName = 'aion.api.client'
