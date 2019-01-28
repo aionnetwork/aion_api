@@ -38,6 +38,7 @@ import org.aion.base.util.ByteUtil;
 import org.aion.base.util.Hex;
 import org.aion.crypto.ECKey;
 import org.aion.crypto.ECKeyFac;
+import org.aion.vm.api.interfaces.Address;
 import org.slf4j.Logger;
 
 /** Created by Jay Tseng on 15/11/16. */
@@ -567,11 +568,11 @@ public final class Tx implements ITx {
         }
     }
 
-    public ApiMsg getCode(AionAddress address) {
+    public ApiMsg getCode(Address address) {
         return getCode(address, -1L);
     }
 
-    public ApiMsg getCode(AionAddress address, long blockNumber) {
+    public ApiMsg getCode(Address address, long blockNumber) {
         if (!this.apiInst.isConnected()) {
             return new ApiMsg(-1003);
         }
@@ -772,7 +773,7 @@ public final class Tx implements ITx {
         return new ApiMsg(this.apiInst.msgExecutor.getStatus(b), ApiMsg.cast.OTHERS);
     }
 
-    public ApiMsg eventRegister(List<String> evt, ContractEventFilter ef, AionAddress address) {
+    public ApiMsg eventRegister(List<String> evt, ContractEventFilter ef, Address address) {
 
         if (evt == null || ef == null || address == null) {
             throw new NullPointerException(
@@ -790,7 +791,7 @@ public final class Tx implements ITx {
 
         List<ByteString> addrList = new ArrayList<>();
 
-        for (AionAddress ad : ef.getAddresses()) {
+        for (Address ad : ef.getAddresses()) {
             addrList.add(ByteString.copyFrom(ad.toBytes()));
         }
 
@@ -838,7 +839,7 @@ public final class Tx implements ITx {
         }
     }
 
-    public ApiMsg eventDeregister(List<String> evt, AionAddress address) {
+    public ApiMsg eventDeregister(List<String> evt, Address address) {
 
         if (evt == null || address == null) {
             throw new NullPointerException(

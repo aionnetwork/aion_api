@@ -27,8 +27,8 @@ import org.aion.api.sol.impl.Uint;
 import org.aion.api.type.ApiMsg;
 import org.aion.api.type.ContractResponse;
 import org.aion.api.type.MsgRsp;
-import org.aion.base.type.AionAddress;
 import org.aion.base.util.ByteArrayWrapper;
+import org.aion.vm.api.interfaces.Address;
 
 /*
  Created by jay on 24/11/16.
@@ -420,9 +420,9 @@ public class PerfBench {
 
         System.out.println("Get " + accs.size() + " accounts!");
 
-        AionAddress acc = (AionAddress) accs.get(0);
+        Address acc = (Address) accs.get(0);
         System.out.println("Get the first account: " + acc.toString());
-        AionAddress acc2 = (AionAddress) accs.get(1);
+        Address acc2 = (Address) accs.get(1);
         System.out.println("Get the second account: " + acc2.toString());
         System.out.println();
 
@@ -706,9 +706,9 @@ public class PerfBench {
 
         System.out.println("Get " + accs.size() + " accounts!");
 
-        AionAddress acc = (AionAddress) accs.get(0);
+        Address acc = (Address) accs.get(0);
         System.out.println("Get the first account: " + acc.toString());
-        AionAddress acc2 = (AionAddress) accs.get(1);
+        Address acc2 = (Address) accs.get(1);
         System.out.println("Get the second account: " + acc2.toString());
         System.out.println();
 
@@ -942,9 +942,9 @@ public class PerfBench {
 
         System.out.println("Get " + accs.size() + " accounts!");
 
-        AionAddress acc = (AionAddress) accs.get(0);
+        Address acc = (Address) accs.get(0);
         System.out.println("Get the first account: " + acc.toString());
-        AionAddress acc2 = (AionAddress) accs.get(1);
+        Address acc2 = (Address) accs.get(1);
         System.out.println("Get the second account: " + acc2.toString());
         System.out.println();
 
@@ -1170,9 +1170,9 @@ public class PerfBench {
 
         System.out.println("Get " + accs.size() + " accounts!");
 
-        AionAddress acc = (AionAddress) accs.get(0);
+        Address acc = (Address) accs.get(0);
         System.out.println("Get the first account: " + acc.toString());
-        AionAddress acc2 = (AionAddress) accs.get(1);
+        Address acc2 = (Address) accs.get(1);
         System.out.println("Get the second account: " + acc2.toString());
         System.out.println();
 

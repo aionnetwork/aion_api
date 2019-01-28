@@ -27,6 +27,7 @@ import org.aion.api.type.BlockSql;
 import org.aion.base.type.AionAddress;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteUtil;
+import org.aion.vm.api.interfaces.Address;
 import org.slf4j.Logger;
 
 public class Admin implements IAdmin {
@@ -152,13 +153,13 @@ public class Admin implements IAdmin {
         return numbers.parallelStream().sorted().collect(Collectors.toList());
     }
 
-    private List<AionAddress> parseAddressList(String addresses) {
+    private List<Address> parseAddressList(String addresses) {
         if (addresses == null) {
             throw new NullPointerException();
         }
 
         String[] parts = addresses.split(",");
-        List<AionAddress> addressList = new ArrayList<>();
+        List<Address> addressList = new ArrayList<>();
         for (String part : parts) {
             addressList.add(new AionAddress(part));
         }
@@ -423,7 +424,7 @@ public class Admin implements IAdmin {
     }
 
     @Override
-    public ApiMsg getAccountDetailsByAddressList(List<AionAddress> addressList) {
+    public ApiMsg getAccountDetailsByAddressList(List<Address> addressList) {
         if (!this.apiInst.isConnected()) {
             return new ApiMsg(-1003);
         }

@@ -12,6 +12,7 @@ import org.aion.api.log.LogEnum;
 import org.aion.api.type.ApiMsg;
 import org.aion.base.type.AionAddress;
 import org.aion.base.util.ByteUtil;
+import org.aion.vm.api.interfaces.Address;
 import org.slf4j.Logger;
 
 /** Created by Jay Tseng on 14/11/16. */
@@ -43,7 +44,7 @@ public class Wallet implements IWallet {
                     Message.rsp_accounts.parseFrom(ApiUtils.parseBody(rsp).getData());
             List<ByteString> accBs = msgRsp.getAccoutList();
 
-            List<AionAddress> account = new ArrayList<>();
+            List<Address> account = new ArrayList<>();
             for (ByteString bs : accBs) {
                 account.add(AionAddress.wrap(bs.toByteArray()));
             }
@@ -63,11 +64,11 @@ public class Wallet implements IWallet {
         }
     }
 
-    public ApiMsg unlockAccount(AionAddress acc, String passphrase) {
+    public ApiMsg unlockAccount(Address acc, String passphrase) {
         return unlockAccount(acc, passphrase, 60);
     }
 
-    public ApiMsg unlockAccount(AionAddress acc, String passphrase, int duration) {
+    public ApiMsg unlockAccount(Address acc, String passphrase, int duration) {
         if (!this.apiInst.isConnected()) {
             return new ApiMsg(-1003);
         }
@@ -152,7 +153,7 @@ public class Wallet implements IWallet {
         }
     }
 
-    public ApiMsg setDefaultAccount(AionAddress addr) {
+    public ApiMsg setDefaultAccount(Address addr) {
         this.apiInst.defaultAccount = addr;
         return new ApiMsg(true, ApiMsg.cast.BOOLEAN);
     }
@@ -161,7 +162,7 @@ public class Wallet implements IWallet {
         return new ApiMsg(this.apiInst.defaultAccount, ApiMsg.cast.OTHERS);
     }
 
-    public ApiMsg lockAccount(AionAddress acc, String passphrase) {
+    public ApiMsg lockAccount(Address acc, String passphrase) {
         if (!this.apiInst.isConnected()) {
             return new ApiMsg(-1003);
         }
