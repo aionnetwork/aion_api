@@ -108,15 +108,16 @@ dependencies {
         compile project(':modCrypto')
         compile project(':modLogger')
         compile project(':modRlp')
+        compile project(':3rdParty/libnzmq')
     } else {
         compile files("./mod/modAionBase.jar")
         compile files("./mod/modCrypto.jar")
         compile files("./mod/modLogger.jar")
         compile files("./mod/modRlp.jar")
+        compile files("./lib/libnzmq.jar")
     }
     compile 'com.madgag.spongycastle:prov:1.58.0.0'
     compile 'com.madgag.spongycastle:core:1.58.0.0'
-    compile files("./lib/libnzmq.jar")
     compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.0'
     compile 'org.slf4j:slf4j-api:1.7.25'
     compile group: 'com.google.protobuf', name: 'protobuf-java', version: '3.5.0'
