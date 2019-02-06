@@ -108,7 +108,7 @@ dependencies {
         compile project(':modCrypto')
         compile project(':modLogger')
         compile project(':modRlp')
-        compile project(':3rdParty/libnzmq')
+        compile project(':3rdParty.libnzmq')
     } else {
         compile files("./mod/modAionBase.jar")
         compile files("./mod/modCrypto.jar")
