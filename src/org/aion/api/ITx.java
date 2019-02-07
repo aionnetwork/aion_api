@@ -1,5 +1,6 @@
 package org.aion.api;
 
+import java.nio.file.Path;
 import java.util.List;
 import org.aion.api.impl.Contract;
 import org.aion.api.type.ApiMsg;
@@ -124,6 +125,21 @@ public interface ITx {
      * @see MsgRsp
      */
     ApiMsg sendRawTransaction(ByteArrayWrapper tx);
+
+    /**
+     * Sends the source code to be compiled in the backend, and returns all relevant information
+     * about the compiled code. Will throw if backend compiler is unavailable or code is improperly
+     * formatted.
+     *
+     * @param directoryPath the path {@link Path Path} of the directory containing the Solidity
+     *     files to be compiled.
+     * @param entryPoint the name {@link String String} of the entry point of these Solidity
+     *     contracts
+     * @return the interface {@link java.util.Map Map} of the class {@link CompileResponse
+     *     CompileResponse} containing the contract name as key and as value wrapped into ApiMsg.
+     *     You can retrieve through the method {@link ApiMsg#getObject() getObject}.
+     */
+    ApiMsg compile(Path directoryPath, String entryPoint);
 
     /**
      * Sends the source code to be compiled in the backend, and returns all relevant information
