@@ -2,7 +2,7 @@ package org.aion.api.type.core.tx;
 
 import org.aion.api.log.AionLoggerFactory;
 import org.aion.api.log.LogEnum;
-import org.aion.base.type.ITransaction;
+import org.aion.type.api.type.ITransaction;
 import org.aion.crypto.ISignature;
 import org.aion.vm.api.interfaces.Address;
 import org.slf4j.Logger;

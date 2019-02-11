@@ -1,7 +1,7 @@
 package org.aion.api.type;
 
-import org.aion.base.type.Hash256;
-import org.aion.base.util.ByteArrayWrapper;
+import org.aion.type.api.type.Hash256;
+import org.aion.type.api.util.ByteArrayWrapper;
 
 /**
  * Represents the transaction status including the execution status and the API session hash.
@@ -21,8 +21,8 @@ import org.aion.base.util.ByteArrayWrapper;
  *      the class {@link ByteArrayWrapper ByteArrayWrapper} represent the deploy result if it is a contract deploy.
  *
  * @see org.aion.api.ITx#sendTransaction(org.aion.api.type.TxArgs)
- * @see org.aion.api.ITx#sendRawTransaction(org.aion.base.util.ByteArrayWrapper)
- * @see org.aion.api.ITx#sendSignedTransaction(org.aion.api.type.TxArgs, org.aion.base.util.ByteArrayWrapper)
+ * @see org.aion.api.ITx#sendRawTransaction(ByteArrayWrapper)
+ * @see org.aion.api.ITx#sendSignedTransaction(org.aion.api.type.TxArgs, ByteArrayWrapper)
  *
  * </pre>
  *

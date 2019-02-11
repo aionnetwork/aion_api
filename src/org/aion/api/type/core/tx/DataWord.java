@@ -3,11 +3,11 @@ package org.aion.api.type.core.tx;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import org.aion.base.util.ByteArrayWrapper;
-import org.aion.base.util.ByteUtil;
-import org.aion.base.util.FastByteComparisons;
-import org.aion.base.util.Hex;
-import org.aion.base.vm.IDataWord;
+import org.aion.type.api.util.ByteArrayWrapper;
+import org.aion.type.api.util.ByteUtil;
+import org.aion.type.api.util.FastByteComparisons;
+import org.aion.type.api.util.Hex;
+import org.aion.type.api.vm.IDataWord;
 
 /**
  * Data word is the basic unit data used by Fvm. The size of a data word is specified to 128 bits.

@@ -1,12 +1,13 @@
 package org.aion.api.type;
 
 import java.util.List;
-import org.aion.base.util.ByteArrayWrapper;
+import org.aion.type.api.type.Hash256;
+import org.aion.type.api.util.ByteArrayWrapper;
 import org.aion.vm.api.interfaces.Address;
 
 /**
  * TxLog class containing all relevant information to transaction log utilized by {@link
- * org.aion.api.ITx#getTxReceipt(org.aion.base.type.Hash256) getTxReceipt}.
+ * org.aion.api.ITx#getTxReceipt(Hash256) getTxReceipt}.
  *
  * @author Jay Tseng
  * @see org.aion.api.type.TxReceipt TxReceipt

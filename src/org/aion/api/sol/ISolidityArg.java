@@ -1,7 +1,7 @@
 package org.aion.api.sol;
 
 import java.util.List;
-import org.aion.base.util.ByteArrayWrapper;
+import org.aion.type.api.util.ByteArrayWrapper;
 import org.aion.vm.api.interfaces.Address;
 
 /**

@@ -25,10 +25,10 @@ import org.aion.api.type.Transaction;
 import org.aion.api.type.TxDetails;
 import org.aion.api.type.TxLog;
 import org.aion.api.type.TxReceipt;
-import org.aion.base.type.AionAddress;
-import org.aion.base.type.Hash256;
-import org.aion.base.util.ByteArrayWrapper;
-import org.aion.base.util.ByteUtil;
+import org.aion.type.api.type.AionAddress;
+import org.aion.type.api.type.Hash256;
+import org.aion.type.api.util.ByteArrayWrapper;
+import org.aion.type.api.util.ByteUtil;
 import org.aion.vm.api.interfaces.Address;
 
 public class ApiUtils {

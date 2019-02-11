@@ -1,6 +1,6 @@
 package org.aion.api.type;
 
-import org.aion.base.type.Hash256;
+import org.aion.type.api.type.Hash256;
 import org.aion.vm.api.interfaces.Address;
 
 /**

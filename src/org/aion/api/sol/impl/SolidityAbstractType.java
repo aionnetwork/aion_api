@@ -9,7 +9,7 @@ import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.log.AionLoggerFactory;
 import org.aion.api.log.LogEnum;
 import org.aion.api.type.TxArgs;
-import org.aion.base.util.ByteArrayWrapper;
+import org.aion.type.api.util.ByteArrayWrapper;
 import org.slf4j.Logger;
 
 /**

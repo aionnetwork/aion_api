@@ -25,8 +25,8 @@ import org.aion.api.type.ContractAbiEntry;
 import org.aion.api.type.ContractDeploy;
 import org.aion.api.type.DeployResponse;
 import org.aion.api.type.JsonFmt;
-import org.aion.base.type.Hash256;
-import org.aion.base.util.ByteArrayWrapper;
+import org.aion.type.api.type.Hash256;
+import org.aion.type.api.util.ByteArrayWrapper;
 import org.aion.vm.api.interfaces.Address;
 import org.slf4j.Logger;
 

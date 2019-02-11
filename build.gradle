@@ -104,13 +104,13 @@ if (rootProject.name != AION_PROJECT_NAME) {
 
 dependencies {
     if (rootProject.name == AION_PROJECT_NAME) {
-        compile project(':modAionBase')
+        compile project(':type_api')
         compile project(':modCrypto')
         compile project(':modLogger')
         compile project(':modRlp')
         compile project(':3rdParty/libnzmq')
     } else {
-        compile files("./mod/modAionBase.jar")
+        compile files("./mod/type_api.jar")
         compile files("./mod/modCrypto.jar")
         compile files("./mod/modLogger.jar")
         compile files("./mod/modRlp.jar")
@@ -296,7 +296,7 @@ task updateAionDeps(type: Copy) {
     }
 
     // note: dependencies of the projects aren't copied
-    ['modAionBase', 'modCrypto', 'modLogger', 'modRlp'].each {
+    ['type_api', 'modCrypto', 'modLogger', 'modRlp'].each {
         def maybeProj = rootProject.findProject(":${it}")
         if (maybeProj != null) {
             dependsOn maybeProj.jar

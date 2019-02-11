@@ -1,5 +1,5 @@
 module aion.api.client {
-    requires aion.base;
+    requires aion.type.api;
     requires aion.log;
     requires java.xml;
     requires slf4j.api;

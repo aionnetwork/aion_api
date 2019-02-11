@@ -10,8 +10,8 @@ import org.aion.api.impl.internal.Message;
 import org.aion.api.log.AionLoggerFactory;
 import org.aion.api.log.LogEnum;
 import org.aion.api.type.ApiMsg;
-import org.aion.base.type.AionAddress;
-import org.aion.base.util.ByteUtil;
+import org.aion.type.api.type.AionAddress;
+import org.aion.type.api.util.ByteUtil;
 import org.aion.vm.api.interfaces.Address;
 import org.slf4j.Logger;
 

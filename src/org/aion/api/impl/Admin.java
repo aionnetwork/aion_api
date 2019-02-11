@@ -24,9 +24,9 @@ import org.aion.api.type.ApiMsg.cast;
 import org.aion.api.type.Block;
 import org.aion.api.type.BlockDetails;
 import org.aion.api.type.BlockSql;
-import org.aion.base.type.AionAddress;
-import org.aion.base.type.Hash256;
-import org.aion.base.util.ByteUtil;
+import org.aion.type.api.type.AionAddress;
+import org.aion.type.api.type.Hash256;
+import org.aion.type.api.util.ByteUtil;
 import org.aion.vm.api.interfaces.Address;
 import org.slf4j.Logger;
 

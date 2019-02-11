@@ -10,8 +10,8 @@ import org.aion.api.type.DeployResponse;
 import org.aion.api.type.MsgRsp;
 import org.aion.api.type.TxArgs;
 import org.aion.api.type.TxReceipt;
-import org.aion.base.type.Hash256;
-import org.aion.base.util.ByteArrayWrapper;
+import org.aion.type.api.type.Hash256;
+import org.aion.type.api.util.ByteArrayWrapper;
 import org.aion.vm.api.interfaces.Address;
 
 /**

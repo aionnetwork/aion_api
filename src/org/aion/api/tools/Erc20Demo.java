@@ -21,7 +21,7 @@ import org.aion.api.sol.IUint;
 import org.aion.api.type.ApiMsg;
 import org.aion.api.type.ContractEvent;
 import org.aion.api.type.ContractResponse;
-import org.aion.base.type.AionAddress;
+import org.aion.type.api.type.AionAddress;
 import org.aion.vm.api.interfaces.Address;
 
 /** Created by Jay Tseng on 26/06/17. */

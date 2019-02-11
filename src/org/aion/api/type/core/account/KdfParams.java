@@ -1,7 +1,7 @@
 package org.aion.api.type.core.account;
 
 import java.io.UnsupportedEncodingException;
-import org.aion.base.util.ByteUtil;
+import org.aion.type.api.util.ByteUtil;
 import org.aion.rlp.RLP;
 import org.aion.rlp.RLPList;
 

@@ -27,7 +27,7 @@ import org.aion.api.sol.impl.Uint;
 import org.aion.api.type.ApiMsg;
 import org.aion.api.type.ContractResponse;
 import org.aion.api.type.MsgRsp;
-import org.aion.base.util.ByteArrayWrapper;
+import org.aion.type.api.util.ByteArrayWrapper;
 import org.aion.vm.api.interfaces.Address;
 
 /*

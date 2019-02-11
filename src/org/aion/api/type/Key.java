@@ -1,6 +1,6 @@
 package org.aion.api.type;
 
-import org.aion.base.util.ByteArrayWrapper;
+import org.aion.type.api.util.ByteArrayWrapper;
 import org.aion.vm.api.interfaces.Address;
 
 /**

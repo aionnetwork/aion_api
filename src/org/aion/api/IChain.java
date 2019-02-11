@@ -4,7 +4,7 @@ import java.math.BigInteger;
 import org.aion.api.type.ApiMsg;
 import org.aion.api.type.Block;
 import org.aion.api.type.Transaction;
-import org.aion.base.type.Hash256;
+import org.aion.type.api.type.Hash256;
 import org.aion.vm.api.interfaces.Address;
 
 /**

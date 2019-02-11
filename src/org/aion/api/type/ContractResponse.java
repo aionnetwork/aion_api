@@ -3,8 +3,8 @@ package org.aion.api.type;
 import java.util.List;
 import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.impl.internal.Message;
-import org.aion.base.type.Hash256;
-import org.aion.base.util.ByteArrayWrapper;
+import org.aion.type.api.type.Hash256;
+import org.aion.type.api.util.ByteArrayWrapper;
 
 /**
  * ALl relevant information pertaining to {@link org.aion.api.IContract IContract} function calls.

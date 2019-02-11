@@ -5,8 +5,8 @@ import static org.aion.api.ITx.NRG_PRICE_MIN;
 
 import java.math.BigInteger;
 import org.aion.api.ITx;
-import org.aion.base.type.AionAddress;
-import org.aion.base.util.ByteArrayWrapper;
+import org.aion.type.api.type.AionAddress;
+import org.aion.type.api.util.ByteArrayWrapper;
 import org.aion.vm.api.interfaces.Address;
 
 /**

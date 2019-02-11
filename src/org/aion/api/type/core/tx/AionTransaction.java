@@ -1,12 +1,12 @@
 package org.aion.api.type.core.tx;
 
-import static org.aion.base.util.ByteUtil.ZERO_BYTE_ARRAY;
+import static org.aion.type.api.util.ByteUtil.ZERO_BYTE_ARRAY;
 
 import java.math.BigInteger;
 import java.util.Arrays;
-import org.aion.base.type.AionAddress;
-import org.aion.base.util.ByteUtil;
-import org.aion.base.util.TimeInstant;
+import org.aion.type.api.type.AionAddress;
+import org.aion.type.api.util.ByteUtil;
+import org.aion.type.api.util.TimeInstant;
 import org.aion.crypto.ECKey;
 import org.aion.crypto.ECKey.MissingPrivateKeyException;
 import org.aion.crypto.HashUtil;
