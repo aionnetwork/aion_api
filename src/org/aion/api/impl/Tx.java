@@ -4,10 +4,13 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+import com.google.protobuf.Api;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -443,7 +446,38 @@ public final class Tx implements ITx {
         Message.req_compile reqBody = Message.req_compile.newBuilder().setCode(code).build();
 
         byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
-        byte[] rsp = this.apiInst.nbProcess(reqMsg);
+        return processCompileRsp(this.apiInst.nbProcess(reqMsg));
+    }
+
+    public ApiMsg compile(Path directoryPath, String entryPoint) {
+        if (!this.apiInst.isConnected()) {
+            return new ApiMsg(-1003);
+        }
+
+        byte[] zipBytes;
+
+        try {
+            zipBytes = Files.readAllBytes(directoryPath);
+        } catch (java.io.IOException ex) {
+            throw new NullPointerException(ex.getMessage());
+        }
+
+        byte[] reqHead =
+                ApiUtils.toReqHeader(
+                        ApiUtils.PROTOCOL_VER, Message.Servs.s_tx, Funcs.f_compileSolidityZip);
+
+        Message.req_compileSolidityZip reqBody =
+                Message.req_compileSolidityZip
+                        .newBuilder()
+                        .setZipfile(ByteString.copyFrom(zipBytes))
+                        .setEntryPoint(entryPoint)
+                        .build();
+
+        byte[] reqMsg = ByteUtil.merge(reqHead, reqBody.toByteArray());
+        return processCompileRsp(this.apiInst.nbProcess(reqMsg));
+    }
+
+    private ApiMsg processCompileRsp(byte[] rsp) {
 
         int val = this.apiInst.validRspHeader(rsp);
 

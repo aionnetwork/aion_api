@@ -39,7 +39,7 @@ enum Funcs	 {
 	f_getTransactionByBlockNumberAndIndex   = 19;
 	f_getTransactionReceipt                 = 20;
 	f_getCompilers                          = 21;
-	f_compileSolidity                       = 22;
+	f_compileSolidityZip                    = 22;
 	f_getWork                               = 23;
 	f_submitWork                            = 24;
 	f_fetchQueuedTransactions               = 25;
@@ -633,16 +633,12 @@ message rsp_getCompilers {
 }
 
 //*****************************************************************************
-//	compileSolidity
+//	compileSolidityZip
 //*****************************************************************************
 
-message req_compileSolidity {
-	string source = 1;
-}
-
-message rsp_compileSolidity {
-	string code	= 1;
-	t_Contract info = 2;
+message req_compileSolidityZip {
+	bytes zipfile = 1;
+	string entryPoint = 2;
 }
 
 //*****************************************************************************

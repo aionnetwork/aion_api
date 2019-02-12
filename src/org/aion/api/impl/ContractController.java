@@ -5,6 +5,8 @@ import static org.aion.api.impl.ErrId.getErrString;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.google.protobuf.Api;
+import java.io.File;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -98,25 +100,126 @@ public final class ContractController implements IContractController {
             final long nrgPrice,
             final BigInteger value,
             Map<String, List<ISolidityArg>> params) {
-        if (from == null || source == null || params == null || value == null) {
-            throw new NullPointerException(
-                    "Source#"
-                            + String.valueOf(source)
-                            + " from#"
-                            + String.valueOf(from)
-                            + " value#"
-                            + String.valueOf(value)
-                            + " inputParams#"
-                            + String.valueOf(params));
-        }
 
-        if (nrgLimit < 0 || nrgPrice < 0) {
-            throw new IllegalArgumentException("nrgConsumed#" + nrgLimit + " nrgPrice" + nrgPrice);
+        checkParams(from, nrgLimit, nrgPrice, value, params);
+
+        if (source == null) {
+            throw new IllegalArgumentException("Source is null");
         }
 
         final String s = source.replaceAll(REGEX_SC_REPLACER, "");
 
         ApiMsg apiMsg = Objects.requireNonNull(API.getTx()).compile(s);
+
+        return processCompiledContracts(apiMsg, from, nrgLimit, nrgPrice, value, params);
+    }
+
+    public ApiMsg createFromDirectory(
+            final File sourceDir,
+            final String entryPoint,
+            final Address from,
+            final long nrgLimit,
+            final long nrgPrice) {
+        return createFromDirectory(
+                sourceDir, entryPoint, from, nrgLimit, nrgPrice, BigInteger.ZERO, new HashMap<>());
+    }
+
+    public ApiMsg createFromDirectory(
+            final File sourceDir,
+            final String entryPoint,
+            final Address from,
+            final long nrgLimit,
+            final long nrgPrice,
+            final BigInteger value) {
+        return createFromDirectory(
+                sourceDir, entryPoint, from, nrgLimit, nrgPrice, value, new HashMap<>());
+    }
+
+    public ApiMsg createFromDirectory(
+            final File sourceDir,
+            final String entryPoint,
+            final Address from,
+            final long nrgLimit,
+            final long nrgPrice,
+            List<ISolidityArg> params) {
+
+        Map<String, List<ISolidityArg>> paramsMap = new HashMap<>();
+        paramsMap.put("", params);
+
+        return createFromDirectory(
+                sourceDir, entryPoint, from, nrgLimit, nrgPrice, BigInteger.ZERO, paramsMap);
+    }
+
+    public ApiMsg createFromDirectory(
+            final File sourceDir,
+            final String entryPoint,
+            final Address from,
+            final long nrgLimit,
+            final long nrgPrice,
+            Map<String, List<ISolidityArg>> params) {
+        return createFromDirectory(
+                sourceDir, entryPoint, from, nrgLimit, nrgPrice, BigInteger.ZERO, params);
+    }
+
+    public ApiMsg createFromDirectory(
+            final File sourceDir,
+            final String entryPoint,
+            final Address from,
+            final long nrgLimit,
+            final long nrgPrice,
+            BigInteger value,
+            List<ISolidityArg> params) {
+
+        Map<String, List<ISolidityArg>> paramsMap = new HashMap<>();
+        paramsMap.put("", params);
+
+        return createFromDirectory(
+                sourceDir, entryPoint, from, nrgLimit, nrgPrice, value, paramsMap);
+    }
+
+    public ApiMsg createFromDirectory(
+            final File sourceDir,
+            final String entryPoint,
+            final Address from,
+            final long nrgLimit,
+            final long nrgPrice,
+            final BigInteger value,
+            Map<String, List<ISolidityArg>> params) {
+
+        checkParams(from, nrgLimit, nrgPrice, value, params);
+
+        if (sourceDir == null) {
+            throw new IllegalArgumentException("SourceDir#" + sourceDir);
+        }
+
+        ApiMsg apiMsg = Objects.requireNonNull(API.getTx()).compile(sourceDir.toPath(), entryPoint);
+        return processCompiledContracts(apiMsg, from, nrgLimit, nrgPrice, value, params);
+    }
+
+    private void checkParams(
+            final Address from,
+            final long nrgLimit,
+            final long nrgPrice,
+            final BigInteger value,
+            Map<String, List<ISolidityArg>> params) {
+
+        if (from == null || params == null || value == null) {
+            throw new NullPointerException(
+                    " from#" + from + " value#" + value + " inputParams#" + params);
+        }
+
+        if (nrgLimit < 0 || nrgPrice < 0) {
+            throw new IllegalArgumentException("nrgConsumed#" + nrgLimit + " nrgPrice" + nrgPrice);
+        }
+    }
+
+    private ApiMsg processCompiledContracts(
+            ApiMsg apiMsg,
+            final Address from,
+            final long nrgLimit,
+            final long nrgPrice,
+            final BigInteger value,
+            Map<String, List<ISolidityArg>> params) {
         if (apiMsg.isError()) {
             return apiMsg;
         }
