@@ -12,6 +12,7 @@ module aion.api.client {
     requires jsr305;
     requires gson;
     requires aion.vm.api;
+    requires libnzmq;
 
     exports org.aion.api;
     exports org.aion.api.type;
