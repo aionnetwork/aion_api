@@ -43,4 +43,4 @@ compile 'network.aion:libnzmq:1.0'
 
 And the Gradle invocation for putting the jars in `lib/maven_repo` was:
 
-`./gradlew :modAionBase:publish :modCrypto:publish :modLogger:publish :modRlp:publish :3rdParty.libnzmq:publish :aion_vm_api:publish :modUtil:publish -PpublishTarget=/home/you/path_to/aion_api/lib/maven_repo``
+`./gradlew :modAionBase:publish :modCrypto:publish :modLogger:publish :modRlp:publish :3rdParty.libnzmq:publish :aion_vm_api:publish :modUtil:publish -PpublishTarget=/home/you/path_to/aion_api/lib/maven_repo`
