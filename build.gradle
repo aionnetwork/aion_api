@@ -19,8 +19,11 @@ repositories {
     mavenLocal()
     mavenCentral()
     jcenter()
-    maven { url "https://dl.bintray.com/aionjayt/aion_api" }    
-    flatDir { dirs './lib', './mod' }
+    maven { 
+        url "https://dl.bintray.com/aionjayt/aion_api" 
+        url "${rootDir}/lib/maven_repo"
+    }    
+    flatDir { dirs './lib' }
 }
 
 ext.moduleName = 'aion.api.client'
@@ -54,68 +57,59 @@ sourceSets {
     }
 }
 
-if (rootProject.name != AION_PROJECT_NAME) {
-    afterEvaluate {
-        // Override java plug-in behaviour to make JDK9+ module logic work
-        // From: https://guides.gradle.org/building-java-9-modules/#step_2_produce_java_9_modules_for_all_subprojects
-        compileJava {
-            inputs.property("moduleName", moduleName)
-            doFirst {
-                options.compilerArgs = [
-                        '--module-path', classpath.asPath,
-                ]
-                classpath = files()
-            }
-        }
-
-        // Need to comment this out for now, modules-info.java doesn't have 'require' declarations
-        // used by the test code.  The ant build.xml, similarly, uses module-path for build, but 
-        // classpath for building the tests (at least in modRlp).  Need to sort out how to properly set the module-path
-        // for the tests before using the stuff below.
-        /*
-        compileTestJava {
-            inputs.property("moduleName", moduleName)
-            doFirst {
-                options.compilerArgs = [
+afterEvaluate {
+    // Override java plug-in behaviour to make JDK9+ module logic work
+    // From: https://guides.gradle.org/building-java-9-modules/#step_2_produce_java_9_modules_for_all_subprojects
+    compileJava {
+        inputs.property("moduleName", moduleName)
+        doFirst {
+            options.compilerArgs = [
                     '--module-path', classpath.asPath,
-                    '--add-modules', 'junit',
-                    '--add-reads', "$moduleName=junit",
-                    '--patch-module', "$moduleName=" + files(sourceSets.test.java.srcDirs).asPath,
-                ]
-                classpath = files()
-            }
+            ]
+            classpath = files()
         }
-
-        test {
-            inputs.property("moduleName", moduleName)
-            doFirst {
-                jvmArgs = [
-                    '--module-path', classpath.asPath,
-                    '--add-modules', 'ALL-MODULE-PATH',
-                    '--add-reads', "$moduleName=junit",
-                    '--patch-module', "$moduleName=" + files(sourceSets.test.java.outputDir).asPath,
-                ]
-                classpath = files()
-            }
-        }
-        */
     }
+
+    // Need to comment this out for now, modules-info.java doesn't have 'require' declarations
+    // used by the test code.  The ant build.xml, similarly, uses module-path for build, but 
+    // classpath for building the tests (at least in modRlp).  Need to sort out how to properly set the module-path
+    // for the tests before using the stuff below.
+    /*
+    compileTestJava {
+        inputs.property("moduleName", moduleName)
+        doFirst {
+            options.compilerArgs = [
+                '--module-path', classpath.asPath,
+                '--add-modules', 'junit',
+                '--add-reads', "$moduleName=junit",
+                '--patch-module', "$moduleName=" + files(sourceSets.test.java.srcDirs).asPath,
+            ]
+            classpath = files()
+        }
+    }
+
+    test {
+        inputs.property("moduleName", moduleName)
+        doFirst {
+            jvmArgs = [
+                '--module-path', classpath.asPath,
+                '--add-modules', 'ALL-MODULE-PATH',
+                '--add-reads', "$moduleName=junit",
+                '--patch-module', "$moduleName=" + files(sourceSets.test.java.outputDir).asPath,
+            ]
+            classpath = files()
+        }
+    }
+    */
 }
 
 dependencies {
-    if (rootProject.name == AION_PROJECT_NAME) {
-        compile project(':modAionBase')
-        compile project(':modCrypto')
-        compile project(':modLogger')
-        compile project(':modRlp')
-        compile project(':3rdParty.libnzmq')
-    } else {
-        compile files("./mod/modAionBase.jar")
-        compile files("./mod/modCrypto.jar")
-        compile files("./mod/modLogger.jar")
-        compile files("./mod/modRlp.jar")
-        compile files("./lib/libnzmq.jar")
-    }
+    compile 'network.aion:modAionBase:0.3.2'
+    compile 'network.aion:modCrypto:0.3.2'
+    compile 'network.aion:modLogger:0.3.2'
+    compile 'network.aion:modRlp:0.3.2'
+    compile 'network.aion:libnzmq:1.0'
+
     compile 'com.madgag.spongycastle:prov:1.58.0.0'
     compile 'com.madgag.spongycastle:core:1.58.0.0'
     compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.0'
@@ -286,51 +280,6 @@ compileJava.finalizedBy(postBuildRevertVersion)
 
 clean.doFirst {
     delete "pack"
-}
-
-task updateAionDeps(type: Copy) {
-    doFirst {
-        if (rootProject.name != AION_PROJECT_NAME) {
-            throw new GradleException('Can only update kernel dependencies when calling this task with aion as the root project')
-        }
-    }
-
-    // note: dependencies of the projects aren't copied
-    ['modAionBase', 'modCrypto', 'modLogger', 'modRlp'].each {
-        def maybeProj = rootProject.findProject(":${it}")
-        if (maybeProj != null) {
-            dependsOn maybeProj.jar
-            from maybeProj.jar.outputs
-        }
-    }
-    into file('mod')
-
-}
-
-task updateNativeDeps(type: Copy) {
-    doFirst {
-        if (rootProject.name != AION_PROJECT_NAME) {
-            throw new GradleException('Can only update kernel dependencies when calling this task with aion as the root project')
-        }
-    }
-
-    ['3rdParty/libnzmq'].each {
-        def maybeProj = rootProject.findProject(":${it}")
-        if (maybeProj != null) {
-            dependsOn maybeProj.jar
-            from maybeProj.jar.outputs
-        }
-    }
-    into file('lib')
-}
-
-/**
- * Update the jars in aion_api using jars from aion (kernel).  Replaces ant
- * target 'clean_build_from_kernel'
- */
-task updateKernelDeps {
-    dependsOn updateAionDeps
-    dependsOn updateNativeDeps
 }
 
 def pomConfig = {
