@@ -85,10 +85,6 @@ public class MsgExecutor implements Runnable {
     private static final Path PATH;
 
     static {
-        NativeLoader.loadLibrary("zmq");
-    }
-
-    static {
         String storageDir = System.getProperty("local.storage.dir");
         if (storageDir == null || storageDir.equalsIgnoreCase("")) {
             storageDir = System.getProperty("user.dir");
