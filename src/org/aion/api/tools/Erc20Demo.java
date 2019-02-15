@@ -22,7 +22,7 @@ import org.aion.api.type.ApiMsg;
 import org.aion.api.type.ContractEvent;
 import org.aion.api.type.ContractResponse;
 import org.aion.type.api.type.AionAddress;
-import org.aion.vm.api.interfaces.Address;
+import org.aion.type.api.interfaces.common.Address;
 
 /** Created by Jay Tseng on 26/06/17. */
 public class Erc20Demo {

@@ -26,8 +26,8 @@ import org.aion.api.type.BlockDetails;
 import org.aion.api.type.BlockSql;
 import org.aion.type.api.type.AionAddress;
 import org.aion.type.api.type.Hash256;
-import org.aion.type.api.util.ByteUtil;
-import org.aion.vm.api.interfaces.Address;
+import org.aion.util.bytes.ByteUtil;
+import org.aion.type.api.interfaces.common.Address;
 import org.slf4j.Logger;
 
 public class Admin implements IAdmin {

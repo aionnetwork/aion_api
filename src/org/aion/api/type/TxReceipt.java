@@ -1,12 +1,12 @@
 package org.aion.api.type;
 
 import java.util.List;
-import org.aion.type.api.type.Hash256;
-import org.aion.vm.api.interfaces.Address;
+import org.aion.type.api.interfaces.common.Hash;
+import org.aion.type.api.interfaces.common.Address;
 
 /**
  * TxReceipt class containing all relevant information to transaction receipts utilized by {@link
- * org.aion.api.ITx#getTxReceipt(Hash256) getTxReceipt}.
+ * org.aion.api.ITx#getTxReceipt(Hash) getTxReceipt}.
  */
 public final class TxReceipt {
 
@@ -14,8 +14,8 @@ public final class TxReceipt {
     private final long blockNumber;
     private final long nrgConsumed;
     private final long cumulativeNrgUsed;
-    private final Hash256 blockHash;
-    private final Hash256 txHash;
+    private final Hash blockHash;
+    private final Hash txHash;
     private final Address from;
     private final Address to;
     private final Address contractAddress;
@@ -50,11 +50,11 @@ public final class TxReceipt {
         return cumulativeNrgUsed;
     }
 
-    public Hash256 getBlockHash() {
+    public Hash getBlockHash() {
         return blockHash;
     }
 
-    public Hash256 getTxHash() {
+    public Hash getTxHash() {
         return txHash;
     }
 
@@ -135,8 +135,8 @@ public final class TxReceipt {
         private long blockNumber;
         private long nrgConsumed;
         private long cumulativeNrgUsed;
-        private Hash256 blockHash;
-        private Hash256 txHash;
+        private Hash blockHash;
+        private Hash txHash;
         private Address from;
         private Address to;
         private Address contractAddress;
@@ -164,12 +164,12 @@ public final class TxReceipt {
             return this;
         }
 
-        public TxReceipt.TxReceiptBuilder blockHash(final Hash256 blockHash) {
+        public TxReceipt.TxReceiptBuilder blockHash(final Hash blockHash) {
             this.blockHash = blockHash;
             return this;
         }
 
-        public TxReceipt.TxReceiptBuilder txHash(final Hash256 txHash) {
+        public TxReceipt.TxReceiptBuilder txHash(final Hash txHash) {
             this.txHash = txHash;
             return this;
         }

@@ -3,16 +3,14 @@ package org.aion.api.type.core.tx;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import org.aion.type.api.util.ByteArrayWrapper;
-import org.aion.type.api.util.ByteUtil;
-import org.aion.type.api.util.FastByteComparisons;
-import org.aion.type.api.util.Hex;
-import org.aion.type.api.vm.IDataWord;
+import org.aion.util.bytes.ByteArrayWrapper;
+import org.aion.util.bytes.ByteUtil;
+import org.aion.util.conversions.Hex;
 
 /**
  * Data word is the basic unit data used by Fvm. The size of a data word is specified to 128 bits.
  */
-public class DataWord implements Comparable<DataWord>, IDataWord {
+public class DataWord implements Comparable<DataWord>, org.aion.type.api.interfaces.vm.DataWord {
 
     private static final BigInteger MAX_VALUE =
             BigInteger.valueOf(2).pow(128).subtract(BigInteger.ONE);

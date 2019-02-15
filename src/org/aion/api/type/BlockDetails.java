@@ -3,8 +3,8 @@ package org.aion.api.type;
 import java.math.BigInteger;
 import java.util.List;
 import org.aion.type.api.type.Hash256;
-import org.aion.type.api.util.ByteArrayWrapper;
-import org.aion.vm.api.interfaces.Address;
+import org.aion.util.bytes.ByteArrayWrapper;
+import org.aion.type.api.interfaces.common.Address;
 
 /**
  * The BlockDetails return the detailed block information including the transactions and the

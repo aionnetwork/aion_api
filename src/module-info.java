@@ -1,6 +1,7 @@
 module aion.api.client {
     requires aion.type.api;
     requires aion.log;
+    requires aion.util;
     requires java.xml;
     requires slf4j.api;
     requires aion.rlp;
@@ -11,7 +12,6 @@ module aion.api.client {
     requires protobuf.java;
     requires jsr305;
     requires gson;
-    requires aion.vm.api;
 
     exports org.aion.api;
     exports org.aion.api.type;

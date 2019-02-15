@@ -1,12 +1,12 @@
 package org.aion.api.type.core.tx;
 
-import static org.aion.type.api.util.ByteUtil.ZERO_BYTE_ARRAY;
+import static org.aion.util.bytes.ByteUtil.ZERO_BYTE_ARRAY;
 
 import java.math.BigInteger;
 import java.util.Arrays;
 import org.aion.type.api.type.AionAddress;
-import org.aion.type.api.util.ByteUtil;
-import org.aion.type.api.util.TimeInstant;
+import org.aion.util.bytes.ByteUtil;
+import org.aion.util.time.TimeInstant;
 import org.aion.crypto.ECKey;
 import org.aion.crypto.ECKey.MissingPrivateKeyException;
 import org.aion.crypto.HashUtil;
@@ -14,7 +14,7 @@ import org.aion.crypto.ISignature;
 import org.aion.crypto.SignatureFac;
 import org.aion.rlp.RLP;
 import org.aion.rlp.RLPList;
-import org.aion.vm.api.interfaces.Address;
+import org.aion.type.api.interfaces.common.Address;
 
 // NOTE: a number of methods are now duplicated here (but with different names) because of issue
 // #734.

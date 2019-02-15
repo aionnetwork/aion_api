@@ -1,13 +1,13 @@
 package org.aion.api.type;
 
 import java.util.List;
-import org.aion.type.api.type.Hash256;
-import org.aion.type.api.util.ByteArrayWrapper;
-import org.aion.vm.api.interfaces.Address;
+import org.aion.type.api.interfaces.common.Address;
+import org.aion.type.api.interfaces.common.Hash;
+import org.aion.type.api.interfaces.common.Wrapper;
 
 /**
  * TxLog class containing all relevant information to transaction log utilized by {@link
- * org.aion.api.ITx#getTxReceipt(Hash256) getTxReceipt}.
+ * org.aion.api.ITx#getTxReceipt(Hash) getTxReceipt}.
  *
  * @author Jay Tseng
  * @see org.aion.api.type.TxReceipt TxReceipt
@@ -15,10 +15,10 @@ import org.aion.vm.api.interfaces.Address;
 public final class TxLog {
 
     private final Address address;
-    private final ByteArrayWrapper data;
+    private final Wrapper data;
     private final List<String> topics;
 
-    public TxLog(Address address, ByteArrayWrapper data, List<String> topics) {
+    public TxLog(Address address, Wrapper data, List<String> topics) {
         this.address = address;
         this.data = data;
         this.topics = topics;
@@ -74,7 +74,7 @@ public final class TxLog {
         return address;
     }
 
-    public ByteArrayWrapper getData() {
+    public Wrapper getData() {
         return data;
     }
 

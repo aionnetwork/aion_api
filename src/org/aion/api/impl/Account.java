@@ -34,11 +34,11 @@ import org.aion.api.type.ApiMsg;
 import org.aion.api.type.Key;
 import org.aion.api.type.KeyExport;
 import org.aion.api.type.core.account.KeystoreFormat;
-import org.aion.type.api.util.ByteUtil;
-import org.aion.type.api.util.TypeConverter;
+import org.aion.util.bytes.ByteUtil;
 import org.aion.crypto.ECKey;
 import org.aion.crypto.ECKeyFac;
-import org.aion.vm.api.interfaces.Address;
+import org.aion.util.string.StringUtils;
+import org.aion.type.api.interfaces.common.Address;
 import org.slf4j.Logger;
 
 /** Created by Jay Tseng on 19/04/17. */
@@ -388,10 +388,10 @@ public final class Account implements IAccount {
                 fos.close();
 
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Keystore created! {}", TypeConverter.toJsonHex(address));
+                    LOGGER.debug("Keystore created! {}", StringUtils.toJsonHex(address));
                 }
 
-                return TypeConverter.toJsonHex(address);
+                return StringUtils.toJsonHex(address);
             } catch (IOException e) {
                 LOGGER.error("fail to create keystore");
                 return ADDR_PREFIX;

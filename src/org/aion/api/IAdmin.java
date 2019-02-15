@@ -2,8 +2,8 @@ package org.aion.api;
 
 import java.util.List;
 import org.aion.api.type.ApiMsg;
-import org.aion.type.api.type.Hash256;
-import org.aion.vm.api.interfaces.Address;
+import org.aion.type.api.interfaces.common.Address;
+import org.aion.type.api.interfaces.common.Hash;
 
 /**
  * This interface dedicate to contact with Aion kernel for certain purpose.
@@ -43,14 +43,14 @@ public interface IAdmin {
      * Get detailed block information include all transactions and the transaction logs by given the
      * block hash.
      *
-     * @param blockHash 32 bytes hash of the desired block wrapped into the class {@link Hash256
-     *     Hash256}.
+     * @param blockHash 32 bytes hash of the desired block wrapped into the class {@link Hash
+     *     Hash}.
      * @return the class {@link org.aion.api.type.BlockDetails BlockDetails} wrapped into ApiMsg.
      *     You can retrieve through the method {@link ApiMsg#getObject() getObject}.
      *     <p>The kernel will only return the first 1000 block details fit the query interval if the
      *     user query the block over the 1000 blocks
      */
-    ApiMsg getBlockDetailsByHash(Hash256 blockHash);
+    ApiMsg getBlockDetailsByHash(Hash blockHash);
 
     /**
      * Get detailed block information include all transactions and the transaction logs by given the

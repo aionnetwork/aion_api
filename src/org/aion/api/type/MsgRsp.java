@@ -1,7 +1,7 @@
 package org.aion.api.type;
 
 import org.aion.type.api.type.Hash256;
-import org.aion.type.api.util.ByteArrayWrapper;
+import org.aion.util.bytes.ByteArrayWrapper;
 
 /**
  * Represents the transaction status including the execution status and the API session hash.

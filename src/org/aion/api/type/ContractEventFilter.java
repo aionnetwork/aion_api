@@ -1,7 +1,7 @@
 package org.aion.api.type;
 
 import java.util.List;
-import org.aion.vm.api.interfaces.Address;
+import org.aion.type.api.interfaces.common.Address;
 
 /**
  * The helper class for gather all of the contract event filter conditions. Use the builder class to

@@ -1,7 +1,7 @@
 package org.aion.api.type;
 
 import java.math.BigInteger;
-import org.aion.vm.api.interfaces.Address;
+import org.aion.type.api.interfaces.common.Address;
 
 /**
  * AccountDetails class containing all relevant information identifying an account

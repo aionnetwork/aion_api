@@ -27,8 +27,8 @@ import org.aion.api.sol.impl.Uint;
 import org.aion.api.type.ApiMsg;
 import org.aion.api.type.ContractResponse;
 import org.aion.api.type.MsgRsp;
-import org.aion.type.api.util.ByteArrayWrapper;
-import org.aion.vm.api.interfaces.Address;
+import org.aion.util.bytes.ByteArrayWrapper;
+import org.aion.type.api.interfaces.common.Address;
 
 /*
  Created by jay on 24/11/16.
@@ -666,7 +666,7 @@ public class PerfBench {
 
     private void TestSmartContractTxBlock() {
         System.out.println(
-                "===============  Testing smart contract blocking Transaction ======================");
+                "===============  Testing smart contract blocking TransactionExtend ======================");
         System.out.println(
                 "Create api instance and connect, please press enter key to go next step!");
         if (!fastTest) {
@@ -827,13 +827,13 @@ public class PerfBench {
 
         long start = System.nanoTime();
         for (int i = 0; i < repeat; i++) {
-            System.out.println("execute Transaction: " + i);
+            System.out.println("execute TransactionExtend: " + i);
             apiMsg.set(tmp.execute());
             if (apiMsg.isError()) {
                 System.out.println(
-                        "execute Transaction: " + i + "failed! " + apiMsg.getErrString());
+                        "execute TransactionExtend: " + i + "failed! " + apiMsg.getErrString());
             } else {
-                System.out.println("executed Transaction: " + i);
+                System.out.println("executed TransactionExtend: " + i);
             }
         }
         long end = System.nanoTime();
@@ -908,7 +908,7 @@ public class PerfBench {
         System.out.println("Disconnect connection between api and node!");
         api.destroyApi();
         System.out.println(
-                "===============  Testing smart contract blocking Transaction finish ======================");
+                "===============  Testing smart contract blocking TransactionExtend finish ======================");
         System.out.println();
     }
 

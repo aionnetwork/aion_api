@@ -97,8 +97,8 @@ public final class AionAPIImpl extends ApiBase implements IAionAPI {
     }
 
     public ITx getTx() {
-        if (Optional.ofNullable(this.getPrivilege().get("Transaction")).isPresent()
-                && this.getPrivilege().get("Transaction")) {
+        if (Optional.ofNullable(this.getPrivilege().get("TransactionExtend")).isPresent()
+                && this.getPrivilege().get("TransactionExtend")) {
             return tx;
         }
 

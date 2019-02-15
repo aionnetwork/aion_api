@@ -59,7 +59,7 @@ public final class ErrId {
         ERROR_CODES.put(-300L, "Invalid address length!");
         ERROR_CODES.put(-301L, "Null password!");
         ERROR_CODES.put(-302L, "Negative duration!");
-        ERROR_CODES.put(-303L, "Null Transaction argument!");
+        ERROR_CODES.put(-303L, "Null TransactionExtend argument!");
         ERROR_CODES.put(-304L, "Invalid account length!");
         ERROR_CODES.put(-305L, "Null Smart contract source code!");
         ERROR_CODES.put(-306L, "Null CompileResponse!");
@@ -94,7 +94,7 @@ public final class ErrId {
         ERROR_CODES.put(-1006L, "Thread exception!");
         ERROR_CODES.put(-1008L, "Contract init exception!");
         ERROR_CODES.put(-1009L, "Socket connection failed!");
-        ERROR_CODES.put(-1010L, "Transaction timeout!");
+        ERROR_CODES.put(-1010L, "TransactionExtend timeout!");
         ERROR_CODES.put(-1011L, "No privilege to access this API.");
 
         ERROR_CODES.put(-1L, "Invalid header length!");
@@ -120,7 +120,7 @@ public final class ErrId {
         ERROR_CODES.put(-21L, "invalid key file!");
 
         ERROR_CODES.put(50L, "Thread sleep exception!");
-        ERROR_CODES.put(51L, "Transaction timeout!");
+        ERROR_CODES.put(51L, "TransactionExtend timeout!");
         ERROR_CODES.put(52L, "future exception!");
         ERROR_CODES.put(53L, "Put msg to txQueue failed!");
         ERROR_CODES.put(54L, "Msg status is null");
@@ -128,11 +128,11 @@ public final class ErrId {
         ERROR_CODES.put(56L, "Null message hash!");
         ERROR_CODES.put(57L, "Null or incorrect message hash length input!");
 
-        ERROR_CODES.put(101L, "Transaction received!");
-        ERROR_CODES.put(102L, "Transaction been dropped!");
-        ERROR_CODES.put(103L, "Transaction in the pending block of the kernel!");
-        ERROR_CODES.put(104L, "Transaction in the new pending block of the kernel!");
-        ERROR_CODES.put(105L, "Transaction been included in a new block!");
+        ERROR_CODES.put(101L, "TransactionExtend received!");
+        ERROR_CODES.put(102L, "TransactionExtend been dropped!");
+        ERROR_CODES.put(103L, "TransactionExtend in the pending block of the kernel!");
+        ERROR_CODES.put(104L, "TransactionExtend in the new pending block of the kernel!");
+        ERROR_CODES.put(105L, "TransactionExtend been included in a new block!");
     }
 
     public static String getErrString(long code) {

@@ -2,11 +2,11 @@ package org.aion.api.type;
 
 import java.math.BigInteger;
 import org.aion.type.api.type.Hash256;
-import org.aion.type.api.util.ByteArrayWrapper;
-import org.aion.vm.api.interfaces.Address;
+import org.aion.util.bytes.ByteArrayWrapper;
+import org.aion.type.api.interfaces.common.Address;
 
 /**
- * The Transaction return data structure, typically used in Transaction getter API.
+ * The TransactionExtend return data structure, typically used in TransactionExtend getter API.
  *
  * @author Jay Tseng
  * @see org.aion.api.IChain#getTransactionByBlockHashAndIndex(Hash256, int)

@@ -1,7 +1,7 @@
 package org.aion.api.type;
 
 import org.aion.type.api.type.Hash256;
-import org.aion.vm.api.interfaces.Address;
+import org.aion.type.api.interfaces.common.Address;
 
 /**
  * Contains the response information after deployed a contract by {@link

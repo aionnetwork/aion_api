@@ -2,13 +2,13 @@ package org.aion.api.type.core.tx;
 
 import org.aion.api.log.AionLoggerFactory;
 import org.aion.api.log.LogEnum;
-import org.aion.type.api.type.ITransaction;
+import org.aion.type.api.interfaces.common.Address;
+import org.aion.type.api.interfaces.tx.TransactionExtend;
 import org.aion.crypto.ISignature;
-import org.aion.vm.api.interfaces.Address;
 import org.slf4j.Logger;
 
 /** @author jin */
-public abstract class AbstractTransaction implements ITransaction {
+public abstract class AbstractTransaction implements TransactionExtend {
 
     private static final int nrgDigits = 64;
 

@@ -10,19 +10,19 @@ import org.aion.api.type.DeployResponse;
 import org.aion.api.type.MsgRsp;
 import org.aion.api.type.TxArgs;
 import org.aion.api.type.TxReceipt;
-import org.aion.type.api.type.Hash256;
-import org.aion.type.api.util.ByteArrayWrapper;
-import org.aion.vm.api.interfaces.Address;
+import org.aion.type.api.interfaces.common.Hash;
+import org.aion.type.api.interfaces.common.Address;
+import org.aion.type.api.interfaces.common.Wrapper;
 
 /**
- * ITx is an interface of the class Transaction. ITx assists in providing methods for transaction
+ * ITx is an interface of the class TransactionExtend. ITx assists in providing methods for transaction
  * related calls.
  *
  * @author Jay Tseng
  */
 public interface ITx {
 
-    /** Transaction price and limit is following by the current Aion-0 kernel definition. */
+    /** TransactionExtend price and limit is following by the current Aion-0 kernel definition. */
     long NRG_PRICE_MIN = 10_000_000_000L; // 10 PLAT  (10 * 10 ^ -9 AION)
 
     long NRG_PRICE_MAX = 9_000_000_000_000_000_000L; //  9 AION
@@ -72,11 +72,11 @@ public interface ITx {
      * Retrieves the transaction receipt given a transaction hash in the format of {@link TxReceipt
      * TxReceipt}.
      *
-     * @param transactionHash the 32 bytes hash represent by the class {@link Hash256 Hash256}.
+     * @param transactionHash the 32 bytes hash represent by the class {@link Hash Hash}.
      * @return the class {@link TxReceipt TxReceipt} wrapped into ApiMsg. You can retrieve through
      *     {@link ApiMsg#getObject() getObject}.
      */
-    ApiMsg getTxReceipt(Hash256 transactionHash);
+    ApiMsg getTxReceipt(Hash transactionHash);
 
     /**
      * Initiates a transaction given a class of type {@link TxArgs TxArgs}. This function provides
@@ -95,27 +95,27 @@ public interface ITx {
 
     /**
      * Initiates a transaction given the class {@link TxArgs TxArgs}, the class {@link
-     * ByteArrayWrapper ByteArrayWrapper} represent the private key of the transaction sender. Then
+     * Wrapper Wrapper} represent the private key of the transaction sender. Then
      * send a transaction including the raw transaction data and signed with the sender's key.
      *
      * @param args given a class {@link TxArgs TxArgs} created by the builder class {@link
      *     org.aion.api.type.TxArgs.TxArgsBuilder TxArgsBuilder}.
-     * @param key the class {@link ByteArrayWrapper ByteArrayWrapper} represent the sender's private
+     * @param key the class {@link Wrapper Wrapper} represent the sender's private
      *     key.
      * @return the class {@link MsgRsp MessageResponse} returned from backend and the current
      *     progress in the backend wrapped into ApiMsg. You can retrieve through {@link
      *     ApiMsg#getObject() getObject}.
      * @see MsgRsp
      */
-    ApiMsg sendSignedTransaction(TxArgs args, ByteArrayWrapper key);
+    ApiMsg sendSignedTransaction(TxArgs args, Wrapper key);
 
     /**
-     * Initiates a transaction given the class {@link ByteArrayWrapper ByteArrayWrapper} represent
+     * Initiates a transaction given the class {@link Wrapper Wrapper} represent
      * the encoded transaction byte array with the sender's signature. This function provides no
      * functionality to assist with encoding or decoding transaction data. Users may choose to
      * either use the more convenient {@link Contract Contract} class for contract transactions.
      *
-     * @param tx given a class {@link ByteArrayWrapper ByteArrayWrapper} represent the encoded
+     * @param tx given a class {@link Wrapper Wrapper} represent the encoded
      *     transaction byte array with the sender's signature.
      * @return the class {@link MsgRsp MsgRsp} returned from backend and the current progress in the
      *     backend wrapped into ApiMsg. You can retrieve through {@link ApiMsg#getObject()
@@ -123,7 +123,7 @@ public interface ITx {
      * @see Contract
      * @see MsgRsp
      */
-    ApiMsg sendRawTransaction(ByteArrayWrapper tx);
+    ApiMsg sendRawTransaction(Wrapper tx);
 
     /**
      * Sends the source code to be compiled in the backend, and returns all relevant information
@@ -171,7 +171,7 @@ public interface ITx {
      * encoding or decoding transaction data. Users may choose to either use the more convenient
      * {@link Contract Contract} class for contract transactions.
      *
-     * @param args the class {@link TxArgs TxArgs} represent the Transaction arguments.
+     * @param args the class {@link TxArgs TxArgs} represent the TransactionExtend arguments.
      */
     void fastTxbuild(TxArgs args);
 
@@ -181,7 +181,7 @@ public interface ITx {
      * encoding or decoding transaction data. Users may choose to either use the more convenient
      * Contract object for contract transactions.
      *
-     * @param args the class {@link TxArgs TxArgs} represent the Transaction arguments.
+     * @param args the class {@link TxArgs TxArgs} represent the TransactionExtend arguments.
      * @param call the boolean value represent the function of the contract is a call function.
      */
     void fastTxbuild(TxArgs args, boolean call);
@@ -201,20 +201,20 @@ public interface ITx {
      * been modified to 30 seconds.
      *
      * @param t timeout represent by millisecond.
-     * @return Transaction object.
+     * @return TransactionExtend object.
      */
     ITx timeout(int t);
 
     /**
      * Check the transaction progress given by the api session hash value.
      *
-     * @param msgHash the 8 bytes array wrapped by the class {@link ByteArrayWrapper
-     *     ByteArrayWrapper} represent the session hash the api client sent.
+     * @param msgHash the 8 bytes array wrapped by the class {@link Wrapper
+     *     Wrapper} represent the session hash the api client sent.
      * @return the class {@link MsgRsp MessageResponse} including transaction status and hash
      *     wrapped into ApiMsg. You can retrieve through the method {@link ApiMsg#getObject()
      *     getObject}.
      */
-    ApiMsg getMsgStatus(ByteArrayWrapper msgHash);
+    ApiMsg getMsgStatus(Wrapper msgHash);
 
     /// **
     // * Query the transaction events by given the contract event filter and the contract Address.

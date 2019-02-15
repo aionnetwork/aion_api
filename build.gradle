@@ -105,9 +105,10 @@ if (rootProject.name != AION_PROJECT_NAME) {
 dependencies {
     if (rootProject.name == AION_PROJECT_NAME) {
         compile project(':type_api')
-        compile project(':modCrypto')
+        compile project(':modUtil')
         compile project(':modLogger')
         compile project(':modRlp')
+        compile project(':modCrypto')
         compile project(':3rdParty/libnzmq')
     } else {
         compile files("./mod/type_api.jar")
@@ -115,6 +116,8 @@ dependencies {
         compile files("./mod/modLogger.jar")
         compile files("./mod/modRlp.jar")
         compile files("./lib/libnzmq.jar")
+        compile 'network.aion:util4j:0.3.3'
+
     }
     compile 'com.madgag.spongycastle:prov:1.58.0.0'
     compile 'com.madgag.spongycastle:core:1.58.0.0'

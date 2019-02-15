@@ -1,7 +1,7 @@
 package org.aion.api.type;
 
-import org.aion.type.api.util.ByteArrayWrapper;
-import org.aion.vm.api.interfaces.Address;
+import org.aion.util.bytes.ByteArrayWrapper;
+import org.aion.type.api.interfaces.common.Address;
 
 /**
  * The key class wrapped the user account information.

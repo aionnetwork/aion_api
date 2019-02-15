@@ -4,8 +4,8 @@ import java.math.BigInteger;
 import org.aion.api.type.ApiMsg;
 import org.aion.api.type.Block;
 import org.aion.api.type.Transaction;
-import org.aion.type.api.type.Hash256;
-import org.aion.vm.api.interfaces.Address;
+import org.aion.type.api.interfaces.common.Address;
+import org.aion.type.api.interfaces.common.Hash;
 
 /**
  * This interface provides methods for fetching blockchain specific details such as blocks and
@@ -68,14 +68,14 @@ public interface IChain {
     /**
      * Gets a transaction given a block hash and transaction index.
      *
-     * @param blockHash 32 bytes hash of the desired block wrapped into the class {@link Hash256
-     *     Hash256}.
+     * @param blockHash 32 bytes hash of the desired block wrapped into the class {@link Hash
+     *     Hash}.
      * @param index the transaction position by int value of the transaction been stored into the
      *     desired block.
      * @return the class {@link Transaction transaction} information wrapped into ApiMsg. You can
      *     retrieve through the method {@link ApiMsg#getObject() getObject}.
      */
-    ApiMsg getTransactionByBlockHashAndIndex(Hash256 blockHash, int index);
+    ApiMsg getTransactionByBlockHashAndIndex(Hash blockHash, int index);
 
     /**
      * Gets a transaction based on the block number and transaction index.
@@ -91,22 +91,22 @@ public interface IChain {
     /**
      * Retrieves a block given the block hash.
      *
-     * @param blockHash 32 bytes hash of the desired block wrapped into the class {@link Hash256
-     *     Hash256}.
+     * @param blockHash 32 bytes hash of the desired block wrapped into the class {@link Hash
+     *     Hash}.
      * @return the class {@link Block block} format wrapped into ApiMsg. You can retrieve through
      *     the method {@link ApiMsg#getObject() getObject}.
      */
-    ApiMsg getBlockByHash(Hash256 blockHash);
+    ApiMsg getBlockByHash(Hash blockHash);
 
     /**
      * Retrieves the total transactions within a block at a given block hash.
      *
-     * @param blockHash 32 bytes hash of the desired block wrapped into the class {@link Hash256
-     *     Hash256}.
+     * @param blockHash 32 bytes hash of the desired block wrapped into the class {@link Hash
+     *     Hash}.
      * @return the transaction number of the block by int value wrapped into ApiMsg. You can
      *     retrieve through the method {@link ApiMsg#getObject() getObject}.
      */
-    ApiMsg getBlockTransactionCountByHash(Hash256 blockHash);
+    ApiMsg getBlockTransactionCountByHash(Hash blockHash);
 
     /**
      * Retrieves the total transactions within a block at a given block number.
@@ -133,12 +133,12 @@ public interface IChain {
      * not found, or the transaction hash is improperly formatted.
      *
      * @param transactionHash 32 bytes hash of the desired transaction wrapped into the class {@link
-     *     Hash256 Hash256}.
-     * @return the class {@link Transaction Transaction} containing all relevant information related
+     *     Hash Hash}.
+     * @return the class {@link Transaction TransactionExtend} containing all relevant information related
      *     to the transaction wrapped into ApiMsg. You can retrieve through the method {@link
      *     ApiMsg#getObject() getObject}.
      */
-    ApiMsg getTransactionByHash(Hash256 transactionHash);
+    ApiMsg getTransactionByHash(Hash transactionHash);
 
     /**
      * Get the storage at a specific position of an address by current blockchain database status.

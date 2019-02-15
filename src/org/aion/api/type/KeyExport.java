@@ -1,8 +1,8 @@
 package org.aion.api.type;
 
 import java.util.List;
-import org.aion.type.api.util.ByteArrayWrapper;
-import org.aion.vm.api.interfaces.Address;
+import org.aion.util.bytes.ByteArrayWrapper;
+import org.aion.type.api.interfaces.common.Address;
 
 /**
  * The KeyExport class wrapped the keystore information

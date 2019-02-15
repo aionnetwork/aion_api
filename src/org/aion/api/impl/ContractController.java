@@ -26,8 +26,8 @@ import org.aion.api.type.ContractDeploy;
 import org.aion.api.type.DeployResponse;
 import org.aion.api.type.JsonFmt;
 import org.aion.type.api.type.Hash256;
-import org.aion.type.api.util.ByteArrayWrapper;
-import org.aion.vm.api.interfaces.Address;
+import org.aion.util.bytes.ByteArrayWrapper;
+import org.aion.type.api.interfaces.common.Address;
 import org.slf4j.Logger;
 
 public final class ContractController implements IContractController {

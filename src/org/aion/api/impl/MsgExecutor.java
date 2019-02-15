@@ -36,9 +36,9 @@ import org.aion.api.type.Event;
 import org.aion.api.type.MsgRsp;
 import org.aion.type.api.type.AionAddress;
 import org.aion.type.api.type.Hash256;
-import org.aion.type.api.util.ByteArrayWrapper;
-import org.aion.type.api.util.ByteUtil;
-import org.aion.type.api.util.NativeLoader;
+import org.aion.util.bytes.ByteArrayWrapper;
+import org.aion.util.bytes.ByteUtil;
+import org.aion.util.file.NativeLoader;
 import org.apache.commons.collections4.map.LRUMap;
 import org.slf4j.Logger;
 import org.zeromq.ZMQ;
@@ -119,7 +119,7 @@ public class MsgExecutor implements Runnable {
     private void initPriviege() {
         this.privilege = Collections.synchronizedMap(new HashMap<>());
         this.privilege.put("Account", PRIVILEGE);
-        this.privilege.put("Transaction", PRIVILEGE);
+        this.privilege.put("TransactionExtend", PRIVILEGE);
         this.privilege.put("Contract", PRIVILEGE);
         this.privilege.put("Net", PRIVILEGE);
         this.privilege.put("Chain", PRIVILEGE);
@@ -898,7 +898,7 @@ public class MsgExecutor implements Runnable {
 
                         if (timeout) {
                             if (LOGGER.isErrorEnabled()) {
-                                LOGGER.error("[aSyncSend] Transaction timeout");
+                                LOGGER.error("[aSyncSend] TransactionExtend timeout");
                             }
                             return new MsgRsp(51, null);
                         }
@@ -976,7 +976,7 @@ public class MsgExecutor implements Runnable {
             this.penddingTx.incrementAndGet();
         } catch (InterruptedException e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("[put] Transaction put in queue exception. {}", e.getMessage());
+                LOGGER.error("[put] TransactionExtend put in queue exception. {}", e.getMessage());
             }
             return Message.Retcode.r_fail_txqueue_exception_VALUE;
         }
@@ -1044,7 +1044,7 @@ public class MsgExecutor implements Runnable {
         this.queue.clear();
         this.penddingTx.set(0);
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("[clear] Transaction cleared!");
+            LOGGER.debug("[clear] TransactionExtend cleared!");
         }
     }
 

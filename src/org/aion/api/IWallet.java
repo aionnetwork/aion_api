@@ -1,7 +1,7 @@
 package org.aion.api;
 
 import org.aion.api.type.ApiMsg;
-import org.aion.vm.api.interfaces.Address;
+import org.aion.type.api.interfaces.common.Address;
 
 /**
  * This interface is an interface for the class Wallet. Assists in account related interactions.

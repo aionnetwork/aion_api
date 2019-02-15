@@ -14,8 +14,8 @@ import org.aion.api.type.ApiMsg;
 import org.aion.api.type.Event;
 import org.aion.api.type.MsgRsp;
 import org.aion.type.api.type.AionAddress;
-import org.aion.type.api.util.ByteArrayWrapper;
-import org.aion.vm.api.interfaces.Address;
+import org.aion.util.bytes.ByteArrayWrapper;
+import org.aion.type.api.interfaces.common.Address;
 import org.slf4j.Logger;
 import org.zeromq.ZMQ;
 

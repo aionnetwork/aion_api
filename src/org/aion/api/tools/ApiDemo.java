@@ -19,7 +19,7 @@ import org.aion.api.sol.ISolidityArg;
 import org.aion.api.sol.IUint;
 import org.aion.api.type.ApiMsg;
 import org.aion.api.type.ContractResponse;
-import org.aion.vm.api.interfaces.Address;
+import org.aion.type.api.interfaces.common.Address;
 
 /**
  * This class shows the basic operation of the Aion Java API.

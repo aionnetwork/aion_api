@@ -40,8 +40,8 @@ import org.aion.api.type.MsgRsp;
 import org.aion.api.type.TxArgs;
 import org.aion.type.api.type.AionAddress;
 import org.aion.type.api.type.Hash256;
-import org.aion.type.api.util.ByteArrayWrapper;
-import org.aion.vm.api.interfaces.Address;
+import org.aion.util.bytes.ByteArrayWrapper;
+import org.aion.type.api.interfaces.common.Address;
 import org.apache.commons.collections4.map.LRUMap;
 import org.slf4j.Logger;
 
@@ -84,7 +84,7 @@ public final class Contract implements IContract {
     private final JsonFmt developerDoc;
     private final Hash256 deployTxId;
 
-    // Transaction relative settings
+    // TransactionExtend relative settings
     private Address from;
     private long txNrgLimit;
     private long txNrgPrice;

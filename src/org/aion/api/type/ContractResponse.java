@@ -4,7 +4,7 @@ import java.util.List;
 import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.impl.internal.Message;
 import org.aion.type.api.type.Hash256;
-import org.aion.type.api.util.ByteArrayWrapper;
+import org.aion.util.bytes.ByteArrayWrapper;
 
 /**
  * ALl relevant information pertaining to {@link org.aion.api.IContract IContract} function calls.
@@ -79,17 +79,17 @@ public final class ContractResponse {
             case Message.Retcode.r_wallet_nullcb_VALUE:
                 return "No coinbase exist in the server.";
             case Message.Retcode.r_tx_Init_VALUE:
-                return "Transaction init.";
+                return "TransactionExtend init.";
             case Message.Retcode.r_tx_Recved_VALUE:
-                return "Transaction received.";
+                return "TransactionExtend received.";
             case Message.Retcode.r_tx_Dropped_VALUE:
-                return "Transaction dropped.";
+                return "TransactionExtend dropped.";
             case Message.Retcode.r_tx_NewPending_VALUE:
-                return "Transaction new Pending.";
+                return "TransactionExtend new Pending.";
             case Message.Retcode.r_tx_Pending_VALUE:
-                return "Transaction Pending.";
+                return "TransactionExtend Pending.";
             case Message.Retcode.r_tx_Included_VALUE:
-                return "Transaction Done.";
+                return "TransactionExtend Done.";
             case Message.Retcode.r_NA_VALUE:
                 return "Status not available.";
             case Message.Retcode.r_fail_header_len_VALUE:

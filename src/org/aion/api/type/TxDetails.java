@@ -2,13 +2,13 @@ package org.aion.api.type;
 
 import java.math.BigInteger;
 import java.util.List;
-import org.aion.type.api.type.Hash256;
-import org.aion.type.api.util.ByteArrayWrapper;
-import org.aion.vm.api.interfaces.Address;
+import org.aion.type.api.interfaces.common.Hash;
+import org.aion.type.api.interfaces.common.Wrapper;
+import org.aion.type.api.interfaces.common.Address;
 
 /**
  * TxLog class containing all relevant information to transaction log utilized by {@link
- * org.aion.api.ITx#getTxReceipt(Hash256) getTxReceipt}.
+ * org.aion.api.ITx#getTxReceipt(Hash) getTxReceipt}.
  *
  * @author Jay Tseng
  * @see org.aion.api.type.TxReceipt TxReceipt
@@ -17,12 +17,12 @@ public final class TxDetails {
 
     private final Address from;
     private final Address to;
-    private final Hash256 txHash;
+    private final Hash txHash;
     private final BigInteger value;
     private final BigInteger nonce;
     private final long nrgConsumed;
     private final long nrgPrice;
-    private final ByteArrayWrapper data;
+    private final Wrapper data;
     private final List<TxLog> logs;
     private final int txIndex;
     private final Address contract;
@@ -57,7 +57,7 @@ public final class TxDetails {
         return contract;
     }
 
-    public Hash256 getTxHash() {
+    public Hash getTxHash() {
         return txHash;
     }
 
@@ -77,7 +77,7 @@ public final class TxDetails {
         return nrgPrice;
     }
 
-    public ByteArrayWrapper getData() {
+    public Wrapper getData() {
         return data;
     }
 
@@ -185,12 +185,12 @@ public final class TxDetails {
         private Address from;
         private Address to;
         private Address contract;
-        private Hash256 txHash;
+        private Hash txHash;
         private BigInteger value;
         private BigInteger nonce;
         private long nrgConsumed;
         private long nrgPrice;
-        private ByteArrayWrapper data;
+        private Wrapper data;
         private List<TxLog> logs;
         private int txIndex;
         private long timestamp;
@@ -208,7 +208,7 @@ public final class TxDetails {
             return this;
         }
 
-        public TxDetailsBuilder txHash(final Hash256 txHash) {
+        public TxDetailsBuilder txHash(final Hash txHash) {
             this.txHash = txHash;
             return this;
         }
@@ -233,7 +233,7 @@ public final class TxDetails {
             return this;
         }
 
-        public TxDetailsBuilder data(final ByteArrayWrapper data) {
+        public TxDetailsBuilder data(final Wrapper data) {
             this.data = data;
             return this;
         }

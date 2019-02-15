@@ -27,9 +27,9 @@ import org.aion.api.type.TxLog;
 import org.aion.api.type.TxReceipt;
 import org.aion.type.api.type.AionAddress;
 import org.aion.type.api.type.Hash256;
-import org.aion.type.api.util.ByteArrayWrapper;
-import org.aion.type.api.util.ByteUtil;
-import org.aion.vm.api.interfaces.Address;
+import org.aion.util.bytes.ByteArrayWrapper;
+import org.aion.util.bytes.ByteUtil;
+import org.aion.type.api.interfaces.common.Address;
 
 public class ApiUtils {
     public static final int PROTOCOL_VER = 2;

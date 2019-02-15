@@ -9,9 +9,9 @@ import org.aion.api.type.ContractEventFilter;
 import org.aion.api.type.ContractResponse;
 import org.aion.api.type.JsonFmt;
 import org.aion.api.type.TxArgs;
-import org.aion.type.api.type.Hash256;
-import org.aion.type.api.util.ByteArrayWrapper;
-import org.aion.vm.api.interfaces.Address;
+import org.aion.type.api.interfaces.common.Hash;
+import org.aion.type.api.interfaces.common.Wrapper;
+import org.aion.type.api.interfaces.common.Address;
 
 /**
  * A Contract class that sits above the Aion Java API layer that provides the user with convenient
@@ -164,7 +164,7 @@ public interface IContract {
      *
      * @return Bytes array encoded function input parameters.
      */
-    ByteArrayWrapper getEncodedData();
+    Wrapper getEncodedData();
 
     /**
      * Retrieve the current sender's account address of the contract.
@@ -183,9 +183,9 @@ public interface IContract {
     /**
      * Retrieve the transaction hash of the deployed contract.
      *
-     * @return the class {@link Hash256 Hash256} represent the 32bytes array wrapper.
+     * @return the class {@link Hash Hash} represent the 32bytes array wrapper.
      */
-    Hash256 getDeployTxId();
+    Hash getDeployTxId();
 
     /**
      * Retrieve the abiDefinition of the deployed contract.

@@ -2,9 +2,9 @@ package org.aion.api.type;
 
 import java.math.BigInteger;
 import org.aion.api.ITx;
-import org.aion.type.api.util.ByteArrayWrapper;
-import org.aion.type.api.util.Bytesable;
-import org.aion.vm.api.interfaces.Address;
+import org.aion.util.bytes.ByteArrayWrapper;
+import org.aion.type.api.interfaces.common.Bytesable;
+import org.aion.type.api.interfaces.common.Address;
 
 /**
  * The helper class for gather all of the deploy arguments to deploy the contract. Use the builder

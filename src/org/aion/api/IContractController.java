@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import org.aion.api.sol.ISolidityArg;
 import org.aion.api.type.ApiMsg;
-import org.aion.vm.api.interfaces.Address;
+import org.aion.type.api.interfaces.common.Address;
 
 /**
  * This interface provides methods for deploy the contract to the Aion blockchain network, store the

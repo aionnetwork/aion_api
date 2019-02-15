@@ -33,12 +33,12 @@ import org.aion.api.type.TxArgs.TxArgsBuilder;
 import org.aion.api.type.core.tx.AionTransaction;
 import org.aion.type.api.type.AionAddress;
 import org.aion.type.api.type.Hash256;
-import org.aion.type.api.util.ByteArrayWrapper;
-import org.aion.type.api.util.ByteUtil;
-import org.aion.type.api.util.Hex;
+import org.aion.util.bytes.ByteArrayWrapper;
+import org.aion.util.bytes.ByteUtil;
+import org.aion.util.conversions.Hex;
 import org.aion.crypto.ECKey;
 import org.aion.crypto.ECKeyFac;
-import org.aion.vm.api.interfaces.Address;
+import org.aion.type.api.interfaces.common.Address;
 import org.slf4j.Logger;
 
 /** Created by Jay Tseng on 15/11/16. */
@@ -1006,7 +1006,7 @@ public final class Tx implements ITx {
     //    }
 
     /*
-       Types.Transaction SignTransaction(Types.Transaction trans) throws Throwable {
+       Types.TransactionExtend SignTransaction(Types.TransactionExtend trans) throws Throwable {
     	if (apiInst.m_socket == null)
     	{
     		throw new NullPointerException("apiInst.m_socket is null");
