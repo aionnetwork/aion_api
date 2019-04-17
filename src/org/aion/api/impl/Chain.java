@@ -163,6 +163,56 @@ public final class Chain implements IChain {
         }
     }
 
+    public ApiMsg getBlockReward(long blockNumber) {
+        if (!apiInst.isInitialized.get()) {
+            return new ApiMsg(-1003);
+        }
+
+        if (blockNumber < -1L) {
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("[getBlockReward] {}", ErrId.getErrString(-129L));
+            }
+            return new ApiMsg(-129);
+        }
+
+        Message.req_getBlockReward body =
+            Message.req_getBlockReward.newBuilder().setBlockNumber(blockNumber).build();
+
+        byte[] header =
+            ApiUtils.toReqHeader(
+                ApiUtils.PROTOCOL_VER,
+                Message.Servs.s_chain,
+                Funcs.f_getBlockReward);
+        byte[] reqMsg = ByteUtil.merge(header, body.toByteArray());
+
+        byte[] rsp = this.apiInst.nbProcess(reqMsg);
+        int code = this.apiInst.validRspHeader(rsp);
+        if (code != 1) {
+            return new ApiMsg(code);
+        }
+
+        try {
+            Message.rsp_getBlockReward resp =
+                Message.rsp_getBlockReward.parseFrom(ApiUtils.parseBody(rsp).getData());
+
+            byte[] reward = resp.getReward().toByteArray();
+            if (reward == null) {
+                return new ApiMsg(
+                    Retcode.r_fail_null_rsp_VALUE,
+                    "null reward for block " + blockNumber,
+                    cast.OTHERS);
+            } else {
+                return new ApiMsg(new BigInteger(1, reward), cast.OTHERS);
+            }
+
+        } catch (InvalidProtocolBufferException e) {
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("[getBlockReward] {}", ErrId.getErrString(-104L) + e.getMessage());
+            }
+            return new ApiMsg(-104, e.getMessage(), cast.OTHERS);
+        }
+    }
+
     public ApiMsg getTransactionByBlockHashAndIndex(Hash256 blockHash, int index) {
         if (!apiInst.isInitialized.get()) {
             return new ApiMsg(-1003);

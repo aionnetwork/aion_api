@@ -66,6 +66,15 @@ public interface IChain {
     ApiMsg getBlockByNumber(long blockNumber);
 
     /**
+     * Gets the block reward of the block corresponding to the given block number.
+     *
+     * @param blockNumber the block number by long value of the desired block.
+     * @return reward of the desired block by the class {@link BigInteger BigInteger} wrapped
+     *      into ApiMsg. You can retrieve through the method {@link ApiMsg#getObject() getObject}.
+     */
+    ApiMsg getBlockReward(long blockNumber);
+
+    /**
      * Gets a transaction given a block hash and transaction index.
      *
      * @param blockHash 32 bytes hash of the desired block wrapped into the class {@link Hash256

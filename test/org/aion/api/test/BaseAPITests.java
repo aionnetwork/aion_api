@@ -220,6 +220,21 @@ public class BaseAPITests {
     }
 
     @Test
+    public void TestGetBlockReward() {
+        System.out.println("run TestGetBlockReward.");
+
+        connectAPI();
+
+        ApiMsg apiMsg = api.getChain().getBlockReward(1L);
+        assertFalse(apiMsg.isError());
+        BigInteger reward = apiMsg.getObject();
+        assertNotNull(reward);
+
+        assertTrue(reward.compareTo(BigInteger.ZERO) > -1);
+        api.destroyApi();
+    }
+
+    @Test
     public void TestGetTransactionByBlockHashAndIndex() {
         System.out.println("run TestGetTransactionByBlockHashAndIndex.");
         connectAPI();

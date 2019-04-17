@@ -78,6 +78,7 @@ enum Funcs	 {
     f_getBlockDetailsByHash 		    = 58;
     f_listening                             = 59;
     f_peerCount                             = 60;
+	f_getBlockReward                        = 61;
 }
 
 enum Retcode {
@@ -1018,4 +1019,17 @@ message rsp_listening {
 
 message rsp_peerCount {
     uint32 peers = 1;
+}
+
+
+//*****************************************************************************
+//	getBlockReward
+//*****************************************************************************
+
+message req_getBlockReward {
+	uint64 blockNumber = 1;
+}
+
+message rsp_getBlockReward {
+	bytes reward = 1;
 }
