@@ -4,5 +4,5 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>network.aion</groupId>
   <artifactId>3rdParty.libnzmq</artifactId>
-  <version>0.3.2.2</version>
+  <version>0.3.4</version>
 </project>
