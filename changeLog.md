@@ -1,5 +1,10 @@
 New Updates (most recent on top)
 
+Aion Java API v0.1.16
+- Allow users to send zips of multiple Solidity contracts for compilation
+- Add a method to retrieve the reward associated with a specific block
+- Miscellaneous changes to dependencies and interfaces
+
 Aion Java API v0.1.15
 - revise license to MIT
 - fixed overflow issue in the Contract decode return value
