@@ -1,5 +1,8 @@
 New Updates (most recent on top)
 
+Aion Java API v0.1.17
+- Expose the transaction type within TxDeails class
+
 Aion Java API v0.1.16
 - Allow users to send zips of multiple Solidity contracts for compilation
 - Add a method to retrieve the reward associated with a specific block

@@ -17,7 +17,7 @@ public interface IAionAPI {
     /** Default LOCALHOST_URL "tcp://127.0.0.1:8547" */
     String LOCALHOST_URL = "tcp://127.0.0.1:8547";
 
-    String VERSION = "0.1.16";
+    String VERSION = "0.1.17";
 
     static IAionAPI init() {
         return AionAPIImpl.inst();
