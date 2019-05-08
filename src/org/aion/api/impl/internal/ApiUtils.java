@@ -543,6 +543,7 @@ public class ApiUtils {
 
             List<TxDetails> txDetails = new ArrayList<>();
             for (Message.t_TxDetail td : bd.getTxList()) {
+                ByteString bs = td.getType();
                 TxDetails.TxDetailsBuilder txBuilder =
                         new TxDetails.TxDetailsBuilder()
                                 .data(ByteArrayWrapper.wrap(td.getData().toByteArray()))
@@ -556,6 +557,7 @@ public class ApiUtils {
                                 .nrgConsumed(td.getNrgConsumed())
                                 .nrgPrice(td.getNrgPrice())
                                 .timestamp(td.getTimestamp())
+                                .type(bs == null || bs.isEmpty() ? 1 : bs.byteAt(0))
                                 .error(td.getError());
 
                 List<TxLog> txLogs = new ArrayList<>();

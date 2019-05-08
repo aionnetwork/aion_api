@@ -138,13 +138,14 @@ message t_AionTx {
         bytes nonce        = 6;
         uint64 nrgConsumed = 7;
         uint64 nrgPrice    = 8;
+        bytes txType = 9;
 }
 
 message t_Node {
     uint64 blockNumber     = 1;
     string nodeId          = 2;
 	string remote_p2p_ip   = 3;
-	uint32 remote_p2p_port = 4;
+		uint32 remote_p2p_port = 4;
     uint32 latency         = 5;
 }
 
@@ -211,6 +212,7 @@ message t_TxDetail {
 	repeated t_LgEle logs 	= 11;
 	uint64 timestamp		= 12;
 	string error			= 13;
+    bytes type = 14;
 }
 
 message t_AccountDetail {

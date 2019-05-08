@@ -28,6 +28,7 @@ public final class TxDetails {
     private final Address contract;
     private final long timestamp;
     private final String error;
+    private final byte type;
 
     private TxDetails(TxDetailsBuilder builder) {
         this.from = builder.from;
@@ -43,6 +44,7 @@ public final class TxDetails {
         this.contract = builder.contract;
         this.timestamp = builder.timestamp;
         this.error = builder.error;
+        this.type = builder.type;
     }
 
     public Address getFrom() {
@@ -96,6 +98,8 @@ public final class TxDetails {
     public String getError() {
         return error;
     }
+
+    public byte getType() {return type;}
 
     @Override
     public String toString() {
@@ -157,6 +161,10 @@ public final class TxDetails {
                         .append(timestamp)
                         .append(",\n")
                         .append(lv)
+                        .append("type: ")
+                        .append(type)
+                        .append(",\n")
+                        .append(lv)
                         .append("error: ")
                         .append(error)
                         .append(",\n")
@@ -195,6 +203,7 @@ public final class TxDetails {
         private int txIndex;
         private long timestamp;
         private String error;
+        private byte type;
 
         public TxDetailsBuilder() {}
 
@@ -260,6 +269,11 @@ public final class TxDetails {
 
         public TxDetailsBuilder error(final String error) {
             this.error = error;
+            return this;
+        }
+
+        public TxDetailsBuilder type(final byte type) {
+            this.type = type;
             return this;
         }
 
