@@ -13,6 +13,7 @@ module aion.api.client {
     requires gson;
     requires aion.vm.api;
     requires libnzmq;
+    requires aion.types;
 
     exports org.aion.api;
     exports org.aion.api.type;

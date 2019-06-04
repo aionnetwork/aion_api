@@ -1,8 +1,8 @@
 package org.aion.api.sol;
 
 import java.util.List;
+import org.aion.aion_types.NewAddress;
 import org.aion.base.util.ByteArrayWrapper;
-import org.aion.vm.api.interfaces.Address;
 
 /**
  * This interface dedicate to the solidity class method operation and the type casting
@@ -10,9 +10,9 @@ import org.aion.vm.api.interfaces.Address;
  * @author Jay Tseng
  * @see org.aion.api.IContract#getInputParams() getInputParams
  * @see org.aion.api.IContract#getOutputParams() getOutputParams
- * @see org.aion.api.IContractController#createFromSource(java.lang.String, Address, long, long,
+ * @see org.aion.api.IContractController#createFromSource(java.lang.String, NewAddress, long, long,
  *     java.util.List) createFromSource
- * @see org.aion.api.IContractController#createFromSource(java.lang.String, Address, long, long,
+ * @see org.aion.api.IContractController#createFromSource(java.lang.String, NewAddress, long, long,
  *     java.math.BigInteger, java.util.Map) createFromSource
  */
 public interface ISolidityArg {

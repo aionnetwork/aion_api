@@ -2,9 +2,9 @@ package org.aion.api.type;
 
 import java.math.BigInteger;
 import java.util.List;
+import org.aion.aion_types.NewAddress;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
-import org.aion.vm.api.interfaces.Address;
 
 /**
  * TxLog class containing all relevant information to transaction log utilized by {@link
@@ -15,8 +15,8 @@ import org.aion.vm.api.interfaces.Address;
  */
 public final class TxDetails {
 
-    private final Address from;
-    private final Address to;
+    private final NewAddress from;
+    private final NewAddress to;
     private final Hash256 txHash;
     private final BigInteger value;
     private final BigInteger nonce;
@@ -25,7 +25,7 @@ public final class TxDetails {
     private final ByteArrayWrapper data;
     private final List<TxLog> logs;
     private final int txIndex;
-    private final Address contract;
+    private final NewAddress contract;
     private final long timestamp;
     private final String error;
     private final byte type;
@@ -47,15 +47,15 @@ public final class TxDetails {
         this.type = builder.type;
     }
 
-    public Address getFrom() {
+    public NewAddress getFrom() {
         return from;
     }
 
-    public Address getTo() {
+    public NewAddress getTo() {
         return to;
     }
 
-    public Address getContract() {
+    public NewAddress getContract() {
         return contract;
     }
 
@@ -190,9 +190,9 @@ public final class TxDetails {
     /** This Builder class is used to build a {@link TxDetails} instance. */
     public static class TxDetailsBuilder {
 
-        private Address from;
-        private Address to;
-        private Address contract;
+        private NewAddress from;
+        private NewAddress to;
+        private NewAddress contract;
         private Hash256 txHash;
         private BigInteger value;
         private BigInteger nonce;
@@ -207,12 +207,12 @@ public final class TxDetails {
 
         public TxDetailsBuilder() {}
 
-        public TxDetailsBuilder from(final Address from) {
+        public TxDetailsBuilder from(final NewAddress from) {
             this.from = from;
             return this;
         }
 
-        public TxDetailsBuilder to(final Address to) {
+        public TxDetailsBuilder to(final NewAddress to) {
             this.to = to;
             return this;
         }
@@ -257,7 +257,7 @@ public final class TxDetails {
             return this;
         }
 
-        public TxDetailsBuilder contract(final Address contract) {
+        public TxDetailsBuilder contract(final NewAddress contract) {
             this.contract = contract;
             return this;
         }

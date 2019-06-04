@@ -2,6 +2,7 @@ package org.aion.api;
 
 import java.nio.file.Path;
 import java.util.List;
+import org.aion.aion_types.NewAddress;
 import org.aion.api.impl.Contract;
 import org.aion.api.type.ApiMsg;
 import org.aion.api.type.CompileResponse;
@@ -13,7 +14,6 @@ import org.aion.api.type.TxArgs;
 import org.aion.api.type.TxReceipt;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
-import org.aion.vm.api.interfaces.Address;
 
 /**
  * ITx is an interface of the class Transaction. ITx assists in providing methods for transaction
@@ -164,22 +164,22 @@ public interface ITx {
     /**
      * Retrieves the compiled code for a given contract with checking latest block.
      *
-     * @param address the class {@link Address Address} represent the deployed contract address.
+     * @param address the class {@link NewAddress Address} represent the deployed contract address.
      * @return the variable bytes array of the compiled code wrapped into ApiMsg. You can retrieve
      *     through {@link ApiMsg#getObject() getObject}.
      */
-    ApiMsg getCode(Address address);
+    ApiMsg getCode(NewAddress address);
 
     /**
      * Retrieves the compiled code for a given contract.
      *
-     * @param address the class {@link Address Address} represent the deployed contract address.
+     * @param address the class {@link NewAddress Address} represent the deployed contract address.
      * @param blockNumber block number of which the contract by long value was committed on.
      *     Indicate -1L to check for the latest block.
      * @return the variable bytes array of the compiled code wrapped into ApiMsg. You can retrieve
      *     through {@link ApiMsg#getObject() getObject}.
      */
-    ApiMsg getCode(Address address, long blockNumber);
+    ApiMsg getCode(NewAddress address, long blockNumber);
 
     /**
      * Pre-build {@link TxArgs TxArgs} for increasing sendTransaction speeds if these transaction
@@ -251,10 +251,10 @@ public interface ITx {
      *
      * @param evt the interface {@link List List} of the class {@link String String} represent the
      *     events the user want to listen.
-     * @param address the class {@link Address Address} represent the deployed contract address.
+     * @param address the class {@link NewAddress Address} represent the deployed contract address.
      * @return the boolean value represent the register success or failed.
      */
-    ApiMsg eventDeregister(List<String> evt, Address address);
+    ApiMsg eventDeregister(List<String> evt, NewAddress address);
 
     /**
      * register the events the user want to listen by given the event name, event filter and the
@@ -264,10 +264,10 @@ public interface ITx {
      *     events the user want to listen.
      * @param ef the class {@link ContractEventFilter ContractEventFilter} represent the event query
      *     conditions.
-     * @param address the class {@link Address Address} represent the deployed contract address.
+     * @param address the class {@link NewAddress Address} represent the deployed contract address.
      * @return the boolean value represent the register success or failed.
      */
-    ApiMsg eventRegister(List<String> evt, ContractEventFilter ef, Address address);
+    ApiMsg eventRegister(List<String> evt, ContractEventFilter ef, NewAddress address);
 
     /**
      * getNrgPrice returns a Long value representing the recommended energy price.

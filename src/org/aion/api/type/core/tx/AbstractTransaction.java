@@ -1,5 +1,6 @@
 package org.aion.api.type.core.tx;
 
+import org.aion.aion_types.NewAddress;
 import org.aion.api.log.AionLoggerFactory;
 import org.aion.api.log.LogEnum;
 import org.aion.base.type.ITransaction;
@@ -27,7 +28,7 @@ public abstract class AbstractTransaction implements ITransaction {
 
     /* the address of the destination account
      * In creation transaction the receive address is - 0 */
-    protected Address to;
+    protected NewAddress to;
 
     /* a counter used to make sure each transaction can only be processed once */
     protected byte[] nonce;
@@ -48,7 +49,7 @@ public abstract class AbstractTransaction implements ITransaction {
 
     AbstractTransaction() {}
 
-    private AbstractTransaction(byte[] nonce, Address receiveAddress, byte[] value, byte[] data) {
+    private AbstractTransaction(byte[] nonce, NewAddress receiveAddress, byte[] value, byte[] data) {
         this.nonce = nonce;
         this.to = receiveAddress;
         this.value = value;
@@ -59,7 +60,7 @@ public abstract class AbstractTransaction implements ITransaction {
 
     AbstractTransaction(
             byte[] nonce,
-            Address receiveAddress,
+            NewAddress receiveAddress,
             byte[] value,
             byte[] data,
             long nrg,
@@ -71,7 +72,7 @@ public abstract class AbstractTransaction implements ITransaction {
 
     public AbstractTransaction(
             byte[] nonce,
-            Address receiveAddress,
+            NewAddress receiveAddress,
             byte[] value,
             byte[] data,
             long nrg,

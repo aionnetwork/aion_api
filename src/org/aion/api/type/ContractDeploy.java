@@ -1,10 +1,10 @@
 package org.aion.api.type;
 
 import java.math.BigInteger;
+import org.aion.aion_types.NewAddress;
 import org.aion.api.ITx;
 import org.aion.base.util.ByteArrayWrapper;
 import org.aion.base.util.Bytesable;
-import org.aion.vm.api.interfaces.Address;
 
 /**
  * The helper class for gather all of the deploy arguments to deploy the contract. Use the builder
@@ -17,7 +17,7 @@ import org.aion.vm.api.interfaces.Address;
 public final class ContractDeploy {
 
     private final CompileResponse cr;
-    private final Address from;
+    private final NewAddress from;
     private final boolean constructor;
     private final ByteArrayWrapper data;
     private final long nrgLimit;
@@ -34,7 +34,7 @@ public final class ContractDeploy {
         this.value = builder.value;
     }
 
-    public Address getFrom() {
+    public NewAddress getFrom() {
         return from;
     }
 
@@ -65,7 +65,7 @@ public final class ContractDeploy {
     public static class ContractDeployBuilder {
 
         private CompileResponse cr;
-        private Address from;
+        private NewAddress from;
         private boolean constructor;
         private ByteArrayWrapper data;
         private long nrgLimit;
@@ -108,7 +108,7 @@ public final class ContractDeploy {
             return this;
         }
 
-        public ContractDeployBuilder from(Address from) {
+        public ContractDeployBuilder from(NewAddress from) {
             this.from = from;
             return this;
         }

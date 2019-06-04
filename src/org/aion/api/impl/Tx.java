@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
-import com.google.protobuf.Api;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.io.UnsupportedEncodingException;
@@ -15,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.aion.aion_types.NewAddress;
 import org.aion.api.ITx;
 import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.impl.internal.Message;
@@ -34,14 +34,12 @@ import org.aion.api.type.MsgRsp;
 import org.aion.api.type.TxArgs;
 import org.aion.api.type.TxArgs.TxArgsBuilder;
 import org.aion.api.type.core.tx.AionTransaction;
-import org.aion.base.type.AionAddress;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
 import org.aion.base.util.ByteUtil;
 import org.aion.base.util.Hex;
 import org.aion.crypto.ECKey;
 import org.aion.crypto.ECKeyFac;
-import org.aion.vm.api.interfaces.Address;
 import org.slf4j.Logger;
 
 /** Created by Jay Tseng on 15/11/16. */
@@ -83,8 +81,8 @@ public final class Tx implements ITx {
                         .setFrom(
                                 ByteString.copyFrom(
                                         cd.getFrom() == null
-                                                ? apiInst.defaultAccount.toBytes()
-                                                : cd.getFrom().toBytes()))
+                                                ? apiInst.defaultAccount.toByteArray()
+                                                : cd.getFrom().toByteArray()))
                         .setNrgLimit(cd.getNrgLimit())
                         .setNrgPrice(cd.getNrgPrice())
                         .setData(ByteString.copyFrom(code))
@@ -114,7 +112,7 @@ public final class Tx implements ITx {
                     Message.rsp_contractDeploy.parseFrom(rsp.getTxDeploy().toBytes());
             return new ApiMsg(
                     new DeployResponse(
-                            AionAddress.wrap(msgRsp.getContractAddress().toByteArray()),
+                            new NewAddress(msgRsp.getContractAddress().toByteArray()),
                             Hash256.wrap(msgRsp.getTxHash().toByteArray())),
                     ApiMsg.cast.OTHERS);
 
@@ -141,9 +139,9 @@ public final class Tx implements ITx {
                         .setFrom(
                                 ByteString.copyFrom(
                                         args.getFrom() == null
-                                                ? apiInst.defaultAccount.toBytes()
-                                                : args.getFrom().toBytes()))
-                        .setTo(ByteString.copyFrom(args.getTo().toBytes()))
+                                                ? apiInst.defaultAccount.toByteArray()
+                                                : args.getFrom().toByteArray()))
+                        .setTo(ByteString.copyFrom(args.getTo().toByteArray()))
                         .setNrg(args.getNrgLimit())
                         .setNrgPrice(args.getNrgPrice())
                         .setValue(ByteString.copyFrom(args.getValue().toByteArray()))
@@ -265,9 +263,9 @@ public final class Tx implements ITx {
                             .setFrom(
                                     ByteString.copyFrom(
                                             args.getFrom() == null
-                                                    ? apiInst.defaultAccount.toBytes()
-                                                    : args.getFrom().toBytes()))
-                            .setTo(ByteString.copyFrom(args.getTo().toBytes()))
+                                                    ? apiInst.defaultAccount.toByteArray()
+                                                    : args.getFrom().toByteArray()))
+                            .setTo(ByteString.copyFrom(args.getTo().toByteArray()))
                             .setData(ByteString.copyFrom(args.getData().toBytes()))
                             .setNonce(ByteString.copyFrom(args.getNonce().toByteArray()))
                             .setValue(ByteString.copyFrom(args.getValue().toByteArray()))
@@ -602,11 +600,11 @@ public final class Tx implements ITx {
         }
     }
 
-    public ApiMsg getCode(Address address) {
+    public ApiMsg getCode(NewAddress address) {
         return getCode(address, -1L);
     }
 
-    public ApiMsg getCode(Address address, long blockNumber) {
+    public ApiMsg getCode(NewAddress address, long blockNumber) {
         if (!this.apiInst.isConnected()) {
             return new ApiMsg(-1003);
         }
@@ -621,7 +619,7 @@ public final class Tx implements ITx {
         Message.req_getCode reqBody =
                 Message.req_getCode
                         .newBuilder()
-                        .setAddress(ByteString.copyFrom(address.toBytes()))
+                        .setAddress(ByteString.copyFrom(address.toByteArray()))
                         .setBlocknumber(blockNumber)
                         .build();
 
@@ -679,9 +677,9 @@ public final class Tx implements ITx {
                         .setFrom(
                                 ByteString.copyFrom(
                                         args.getFrom() == null
-                                                ? apiInst.defaultAccount.toBytes()
-                                                : args.getFrom().toBytes()))
-                        .setTo(ByteString.copyFrom(args.getTo().toBytes()))
+                                                ? apiInst.defaultAccount.toByteArray()
+                                                : args.getFrom().toByteArray()))
+                        .setTo(ByteString.copyFrom(args.getTo().toByteArray()))
                         .setData(ByteString.copyFrom(args.getData().toBytes()))
                         .setNonce(ByteString.copyFrom(args.getNonce().toByteArray()))
                         .setValue(ByteString.copyFrom(args.getValue().toByteArray()))
@@ -722,11 +720,7 @@ public final class Tx implements ITx {
         TxArgs txArgs =
                 new TxArgsBuilder()
                         .data(ByteArrayWrapper.wrap(byteCode))
-                        .from(
-                                apiInst.defaultAccount.equals(AionAddress.EMPTY_ADDRESS())
-                                        ? AionAddress.wrap(
-                                                "0xa000000000000000000000000000000000000000000000000000000000000000")
-                                        : apiInst.defaultAccount)
+                        .from(apiInst.defaultAccount)
                         .createTxArgs();
 
         return estimateNrg(txArgs);
@@ -772,9 +766,9 @@ public final class Tx implements ITx {
                             .setFrom(
                                     ByteString.copyFrom(
                                             args.getFrom() == null
-                                                    ? apiInst.defaultAccount.toBytes()
-                                                    : args.getFrom().toBytes()))
-                            .setTo(ByteString.copyFrom(args.getTo().toBytes()))
+                                                    ? apiInst.defaultAccount.toByteArray()
+                                                    : args.getFrom().toByteArray()))
+                            .setTo(ByteString.copyFrom(args.getTo().toByteArray()))
                             .setData(ByteString.copyFrom(args.getData().toBytes()))
                             .setValue(ByteString.copyFrom(args.getValue().toByteArray()))
                             .setNrg(args.getNrgLimit())
@@ -807,7 +801,7 @@ public final class Tx implements ITx {
         return new ApiMsg(this.apiInst.msgExecutor.getStatus(b), ApiMsg.cast.OTHERS);
     }
 
-    public ApiMsg eventRegister(List<String> evt, ContractEventFilter ef, Address address) {
+    public ApiMsg eventRegister(List<String> evt, ContractEventFilter ef, NewAddress address) {
 
         if (evt == null || ef == null || address == null) {
             throw new NullPointerException(
@@ -825,8 +819,8 @@ public final class Tx implements ITx {
 
         List<ByteString> addrList = new ArrayList<>();
 
-        for (Address ad : ef.getAddresses()) {
-            addrList.add(ByteString.copyFrom(ad.toBytes()));
+        for (NewAddress ad : ef.getAddresses()) {
+            addrList.add(ByteString.copyFrom(ad.toByteArray()));
         }
 
         List<String> topics = new ArrayList<>(ef.getTopics());
@@ -837,7 +831,7 @@ public final class Tx implements ITx {
                         .addAllAddresses(addrList)
                         .setFrom((ef.getFromBlock()))
                         .setTo(ef.getToBlock())
-                        .setContractAddr(ByteString.copyFrom(address.toBytes()))
+                        .setContractAddr(ByteString.copyFrom(address.toByteArray()))
                         .setExpireTime(ef.getExpireTime())
                         .addAllTopics(topics)
                         .build();
@@ -873,7 +867,7 @@ public final class Tx implements ITx {
         }
     }
 
-    public ApiMsg eventDeregister(List<String> evt, Address address) {
+    public ApiMsg eventDeregister(List<String> evt, NewAddress address) {
 
         if (evt == null || address == null) {
             throw new NullPointerException(
@@ -888,7 +882,7 @@ public final class Tx implements ITx {
                 Message.req_eventDeregister
                         .newBuilder()
                         .addAllEvents(evt)
-                        .setContractAddr(ByteString.copyFrom(address.toBytes()))
+                        .setContractAddr(ByteString.copyFrom(address.toByteArray()))
                         .build();
 
         byte[] reqHead =

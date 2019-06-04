@@ -1,6 +1,7 @@
 package org.aion.api;
 
 import java.util.List;
+import org.aion.aion_types.NewAddress;
 import org.aion.api.sol.ISolidityArg;
 import org.aion.api.type.ApiMsg;
 import org.aion.api.type.ContractAbiEntry;
@@ -11,7 +12,6 @@ import org.aion.api.type.JsonFmt;
 import org.aion.api.type.TxArgs;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
-import org.aion.vm.api.interfaces.Address;
 
 /**
  * A Contract class that sits above the Aion Java API layer that provides the user with convenient
@@ -120,10 +120,10 @@ public interface IContract {
     /**
      * Sets the message sender address for function be executed.
      *
-     * @param address the class {@link Address Address} represent the desired sender account.
+     * @param address the class {@link NewAddress Address} represent the desired sender account.
      * @return the contract interface {@link IContract IContract}.
      */
-    IContract setFrom(Address address);
+    IContract setFrom(NewAddress address);
 
     /**
      * Sets the transaction value for certain functions.
@@ -169,16 +169,16 @@ public interface IContract {
     /**
      * Retrieve the current sender's account address of the contract.
      *
-     * @return the class {@link Address Address} represent the sender's account address.
+     * @return the class {@link NewAddress Address} represent the sender's account address.
      */
-    Address getFrom();
+    NewAddress getFrom();
 
     /**
      * Retrieve the address of the deployed contract.
      *
-     * @return the class {@link Address Address} represent the contractaddress.
+     * @return the class {@link NewAddress Address} represent the contractaddress.
      */
-    Address getContractAddress();
+    NewAddress getContractAddress();
 
     /**
      * Retrieve the transaction hash of the deployed contract.

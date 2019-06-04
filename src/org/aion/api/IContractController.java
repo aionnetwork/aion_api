@@ -4,9 +4,9 @@ import java.io.File;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
+import org.aion.aion_types.NewAddress;
 import org.aion.api.sol.ISolidityArg;
 import org.aion.api.type.ApiMsg;
-import org.aion.vm.api.interfaces.Address;
 
 /**
  * This interface provides methods for deploy the contract to the Aion blockchain network, store the
@@ -21,7 +21,7 @@ public interface IContractController {
      *
      * @param source the class {@link String String} represent the contract source code. It could be
      *     multiple contracts.
-     * @param from the class {@link Address Address} represent the sender or the contract owner whom
+     * @param from the class {@link NewAddress Address} represent the sender or the contract owner whom
      *     deploy the contract.
      * @param nrgLimit the long value represent the maximum energy consume during this contract
      *     deploy been allowed. if the contract consume energy more than this number. the deploy
@@ -36,14 +36,14 @@ public interface IContractController {
      *     <p>A multi-contract source, set key value pair when you want to deploy the contract "key"
      *     with initial parameters "value"
      */
-    ApiMsg createFromSource(String source, Address from, long nrgLimit, long nrgPrice);
+    ApiMsg createFromSource(String source, NewAddress from, long nrgLimit, long nrgPrice);
 
     /**
      * Multiple contract create methods for deploy contracts on the Aion network.
      *
      * @param source the class {@link String String} represent the contract source code. It could be
      *     multiple contracts.
-     * @param from the class {@link Address Address} represent the sender or the contract owner whom
+     * @param from the class {@link NewAddress Address} represent the sender or the contract owner whom
      *     deploy the contract.
      * @param nrgLimit the long value represent the maximum energy consume during this contract
      *     deploy been allowed. if the contract consume energy more than this number. the deploy
@@ -61,14 +61,14 @@ public interface IContractController {
      *     with initial parameters "value"
      */
     ApiMsg createFromSource(
-            String source, Address from, long nrgLimit, long nrgPrice, BigInteger value);
+            String source, NewAddress from, long nrgLimit, long nrgPrice, BigInteger value);
 
     /**
      * contract create method for deploy a contract with initial arguments on the Aion network.
      *
      * @param source the class {@link String String} represent the contract source code. It could be
      *     multiple contracts.
-     * @param from the class {@link Address Address} represent the sender or the contract owner whom
+     * @param from the class {@link NewAddress Address} represent the sender or the contract owner whom
      *     deploy the contract.
      * @param nrgLimit the long value represent the maximum energy consume during this contract
      *     deploy been allowed. if the contract consume energy more than this number. the deploy
@@ -87,14 +87,14 @@ public interface IContractController {
      *     with initial parameters "value"
      */
     ApiMsg createFromSource(
-            String source, Address from, long nrgLimit, long nrgPrice, List<ISolidityArg> params);
+            String source, NewAddress from, long nrgLimit, long nrgPrice, List<ISolidityArg> params);
 
     /**
      * contract create method for deploy contracts with initial arguments on the Aion network.
      *
      * @param source the class {@link String String} represent the contract source code. It could be
      *     multiple contracts.
-     * @param from the class {@link Address Address} represent the sender or the contract owner whom
+     * @param from the class {@link NewAddress Address} represent the sender or the contract owner whom
      *     deploy the contract.
      * @param nrgLimit the long value represent the maximum energy consume during this contract
      *     deploy been allowed. if the contract consume energy more than this number. the deploy
@@ -112,7 +112,7 @@ public interface IContractController {
      */
     ApiMsg createFromSource(
             String source,
-            Address from,
+            NewAddress from,
             long nrgLimit,
             long nrgPrice,
             Map<String, List<ISolidityArg>> params);
@@ -122,7 +122,7 @@ public interface IContractController {
      *
      * @param source the class {@link String String} represent the contract source code. It could be
      *     multiple contracts.
-     * @param from the class {@link Address Address} represent the sender or the contract owner whom
+     * @param from the class {@link NewAddress Address} represent the sender or the contract owner whom
      *     deploy the contract.
      * @param nrgLimit the long value represent the maximum energy consume during this contract
      *     deploy been allowed. if the contract consume energy more than this number. the deploy
@@ -144,7 +144,7 @@ public interface IContractController {
      */
     ApiMsg createFromSource(
             String source,
-            Address from,
+            NewAddress from,
             long nrgLimit,
             long nrgPrice,
             BigInteger value,
@@ -155,7 +155,7 @@ public interface IContractController {
      *
      * @param source the class {@link String String} represent the contract source code. It could be
      *     multiple contracts.
-     * @param from the class {@link Address Address} represent the sender or the contract owner whom
+     * @param from the class {@link NewAddress Address} represent the sender or the contract owner whom
      *     deploy the contract.
      * @param nrgLimit the long value represent the maximum energy consume during this contract
      *     deploy been allowed. if the contract consume energy more than this number. the deploy
@@ -177,7 +177,7 @@ public interface IContractController {
      */
     ApiMsg createFromSource(
             String source,
-            Address from,
+            NewAddress from,
             long nrgLimit,
             long nrgPrice,
             BigInteger value,
@@ -190,7 +190,7 @@ public interface IContractController {
      *     contracts to be compiled.
      * @param entryPoint the name {@link String String} of the entry point of these Solidity
      *     contracts
-     * @param from the class {@link Address Address} represent the sender or the contract owner whom
+     * @param from the class {@link NewAddress Address} represent the sender or the contract owner whom
      *     deploy the contract.
      * @param nrgLimit the long value represent the maximum energy consume during this contract
      *     deploy been allowed. if the contract consume energy more than this number. the deploy
@@ -206,7 +206,7 @@ public interface IContractController {
      *     with initial parameters "value"
      */
     ApiMsg createFromDirectory(
-            File sourceDir, String entryPoint, Address from, long nrgLimit, long nrgPrice);
+            File sourceDir, String entryPoint, NewAddress from, long nrgLimit, long nrgPrice);
 
     /**
      * Multiple contract create methods for deploy a contract to the Aion blockchain network.
@@ -215,7 +215,7 @@ public interface IContractController {
      *     contracts to be compiled.
      * @param entryPoint the name {@link String String} of the entry point of these Solidity
      *     contracts
-     * @param from the class {@link Address Address} represent the sender or the contract owner whom
+     * @param from the class {@link NewAddress Address} represent the sender or the contract owner whom
      *     deploy the contract.
      * @param nrgLimit the long value represent the maximum energy consume during this contract
      *     deploy been allowed. if the contract consume energy more than this number. the deploy
@@ -235,7 +235,7 @@ public interface IContractController {
     ApiMsg createFromDirectory(
             File sourceDir,
             String entryPoint,
-            Address from,
+            NewAddress from,
             long nrgLimit,
             long nrgPrice,
             BigInteger value);
@@ -247,7 +247,7 @@ public interface IContractController {
      *     contracts to be compiled.
      * @param entryPoint the name {@link String String} of the entry point of these Solidity
      *     contracts
-     * @param from the class {@link Address Address} represent the sender or the contract owner whom
+     * @param from the class {@link NewAddress Address} represent the sender or the contract owner whom
      *     deploy the contract.
      * @param nrgLimit the long value represent the maximum energy consume during this contract
      *     deploy been allowed. if the contract consume energy more than this number. the deploy
@@ -268,7 +268,7 @@ public interface IContractController {
     ApiMsg createFromDirectory(
             File sourceDir,
             String entryPoint,
-            Address from,
+            NewAddress from,
             long nrgLimit,
             long nrgPrice,
             List<ISolidityArg> params);
@@ -280,7 +280,7 @@ public interface IContractController {
      *     contracts to be compiled.
      * @param entryPoint the name {@link String String} of the entry point of these Solidity
      *     contracts
-     * @param from the class {@link Address Address} represent the sender or the contract owner whom
+     * @param from the class {@link NewAddress Address} represent the sender or the contract owner whom
      *     deploy the contract.
      * @param nrgLimit the long value represent the maximum energy consume during this contract
      *     deploy been allowed. if the contract consume energy more than this number. the deploy
@@ -301,7 +301,7 @@ public interface IContractController {
     ApiMsg createFromDirectory(
             File sourceDir,
             String entryPoint,
-            Address from,
+            NewAddress from,
             long nrgLimit,
             long nrgPrice,
             Map<String, List<ISolidityArg>> params);
@@ -313,7 +313,7 @@ public interface IContractController {
      *     * point of these Solidity * contracts
      * @param entryPoint the name {@link String String} of the entry point of these Solidity
      *     contracts
-     * @param from the class {@link Address Address} represent the sender or the contract owner whom
+     * @param from the class {@link NewAddress Address} represent the sender or the contract owner whom
      *     deploy the contract.
      * @param nrgLimit the long value represent the maximum energy consume during this contract
      *     deploy been allowed. if the contract consume energy more than this number. the deploy
@@ -336,7 +336,7 @@ public interface IContractController {
     ApiMsg createFromDirectory(
             File sourceDir,
             String entryPoint,
-            Address from,
+            NewAddress from,
             long nrgLimit,
             long nrgPrice,
             BigInteger value,
@@ -349,7 +349,7 @@ public interface IContractController {
      *     contracts to be compiled.
      * @param entryPoint the name {@link String String} of the entry point of these Solidity
      *     contracts
-     * @param from the class {@link Address Address} represent the sender or the contract owner whom
+     * @param from the class {@link NewAddress Address} represent the sender or the contract owner whom
      *     deploy the contract.
      * @param nrgLimit the long value represent the maximum energy consume during this contract
      *     deploy been allowed. if the contract consume energy more than this number. the deploy
@@ -372,7 +372,7 @@ public interface IContractController {
     ApiMsg createFromDirectory(
             File sourceDir,
             String entryPoint,
-            Address from,
+            NewAddress from,
             long nrgLimit,
             long nrgPrice,
             BigInteger value,
@@ -382,26 +382,26 @@ public interface IContractController {
      * create a contract object by given the sender, the deployed contract address on the Aion
      * network, and the solidity abi definition for the contract. And store into the controller.
      *
-     * @param from the class {@link Address Address} represent the sender whom want to interact with
+     * @param from the class {@link NewAddress Address} represent the sender whom want to interact with
      *     the contract.
-     * @param contract the class {@link Address Address} represent the contract address.
+     * @param contract the class {@link NewAddress Address} represent the contract address.
      * @param abi the class {@link String String} represent the contract Abi definition.
      * @return the class {@link IContract IContract} represent the contract been created in the
      *     contractController. The created contract object will been store inside the Controller and
      *     user can retrieve it by given the contract address.
      * @see IContractController#getContract
      */
-    IContract getContractAt(Address from, Address contract, String abi);
+    IContract getContractAt(NewAddress from, NewAddress contract, String abi);
 
     /**
      * retrieve the contract by given the contract address.
      *
-     * @param contractAddr the class {@link Address Address} represent the contract address.
+     * @param contractAddr the class {@link NewAddress Address} represent the contract address.
      * @return the class {@link IContract IContract} represent the contract been stored inside the
      *     contractController.
      * @see IContractController#getContract
      */
-    IContract getContract(Address contractAddr);
+    IContract getContract(NewAddress contractAddr);
 
     /**
      * retrieve the contractList by given the contract name.
@@ -428,11 +428,11 @@ public interface IContractController {
      * retrieve all of the pair of the contract address and the contract name inside the
      * ContractController.
      *
-     * @return the interface {@link Map Map} of the key of the Class {@link Address Address} and the
+     * @return the interface {@link Map Map} of the key of the Class {@link NewAddress Address} and the
      *     value of the class {@link String String} represent the contract address and the contract
      *     name.
      */
-    Map<Address, String> getContractMap();
+    Map<NewAddress, String> getContractMap();
 
     /**
      * remove contract by given the contract object from ContractController.

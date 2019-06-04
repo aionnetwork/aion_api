@@ -24,6 +24,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.aion.aion_types.NewAddress;
 import org.aion.api.IUtils;
 import org.aion.api.cfg.CfgApi;
 import org.aion.api.impl.internal.ApiUtils;
@@ -34,11 +35,9 @@ import org.aion.api.log.LogEnum;
 import org.aion.api.type.ContractEvent;
 import org.aion.api.type.Event;
 import org.aion.api.type.MsgRsp;
-import org.aion.base.type.AionAddress;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
 import org.aion.base.util.ByteUtil;
-import org.aion.base.util.NativeLoader;
 import org.apache.commons.collections4.map.LRUMap;
 import org.slf4j.Logger;
 import org.zeromq.ZMQ;
@@ -290,7 +289,7 @@ public class MsgExecutor implements Runnable {
             for (Message.t_EventCt cte : evt.getEcList()) {
                 ContractEvent.ContractEventBuilder builder =
                         new ContractEvent.ContractEventBuilder()
-                                .address(AionAddress.wrap(cte.getAddress().toByteArray()))
+                                .address(new NewAddress(cte.getAddress().toByteArray()))
                                 .blockHash(Hash256.wrap(cte.getBlockHash().toByteArray()))
                                 .blockNumber(cte.getBlockNumber())
                                 .data(ByteArrayWrapper.wrap(cte.getData().toByteArray()))

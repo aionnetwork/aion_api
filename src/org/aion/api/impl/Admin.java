@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.aion.aion_types.NewAddress;
 import org.aion.api.IAdmin;
 import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.impl.internal.Message;
@@ -24,10 +25,8 @@ import org.aion.api.type.ApiMsg.cast;
 import org.aion.api.type.Block;
 import org.aion.api.type.BlockDetails;
 import org.aion.api.type.BlockSql;
-import org.aion.base.type.AionAddress;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteUtil;
-import org.aion.vm.api.interfaces.Address;
 import org.slf4j.Logger;
 
 public class Admin implements IAdmin {
@@ -153,15 +152,15 @@ public class Admin implements IAdmin {
         return numbers.parallelStream().sorted().collect(Collectors.toList());
     }
 
-    private List<Address> parseAddressList(String addresses) {
+    private List<NewAddress> parseAddressList(String addresses) {
         if (addresses == null) {
             throw new NullPointerException();
         }
 
         String[] parts = addresses.split(",");
-        List<Address> addressList = new ArrayList<>();
+        List<NewAddress> addressList = new ArrayList<>();
         for (String part : parts) {
-            addressList.add(new AionAddress(part));
+            addressList.add(Utils.wrapAddress(part));
         }
 
         return addressList;
@@ -424,7 +423,7 @@ public class Admin implements IAdmin {
     }
 
     @Override
-    public ApiMsg getAccountDetailsByAddressList(List<Address> addressList) {
+    public ApiMsg getAccountDetailsByAddressList(List<NewAddress> addressList) {
         if (!this.apiInst.isConnected()) {
             return new ApiMsg(-1003);
         }
@@ -440,7 +439,7 @@ public class Admin implements IAdmin {
         List<ByteString> addressListString =
                 addressList
                         .parallelStream()
-                        .map(address -> ByteString.copyFrom(address.toBytes()))
+                        .map(address -> ByteString.copyFrom(address.toByteArray()))
                         .collect(Collectors.toList());
 
         Message.req_getAccountDetailsByAddressList reqBody =

@@ -5,7 +5,6 @@ import static org.aion.api.impl.ErrId.getErrString;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.google.protobuf.Api;
 import java.io.File;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
@@ -16,6 +15,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import org.aion.aion_types.NewAddress;
 import org.aion.api.IContract;
 import org.aion.api.IContractController;
 import org.aion.api.log.AionLoggerFactory;
@@ -29,14 +29,13 @@ import org.aion.api.type.DeployResponse;
 import org.aion.api.type.JsonFmt;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
-import org.aion.vm.api.interfaces.Address;
 import org.slf4j.Logger;
 
 public final class ContractController implements IContractController {
 
     private static final Logger LOGGER = AionLoggerFactory.getLogger(LogEnum.CNT.name());
     private static final String REGEX_SC_REPLACER = "\\p{Cc}";
-    private static final Map<Address, IContract> CONTAINER = new HashMap<>();
+    private static final Map<NewAddress, IContract> CONTAINER = new HashMap<>();
     private static AionAPIImpl API;
 
     ContractController(final AionAPIImpl api) {
@@ -44,13 +43,13 @@ public final class ContractController implements IContractController {
     }
 
     public ApiMsg createFromSource(
-            final String source, final Address from, final long nrgLimit, final long nrgPrice) {
+            final String source, final NewAddress from, final long nrgLimit, final long nrgPrice) {
         return createFromSource(source, from, nrgLimit, nrgPrice, BigInteger.ZERO, new HashMap<>());
     }
 
     public ApiMsg createFromSource(
             final String source,
-            final Address from,
+            final NewAddress from,
             final long nrgLimit,
             final long nrgPrice,
             final BigInteger value) {
@@ -59,7 +58,7 @@ public final class ContractController implements IContractController {
 
     public ApiMsg createFromSource(
             final String source,
-            final Address from,
+            final NewAddress from,
             final long nrgLimit,
             final long nrgPrice,
             List<ISolidityArg> params) {
@@ -72,7 +71,7 @@ public final class ContractController implements IContractController {
 
     public ApiMsg createFromSource(
             final String source,
-            final Address from,
+            final NewAddress from,
             final long nrgLimit,
             final long nrgPrice,
             final Map<String, List<ISolidityArg>> params) {
@@ -81,7 +80,7 @@ public final class ContractController implements IContractController {
 
     public ApiMsg createFromSource(
             final String source,
-            final Address from,
+            final NewAddress from,
             final long nrgLimit,
             final long nrgPrice,
             final BigInteger value,
@@ -95,7 +94,7 @@ public final class ContractController implements IContractController {
 
     public ApiMsg createFromSource(
             final String source,
-            final Address from,
+            final NewAddress from,
             final long nrgLimit,
             final long nrgPrice,
             final BigInteger value,
@@ -117,7 +116,7 @@ public final class ContractController implements IContractController {
     public ApiMsg createFromDirectory(
             final File sourceDir,
             final String entryPoint,
-            final Address from,
+            final NewAddress from,
             final long nrgLimit,
             final long nrgPrice) {
         return createFromDirectory(
@@ -127,7 +126,7 @@ public final class ContractController implements IContractController {
     public ApiMsg createFromDirectory(
             final File sourceDir,
             final String entryPoint,
-            final Address from,
+            final NewAddress from,
             final long nrgLimit,
             final long nrgPrice,
             final BigInteger value) {
@@ -138,7 +137,7 @@ public final class ContractController implements IContractController {
     public ApiMsg createFromDirectory(
             final File sourceDir,
             final String entryPoint,
-            final Address from,
+            final NewAddress from,
             final long nrgLimit,
             final long nrgPrice,
             List<ISolidityArg> params) {
@@ -153,7 +152,7 @@ public final class ContractController implements IContractController {
     public ApiMsg createFromDirectory(
             final File sourceDir,
             final String entryPoint,
-            final Address from,
+            final NewAddress from,
             final long nrgLimit,
             final long nrgPrice,
             Map<String, List<ISolidityArg>> params) {
@@ -164,7 +163,7 @@ public final class ContractController implements IContractController {
     public ApiMsg createFromDirectory(
             final File sourceDir,
             final String entryPoint,
-            final Address from,
+            final NewAddress from,
             final long nrgLimit,
             final long nrgPrice,
             BigInteger value,
@@ -180,7 +179,7 @@ public final class ContractController implements IContractController {
     public ApiMsg createFromDirectory(
             final File sourceDir,
             final String entryPoint,
-            final Address from,
+            final NewAddress from,
             final long nrgLimit,
             final long nrgPrice,
             final BigInteger value,
@@ -197,7 +196,7 @@ public final class ContractController implements IContractController {
     }
 
     private void checkParams(
-            final Address from,
+            final NewAddress from,
             final long nrgLimit,
             final long nrgPrice,
             final BigInteger value,
@@ -215,7 +214,7 @@ public final class ContractController implements IContractController {
 
     private ApiMsg processCompiledContracts(
             ApiMsg apiMsg,
-            final Address from,
+            final NewAddress from,
             final long nrgLimit,
             final long nrgPrice,
             final BigInteger value,
@@ -318,7 +317,7 @@ public final class ContractController implements IContractController {
         return apiMsg.set(1);
     }
 
-    public IContract getContractAt(final Address from, final Address contract, final String abi) {
+    public IContract getContractAt(final NewAddress from, final NewAddress contract, final String abi) {
 
         // generate type for Gson parsing
         Type abiType = new TypeToken<ArrayList<ContractAbiEntry>>() {}.getType();
@@ -352,7 +351,7 @@ public final class ContractController implements IContractController {
         return CONTAINER.get(contract);
     }
 
-    public final IContract getContract(Address addr) {
+    public final IContract getContract(NewAddress addr) {
         return CONTAINER.get(addr);
     }
 
@@ -371,10 +370,10 @@ public final class ContractController implements IContractController {
                 .collect(Collectors.toList());
     }
 
-    public Map<Address, String> getContractMap() {
-        Map<Address, String> rtn = new HashMap<>();
+    public Map<NewAddress, String> getContractMap() {
+        Map<NewAddress, String> rtn = new HashMap<>();
 
-        for (Map.Entry<Address, IContract> ct : CONTAINER.entrySet()) {
+        for (Map.Entry<NewAddress, IContract> ct : CONTAINER.entrySet()) {
             rtn.put(ct.getKey(), ct.getValue().getContractName());
         }
 

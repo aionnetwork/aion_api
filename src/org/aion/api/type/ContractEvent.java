@@ -1,9 +1,9 @@
 package org.aion.api.type;
 
 import java.util.List;
+import org.aion.aion_types.NewAddress;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
-import org.aion.vm.api.interfaces.Address;
 
 /**
  * The helper class for gather all of the contract event information. Use the builder class to
@@ -14,7 +14,7 @@ import org.aion.vm.api.interfaces.Address;
  * @author Jay Tseng
  */
 public final class ContractEvent extends Event {
-    private final Address address;
+    private final NewAddress address;
     private final Hash256 blockHash;
     private final Hash256 txHash;
     private final ByteArrayWrapper data;
@@ -43,7 +43,7 @@ public final class ContractEvent extends Event {
         this.results = builder.results;
     }
 
-    public Address getAddress() {
+    public NewAddress getAddress() {
         return address;
     }
 
@@ -85,7 +85,7 @@ public final class ContractEvent extends Event {
 
     /** This Builder class is used to build a {@link ContractEvent} instance. */
     public static class ContractEventBuilder {
-        private Address address;
+        private NewAddress address;
         private Hash256 blockHash;
         private Hash256 txHash;
         private ByteArrayWrapper data;
@@ -115,7 +115,7 @@ public final class ContractEvent extends Event {
 
         public ContractEventBuilder() {}
 
-        public ContractEvent.ContractEventBuilder address(final Address address) {
+        public ContractEvent.ContractEventBuilder address(final NewAddress address) {
             this.address = address;
             return this;
         }

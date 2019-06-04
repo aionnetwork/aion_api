@@ -15,6 +15,7 @@ import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
+import org.aion.aion_types.NewAddress;
 import org.aion.api.IAionAPI;
 import org.aion.api.IContract;
 import org.aion.api.IUtils;
@@ -28,7 +29,6 @@ import org.aion.api.type.ApiMsg;
 import org.aion.api.type.ContractResponse;
 import org.aion.api.type.MsgRsp;
 import org.aion.base.util.ByteArrayWrapper;
-import org.aion.vm.api.interfaces.Address;
 
 /*
  Created by jay on 24/11/16.
@@ -420,9 +420,9 @@ public class PerfBench {
 
         System.out.println("Get " + accs.size() + " accounts!");
 
-        Address acc = (Address) accs.get(0);
+        NewAddress acc = (NewAddress) accs.get(0);
         System.out.println("Get the first account: " + acc.toString());
-        Address acc2 = (Address) accs.get(1);
+        NewAddress acc2 = (NewAddress) accs.get(1);
         System.out.println("Get the second account: " + acc2.toString());
         System.out.println();
 
@@ -706,9 +706,9 @@ public class PerfBench {
 
         System.out.println("Get " + accs.size() + " accounts!");
 
-        Address acc = (Address) accs.get(0);
+        NewAddress acc = (NewAddress) accs.get(0);
         System.out.println("Get the first account: " + acc.toString());
-        Address acc2 = (Address) accs.get(1);
+        NewAddress acc2 = (NewAddress) accs.get(1);
         System.out.println("Get the second account: " + acc2.toString());
         System.out.println();
 
@@ -942,9 +942,9 @@ public class PerfBench {
 
         System.out.println("Get " + accs.size() + " accounts!");
 
-        Address acc = (Address) accs.get(0);
+        NewAddress acc = (NewAddress) accs.get(0);
         System.out.println("Get the first account: " + acc.toString());
-        Address acc2 = (Address) accs.get(1);
+        NewAddress acc2 = (NewAddress) accs.get(1);
         System.out.println("Get the second account: " + acc2.toString());
         System.out.println();
 
@@ -1170,9 +1170,9 @@ public class PerfBench {
 
         System.out.println("Get " + accs.size() + " accounts!");
 
-        Address acc = (Address) accs.get(0);
+        NewAddress acc = (NewAddress) accs.get(0);
         System.out.println("Get the first account: " + acc.toString());
-        Address acc2 = (Address) accs.get(1);
+        NewAddress acc2 = (NewAddress) accs.get(1);
         System.out.println("Get the second account: " + acc2.toString());
         System.out.println();
 

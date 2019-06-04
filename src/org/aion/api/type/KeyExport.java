@@ -1,8 +1,8 @@
 package org.aion.api.type;
 
 import java.util.List;
+import org.aion.aion_types.NewAddress;
 import org.aion.base.util.ByteArrayWrapper;
-import org.aion.vm.api.interfaces.Address;
 
 /**
  * The KeyExport class wrapped the keystore information
@@ -17,9 +17,9 @@ import org.aion.vm.api.interfaces.Address;
 public final class KeyExport {
 
     private final List<ByteArrayWrapper> keyFiles;
-    private final List<Address> invalidAddress;
+    private final List<NewAddress> invalidAddress;
 
-    public KeyExport(final List<ByteArrayWrapper> keyfiles, final List<Address> invalidAddr) {
+    public KeyExport(final List<ByteArrayWrapper> keyfiles, final List<NewAddress> invalidAddr) {
         if (keyfiles == null || invalidAddr == null) {
             throw new NullPointerException();
         }
@@ -31,7 +31,7 @@ public final class KeyExport {
         return this.keyFiles;
     }
 
-    public List<Address> getInvalidAddress() {
+    public List<NewAddress> getInvalidAddress() {
         return this.invalidAddress;
     }
 }

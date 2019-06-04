@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.aion.aion_types.NewAddress;
 import org.aion.api.IAionAPI;
 import org.aion.api.IContract;
 import org.aion.api.IUtils;
@@ -24,7 +25,6 @@ import org.aion.api.type.ApiMsg;
 import org.aion.api.type.ContractResponse;
 import org.aion.api.type.MsgRsp;
 import org.aion.base.util.ByteArrayWrapper;
-import org.aion.vm.api.interfaces.Address;
 
 /** Created by Jay Tseng on 18/05/17. */
 public class SimpleBench {
@@ -63,7 +63,7 @@ public class SimpleBench {
         List acc = api.getWallet().getAccounts().getObject();
         assertThat(acc.size(), is(greaterThan(0)));
 
-        Address cb = (Address) acc.get(0);
+        NewAddress cb = (NewAddress) acc.get(0);
         assertThat(cb, not(equalTo(null)));
         assertTrue(api.getWallet().unlockAccount(cb, DEFAULT_PASSWORD, 3600).getObject());
 

@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.aion.aion_types.NewAddress;
 import org.aion.api.IAccount;
 import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.impl.internal.Message;
@@ -38,7 +39,6 @@ import org.aion.base.util.ByteUtil;
 import org.aion.base.util.TypeConverter;
 import org.aion.crypto.ECKey;
 import org.aion.crypto.ECKeyFac;
-import org.aion.vm.api.interfaces.Address;
 import org.slf4j.Logger;
 
 /** Created by Jay Tseng on 19/04/17. */
@@ -138,12 +138,13 @@ public final class Account implements IAccount {
         }
 
         Set<Message.t_Key> mkeys = new HashSet<>();
-        Set<Address> invalidAddress = new HashSet<>();
+        // TODO: Why do we populate, but never use this set?
+        Set<NewAddress> invalidAddress = new HashSet<>();
         for (Key key1 : keys) {
             try {
                 t_Key key =
                         t_Key.newBuilder()
-                                .setAddress(ByteString.copyFrom(key1.getPubKey().toBytes()))
+                                .setAddress(ByteString.copyFrom(key1.getPubKey().toByteArray()))
                                 .setPassword(key1.getPassPhrase())
                                 .build();
                 mkeys.add(key);
@@ -206,12 +207,13 @@ public final class Account implements IAccount {
         }
 
         Set<Message.t_Key> mkeys = new HashSet<>();
-        Set<Address> invalidAddress = new HashSet<>();
+        // TODO: Why do we populate, but never use this set?
+        Set<NewAddress> invalidAddress = new HashSet<>();
         for (Key key1 : keys) {
             try {
                 t_Key key =
                         t_Key.newBuilder()
-                                .setAddress(ByteString.copyFrom(key1.getPubKey().toBytes()))
+                                .setAddress(ByteString.copyFrom(key1.getPubKey().toByteArray()))
                                 .setPassword(key1.getPassPhrase())
                                 .build();
                 mkeys.add(key);

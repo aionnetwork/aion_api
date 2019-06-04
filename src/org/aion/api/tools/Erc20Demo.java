@@ -11,9 +11,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Scanner;
+import org.aion.aion_types.NewAddress;
 import org.aion.api.IAionAPI;
 import org.aion.api.IContract;
 import org.aion.api.IUtils;
+import org.aion.api.impl.Utils;
 import org.aion.api.sol.IAddress;
 import org.aion.api.sol.ISString;
 import org.aion.api.sol.ISolidityArg;
@@ -21,8 +23,6 @@ import org.aion.api.sol.IUint;
 import org.aion.api.type.ApiMsg;
 import org.aion.api.type.ContractEvent;
 import org.aion.api.type.ContractResponse;
-import org.aion.base.type.AionAddress;
-import org.aion.vm.api.interfaces.Address;
 
 /** Created by Jay Tseng on 26/06/17. */
 public class Erc20Demo {
@@ -102,13 +102,13 @@ public class Erc20Demo {
     private static boolean UNLOCKLOOP = true;
     private static int CNT = 0;
     private static long INITIALSUPPLY = 0;
-    private static Address COINBASE;
+    private static NewAddress COINBASE;
     private static IContract CONTRACT;
     private static IAionAPI API = null;
     private static int ERROR_CNT = 3;
     private static String FUNCTION_NAME = "";
     private static List<String> FUNCTION_ARGS = new ArrayList<>();
-    private static Address MSGSENDER;
+    private static NewAddress MSGSENDER;
 
     public static void main(String[] args) {
         System.out.println("Erc20 demo start:");
@@ -221,9 +221,7 @@ public class Erc20Demo {
                                                                                     "Account found, message sender set to "
                                                                                             + sd);
                                                                             MSGSENDER =
-                                                                                    AionAddress
-                                                                                            .wrap(
-                                                                                                    sd);
+                                                                                Utils.wrapAddress(sd);
                                                                         }
                                                                     })));
         }
@@ -501,14 +499,14 @@ public class Erc20Demo {
                                                     accs.forEach(
                                                             acc -> {
                                                                 if (acc.equals(
-                                                                        AionAddress.wrap(ulAcc))) {
+                                                                        Utils.wrapAddress(ulAcc))) {
                                                                     System.out.println(
                                                                             "UnlockAccount: "
                                                                                     + ulAcc);
                                                                     ApiMsg apiMsg =
                                                                             API.getWallet()
                                                                                     .unlockAccount(
-                                                                                            (Address)
+                                                                                            (NewAddress)
                                                                                                     acc,
                                                                                             FUNCTION_ARGS
                                                                                                     .get(
@@ -538,8 +536,8 @@ public class Erc20Demo {
             Optional.ofNullable(getServerAccounts())
                     .ifPresent(
                             accs -> {
-                                Address acc =
-                                        (Address) accs.get(Integer.valueOf(FUNCTION_ARGS.get(0)));
+                                NewAddress acc =
+                                        (NewAddress) accs.get(Integer.valueOf(FUNCTION_ARGS.get(0)));
 
                                 Optional.ofNullable(acc)
                                         .ifPresent(
@@ -714,7 +712,7 @@ public class Erc20Demo {
             return false;
         }
 
-        List<Address> accs = apiMsg.getObject();
+        List<NewAddress> accs = apiMsg.getObject();
         System.out.println("Get " + accs.size() + " accounts!");
 
         if (accs.size() < 3) {

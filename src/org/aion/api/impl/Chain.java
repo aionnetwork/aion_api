@@ -5,6 +5,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import org.aion.aion_types.NewAddress;
 import org.aion.api.IChain;
 import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.impl.internal.Message;
@@ -15,11 +16,9 @@ import org.aion.api.log.LogEnum;
 import org.aion.api.type.ApiMsg;
 import org.aion.api.type.ApiMsg.cast;
 import org.aion.api.type.Block;
-import org.aion.base.type.AionAddress;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
 import org.aion.base.util.ByteUtil;
-import org.aion.vm.api.interfaces.Address;
 import org.slf4j.Logger;
 
 /** Created by Jay Tseng on 14/11/16. */
@@ -65,11 +64,11 @@ public final class Chain implements IChain {
         }
     }
 
-    public ApiMsg getBalance(Address address) {
+    public ApiMsg getBalance(NewAddress address) {
         return getBalance(address, blockNumber().getObject());
     }
 
-    public ApiMsg getBalance(Address address, long blockNumber) {
+    public ApiMsg getBalance(NewAddress address, long blockNumber) {
 
         if (!apiInst.isInitialized.get()) {
             return new ApiMsg(-1003);
@@ -85,7 +84,7 @@ public final class Chain implements IChain {
         Message.req_getBalance reqBody =
                 Message.req_getBalance
                         .newBuilder()
-                        .setAddress(ByteString.copyFrom(address.toBytes()))
+                        .setAddress(ByteString.copyFrom(address.toByteArray()))
                         .setBlockNumber(blockNumber)
                         .build();
 
@@ -400,7 +399,7 @@ public final class Chain implements IChain {
         }
     }
 
-    public ApiMsg getTransactionCount(Address address, long blockNumber) {
+    public ApiMsg getTransactionCount(NewAddress address, long blockNumber) {
         if (!this.apiInst.isConnected()) {
             return new ApiMsg(-1003);
         }
@@ -415,7 +414,7 @@ public final class Chain implements IChain {
         Message.req_getTransactionCount reqBody =
                 Message.req_getTransactionCount
                         .newBuilder()
-                        .setAddress(ByteString.copyFrom(address.toBytes()))
+                        .setAddress(ByteString.copyFrom(address.toByteArray()))
                         .setBlocknumber(blockNumber)
                         .build();
 
@@ -582,7 +581,7 @@ public final class Chain implements IChain {
                 .difficulty(new BigInteger(rsp.getDifficulty().toByteArray()))
                 .extraData(ByteArrayWrapper.wrap(rsp.getExtraData().toByteArray()))
                 .nonce(new BigInteger(rsp.getNonce().toByteArray()))
-                .miner(AionAddress.wrap(rsp.getMinerAddress().toByteArray()))
+                .miner(new NewAddress(rsp.getMinerAddress().toByteArray()))
                 .nrgConsumed(rsp.getNrgConsumed())
                 .nrgLimit(rsp.getNrgLimit())
                 .txTrieRoot(Hash256.wrap(rsp.getTxTrieRoot().toByteArray()))
@@ -603,10 +602,10 @@ public final class Chain implements IChain {
      * GetNonce returns a BigInteger representing the nonce of the account address at the latest
      * block number.
      *
-     * @param address the class {@link Address Address} of the desired account to get the nonce of.
+     * @param address the class {@link NewAddress Address} of the desired account to get the nonce of.
      * @return the account's nonce.
      */
-    public ApiMsg getNonce(Address address) {
+    public ApiMsg getNonce(NewAddress address) {
         if (!apiInst.isInitialized.get()) {
             return new ApiMsg(-1003);
         }
@@ -614,7 +613,7 @@ public final class Chain implements IChain {
         Message.req_getNonce reqBody =
                 Message.req_getNonce
                         .newBuilder()
-                        .setAddress(ByteString.copyFrom(address.toBytes()))
+                        .setAddress(ByteString.copyFrom(address.toByteArray()))
                         .build();
 
         byte[] reqHead =
@@ -650,11 +649,11 @@ public final class Chain implements IChain {
         }
     }
 
-    public ApiMsg getStorageAt(Address address, int position) {
+    public ApiMsg getStorageAt(NewAddress address, int position) {
         return getStorageAt(address, position, -1L);
     }
 
-    public ApiMsg getStorageAt(Address address, int position, long blockNumber) {
+    public ApiMsg getStorageAt(NewAddress address, int position, long blockNumber) {
         if (!apiInst.isInitialized.get()) {
             return new ApiMsg(-1003);
         }
@@ -662,7 +661,7 @@ public final class Chain implements IChain {
         Message.req_getStorageAt reqBody =
                 Message.req_getStorageAt
                         .newBuilder()
-                        .setAddress(ByteString.copyFrom(address.toBytes()))
+                        .setAddress(ByteString.copyFrom(address.toByteArray()))
                         .setBlocknumber(blockNumber)
                         .setPosition(position)
                         .build();

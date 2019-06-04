@@ -4,10 +4,10 @@ import static org.aion.api.ITx.NRG_LIMIT_TX_MIN;
 import static org.aion.api.ITx.NRG_PRICE_MIN;
 
 import java.math.BigInteger;
+import org.aion.aion_types.NewAddress;
 import org.aion.api.ITx;
-import org.aion.base.type.AionAddress;
+import org.aion.api.impl.Utils;
 import org.aion.base.util.ByteArrayWrapper;
-import org.aion.vm.api.interfaces.Address;
 
 /**
  * The transaction input arguments used in {@link
@@ -16,8 +16,8 @@ import org.aion.vm.api.interfaces.Address;
  */
 public final class TxArgs {
 
-    private final Address from;
-    private final Address to;
+    private final NewAddress from;
+    private final NewAddress to;
     private final BigInteger value;
     private final BigInteger nonce;
     private final long nrgLimit;
@@ -34,11 +34,11 @@ public final class TxArgs {
         this.data = builder.data;
     }
 
-    public Address getFrom() {
+    public NewAddress getFrom() {
         return from;
     }
 
-    public Address getTo() {
+    public NewAddress getTo() {
         return to;
     }
 
@@ -65,8 +65,8 @@ public final class TxArgs {
     /** This Builder class is used to build a {@link TxArgs} instance. */
     public static class TxArgsBuilder {
 
-        private Address from;
-        private Address to;
+        private NewAddress from;
+        private NewAddress to;
         private BigInteger value;
         private BigInteger nonce;
         private long nrgLimit;
@@ -75,12 +75,12 @@ public final class TxArgs {
 
         public TxArgsBuilder() {}
 
-        public TxArgs.TxArgsBuilder from(final Address from) {
+        public TxArgs.TxArgsBuilder from(final NewAddress from) {
             this.from = from;
             return this;
         }
 
-        public TxArgs.TxArgsBuilder to(final Address to) {
+        public TxArgs.TxArgsBuilder to(final NewAddress to) {
             this.to = to;
             return this;
         }
@@ -125,16 +125,16 @@ public final class TxArgs {
             }
 
             if (from == null) {
-                from = AionAddress.EMPTY_ADDRESS();
+                from = Utils.ZERO_ADDRESS();
             }
 
             if (to == null) {
-                to = AionAddress.EMPTY_ADDRESS();
+                to = Utils.ZERO_ADDRESS();
             }
 
             if (nrgLimit == 0) {
                 nrgLimit =
-                        to.equals(AionAddress.EMPTY_ADDRESS())
+                        to.equals(Utils.ZERO_ADDRESS())
                                 ? ITx.NRG_LIMIT_CONTRACT_CREATE_MAX
                                 : ITx.NRG_LIMIT_TX_MAX;
             }

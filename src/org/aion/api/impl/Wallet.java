@@ -4,15 +4,14 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.util.ArrayList;
 import java.util.List;
+import org.aion.aion_types.NewAddress;
 import org.aion.api.IWallet;
 import org.aion.api.impl.internal.ApiUtils;
 import org.aion.api.impl.internal.Message;
 import org.aion.api.log.AionLoggerFactory;
 import org.aion.api.log.LogEnum;
 import org.aion.api.type.ApiMsg;
-import org.aion.base.type.AionAddress;
 import org.aion.base.util.ByteUtil;
-import org.aion.vm.api.interfaces.Address;
 import org.slf4j.Logger;
 
 /** Created by Jay Tseng on 14/11/16. */
@@ -44,9 +43,9 @@ public class Wallet implements IWallet {
                     Message.rsp_accounts.parseFrom(ApiUtils.parseBody(rsp).getData());
             List<ByteString> accBs = msgRsp.getAccoutList();
 
-            List<Address> account = new ArrayList<>();
+            List<NewAddress> account = new ArrayList<>();
             for (ByteString bs : accBs) {
-                account.add(AionAddress.wrap(bs.toByteArray()));
+                account.add(new NewAddress(bs.toByteArray()));
             }
 
             if (LOGGER.isDebugEnabled()) {
@@ -64,11 +63,11 @@ public class Wallet implements IWallet {
         }
     }
 
-    public ApiMsg unlockAccount(Address acc, String passphrase) {
+    public ApiMsg unlockAccount(NewAddress acc, String passphrase) {
         return unlockAccount(acc, passphrase, 60);
     }
 
-    public ApiMsg unlockAccount(Address acc, String passphrase, int duration) {
+    public ApiMsg unlockAccount(NewAddress acc, String passphrase, int duration) {
         if (!this.apiInst.isConnected()) {
             return new ApiMsg(-1003);
         }
@@ -90,7 +89,7 @@ public class Wallet implements IWallet {
         Message.req_unlockAccount reqBody =
                 Message.req_unlockAccount
                         .newBuilder()
-                        .setAccount(ByteString.copyFrom(acc.toBytes()))
+                        .setAccount(ByteString.copyFrom(acc.toByteArray()))
                         .setDuration(duration)
                         .setPassword(passphrase)
                         .build();
@@ -135,7 +134,7 @@ public class Wallet implements IWallet {
         try {
             Message.rsp_minerAddress msgRsp =
                     Message.rsp_minerAddress.parseFrom(ApiUtils.parseBody(rsp).getData());
-            this.apiInst.minerAddress = AionAddress.wrap(msgRsp.getMinerAddr().toByteArray());
+            this.apiInst.minerAddress = new NewAddress(msgRsp.getMinerAddr().toByteArray());
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("[getMinerAccount] minerAddress: [{}]", this.apiInst.minerAddress);
             }
@@ -153,7 +152,7 @@ public class Wallet implements IWallet {
         }
     }
 
-    public ApiMsg setDefaultAccount(Address addr) {
+    public ApiMsg setDefaultAccount(NewAddress addr) {
         this.apiInst.defaultAccount = addr;
         return new ApiMsg(true, ApiMsg.cast.BOOLEAN);
     }
@@ -162,7 +161,7 @@ public class Wallet implements IWallet {
         return new ApiMsg(this.apiInst.defaultAccount, ApiMsg.cast.OTHERS);
     }
 
-    public ApiMsg lockAccount(Address acc, String passphrase) {
+    public ApiMsg lockAccount(NewAddress acc, String passphrase) {
         if (!this.apiInst.isConnected()) {
             return new ApiMsg(-1003);
         }
@@ -177,7 +176,7 @@ public class Wallet implements IWallet {
         Message.req_accountlock reqBody =
                 Message.req_accountlock
                         .newBuilder()
-                        .setAccount(ByteString.copyFrom(acc.toBytes()))
+                        .setAccount(ByteString.copyFrom(acc.toByteArray()))
                         .setPassword(passphrase)
                         .build();
 

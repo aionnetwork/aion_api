@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.aion.aion_types.NewAddress;
 import org.aion.api.IUtils;
 import org.aion.api.cfg.CfgApi;
 import org.aion.api.impl.internal.ApiUtils;
@@ -13,9 +14,7 @@ import org.aion.api.log.LogEnum;
 import org.aion.api.type.ApiMsg;
 import org.aion.api.type.Event;
 import org.aion.api.type.MsgRsp;
-import org.aion.base.type.AionAddress;
 import org.aion.base.util.ByteArrayWrapper;
-import org.aion.vm.api.interfaces.Address;
 import org.slf4j.Logger;
 import org.zeromq.ZMQ;
 
@@ -26,8 +25,8 @@ public class ApiBase {
     private final int SLEEPTIME = 3000;
     AtomicBoolean isInitialized = new AtomicBoolean(false);
     // END PRIVATE MEMBERS --------------------------------------------
-    Address minerAddress;
-    Address defaultAccount = AionAddress.EMPTY_ADDRESS();
+    NewAddress minerAddress;
+    NewAddress defaultAccount = Utils.ZERO_ADDRESS();
     String url;
     boolean nb = false;
     int timeout = 300_000;

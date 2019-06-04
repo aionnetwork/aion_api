@@ -2,9 +2,9 @@ package org.aion.api.type;
 
 import java.math.BigInteger;
 import java.util.List;
+import org.aion.aion_types.NewAddress;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
-import org.aion.vm.api.interfaces.Address;
 
 /**
  * The BlockDetails return the detailed block information including the transactions and the
@@ -30,7 +30,7 @@ public final class BlockDetails {
     private final BigInteger nonce;
     private final BigInteger difficulty;
     private final BigInteger totalDifficulty;
-    private final Address minerAddress;
+    private final NewAddress minerAddress;
     private final Hash256 stateRoot;
     private final Hash256 txTrieRoot;
     private final Hash256 receiptTxRoot;
@@ -104,7 +104,7 @@ public final class BlockDetails {
         return difficulty;
     }
 
-    public Address getMinerAddress() {
+    public NewAddress getMinerAddress() {
         return minerAddress;
     }
 
@@ -237,7 +237,7 @@ public final class BlockDetails {
         private BigInteger nonce;
         private BigInteger difficulty;
         private BigInteger totalDifficulty;
-        private Address minerAddress;
+        private NewAddress minerAddress;
         private Hash256 stateRoot;
         private Hash256 txTrieRoot;
         private Hash256 receiptTxRoot;
@@ -312,7 +312,7 @@ public final class BlockDetails {
             return this;
         }
 
-        public BlockDetailsBuilder miner(final Address miner) {
+        public BlockDetailsBuilder miner(final NewAddress miner) {
             this.minerAddress = miner;
             return this;
         }
