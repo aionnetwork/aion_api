@@ -111,7 +111,7 @@ public final class Chain implements IChain {
                         "null balance for address " + address + " and blockNumber " + blockNumber,
                         cast.OTHERS);
             } else {
-                return new ApiMsg(new BigInteger(balance), cast.OTHERS);
+                return new ApiMsg(new BigInteger(1, balance), cast.OTHERS);
             }
 
         } catch (InvalidProtocolBufferException e) {
@@ -579,9 +579,9 @@ public final class Chain implements IChain {
         }
 
         return builder.bloom(ByteArrayWrapper.wrap(rsp.getLogsBloom().toByteArray()))
-                .difficulty(new BigInteger(rsp.getDifficulty().toByteArray()))
+                .difficulty(new BigInteger(1, rsp.getDifficulty().toByteArray()))
                 .extraData(ByteArrayWrapper.wrap(rsp.getExtraData().toByteArray()))
-                .nonce(new BigInteger(rsp.getNonce().toByteArray()))
+                .nonce(new BigInteger(1, rsp.getNonce().toByteArray()))
                 .miner(AionAddress.wrap(rsp.getMinerAddress().toByteArray()))
                 .nrgConsumed(rsp.getNrgConsumed())
                 .nrgLimit(rsp.getNrgLimit())
@@ -595,7 +595,7 @@ public final class Chain implements IChain {
                 .parentHash(Hash256.wrap(rsp.getParentHash().toByteArray()))
                 .solution(ByteArrayWrapper.wrap(rsp.getSolution().toByteArray()))
                 .size(rsp.getSize())
-                .totalDifficulty(new BigInteger(rsp.getTotalDifficulty().toByteArray()))
+                .totalDifficulty(new BigInteger(1, rsp.getTotalDifficulty().toByteArray()))
                 .createBlock();
     }
 
@@ -639,7 +639,7 @@ public final class Chain implements IChain {
                         "null nonce for address " + address,
                         cast.OTHERS);
             } else {
-                return new ApiMsg(new BigInteger(nonce), cast.OTHERS);
+                return new ApiMsg(new BigInteger(1, nonce), cast.OTHERS);
             }
 
         } catch (InvalidProtocolBufferException e) {

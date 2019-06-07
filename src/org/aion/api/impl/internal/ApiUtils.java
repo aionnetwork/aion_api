@@ -100,8 +100,8 @@ public class ApiUtils {
                 .from(AionAddress.wrap(rsp.getFrom().toByteArray()))
                 .to(AionAddress.wrap(rsp.getTo().toByteArray()))
                 .timeStamp(rsp.getTimeStamp())
-                .nonce(new BigInteger(rsp.getNonce().toByteArray()))
-                .value(new BigInteger(rsp.getValue().toByteArray()))
+                .nonce(new BigInteger(1, rsp.getNonce().toByteArray()))
+                .value(new BigInteger(1, rsp.getValue().toByteArray()))
                 .txHash(Hash256.wrap(rsp.getTxHash().toByteArray()))
                 .nrgPrice(rsp.getNrgPrice())
                 .nrgConsumed(rsp.getNrgConsume())
@@ -613,9 +613,9 @@ public class ApiUtils {
             Block built =
                     new Block.BlockBuilder()
                             .bloom(ByteArrayWrapper.wrap(b.getLogsBloom().toByteArray()))
-                            .difficulty(new BigInteger(b.getDifficulty().toByteArray()))
+                            .difficulty(new BigInteger(1, b.getDifficulty().toByteArray()))
                             .extraData(ByteArrayWrapper.wrap(b.getExtraData().toByteArray()))
-                            .nonce(new BigInteger(b.getNonce().toByteArray()))
+                            .nonce(new BigInteger(1, b.getNonce().toByteArray()))
                             .miner(AionAddress.wrap(b.getMinerAddress().toByteArray()))
                             .nrgConsumed(b.getNrgConsumed())
                             .nrgLimit(b.getNrgLimit())
@@ -628,7 +628,7 @@ public class ApiUtils {
                             .parentHash(Hash256.wrap(b.getParentHash().toByteArray()))
                             .solution(ByteArrayWrapper.wrap(b.getSolution().toByteArray()))
                             .size(b.getSize())
-                            .totalDifficulty(new BigInteger(b.getTotalDifficulty().toByteArray()))
+                            .totalDifficulty(new BigInteger(1, b.getTotalDifficulty().toByteArray()))
                             .createBlock();
 
             rtn.add(built);
@@ -647,7 +647,7 @@ public class ApiUtils {
             AccountDetails built =
                     new AccountDetails.AccountDetailsBuilder()
                             .address(AionAddress.wrap(a.getAddress().toByteArray()))
-                            .balance(new BigInteger(a.getBalance().toByteArray()))
+                            .balance(new BigInteger(1, a.getBalance().toByteArray()))
                             .createAccountDetails();
 
             rtn.add(built);

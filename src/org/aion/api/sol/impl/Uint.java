@@ -52,7 +52,7 @@ public class Uint extends SolidityAbstractType implements IUint {
         }
 
         ArrayList<Object> l = new ArrayList<>();
-        l.add(new BigInteger(bytes).toByteArray());
+        l.add(new BigInteger(1, bytes).toByteArray());
         return new Uint(l);
     }
 
